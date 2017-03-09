@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class CollectionSolver {
     public static void main(String[] args) {
+        // Predefined
         Predicate node = new Predicate("node", 1);
         node.add("a");
         node.add("b");
@@ -24,16 +25,33 @@ public class CollectionSolver {
         label.add("bc", "\"mom\"");
         System.out.println(label);
 
+        // edge_with_label(X, Y, S) :- edge(X, Y, E), label(E, S).
         Predicate edgeWithLabel = new Predicate("edge_with_label", 3);
         List<String[]> edgeResults = edge.get("X", "Y", "E");
         List<String[]> labelResults = label.get("E", "S");
         for (String[] edgeResult : edgeResults) {
-            for (String[] labelResult: labelResults) {
+            for (String[] labelResult : labelResults) {
                 if (Objects.equals(edgeResult[2], labelResult[0])) {
                     edgeWithLabel.add(edgeResult[0], edgeResult[1], labelResult[1]);
                 }
             }
         }
         System.out.println(edgeWithLabel);
+
+        // female(X) :- edge_with_label(X, _, "mom").
+        Predicate female = new Predicate("female", 1);
+        List<String[]> edgeWithLabelResults1 = edgeWithLabel.get("X", "Y", "\"mom\"");
+        for (String[] edgeWithLabelResult : edgeWithLabelResults1) {
+            female.add(edgeWithLabelResult[0]);
+        }
+        System.out.println(female);
+
+        // male(X) :- edge_with_label(X, _, "dad").
+        Predicate male = new Predicate("male", 1);
+        List<String[]> edgeWithLabelResults2 = edgeWithLabel.get("X", "Y", "\"dad\"");
+        for (String[] edgeWithLabelResult : edgeWithLabelResults2) {
+            male.add(edgeWithLabelResult[0]);
+        }
+        System.out.println(male);
     }
 }

@@ -92,7 +92,7 @@ public class Predicate {
     }
 
     private static boolean isAtom(String name) {
-        return Character.isLowerCase(name.charAt(0));
+        return !isVariable(name);
     }
 
     private static boolean isVariable(String name) {
