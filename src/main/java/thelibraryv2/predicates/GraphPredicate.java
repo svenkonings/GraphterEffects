@@ -1,6 +1,7 @@
-package thelibraryv2;
+package thelibraryv2.predicates;
 
 import thelibraryv2.exceptions.InvalidSizeException;
+import thelibraryv2.predicates.Predicate;
 
 import java.util.List;
 

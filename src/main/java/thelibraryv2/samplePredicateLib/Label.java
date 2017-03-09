@@ -2,8 +2,8 @@ package thelibraryv2.samplePredicateLib;
 
 import Graphstream.Edge;
 import Graphstream.Node;
-import thelibraryv2.*;
 import thelibraryv2.exceptions.InvalidSizeException;
+import thelibraryv2.predicates.GraphPredicate;
 
 import java.util.List;
 
