@@ -1,4 +1,4 @@
-package thelibrary;
+package thelibraryv2;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

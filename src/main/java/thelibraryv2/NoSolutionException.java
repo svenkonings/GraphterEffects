@@ -1,4 +1,4 @@
-package thelibrary;
+package thelibraryv2;
 
 public class NoSolutionException extends Exception {
 
