@@ -1,4 +1,4 @@
-package solver;
+package solver.constraints;
 
 import java.util.HashMap;
 import java.util.Map;
