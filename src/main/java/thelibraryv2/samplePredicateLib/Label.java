@@ -1,11 +1,13 @@
 package thelibraryv2.samplePredicateLib;
 
+import Graphstream.Edge;
+import Graphstream.Node;
 import thelibraryv2.*;
+import thelibraryv2.exceptions.InvalidSizeException;
 
-import java.util.LinkedList;
 import java.util.List;
 
-public class Label extends Predicate {
+public class Label extends GraphPredicate {
 
         @Override
     public boolean check(List<Object> input) throws InvalidSizeException {

@@ -1,4 +1,4 @@
-package thelibraryv2;
+package thelibraryv2.exceptions;
 
 
 public class InvalidSizeException extends Exception {

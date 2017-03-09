@@ -1,4 +1,4 @@
-package thelibraryv2;
+package Graphstream;
 
 public class Edge {
 
