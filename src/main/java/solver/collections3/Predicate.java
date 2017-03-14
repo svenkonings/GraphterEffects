@@ -75,6 +75,16 @@ public class Predicate {
             for (int i = 0; i < arity; i++) {
                 String argTerm = args.get(i);
                 String valueTerm = value.get(i);
+                /*  Arg  - Value
+                  Implemented cases:
+                    Atom - Atom
+                    Var  - Atom
+                  Unimplemented cases:
+                    Atom - Var
+                    Var  - Var
+                  Reasons:
+                    The value of a graph can't be a variable
+                */
                 if (isAtom(argTerm) && !argTerm.equals(valueTerm)) {
                     return false;
                 }
