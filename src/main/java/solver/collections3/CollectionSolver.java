@@ -10,6 +10,11 @@ public class CollectionSolver {
         node.add("a");
         node.add("b");
         node.add("c");
+        node.add("d");
+        node.add("e");
+        node.add("f");
+        node.add("g");
+        node.add("h");
         System.out.println(node);
 
         Predicate edge = new Predicate("edge", 3);
@@ -44,6 +49,12 @@ public class CollectionSolver {
         List<Map<String, String>> maleValues = edgeWithLabel.get("X", "Y", "\"dad\"");
         maleValues.forEach(result -> male.add(result.get("X")));
         System.out.println(male);
+
+//        // test(A, B, ...) :- node(A), node(B), ...
+//        Predicate test = new Predicate("test", 8);
+//        List<Map<String, String>> testValues = unify(node.get("A"), node.get("B"), node.get("C"), node.get("D"), node.get("E"), node.get("F"), node.get("G"), node.get("H"));
+//        testValues.forEach(value -> test.add(value.get("A"), value.get("B"), value.get("C"), value.get("D"), value.get("E"), value.get("F"), value.get("G"), value.get("H")));
+//        System.out.println(test);
     }
 
     @SafeVarargs
