@@ -44,5 +44,10 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/jatalog-0.9-SNAPSHOT.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+            <version>3.2</version>
+        </dependency>
     </dependencies>
 </project>

@@ -31,5 +31,15 @@
     <orderEntry type="library" name="Maven: com.lowagie:itext:2.1.5" level="project" />
     <orderEntry type="library" name="Maven: bouncycastle:bcmail-jdk14:138" level="project" />
     <orderEntry type="library" name="Maven: bouncycastle:bcprov-jdk14:138" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: za.co.wstoop:jatalog:0.9-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/jatalog-0.9-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="Maven: org.jfree:jfreesvg:3.2" level="project" />
   </component>
 </module>
