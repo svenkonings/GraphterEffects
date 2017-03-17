@@ -8,7 +8,7 @@ import java.util.Map;
 
 public final class GraphPredicateLibrary {
 
-
+    // Interface (eg Callable) instead of Method
     private Map<GraphPredicate, Method> predicatemap = new HashMap<>();
 
     public Map<GraphPredicate, Method> getMap() {
@@ -21,7 +21,7 @@ public final class GraphPredicateLibrary {
         }
         predicatemap.put(pred, med);
         return true;
-        }
+    }
 
 
 }

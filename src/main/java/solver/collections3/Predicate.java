@@ -33,6 +33,8 @@ public class Predicate {
         System.out.println();
     }
 
+    // Dynamically calculate the values
+    // Assertions --> Exceptions
     public Predicate(String name, int arity) {
         this(name, arity, new ArrayList<>());
     }
