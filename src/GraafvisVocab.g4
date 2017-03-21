@@ -48,4 +48,4 @@ NAME:    NAME_LO | NAME_HI;
 
 WS:             [ \n\r\t] -> skip;
 BLOCKCOMMENT:   '/*' .*? '*/' -> skip;
-LINECOMMENT: BEGIN_COMMENT .*? NEWLINE -> skip;
+LINECOMMENT: BEGIN_COMMENT .*? NEWLINE -> skip; //TODO -- does this even work?

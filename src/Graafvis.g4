@@ -40,7 +40,7 @@ literal: atom
        ;
 
 /* Atoms are predicates applied to a tuple of terms */
-atom: predicate PAR_OPEN term (COMMA term)* PAR_CLOSE;
+atom: predicate PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 
 /* Language feature to apply one predicate to multiple tuples of terms */
 multi_atom: predicate BRACE_OPEN term (COMMA term)* BRACE_CLOSE;
