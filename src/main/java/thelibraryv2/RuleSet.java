@@ -1,7 +1,9 @@
 package thelibraryv2;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by poesd_000 on 20/03/2017.
@@ -11,7 +13,7 @@ public class RuleSet {
     /**
      * Container of the completed rules
      */
-    private Map<VisElem, Map<String, String>> completedrules = new HashMap<>();
+    private Set<VisElem> completedrules = new HashSet<>();
 
     /**
      * Set a completed rule
@@ -20,9 +22,6 @@ public class RuleSet {
      * @param value Value of the parameter
      */
     public void set(VisElem vis, String key, String value) {
-        if (!completedrules.containsKey(vis)) {
-            completedrules.put(vis, new HashMap<>());
-        }
-        completedrules.get(vis).put(key, value);
+        vis.set(key, value);
     }
 }
