@@ -13,13 +13,13 @@ public class IR {
 
 
     public static void main(String[] args) {
-        List<Rule> ruleset = new LinkedList<>();
+        List<Rule> rulelist = new LinkedList<>();
         //fact
-        ruleset.add(new Rule(new Expr("label", Arrays.asList("X", "hello"))));
+        rulelist.add(new Rule(new Expr("label", Arrays.asList("X", "hello"))));
 
         //rule
-        ruleset.add(new Rule(new Expr("shape", Arrays.asList("X", "circle")), new Expr("label", Arrays.asList("X", "hello"))));
-        System.out.println(ruleset);
+        rulelist.add(new Rule(new Expr("shape", Arrays.asList("X", "circle")), new Expr("label", Arrays.asList("X", "hello"))));
+        System.out.println(rulelist);
     }
 
     public IR(){
