@@ -24,13 +24,19 @@ label: NAME_LO (RENAME_TOKEN NAME_LO)?
 /* Implicative clauses */
 clause: (antecedent ARROW)? consequence EOL;
 
-antecedent: literal (bool_op literal)*;
+antecedent: propositional_formula;
+
+propositional_formula: propositional_formula bool_op propositional_formula
+                     | PAR_OPEN propositional_formula PAR_CLOSE
+                     | literal
+                     ;
+
 consequence: literal (COMMA literal)*;
 
 /* Literals are atomic formulas or boolean expressions*/
 literal: atom
        | multi_atom
-       | bool_expr // TODO
+       | bool_expr
        ;
 
 /* Atoms are predicates applied to a tuple of terms */
@@ -70,7 +76,7 @@ num_expr: num_expr num_op num_expr
         | NUMBER
         ;
 
-bool_op: ; // TODO
+bool_op: OR | AND | COMMA; // TODO
 eq_op: ; // TODO
 num_op: ; // TODO
 

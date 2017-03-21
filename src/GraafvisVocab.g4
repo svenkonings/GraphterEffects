@@ -1,5 +1,9 @@
 lexer grammar GraafvisVocab;
 
+fragment LETTER_LO: [a-z];
+fragment LETTER_HI: [A-Z];
+fragment BEGIN_COMMENT: '%';
+
 ARROW: '->';
 COLON: ':';
 
@@ -23,6 +27,7 @@ LE: '<=';
 
 COMMA: ',';
 OR: 'or';
+AND: 'and';
 
 UNDERSCORE: '_';
 
@@ -40,10 +45,6 @@ NUMBER:         [0-9]+;
 NAME_LO: LETTER_LO (LETTER_LO | LETTER_HI | NUMBER)*;
 NAME_HI: LETTER_HI (LETTER_LO | LETTER_HI | NUMBER)*;
 NAME:    NAME_LO | NAME_HI;
-
-fragment LETTER_LO: [a-z];
-fragment LETTER_HI: [A-Z];
-fragment BEGIN_COMMENT: '%';
 
 WS:             [ \n\r\t] -> skip;
 BLOCKCOMMENT:   '/*' .*? '*/' -> skip;
