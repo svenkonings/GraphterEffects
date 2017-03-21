@@ -1,25 +1,27 @@
 package thelibraryv2;
+
+import utils.Pair;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-/**
- * Created by poesd_000 on 20/03/2017.
- */
 public class IR {
 
 
     public static void main(String[] args) {
+        Set<String> imports = new HashSet<>();
+        imports.add("ext1.mincut.");
+        imports.add("ext1.maxflow.");
         List<Rule> rulelist = new LinkedList<>();
+        Pair<Set<String>, List<Rule>> res = new Pair<>(imports, rulelist);
+
         //fact
         rulelist.add(new Rule(new Expr("label", Arrays.asList("X", "hello"))));
 
         //rule
         rulelist.add(new Rule(new Expr("shape", Arrays.asList("X", "circle")), new Expr("label", Arrays.asList("X", "hello"))));
-        System.out.println(rulelist);
+        System.out.println(res);
     }
 
     public IR(){
