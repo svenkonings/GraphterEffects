@@ -3,47 +3,150 @@ package solver.constraintlogic;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 import org.dom4j.Element;
-import solver.constraintlogic.elements.Ellipse;
-import solver.constraintlogic.elements.Rectangle;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.chocosolver.solver.variables.IntVar.MAX_INT_BOUND;
-import static solver.constraintlogic.Shape.*;
 
 public class VisElem {
 
+    private VisType type;
     private final Model model;
-    private final Map<String, IntVar> values;
+    private final Map<String, String> values;
+    private final Map<String, IntVar> vars;
 
     public VisElem(Model model) {
         this.model = model;
         this.values = new HashMap<>();
+        this.vars = new HashMap<>();
+        setDefaults();
     }
 
-    public IntVar get(String name) {
-        return values.computeIfAbsent(name, key -> {
-            switch (key) {
-                case "shape":
-                    return model.intVar(SHAPES);
-                default:
-                    return model.intVar(0, MAX_INT_BOUND);
-            }
-        });
+    private void setDefaults() {
+        setVar("x2", getVar("x").add(getVar("width")).intVar());
+        setVar("y2", getVar("y").add(getVar("height")).intVar());
     }
 
-    // TODO: Add support for non-shapes
-    public Element generateElement() {
-        IntVar shape = get("shape");
-        if (shape.isInstantiated()) {
-            switch (shape.getValue()) {
-                case SHAPE_RECTANGLE:
-                    return new Rectangle(get("x"), get("y"), get("width"), get("height"));
-                case SHAPE_ELLIPSE:
-                    return new Ellipse(get("x"), get("y"), get("width"), get("height"));
-            }
+    public VisType getType() {
+        return type;
+    }
+
+    public void setType(VisType newType) {
+        if (type != null && !type.equals(newType)) {
+            throw new ElementException("This element already has type %s instead of %s", type, newType);
+        }
+        type = newType;
+    }
+
+    public void set(String name, String value) {
+        try {
+            int varValue = Integer.parseInt(value);
+            setVar(name, varValue);
+        } catch (NumberFormatException e) {
+            setValue(name, value);
+        }
+    }
+
+    private void setValue(String name, String value) {
+        if (vars.containsKey(name)) {
+            throw new ElementException("%s is already defined as a variable", name);
+        } else if (values.containsKey(name) && !Objects.equals(values.get(name), value)) {
+            throw new ElementException("%s already has a different value", name);
+        } else {
+            values.put(name, value);
+        }
+    }
+
+    private void setVar(String name, int varValue) {
+        if (values.containsKey(name)) {
+            throw new ElementException("%s is already defined as a value", name);
+        } else if (vars.containsKey(name)) {
+            IntVar var = vars.get(name);
+            model.arithm(var, "=", varValue).post();
+        } else {
+            IntVar var = model.intVar(model.generateName(name), varValue);
+            vars.put(name, var);
+        }
+    }
+
+    private void setVar(String name, IntVar var) {
+        if (values.containsKey(name)) {
+            throw new ElementException("%s is already defined as a value", name);
+        } else if (vars.containsKey(name)) {
+            throw new ElementException("%s is already defined as a variable", name);
+        } else {
+            vars.put(name, var);
+        }
+    }
+
+    private void removeVars(String... names) {
+        for (String name : names) {
+            vars.remove(name);
+        }
+    }
+
+    private static String varToValue(IntVar var) {
+        if (var.isInstantiated()) {
+            return Integer.toString(var.getValue());
         }
         return null;
+    }
+
+    public String getValue(String name) {
+        if (values.containsKey(name)) {
+            return values.get(name);
+        } else if (vars.containsKey(name)) {
+            return varToValue(vars.get(name));
+        } else {
+            return null;
+        }
+    }
+
+    public IntVar getVar(String name) {
+        if (values.containsKey(name)) {
+            throw new ElementException("%s is already defined as a value", name);
+        }
+        return vars.computeIfAbsent(name, key -> model.intVar(model.generateName(key), 0, MAX_INT_BOUND));
+    }
+
+    public Map<String, String> getValues() {
+        Map<String, String> result = new HashMap<>(values);
+        vars.forEach((name, var) -> result.put(name, varToValue(var)));
+        return result;
+    }
+
+    public Map<String, IntVar> getVars() {
+        return new HashMap<>(vars);
+    }
+
+    public void addElement(Element parent) {
+        if (type == null) {
+            return;
+        }
+
+        // TODO: Set default values for certain types
+        // Convert generic attributes to attributes specific to this type
+        switch (type) {
+            case RECTANGLE:
+                removeVars("x2", "y2"); // Temp, see to do below
+                break;
+            case ELLIPSE:
+                setVar("rx", getVar("width").div(2).intVar());
+                setVar("ry", getVar("height").div(2).intVar());
+                setVar("cx", getVar("x").add(getVar("rx")).intVar());
+                setVar("cy", getVar("y").add(getVar("ry")).intVar());
+                removeVars("x", "y", "x2", "y2", "width", "height"); // Temp, see to do below
+                break;
+        }
+
+        // TODO: Check if the given attributes belong to this type
+        Element element = parent.addElement(VisType.toSvgElement(type));
+        getValues().forEach((name, value) -> {
+            if (value != null) {
+                element.addAttribute(name, value);
+            }
+        });
     }
 }

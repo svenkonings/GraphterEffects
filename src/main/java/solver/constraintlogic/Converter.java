@@ -1,8 +1,10 @@
 package solver.constraintlogic;
 
 import org.chocosolver.solver.Model;
-import org.dom4j.*;
-import solver.constraintlogic.elements.SVGElement;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
 
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static solver.constraintlogic.Util.testData;
@@ -21,49 +24,41 @@ public class Converter {
     private final Model model;
     private final Map<String, VisElem> mapping;
 
-    public static void main(String[] args) throws DatalogException, IOException, DocumentException {
+    public static void main(String[] args) throws DatalogException, DocumentException, IOException {
         Document document = new Converter().convert();
         writeDocument(document, "test.svg");
     }
 
-    public Converter() {
+    public Converter() throws DatalogException {
         jatalog = new Jatalog();
         model = new Model();
         mapping = new HashMap<>();
+        jatalog.rule(expr("type", "X", "Y"), expr("shape", "X", "Y"));
         testData(jatalog);
     }
 
     public Document convert() throws DatalogException, DocumentException {
         Document document = DocumentHelper.createDocument();
-        Element root = document.addElement(new QName("svg", SVGElement.NAMESPACE));
-        equalsConstraint("shape", "shape", Shape::parseShape);
-        equalsConstraint("posX", "x");
-        equalsConstraint("posY", "y");
-        equalsConstraint("width", "width");
-        equalsConstraint("height", "height");
+        Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
+        valuePredicate("type", VisElem::setType, VisType::fromAtom);
+        valuePredicate("posX", "x");
+        valuePredicate("posY", "y");
+        valuePredicate("width", "width");
+        valuePredicate("height", "height");
         model.getSolver().solve();
-        mapping.values().forEach(visElem -> {
-            Element element = visElem.generateElement();
-            if (element != null) {
-                root.add(element);
-            }
-        });
+        mapping.values().forEach(visElem -> visElem.addElement(root));
         return document;
     }
 
-    public void equalsConstraint(String predicate, String var) throws DatalogException {
-        equalsConstraint(predicate, var, Integer::parseInt);
+    public void valuePredicate(String predicate, String name) throws DatalogException {
+        valuePredicate(predicate, (visElem, result) -> visElem.set(name, result), String::toString);
     }
 
-    public void equalsConstraint(String predicate, String var, Function<String, Integer> parseFunction) throws DatalogException {
-        arithmConstraint(predicate, var, "=", parseFunction);
-    }
-
-    public void arithmConstraint(String predicate, String var, String operator, Function<String, Integer> parseFunction) throws DatalogException {
+    public <T> void valuePredicate(String predicate, BiConsumer<VisElem, T> visElemConsumer, Function<String, T> resultConverter) throws DatalogException {
         Collection<Map<String, String>> results = jatalog.query(expr(predicate, "Key", "Value"));
         for (Map<String, String> result : results) {
             VisElem visElem = mapping.computeIfAbsent(result.get("Key"), key -> new VisElem(model));
-            model.arithm(visElem.get(var), operator, parseFunction.apply(result.get("Value"))).post();
+            visElemConsumer.accept(visElem, resultConverter.apply(result.get("Value")));
         }
     }
 }
