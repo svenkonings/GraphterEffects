@@ -10,6 +10,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceFactory;
 import org.junit.Test;
+import utils.TestUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
