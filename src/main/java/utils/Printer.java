@@ -27,31 +27,23 @@ public class Printer {
         attrstring = attrstring + "}";
         builder.append(attrstring).append("\n");
 
-        List<Node> nodeset = new LinkedList<>(g.getNodeSet());
+        List<Element> nodeset = new LinkedList<>(g.getNodeSet());
         Collections.sort(nodeset, (o1, o2) -> o1.getId().compareTo(o2.getId()));
-
         builder.append("NODES\n");
-        for (Node n : nodeset) {
-            builder.append("\t").append(n);
-            builder.append("\t{");
-            attrstring = "";
-            for (String key : n.getAttributeKeySet()) {
-                attrstring += "\"" + key + "\":\"" + n.getAttribute(key) + "\",";
-            }
-            if (attrstring.endsWith(",")) {
-                attrstring = attrstring.substring(0, attrstring.length()-1);
-            }
-            attrstring = attrstring + "}";
-            builder.append(attrstring).append("\n");
-        }
-
-        List<Edge> edgeset = new LinkedList<>(g.getEdgeSet());
+        addfromlist(builder, nodeset);
+        List<Element> edgeset = new LinkedList<>(g.getEdgeSet());
         Collections.sort(edgeset, (o1, o2) -> o1.getId().compareTo(o2.getId()));
         builder.append("EDGES\n");
-        for (Edge e : edgeset) {
+        addfromlist(builder, edgeset);
+        System.out.println(builder.toString());
+    }
+
+
+    private static void addfromlist(StringBuilder builder, List<Element> list) {
+        for (Element e : list) {
             builder.append("\t").append(e);
             builder.append("\t{");
-            attrstring = "";
+            String attrstring = "";
             for (String key : e.getAttributeKeySet()) {
                 attrstring += "\"" + key + "\":\"" + e.getAttribute(key) + "\",";
             }
@@ -62,9 +54,6 @@ public class Printer {
             builder.append(attrstring).append("\n");
         }
 
-
-
-        System.out.println(builder.toString());
     }
 
 }
