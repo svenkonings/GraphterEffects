@@ -73,7 +73,7 @@ public class TestUtils {
         answers = jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID, "Value"));
         assert answers.size() == 1;
         try {
-            TestUtils.answerContains(answers,"ID",expectedID,"Value",expectedValue);
+            assert TestUtils.answerContains(answers,"Value",expectedValue);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,8 +84,8 @@ public class TestUtils {
                 attributeKey -> {
                     try {
                         Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
-                        TestUtils.answerContains(
-                                answers, element.getId(), element.getAttribute(attributeKey));
+                        assert TestUtils.answerContains(
+                                answers, "Value", element.getAttribute(attributeKey));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
