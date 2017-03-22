@@ -1,6 +1,6 @@
 package api;
 
-import Graphstream.Graph;
+import org.graphstream.graph.Graph;
 
 public class Graafvis {
 

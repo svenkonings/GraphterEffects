@@ -5,6 +5,8 @@ import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
 import java.util.*;
+import org.graphstream.graph.implementations.*;
+
 
 public class IR {
 
@@ -22,6 +24,7 @@ public class IR {
         //rule
         rulelist.add(new Rule(new Expr("shape", Arrays.asList("X", "circle")), new Expr("label", Arrays.asList("X", "hello"))));
         System.out.println(res);
+
     }
 
     public IR(){
