@@ -2,6 +2,7 @@ package utils; /**
  * Created by user on 21-3-2017.
  */
 
+import org.graphstream.graph.Element;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
@@ -9,6 +10,9 @@ import za.co.wstoop.jatalog.Jatalog;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static utils.ExprUtils.elementExpr;
 
 public class TestUtils {
 
@@ -63,5 +67,36 @@ public class TestUtils {
         }
         return false;
     }
+
+    public static void testPredicateValue(Jatalog jatalog, Element element, String predicate, String expectedID, String expectedValue) throws DatalogException {
+        Collection<Map<String, String>> answers;
+        answers = jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID, "Value"));
+        assert answers.size() == 1;
+        try {
+            TestUtils.answerContains(answers,"ID",expectedID,"Value",expectedValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void testAttributesCorrect(Jatalog jatalog, Element element) throws DatalogException {
+        element.getAttributeKeySet().forEach(
+                attributeKey -> {
+                    try {
+                        Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
+                        TestUtils.answerContains(
+                                answers, element.getId(), element.getAttribute(attributeKey));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+    }
+
+
+    public static void testSimpleFact(Jatalog jatalog, Element element, String predicate, String expectedID, boolean shouldExist) throws DatalogException {
+        assertEquals(shouldExist, !jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID)).isEmpty());
+    }
+
 
 }

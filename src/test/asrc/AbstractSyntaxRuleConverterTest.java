@@ -1,7 +1,6 @@
 package asrc;
 
 import org.graphstream.graph.Edge;
-import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
@@ -22,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static utils.TestUtils.*;
 
 /**
  * Created by user on 21-3-2017.
@@ -151,47 +150,6 @@ public class AbstractSyntaxRuleConverterTest {
 
     private void edgeIntegerInvariantsTest(Jatalog jatalog, Edge edge) throws DatalogException {
         testPredicateValue(jatalog,edge,"attributecount",edge.getId(),String.valueOf(edge.getAttributeCount()));
-    }
-
-    private void testPredicateValue(Jatalog jatalog, Element element, String predicate, String expectedID, String expectedValue) throws DatalogException {
-        Collection<Map<String, String>> answers;
-        answers = jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID, "Value"));
-        assert answers.size() == 1;
-        try {
-            TestUtils.answerContains(answers,"ID",expectedID,"Value",expectedValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void testAttributesCorrect(Jatalog jatalog, Element element) throws DatalogException {
-        element.getAttributeKeySet().forEach(
-                attributeKey -> {
-                    try {
-                        Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
-                        TestUtils.answerContains(
-                                answers, element.getId(), element.getAttribute(attributeKey));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-        );
-    }
-
-
-    private void testSimpleFact(Jatalog jatalog, Element element, String predicate, String expectedID, boolean shouldExist) throws DatalogException {
-        assertEquals(shouldExist, !jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID)).isEmpty());
-    }
-
-    private Expr elementExpr(Element element){
-        if(element instanceof Graph) {
-            return Expr.expr("graph", element.getId());
-        } else if (element instanceof Edge){
-            Edge edge = (Edge) element;
-            return Expr.expr("edge", edge.getTargetNode().getId(), edge.getSourceNode().getId(),element.getId());
-        } else {
-            return Expr.expr("node", element.getId());
-        }
     }
 
     public DefaultGraph importDGraph(String filepath) throws IOException {
