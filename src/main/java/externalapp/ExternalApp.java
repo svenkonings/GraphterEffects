@@ -1,13 +1,10 @@
 package externalapp;
 
-import Graphstream.Graph;
 import api.Constraintset;
 import api.Graafvis;
 import api.UnknownFormatException;
+import org.graphstream.graph.Graph;
 
-/**
- * Created by poesd_000 on 17/03/2017.
- */
 public class ExternalApp {
     public static void main(String[] args) throws UnknownFormatException {
         Graafvis gv = new Graafvis();
