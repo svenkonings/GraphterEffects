@@ -7,24 +7,42 @@ import org.junit.Test;
  */
 public abstract class GrammarTest {
 
+    private static final boolean SHOW_PROCESS = true;
+
     protected abstract String[] getValidSamples();
 
     protected abstract String[] getInvalidSamples();
 
     protected abstract ParserRuleContext parse(GraafvisParser parser);
 
+    protected abstract String getRuleName();
+
     @Test
     public void test() {
         for (String sample : getValidSamples()) {
             GraafvisParser parser = getGraafvisParser(sample);
             parse(parser);
-            Assert.assertEquals(sample, 0, countErrors(parser));
+            myAssertEquals(getRuleName(), sample, 0, countErrors(parser));
         }
         for (String sample : getInvalidSamples()) {
             GraafvisParser parser = getGraafvisParser(sample);
             parse(parser);
-            Assert.assertNotEquals(sample, 0, countErrors(parser));
+            myAssertNotEquals(getRuleName(), sample, 0, countErrors(parser));
         }
+    }
+
+    private static void myAssertEquals(String type, String sample, int expected, int actual) {
+        if (SHOW_PROCESS) {
+            System.out.printf("Parsed %s: %s. Expected %d errors. Found %d\n\r", type, sample, expected, actual);
+        }
+        Assert.assertEquals(sample, expected, actual);
+    }
+
+    private static void myAssertNotEquals(String type, String sample, int unexpected, int actual) {
+        if (SHOW_PROCESS) {
+            System.out.printf("Parsed %s: %s. Did not expect %d errors. Found %d\n\r", type, sample, unexpected, actual);
+        }
+        Assert.assertNotEquals(sample, unexpected, actual);
     }
 
     private static GraafvisParser getGraafvisParser(String text) {

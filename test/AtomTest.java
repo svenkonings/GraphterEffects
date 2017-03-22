@@ -5,27 +5,17 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public class AtomTest extends GrammarTest {
 
-    public static final String[] VALID_ATOMS = new String[]
+    private PredicateTest predicateTest = new PredicateTest();
+    private TermTest termTest = new TermTest();
+
+    private static final String[] ATOMS = new String[]
             {
-                    "p(x)",
-                    "q(X)",
-                    "p(0)",
-                    "p()",
-                    "p(_)",
-                    "predicate(X)",
-                    "predi_cate(X)",
-                    "pred1cate(1)",
-                    "p(x,y,z)",
-                    "predicate(x, y  , z)",
-                    "predicate(X,0,abc )",
-                    "q(X,_)",
-                    "predicate((x))",
-                    "p((x,y))",
-                    "q((a,b),(c,d))",
-                    "q((a,_),(_,_))",
-                    "p(\tx,3)"
+                    "%s(%s)",
+                    "%s(%s,%s)",
+                    "%s(%s,%s,%s)",
+                    "%s()"
             };
-    public static final String[] INVALID_ATOMS = new String[]
+    private static final String[] INVALID_SAMPLES = new String[]
             {
                     "test",
                     "p)(",
@@ -42,19 +32,82 @@ public class AtomTest extends GrammarTest {
                     ""
             };
 
+
     @Override
     protected String[] getValidSamples() {
-        return VALID_ATOMS;
+        String[] validTerms = termTest.getValidSamples();
+        String[] validPredicates = predicateTest.getValidSamples();
+
+        int atomCount = 0;
+        // Tuple 0
+        atomCount += validPredicates.length + validTerms.length;
+        // Tuple 1
+        atomCount += validPredicates.length + (2 * validTerms.length);
+        // Tuple 2
+        atomCount += validPredicates.length + (3 * validTerms.length);
+        // Tuple 3
+        atomCount += validPredicates.length;
+        // Create array to store possible atoms
+        String[] samples = new String[atomCount];
+        // Add atom examples
+        int samplePointer = 0;
+        // AtomType 0
+        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[0], validPredicates[i], validTerms[0]);
+        }
+        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[0], validPredicates[0], validTerms[i]);
+        }
+        // AtomType 1
+        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[1], validPredicates[i], validTerms[0], validTerms[0]);
+        }
+        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[1], validPredicates[0], validTerms[i], validTerms[0]);
+        }
+        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[1], validPredicates[0], validTerms[0], validTerms[i]);
+        }
+        // AtomType 2
+        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[2], validPredicates[i], validTerms[0], validTerms[0], validTerms[0]);
+        }
+        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[2], validPredicates[0], validTerms[i], validTerms[0], validTerms[0]);
+        }
+        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[2], validPredicates[0], validTerms[0], validTerms[i], validTerms[0]);
+        }
+        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[2], validPredicates[0], validTerms[0], validTerms[0], validTerms[i]);
+        }
+        // AtomType 3
+        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(ATOMS[3], validPredicates[i]);
+        }
+        return samples;
     }
 
     @Override
     protected String[] getInvalidSamples() {
-        return INVALID_ATOMS;
+        return INVALID_SAMPLES;
+    }
+
+    @Override
+    public void test() {
+        predicateTest.test();
+        termTest.test();
+        super.test();
     }
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
         return parser.atom();
+    }
+
+    @Override
+    protected String getRuleName() {
+        return "atom";
     }
 
 

@@ -23,5 +23,10 @@ public class MultiAtomTest extends GrammarTest {
         return parser.multi_atom();
     }
 
+    @Override
+    protected String getRuleName() {
+        return "multi_atom";
+    }
+
 
 }

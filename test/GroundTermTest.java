@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public class GroundTermTest extends GrammarTest {
 
-    public static final String[] VALID_STRING_SAMPLES = new String[]
+    private static final String[] VALID_STRING_SAMPLES = new String[]
             {
                     "\"\"",
                     "\"a\"",
@@ -16,7 +16,7 @@ public class GroundTermTest extends GrammarTest {
                     "\"a_b\""
             };
 
-    public static final String[] VALID_NUMBER_SAMPLES = new String[]
+    private static final String[] VALID_NUMBER_SAMPLES = new String[]
             {
                     "1",
                     "0123",
@@ -24,7 +24,7 @@ public class GroundTermTest extends GrammarTest {
                     "921345156224167352"
             };
 
-    public static final String[] VALID_NAME_LO_SAMPLES = new String[]
+    private static final String[] VALID_NAME_LO_SAMPLES = new String[]
             {
                     "a",
                     "a_b",
@@ -33,7 +33,7 @@ public class GroundTermTest extends GrammarTest {
                     "a_"
             };
 
-    public static final String[] INVALID_SAMPLES = new String[]
+    private static final String[] INVALID_SAMPLES = new String[]
             {
                     "",
                     "A",
@@ -59,5 +59,10 @@ public class GroundTermTest extends GrammarTest {
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
         return parser.ground_term();
+    }
+
+    @Override
+    protected String getRuleName() {
+        return "ground_term";
     }
 }

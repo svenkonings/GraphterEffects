@@ -3,26 +3,24 @@ import org.antlr.v4.runtime.ParserRuleContext;
 /**
  *
  */
-public class VariableTest extends GrammarTest {
+public class PredicateTest extends GrammarTest {
 
     private static final String[] VALID_SAMPLES = new String[]
             {
-                    "A",
-                    "ABC",
-                    "Aa",
-                    "A_bc",
-                    "A_",
-                    "A1"
+                    "predicate",
+                    "p",
+                    "p_q",
+                    "p1",
+                    "p_",
+                    "p1_"
             };
     private static final String[] INVALID_SAMPLES = new String[]
             {
+                    "Predicate",
+                    "1p",
                     "",
-                    "aA",
-                    "_A",
-                    "#$%",
-                    "a",
-                    "1A",
-                    "1"
+                    "_predicate",
+                    "!@#predicate"
             };
 
     @Override
@@ -37,13 +35,12 @@ public class VariableTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.variable();
+        return parser.predicate();
     }
 
     @Override
     protected String getRuleName() {
-        return "variable";
+        return "predicate";
     }
-
 
 }
