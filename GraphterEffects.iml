@@ -42,6 +42,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.sourceforge:gxl:1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/gxl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.jfree:jfreesvg:3.2" level="project" />
   </component>
 </module>
