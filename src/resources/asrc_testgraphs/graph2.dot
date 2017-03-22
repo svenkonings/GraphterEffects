@@ -1,7 +1,0 @@
-//A simple directed graph
-digraph graphname {
-    a -> b -> c;
-    b -> d;
-}
-
-

@@ -1,45 +1,41 @@
-package gxltest;
+package abstractsyntaxconverter;
 
 import net.sourceforge.gxl.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.xml.sax.SAXException;
-import utils.Printer;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.lang.System.out;
-
 /**
  * Created by poesd_000 on 21/03/2017.
  */
-public class GXLTest {
+public class GXLReader {
 
 
-    public static void main(String[] args) throws IOException, SAXException {
+    private static Set<String> ids = new HashSet<>();
+    private static int idcounter = 0;
 
-
-        byte[] encoded = Files.readAllBytes(Paths.get("tictactoe.gps/move.gpr"));
+    public static MultiGraph read(String path) throws IOException, SAXException {
+        ids.clear();
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
         String gxml = new String(encoded, "UTF-8");
         gxml = gxml.replaceAll(" xmlns=\"http://www.gupro.de/GXL/gxl-1.0.dtd\"", "");
 
+        gxml = removeDupAttr(gxml);
 
         GXLDocument doc = new GXLDocument(new ByteArrayInputStream(gxml.getBytes(StandardCharsets.UTF_8)));
         GXLGXL a = doc.getDocumentElement();
         GXLGraph graph = a.getGraphAt(0);
 
-        MultiGraph tograph = new MultiGraph(graph.getAttribute("id"), false, false);
-
+        MultiGraph tograph = new MultiGraph(graph.getAttribute("id"), true, false);
         boolean directed = graph.getAttribute("edgemode").equals("directed");
 
         for (int i = 0; i < graph.getGraphElementCount(); i++) {
@@ -53,36 +49,22 @@ public class GXLTest {
             } else if (elem instanceof GXLEdge) {
                 Edge e = tograph.addEdge(id, elem.getAttribute("from"), elem.getAttribute("to"), directed);
                 for (int p = 0; p < elem.getAttrCount(); p++) {
-                    try {
-                        e.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
-                    } catch (NullPointerException ex) {
-                        System.out.println(id);
-                    }
+                    e.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
                 }
             }
         }
-        Printer.pprint(tograph);
+        return tograph;
     }
 
-
-    private static String getElementName(GXLValue value) throws InvocationTargetException, IllegalAccessException {
-        Class c = GXLElement.class;
-        Method[] ms = c.getDeclaredMethods();
-        for (Method each : ms) {
-            String methodName = each.getName();
-            if (!methodName.equals("getElementName")) {
-                continue;
-            }
-            each.setAccessible(true); // this is the key
-            out.println(each.invoke(value, new Object[]{}));
+    private static String removeDupAttr(String gxml) {
+        int index1 = gxml.indexOf("<attr name=\"$version\">");
+        int index2 = gxml.indexOf("<attr name=\"$version\">", index1 + 1);
+        if (index2 == -1) {
+            return gxml;
         }
-        return null;
-
+        int end = gxml.indexOf("</attr>", index2);
+        return removeDupAttr(gxml.substring(0, index2) + gxml.substring(end + 6));
     }
-
-
-    private static Set<String> ids = new HashSet<>();
-    private static int idcounter = 0;
 
     private static String getID(GXLGraphElement in) {
         String idgotten = in.getAttribute("id");

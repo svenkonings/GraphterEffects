@@ -30,21 +30,21 @@ public class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        DefaultGraph graph = importDGraph("src/resources/asrc_testgraphs/graph1.dot");
+        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph1.dot");
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        DefaultGraph graph = importDGraph("src/resources/asrc_testgraphs/graph2.dot");
+        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph2.dot");
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog,graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        DefaultGraph graph = importDGraph("src/resources/asrc_testgraphs/graph3.dot");
+        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph3.dot");
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
