@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import static solver.constraintlogic.Util.testData;
 import static solver.constraintlogic.Util.writeDocument;
@@ -40,7 +39,7 @@ public class Converter {
     public Document convert() throws DatalogException, DocumentException {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
-        valuePredicate("type", VisElem::setType, VisType::fromAtom);
+        valuePredicate("type", (visElem, result) -> visElem.setType(VisType.fromAtom(result)));
         valuePredicate("posX", "x");
         valuePredicate("posY", "y");
         valuePredicate("width", "width");
@@ -51,14 +50,14 @@ public class Converter {
     }
 
     public void valuePredicate(String predicate, String name) throws DatalogException {
-        valuePredicate(predicate, (visElem, result) -> visElem.set(name, result), String::toString);
+        valuePredicate(predicate, (visElem, result) -> visElem.set(name, result));
     }
 
-    public <T> void valuePredicate(String predicate, BiConsumer<VisElem, T> visElemConsumer, Function<String, T> resultConverter) throws DatalogException {
+    public void valuePredicate(String predicate, BiConsumer<VisElem, String> consumer) throws DatalogException {
         Collection<Map<String, String>> results = jatalog.query(expr(predicate, "Key", "Value"));
         for (Map<String, String> result : results) {
             VisElem visElem = mapping.computeIfAbsent(result.get("Key"), key -> new VisElem(model));
-            visElemConsumer.accept(visElem, resultConverter.apply(result.get("Value")));
+            consumer.accept(visElem, result.get("Value"));
         }
     }
 }
