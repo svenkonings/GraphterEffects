@@ -64,7 +64,7 @@ ground_term: STRING
 /* Variables start with uppercase letter */
 variable: NAME_HI;
 
-bool_expr: num_expr eq_op num_expr
+bool_expr: num_expr eq_op num_expr // TODO -- support negation (different from not)
          | bool_expr bool_op bool_expr
          | PAR_OPEN bool_expr PAR_CLOSE // TODO -- do expressions support more operators? (due to negation)
          | TRUE
