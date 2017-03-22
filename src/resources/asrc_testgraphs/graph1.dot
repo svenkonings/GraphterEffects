@@ -1,0 +1,5 @@
+//A simple undirected graph
+graph graphname {
+    a -- b -- c;
+    b -- d;
+ }

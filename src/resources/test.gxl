@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">
+<!-- simple example schema 05.02.2002 -->
+<gxl xmlns:xlink=" http://www.w3.org/1999/xlink">
+  <graph id="simpleExample-schema" edgeids=" true" edgemode=" directed" hypergraph=" false">
+    <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#gxl-1.0" xlink:type=" simple"/>
+    <node id="simpleExampleSchema">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#GraphClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> simpleExampleSchema</string>
+      </attr>
+    </node>
+    <edge id="c1" to="Call" from="simpleExampleSchema">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#contains" xlink:type=" simple"/>
+    </edge>
+    <node id="Call">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#EdgeClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> Call</string>
+      </attr>
+      <attr name=" isabstract">
+        <bool> false</bool>
+      </attr>
+      <attr name=" isdirected">
+        <bool> true</bool>
+      </attr>
+    </node>
+    <edge id="c2" to="Ref" from="simpleExampleSchema">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#contains" xlink:type=" simple"/>
+    </edge>
+    <node id="Ref">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#EdgeClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> Ref</string>
+      </attr>
+      <attr name=" isabstract">
+        <bool> false</bool>
+      </attr>
+      <attr name=" isdirected">
+        <bool> true</bool>
+      </attr>
+    </node>
+    <edge id="c3" to="Proc" from="simpleExampleSchema">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#contains" xlink:type=" simple"/>
+    </edge>
+    <node id="Proc">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#NodeClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> Proc</string>
+      </attr>
+      <attr name=" isabstract">
+        <bool> false</bool>
+      </attr>
+    </node>
+    <edge id="c4" to="Var" from="simpleExampleSchema">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#contains" xlink:type=" simple"/>
+    </edge>
+    <node id="Var">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#NodeClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> Var</string>
+      </attr>
+      <attr name=" isabstract">
+        <bool> false</bool>
+      </attr>
+    </node>
+    <node id="line">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#AttributeClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> line</string>
+      </attr>
+    </node>
+    <node id="file">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#AttributeClass" xlink:type=" simple"/>
+      <attr name=" name">
+        <string> file</string>
+      </attr>
+    </node>
+    <node id="domainInt">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#Int" xlink:type=" simple"/>
+    </node>
+    <node id="domainString">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#String" xlink:type=" simple"/>
+    </node>
+    <edge id="e8" to="Proc" from="Call">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#from" xlink:type=" simple"/>
+      <attr name=" limits">
+        <tup>
+          <int> 0</int>
+          <int> -1</int>
+        </tup>
+      </attr>
+      <attr name=" isordered">
+        <bool> false</bool>
+      </attr>
+    </edge>
+    <edge id="e10" to="Proc" from="Ref">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#from" xlink:type=" simple"/>
+      <attr name=" limits">
+        <tup>
+          <int> 0</int>
+          <int> -1</int>
+        </tup>
+      </attr>
+      <attr name=" isordered">
+        <bool> false</bool>
+      </attr>
+    </edge>
+    <edge id="e7" to="Proc" from="Call">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#to" xlink:type=" simple"/>
+      <attr name=" limits">
+        <tup>
+          <int> 0</int>
+          <int> -1</int>
+        </tup>
+      </attr>
+      <attr name=" isordered">
+        <bool> false</bool>
+      </attr>
+    </edge>
+    <edge id="e9" to="Var" from="Ref">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#to" xlink:type=" simple"/>
+      <attr name=" limits">
+        <tup>
+          <int> 0</int>
+          <int> -1</int>
+        </tup>
+      </attr>
+      <attr name=" isordered">
+        <bool> false</bool>
+      </attr>
+    </edge>
+    <edge id="e3" to="line" from="Call">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#hasAttribute" xlink:type=" simple"/>
+    </edge>
+    <edge id="e1" to="file" from="Proc">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#hasAttribute" xlink:type=" simple"/>
+    </edge>
+    <edge id="e5" to="line" from="Ref">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#hasAttribute" xlink:type=" simple"/>
+    </edge>
+    <edge id="e6" to="line" from="Var">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#hasAttribute" xlink:type=" simple"/>
+    </edge>
+    <edge id="e4" to="domainInt" from="line">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#hasDomain" xlink:type=" simple"/>
+    </edge>
+    <edge id="e2" to="domainString" from="file">
+      <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#hasDomain" xlink:type=" simple"/>
+    </edge>
+  </graph>
+</gxl>
