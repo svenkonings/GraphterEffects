@@ -9,14 +9,16 @@ program: import_vis*
          clause*
          EOF;
 
-/** Import another vis file */
+/** Import another vis file. The .vis is implied. */
 import_vis: IMPORT_TOKEN STRING EOL;
 
-/* Specify which labels should have generated predicates */
+// TO DO check if this generates only predicates or not
+/* Specify which labels should have generated identifiers: predicates and constants */
 node_label_gen: NODE_LABEL_TOKEN COLON label (COMMA label)+ EOL;
 edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)+ EOL;
 
 /* Define and rename a label */
+// TO DO de label moet toch een string zijn?
 label: NAME_LO (RENAME_TOKEN NAME_LO)?
      | NAME_HI RENAME_TOKEN NAME_LO
      ;
