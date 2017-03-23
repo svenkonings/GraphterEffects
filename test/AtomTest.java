@@ -39,13 +39,13 @@ public class AtomTest extends GrammarTest {
         String[] validPredicates = predicateTest.getValidSamples();
 
         int atomCount = 0;
-        // Tuple 0
+        // Atom 0
         atomCount += validPredicates.length + validTerms.length;
-        // Tuple 1
+        // Atom 1
         atomCount += validPredicates.length + (2 * validTerms.length);
-        // Tuple 2
+        // Atom 2
         atomCount += validPredicates.length + (3 * validTerms.length);
-        // Tuple 3
+        // Atom 3
         atomCount += validPredicates.length;
         // Create array to store possible atoms
         String[] samples = new String[atomCount];

@@ -45,7 +45,7 @@ literal: atom
 atom: predicate PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 
 /* Language feature to apply one predicate to multiple tuples of terms */
-multi_atom: predicate BRACE_OPEN term (COMMA term)* BRACE_CLOSE;
+multi_atom: predicate BRACE_OPEN (term (COMMA term)*)? BRACE_CLOSE;
 
 /* Predicates start with lowercase letter */
 predicate: NAME_LO;
