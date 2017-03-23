@@ -2,12 +2,10 @@ package compiler.solver;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
-import org.dom4j.Element;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import static org.chocosolver.solver.variables.IntVar.MAX_INT_BOUND;
 
@@ -46,6 +44,7 @@ public class VisElem {
     /**
      * Initializes the default variables. The defaults are:
      * <ul>
+     * <li>z position</li>
      * <li>x and y posistions</li>
      * <li>x1 and y1 positions (same as x and y)</li>
      * <li>width and heigth</li>
@@ -54,6 +53,7 @@ public class VisElem {
      * </ul>
      */
     private void setDefaultVars() {
+        getVar("z");
         setVar("x1", getVar("x"));
         setVar("y1", getVar("y"));
         setVar("x2", getVar("x").add(getVar("width")).intVar());
@@ -206,6 +206,7 @@ public class VisElem {
      * @return The {@link IntVar} variable.
      * @throws ElementException If the name belongs to a value instead of a variable.
      */
+    // TODO: Modify automatic generation, support negative vars
     public IntVar getVar(String name) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
@@ -221,7 +222,12 @@ public class VisElem {
      */
     public Map<String, String> getValues() {
         Map<String, String> result = new HashMap<>(values);
-        vars.forEach((name, var) -> result.put(name, varToValue(var)));
+        vars.forEach((name, var) -> {
+            String value = varToValue(var);
+            if (value != null) {
+                result.put(name, value);
+            }
+        });
         return result;
     }
 
@@ -232,24 +238,5 @@ public class VisElem {
      */
     public Map<String, IntVar> getVars() {
         return new HashMap<>(vars);
-    }
-
-    /**
-     * Transforms this visualization element to a SVG element and adds it to the given parent SVG element. The
-     * name-value pairs are added as attributes to the SVG element if they are applicable to this type according to
-     * {@link SvgAttributes#fromVisType(VisType)}.
-     *
-     * @param parent The parent SVG element.
-     */
-    public void addToElement(Element parent) {
-        if (type == null) {
-            return;
-        }
-        Element element = parent.addElement(VisType.toSvgElement(type));
-        Set<String> attributes = SvgAttributes.fromVisType(type);
-        getValues().entrySet().stream()
-                .filter(entry -> entry.getValue() != null)
-                .filter(entry -> attributes.contains(entry.getKey()))
-                .forEach(entry -> element.addAttribute(entry.getKey(), entry.getValue()));
     }
 }

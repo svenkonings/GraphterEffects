@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Class containing all the possible SVG attributes.
+ */
 public class SvgAttributes {
     // Global attributes
     public final Set<String> animationEventAttributes;
@@ -27,6 +30,9 @@ public class SvgAttributes {
 
     private static SvgAttributes svgAttributes;
 
+    /**
+     * @return The instance of this class.
+     */
     public static SvgAttributes getInstance() {
         if (svgAttributes == null) {
             svgAttributes = new SvgAttributes();
@@ -34,6 +40,12 @@ public class SvgAttributes {
         return svgAttributes;
     }
 
+    /**
+     * Return the set with attributes belonging to the given type.
+     *
+     * @param type The given type.
+     * @return A set of attribute names.
+     */
     public static Set<String> fromVisType(VisType type) {
         switch (type) {
             case RECTANGLE:
