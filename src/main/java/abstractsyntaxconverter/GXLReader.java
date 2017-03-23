@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,19 +40,30 @@ public class GXLReader {
         MultiGraph tograph = new MultiGraph(graph.getAttribute("id"), true, false);
         boolean directed = graph.getAttribute("edgemode").equals("directed");
 
+        List<GXLGraphElement> nodes = new LinkedList<>();
+        List<GXLGraphElement> edges = new LinkedList<>();
         for (int i = 0; i < graph.getGraphElementCount(); i++) {
             GXLGraphElement elem = graph.getGraphElementAt(i);
-            String id = getID(elem);
             if (elem instanceof GXLNode) {
-                Node n = tograph.addNode(id);
-                for (int p = 0; p < elem.getAttrCount(); p++) {
-                    n.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
-                }
-            } else if (elem instanceof GXLEdge) {
-                Edge e = tograph.addEdge(id, elem.getAttribute("from"), elem.getAttribute("to"), directed);
-                for (int p = 0; p < elem.getAttrCount(); p++) {
-                    e.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
-                }
+                nodes.add(elem);
+            } else {
+                edges.add(elem);
+            }
+        }
+
+        for (GXLGraphElement elem : nodes) {
+            String id = getID(elem);
+            Node n = tograph.addNode(id);
+            for (int p = 0; p < elem.getAttrCount(); p++) {
+                n.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
+            }
+        }
+
+        for (GXLGraphElement elem : edges) {
+            String id = getID(elem);
+            Edge e = tograph.addEdge(id, elem.getAttribute("from"), elem.getAttribute("to"), directed);
+            for (int p = 0; p < elem.getAttrCount(); p++) {
+                e.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
             }
         }
         return tograph;
@@ -71,6 +84,8 @@ public class GXLReader {
         if (idgotten != null && !ids.contains(idgotten)) {
             ids.add(idgotten);
             return idgotten;
+        } else {
+            System.out.println("Rejected ID: " +idgotten);
         }
         while (ids.contains("ID?" + idcounter)) {
             idcounter++;

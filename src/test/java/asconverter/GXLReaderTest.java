@@ -14,15 +14,33 @@ import java.io.IOException;
 public class GXLReaderTest {
 
     @Test
-    public void createGraphstreamWithoutError() throws IOException, SAXException {
-        for (File f : FileUtils.recursiveInDirectory("resources/testgxl")) {
-            if (f.getName().endsWith(".properties") || f.getName().endsWith(".gcp") || f.getName().endsWith(".txt")) {
-                continue;
+    public void GPLWithoutError() throws IOException, SAXException {
+        for (File f : FileUtils.recursiveInDirectory(FileUtils.fromResources("gpl_and_gst"))) {
+            try {
+                if (f.getName().endsWith(".properties") || f.getName().endsWith(".gcp") || f.getName().endsWith(".txt")) {
+                    continue;
+                }
+                GXLReader.read(f.getPath());
+            } catch (Exception e) {
+                System.err.println("Error reading file " + f.getPath());
+                throw e;
             }
-            System.out.println("Reading " + f.getAbsolutePath() + "...");
-            GXLReader.read(f.getPath());
         }
+    }
 
+    @Test
+    public void GXLWithoutError() throws IOException, SAXException {
+        for (File f : FileUtils.recursiveInDirectory(FileUtils.fromResources("gxl/test.gxl"))) {
+            try {
+                if (f.getName().endsWith(".properties") || f.getName().endsWith(".gcp") || f.getName().endsWith(".txt")) {
+                    continue;
+                }
+                GXLReader.read(f.getPath());
+            } catch (Exception e) {
+                System.err.println("Error reading file " + f.getPath());
+                throw e;
+            }
+        }
     }
 }
 

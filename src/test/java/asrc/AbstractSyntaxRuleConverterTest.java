@@ -9,6 +9,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceFactory;
 import org.junit.Test;
+import utils.FileUtils;
 import utils.TestUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
@@ -30,21 +31,21 @@ public class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph1.dot");
+        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph1.dot").getPath());
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph2.dot");
+        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph2.dot").getPath());
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog,graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph3.dot");
+        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph3.dot").getPath());
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
