@@ -28,11 +28,11 @@ public final class Printer {
         builder.append(attrstring).append("\n");
 
         List<Element> nodeset = new LinkedList<>(g.getNodeSet());
-        Collections.sort(nodeset, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+        Collections.sort(nodeset, (o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
         builder.append("NODES\n");
         addfromlist(builder, nodeset);
         List<Element> edgeset = new LinkedList<>(g.getEdgeSet());
-        Collections.sort(edgeset, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+        Collections.sort(edgeset, (o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
         builder.append("EDGES\n");
         addfromlist(builder, edgeset);
         System.out.println(builder.toString());

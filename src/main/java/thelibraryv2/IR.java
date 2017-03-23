@@ -5,29 +5,24 @@ import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
 import java.util.*;
-import org.graphstream.graph.implementations.*;
 
 
 public class IR {
 
 
-    public static void main(String[] args) {
-        Set<String> imports = new HashSet<>();
-        imports.add("ext1.mincut.");
-        imports.add("ext1.maxflow.");
-        List<Rule> rulelist = new LinkedList<>();
-        Pair<Set<String>, List<Rule>> res = new Pair<>(imports, rulelist);
+    private final List<Rule> content;
+    private final Set<String> imports;
 
-        //fact
-        rulelist.add(new Rule(new Expr("label", Arrays.asList("X", "hello"))));
-
-        //rule
-        rulelist.add(new Rule(new Expr("shape", Arrays.asList("X", "circle")), new Expr("label", Arrays.asList("X", "hello"))));
-        System.out.println(res);
-
+    public IR(Set<String> imports, List<Rule> content) {
+        this.imports = imports;
+        this.content = content;
     }
 
-    public IR(){
+    public List<Rule> getContent(){
+        return content;
+    }
 
+    public Set<String> getImports() {
+        return imports;
     }
 }
