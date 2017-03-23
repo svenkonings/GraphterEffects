@@ -23,7 +23,7 @@ public class SvgGenerator {
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         setViewBox(root, visElems);
         visElems.stream()
-                .sorted(Comparator.comparing(elem -> Integer.parseInt(elem.getValue("z"))))
+                .sorted(Comparator.comparing(elem -> elem.getVar("z").getValue()))
                 .forEach(visElem -> addElement(visElem, root));
         return document;
     }
@@ -52,8 +52,7 @@ public class SvgGenerator {
      */
     private static int max(List<VisElem> visElems, String name) {
         return visElems.stream()
-                .map(visElem -> visElem.getValue(name))
-                .mapToInt(Integer::parseInt)
+                .mapToInt(visElem -> visElem.getVar(name).getValue())
                 .max().orElse(0);
     }
 
