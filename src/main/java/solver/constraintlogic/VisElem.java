@@ -7,9 +7,11 @@ import org.dom4j.Element;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.chocosolver.solver.variables.IntVar.MAX_INT_BOUND;
 
+// TODO: Improve exception handling
 public class VisElem {
 
     private VisType type;
@@ -21,12 +23,16 @@ public class VisElem {
         this.model = model;
         this.values = new HashMap<>();
         this.vars = new HashMap<>();
-        setDefaults();
+        setDefaultVars();
     }
 
-    private void setDefaults() {
+    private void setDefaultVars() {
+        setVar("x1", getVar("x"));
+        setVar("y1", getVar("y"));
         setVar("x2", getVar("x").add(getVar("width")).intVar());
         setVar("y2", getVar("y").add(getVar("height")).intVar());
+        setVar("cx", getVar("x").add(getVar("width").div(2)).intVar());
+        setVar("cy", getVar("y").add(getVar("heigth").div(2)).intVar());
     }
 
     public VisType getType() {
@@ -38,6 +44,20 @@ public class VisElem {
             throw new ElementException("This element already has type %s instead of %s", type, newType);
         }
         type = newType;
+        setTypeVars();
+    }
+
+    // TODO: Set default values for certain types
+    private void setTypeVars() {
+        if (type == null) {
+            throw new ElementException("Type not set");
+        }
+        switch (type) {
+            case ELLIPSE:
+                setVar("rx", getVar("width").div(2).intVar());
+                setVar("ry", getVar("height").div(2).intVar());
+                break;
+        }
     }
 
     public void set(String name, String value) {
@@ -71,19 +91,13 @@ public class VisElem {
         }
     }
 
-    private void setVar(String name, IntVar var) {
+    public void setVar(String name, IntVar var) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
         } else if (vars.containsKey(name)) {
             throw new ElementException("%s is already defined as a variable", name);
         } else {
             vars.put(name, var);
-        }
-    }
-
-    private void removeVars(String... names) {
-        for (String name : names) {
-            vars.remove(name);
         }
     }
 
@@ -121,32 +135,23 @@ public class VisElem {
         return new HashMap<>(vars);
     }
 
+    private void removeVars(String... names) {
+        for (String name : names) {
+            vars.remove(name);
+        }
+    }
+
     public void addElement(Element parent) {
         if (type == null) {
             return;
         }
 
-        // TODO: Set default values for certain types
-        // Convert generic attributes to attributes specific to this type
-        switch (type) {
-            case RECTANGLE:
-                removeVars("x2", "y2"); // Temp, see to do below
-                break;
-            case ELLIPSE:
-                setVar("rx", getVar("width").div(2).intVar());
-                setVar("ry", getVar("height").div(2).intVar());
-                setVar("cx", getVar("x").add(getVar("rx")).intVar());
-                setVar("cy", getVar("y").add(getVar("ry")).intVar());
-                removeVars("x", "y", "x2", "y2", "width", "height"); // Temp, see to do below
-                break;
-        }
-
-        // TODO: Check if the given attributes belong to this type
         Element element = parent.addElement(VisType.toSvgElement(type));
-        getValues().forEach((name, value) -> {
-            if (value != null) {
-                element.addAttribute(name, value);
-            }
-        });
+        // TODO: Check if the given attributes belong to this type
+        Set<String> attributes = SvgAttributes.fromVisType(type);
+        getValues().entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .filter(entry -> attributes.contains(entry.getKey()))
+                .forEach(entry -> element.addAttribute(entry.getKey(), entry.getValue()));
     }
 }
