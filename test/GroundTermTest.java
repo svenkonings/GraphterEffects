@@ -24,7 +24,7 @@ public class GroundTermTest extends GrammarTest {
                     "921345156224167352"
             };
 
-    private static final String[] VALID_NAME_LO_SAMPLES = new String[]
+    private static final String[] VALID_ID_SAMPLES = new String[]
             {
                     "a",
                     "a_b",
@@ -44,10 +44,10 @@ public class GroundTermTest extends GrammarTest {
 
     @Override
     protected String[] getValidSamples() {
-        String[] result = new String[VALID_STRING_SAMPLES.length + VALID_NUMBER_SAMPLES.length + VALID_NAME_LO_SAMPLES.length];
+        String[] result = new String[VALID_STRING_SAMPLES.length + VALID_NUMBER_SAMPLES.length + VALID_ID_SAMPLES.length];
         System.arraycopy(VALID_STRING_SAMPLES, 0, result, 0, VALID_STRING_SAMPLES.length);
         System.arraycopy(VALID_NUMBER_SAMPLES, 0, result, VALID_STRING_SAMPLES.length, VALID_NUMBER_SAMPLES.length);
-        System.arraycopy(VALID_NAME_LO_SAMPLES, 0, result, VALID_STRING_SAMPLES.length + VALID_NUMBER_SAMPLES.length, VALID_NAME_LO_SAMPLES.length);
+        System.arraycopy(VALID_ID_SAMPLES, 0, result, VALID_STRING_SAMPLES.length + VALID_NUMBER_SAMPLES.length, VALID_ID_SAMPLES.length);
         return result;
     }
 
@@ -63,6 +63,6 @@ public class GroundTermTest extends GrammarTest {
 
     @Override
     protected String getRuleName() {
-        return "ground_term";
+        return "ground term";
     }
 }

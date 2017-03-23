@@ -7,7 +7,6 @@ public class MultiAtomTest extends GrammarTest {
 
     private static final String[] MULTI_ATOMS = new String[]
             {
-                    "%s{}",
                     "%s{%s}",
                     "%s{%s,%s}"
             };
@@ -31,10 +30,8 @@ public class MultiAtomTest extends GrammarTest {
 
         int atomCount = 0;
         // Atom 0
-        atomCount += predicateSamples.length;
-        // Atom 1
         atomCount += predicateSamples.length + termSamples.length;
-        // Atom 2
+        // Atom 1
         atomCount += predicateSamples.length + (2 * termSamples.length);
         // Create array to store possible atoms
         String[] samples = new String[atomCount];
@@ -42,24 +39,20 @@ public class MultiAtomTest extends GrammarTest {
         int samplePointer = 0;
         // AtomType 0
         for (int i = 0; i < predicateSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[0], predicateSamples[i]);
+            samples[samplePointer] = String.format(MULTI_ATOMS[0], predicateSamples[i], termSamples[0]);
+        }
+        for (int i = 0; i < termSamples.length; i++, samplePointer++) {
+            samples[samplePointer] = String.format(MULTI_ATOMS[0], predicateSamples[0], termSamples[i]);
         }
         // AtomType 1
         for (int i = 0; i < predicateSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[i], termSamples[0]);
+            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[i], termSamples[0], termSamples[0]);
         }
         for (int i = 0; i < termSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[0], termSamples[i]);
-        }
-        // AtomType 2
-        for (int i = 0; i < predicateSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[2], predicateSamples[i], termSamples[0], termSamples[0]);
+            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[0], termSamples[i], termSamples[0]);
         }
         for (int i = 0; i < termSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[2], predicateSamples[0], termSamples[i], termSamples[0]);
-        }
-        for (int i = 0; i < termSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[2], predicateSamples[0], termSamples[0], termSamples[i]);
+            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[0], termSamples[0], termSamples[i]);
         }
         return samples;
     }
@@ -76,7 +69,7 @@ public class MultiAtomTest extends GrammarTest {
 
     @Override
     protected String getRuleName() {
-        return "multi_atom";
+        return "multi atom";
     }
 
 
