@@ -1,5 +1,6 @@
 package asrc;
 
+import abstractsyntaxconverter.Importer;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -25,28 +26,25 @@ import java.util.Map;
 
 import static utils.TestUtils.*;
 
-/**
- * Created by user on 21-3-2017.
- */
-public class AbstractSyntaxRuleConverterTest {
+public final class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
+        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog,graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
+        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
@@ -154,32 +152,6 @@ public class AbstractSyntaxRuleConverterTest {
         testPredicateValue(jatalog,edge,"attributecount",edge.getId(),String.valueOf(edge.getAttributeCount()));
     }
 
-    public DefaultGraph importDGraph(File file) throws IOException {
-        DefaultGraph g = new DefaultGraph(file.getName());
-        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
-        fs.addSink(g);
-        fs.readAll(file.getAbsolutePath());
-        fs.removeSink(g);
-        return g;
-    }
-
-    public SingleGraph importSGraph(File file) throws IOException {
-        SingleGraph g = new SingleGraph("g");
-        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
-        fs.addSink(g);
-        fs.readAll(file.getAbsolutePath());
-        fs.removeSink(g);
-        return g;
-    }
-
-    public MultiGraph importMGraph(File file) throws IOException {
-        MultiGraph g = new MultiGraph("g");
-        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
-        fs.addSink(g);
-        fs.readAll(file.getAbsolutePath());
-        fs.removeSink(g);
-        return g;
-    }
 
     private void addRules(Jatalog jatalog, List<Rule> rules) {
         rules.forEach(rule -> {

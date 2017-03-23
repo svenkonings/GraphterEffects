@@ -7,23 +7,28 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-/**
- * Created by poesd_000 on 21/03/2017.
- */
-public class GXLReader {
+final class GXLReader {
 
 
     private static Set<String> ids = new HashSet<>();
     private static int idcounter = 0;
+    private static final List<String> acceptslist = Arrays.asList("gxl", "gst", "gpl", "gst", "gpr", "gty");
+
+    public static boolean acceptsExtension(String ext) {
+        return acceptslist.contains(ext.toLowerCase());
+    }
+
+
+    public static MultiGraph read(File file) throws IOException, SAXException {
+        return read(file.getAbsolutePath());
+    }
 
     public static MultiGraph read(String path) throws IOException, SAXException {
         ids.clear();
@@ -61,7 +66,7 @@ public class GXLReader {
 
         for (GXLGraphElement elem : edges) {
             String id = getID(elem);
-            Edge e = tograph.addEdge(id, elem.getAttribute("from"), elem.getAttribute("to"), directed);
+            Edge e = tograph.addEdge(id, "_" + elem.getAttribute("from"), "_" + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
                 e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content) );
@@ -96,16 +101,20 @@ public class GXLReader {
 
     private static String getID(GXLGraphElement in) {
         String idgotten = in.getAttribute("id");
-        if (idgotten != null && !ids.contains(idgotten)) {
-            ids.add(idgotten);
-            return idgotten;
-        } else {
-            System.out.println("Rejected ID: " +idgotten);
+        if (idgotten != null && !ids.contains("_" + idgotten)) {
+            ids.add("_" + idgotten);
+            return "_" + idgotten;
         }
-        while (ids.contains("ID?" + idcounter)) {
+        String prefix = "UNKNOWN";
+        if (in instanceof GXLNode) {
+            prefix = "n";
+        } else if (in instanceof GXLEdge){
+            prefix = "e";
+        }
+        while (ids.contains("_" + prefix + "ID?" + idcounter)) {
             idcounter++;
         }
-        idgotten = "ID?" + idcounter;
+        idgotten = "_" + prefix + "ID?" + idcounter;
         ids.add(idgotten);
         return idgotten;
     }

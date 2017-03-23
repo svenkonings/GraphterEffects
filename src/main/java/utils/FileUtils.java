@@ -6,10 +6,15 @@ import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by poesd_000 on 22/03/2017.
- */
-public class FileUtils {
+public final class FileUtils {
+
+
+    public static String getExtension(String filename) {
+        if (!filename.contains(".")) {
+            return filename;
+        }
+        return getExtension(filename.substring(filename.indexOf(".")+1));
+    }
 
     public static File fromResources(String path) {
         return new File(FileUtils.class.getClassLoader().getResource(path).getFile());

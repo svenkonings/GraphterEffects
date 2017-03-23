@@ -1,6 +1,6 @@
 package asconverter;
 
-import abstractsyntaxconverter.GXLReader;
+import abstractsyntaxconverter.Importer;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
@@ -8,10 +8,7 @@ import utils.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by poesd_000 on 22/03/2017.
- */
-public class GXLReaderTest {
+public final class GXLReaderTest {
 
     @Test
     public void GPLWithoutError() throws IOException, SAXException {
@@ -20,7 +17,7 @@ public class GXLReaderTest {
                 if (f.getName().endsWith(".properties") || f.getName().endsWith(".gcp") || f.getName().endsWith(".txt")) {
                     continue;
                 }
-                GXLReader.read(f.getPath());
+                Importer.fromFile(f);
             } catch (Exception e) {
                 System.err.println("Error reading file " + f.getPath());
                 throw e;
@@ -35,7 +32,7 @@ public class GXLReaderTest {
                 if (f.getName().endsWith(".properties") || f.getName().endsWith(".gcp") || f.getName().endsWith(".txt")) {
                     continue;
                 }
-                GXLReader.read(f.getPath());
+                Importer.fromFile(f);
             } catch (Exception e) {
                 System.err.println("Error reading file " + f.getPath());
                 throw e;

@@ -12,10 +12,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Created by poesd_000 on 22/03/2017.
- */
-public class PrinterTest {
+public final class PrinterTest {
 
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private PrintStream ps = new PrintStream(baos);
