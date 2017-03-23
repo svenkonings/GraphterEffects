@@ -17,7 +17,7 @@ class ErrorListener extends BaseErrorListener {
     private final List<Error> errors;
 
     public ErrorListener() {
-        this.errors = new ArrayList<>();
+        this.errors = new ArrayList<Error>();
     }
 
     @Override

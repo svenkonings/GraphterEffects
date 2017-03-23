@@ -56,6 +56,6 @@ NUMBER: [0-9]+;
 ID: LETTER_LO (LETTER_LO | LETTER_HI | NUMBER | UNDERSCORE)*;
 HID: LETTER_HI (LETTER_LO | LETTER_HI | NUMBER | UNDERSCORE)*;
 
-WS:             [ \n\r\t] -> skip;
+WS:             [ \t\r\n]+ -> skip;
 BLOCKCOMMENT:   '/*' .*? '*/' -> skip;
 LINECOMMENT: BEGIN_COMMENT .*? NEWLINE -> skip; //TODO -- does this even work?

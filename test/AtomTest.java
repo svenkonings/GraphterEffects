@@ -23,6 +23,7 @@ public class AtomTest extends GrammarTest {
                     "_p()",
                     "4p(X)",
                     "p(()",
+                    "p(,)",
                     "p((,))",
                     "p(x,,y)",
                     "p@$%(x)",
@@ -94,6 +95,7 @@ public class AtomTest extends GrammarTest {
 
     @Override
     public void test() {
+//        System.out.println("hoi");
         predicateTest.test();
         termTest.test();
         super.test();
