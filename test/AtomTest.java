@@ -32,7 +32,6 @@ public class AtomTest extends GrammarTest {
                     ""
             };
 
-
     @Override
     protected String[] getValidSamples() {
         String[] validTerms = termTest.getValidSamples();

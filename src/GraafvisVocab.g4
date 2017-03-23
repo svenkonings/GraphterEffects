@@ -19,7 +19,7 @@ BRACE_CLOSE: '}';
 EQ: '==';
 NQ: '!=';
 GT: '>';
-ST: '<';
+LT: '<';
 GE: '>=';
 LE: '<=';
 
@@ -28,6 +28,17 @@ LE: '<=';
 COMMA: ',';
 OR: 'or';
 AND: 'and';
+
+NOT: 'not';
+
+/* Num operators */
+
+PLUS: '+';
+MINUS: '-';
+MULT: '*';
+DIV: '/';
+POW: '^';
+MOD: '%';
 
 UNDERSCORE: '_';
 

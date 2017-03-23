@@ -7,8 +7,8 @@ public class GroundTermTest extends GrammarTest {
 
     private static final String[] VALID_STRING_SAMPLES = new String[]
             {
-                    "\"\"",
                     "\"a\"",
+                    "\"\"",
                     "\"123\"",
                     "\"abc\"",
                     "\"a1b\"",
