@@ -1,12 +1,16 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
 public class GroundTermTest extends GrammarTest {
 
-    private static final String[] VALID_STRING_SAMPLES = new String[]
-            {
+    private static final List<String> VALID_STRING_SAMPLES = Arrays.asList
+            (
                     "\"a\"",
                     "\"\"",
                     "\"123\"",
@@ -14,45 +18,47 @@ public class GroundTermTest extends GrammarTest {
                     "\"a1b\"",
                     "\"a%^&#\"",
                     "\"a_b\""
-            };
+            );
 
-    private static final String[] VALID_NUMBER_SAMPLES = new String[]
-            {
+    private static final List<String> VALID_NUMBER_SAMPLES = Arrays.asList
+            (
                     "1",
                     "0123",
                     "0",
                     "921345156224167352"
-            };
-
-    private static final String[] VALID_ID_SAMPLES = new String[]
-            {
+            );
+    private static final List<String> VALID_ID_SAMPLES = Arrays.asList
+            (
                     "a",
                     "a_b",
                     "aAa",
                     "a123",
                     "a_"
-            };
+            );
 
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+    public static final List<String> VALID_SAMPLES = new ArrayList<>();
+    static {
+        VALID_SAMPLES.addAll(VALID_STRING_SAMPLES);
+        VALID_SAMPLES.addAll(VALID_NUMBER_SAMPLES);
+        VALID_SAMPLES.addAll(VALID_ID_SAMPLES);
+    }
+
+    public static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "",
                     "A",
                     "A_name",
                     "@#$",
-                    "_a",
-            };
+                    "_a"
+            );
 
     @Override
-    protected String[] getValidSamples() {
-        String[] result = new String[VALID_STRING_SAMPLES.length + VALID_NUMBER_SAMPLES.length + VALID_ID_SAMPLES.length];
-        System.arraycopy(VALID_STRING_SAMPLES, 0, result, 0, VALID_STRING_SAMPLES.length);
-        System.arraycopy(VALID_NUMBER_SAMPLES, 0, result, VALID_STRING_SAMPLES.length, VALID_NUMBER_SAMPLES.length);
-        System.arraycopy(VALID_ID_SAMPLES, 0, result, VALID_STRING_SAMPLES.length + VALID_NUMBER_SAMPLES.length, VALID_ID_SAMPLES.length);
-        return result;
+    protected List<String> getValidSamples() {
+        return VALID_SAMPLES;
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
     }
 

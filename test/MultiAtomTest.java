@@ -1,17 +1,44 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
 public class MultiAtomTest extends GrammarTest {
 
-    private static final String[] MULTI_ATOMS = new String[]
-            {
+    private static final List<String> MULTI_ATOMS = Arrays.asList
+            (
                     "%s{%s}",
                     "%s{%s,%s}"
-            };
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+            );
+
+    public static final List<String> VALID_SAMPLES = new ArrayList<>();
+    static {
+        List<String> predicates = PredicateTest.VALID_SAMPLES;
+        List<String> terms = TermTest.VALID_SAMPLES;
+
+        // Atom type 0
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(MULTI_ATOMS.get(0), predicate, terms.get(0)));
+        }
+        for (String term : terms) {
+            VALID_SAMPLES.add(String.format(MULTI_ATOMS.get(0), predicates.get(0), term));
+        }
+        // Atom type 1
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(MULTI_ATOMS.get(1), predicate, terms.get(0), terms.get(0)));
+        }
+        for (String term : terms) {
+            VALID_SAMPLES.add(String.format(MULTI_ATOMS.get(1), predicates.get(0), term, term));
+        }
+
+    }
+
+    public static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "Predicate{}",
                     "predicate()",
                     "p{1,}",
@@ -19,47 +46,15 @@ public class MultiAtomTest extends GrammarTest {
                     "p{()}",
                     "p{}",
                     ""
-            };
-
-    private PredicateTest predicateTest = new PredicateTest();
-    private TermTest termTest = new TermTest();
+            );
 
     @Override
-    protected String[] getValidSamples() {
-        String[] predicateSamples = predicateTest.getValidSamples();
-        String[] termSamples = termTest.getValidSamples();
-
-        int atomCount = 0;
-        // Atom 0
-        atomCount += predicateSamples.length + termSamples.length;
-        // Atom 1
-        atomCount += predicateSamples.length + (2 * termSamples.length);
-        // Create array to store possible atoms
-        String[] samples = new String[atomCount];
-        // Add atom examples
-        int samplePointer = 0;
-        // AtomType 0
-        for (int i = 0; i < predicateSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[0], predicateSamples[i], termSamples[0]);
-        }
-        for (int i = 0; i < termSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[0], predicateSamples[0], termSamples[i]);
-        }
-        // AtomType 1
-        for (int i = 0; i < predicateSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[i], termSamples[0], termSamples[0]);
-        }
-        for (int i = 0; i < termSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[0], termSamples[i], termSamples[0]);
-        }
-        for (int i = 0; i < termSamples.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(MULTI_ATOMS[1], predicateSamples[0], termSamples[0], termSamples[i]);
-        }
-        return samples;
+    protected List<String> getValidSamples() {
+        return VALID_SAMPLES;
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
     }
 
@@ -72,6 +67,4 @@ public class MultiAtomTest extends GrammarTest {
     protected String getRuleName() {
         return "multi atom";
     }
-
-
 }
