@@ -12,7 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="gxl" level="project" />
     <orderEntry type="library" name="Maven: org.choco-solver:choco-solver:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.choco-solver:choco-sat:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.choco-solver:cutoffseq:1.0.2" level="project" />

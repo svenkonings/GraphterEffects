@@ -12,7 +12,7 @@ import java.util.Set;
 import static org.chocosolver.solver.variables.IntVar.MAX_INT_BOUND;
 
 /**
- * The {@code VisElem} class respresents a visualization element.A visualization element has a single {@code VisType}
+ * The {@code VisElem} class respresents a visualization element. A visualization element has a single {@code VisType}
  * type with a combination of String values and Integer Variables.
  */
 // TODO: Improve exception handling
@@ -112,7 +112,7 @@ public class VisElem {
     public void set(String name, String value) {
         try {
             int varValue = Integer.parseInt(value);
-            setVar(name, varValue);
+            setVarValue(name, varValue);
         } catch (NumberFormatException e) {
             setValue(name, value);
         }
@@ -142,12 +142,11 @@ public class VisElem {
      * @param varValue The given {@link IntVar} value.
      * @throws ElementException If the name is already assigned to a {@link String} constant.
      */
-    private void setVar(String name, int varValue) {
+    private void setVarValue(String name, int varValue) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
         } else if (vars.containsKey(name)) {
-            IntVar var = vars.get(name);
-            model.arithm(var, "=", varValue).post();
+            vars.get(name).eq(varValue).post();
         } else {
             IntVar var = model.intVar(model.generateName(name), varValue);
             vars.put(name, var);
