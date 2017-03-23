@@ -17,7 +17,6 @@ node_label_gen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 
 /* Define and rename a label */
-// TO DO de label moet toch een string zijn?
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
@@ -68,6 +67,7 @@ bool_expr: NOT bool_expr
          | num_expr eq_op num_expr
          | bool_expr bool_op bool_expr
          | PAR_OPEN bool_expr PAR_CLOSE
+         | variable
          | TRUE
          | FALSE
          ;
@@ -76,17 +76,14 @@ num_expr: num_expr pow_op num_expr
         | num_expr mult_op num_expr
         | num_expr plus_op num_expr
         | PAR_OPEN num_expr PAR_CLOSE
+        | variable
         | NUMBER
         ;
 
-bool_op: OR | AND | COMMA;
+bool_op: COMMA | AND | OR;
 eq_op: EQ | NQ | GT | LT | GE | LE;
 
 pow_op: POW;
 mult_op: MULT | DIV | MOD;
 plus_op: PLUS | MINUS;
-
-
-
-
 
