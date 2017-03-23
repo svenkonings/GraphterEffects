@@ -45,7 +45,7 @@ public class Converter {
         valuePredicate("width", "width");
         valuePredicate("height", "height");
         model.getSolver().solve();
-        mapping.values().forEach(visElem -> visElem.addElement(root));
+        mapping.values().forEach(visElem -> visElem.addToElement(root));
         return document;
     }
 
