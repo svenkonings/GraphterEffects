@@ -12,14 +12,13 @@ program: import_vis*
 /** Import another vis file. The .vis is implied. */
 import_vis: IMPORT_TOKEN STRING EOL;
 
-// TO DO check if this generates only predicates or not
 /* Specify which labels should have generated identifiers: predicates and constants */
 node_label_gen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 
 /* Define and rename a label */
 // TO DO de label moet toch een string zijn?
-label: STRING RENAME_TOKEN predicate;
+label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
 clause: (antecedent ARROW)? consequence EOL;
@@ -47,7 +46,7 @@ atom: predicate PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 multi_atom: predicate BRACE_OPEN (term (COMMA term)*)? BRACE_CLOSE;
 
 /* Predicates start with lowercase letter */
-predicate: NAME_LO;
+predicate: ID;
 
 /* Terms are either ground terms, free variables, underscores or a tuple of more terms */
 term: ground_term
@@ -59,11 +58,11 @@ term: ground_term
 /* Ground terms contain no free variables */
 ground_term: STRING
            | NUMBER
-           | NAME_LO
+           | ID
            ;
 
 /* Variables start with uppercase letter */
-variable: NAME_HI;
+variable: HID;
 
 bool_expr: NOT bool_expr
          | num_expr eq_op num_expr
