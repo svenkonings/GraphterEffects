@@ -4,10 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import utils.Pair;
 
-/**
- * Created by poesd_000 on 22/03/2017.
- */
-public class PairTest {
+public final class PairTest {
 
 
     @Test

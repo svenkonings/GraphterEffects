@@ -5,10 +5,7 @@ import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import za.co.wstoop.jatalog.Expr;
 
-/**
- * Created by user on 22-3-2017.
- */
-public class ExprUtils {
+public final class ExprUtils {
 
     public static Expr elementExpr(Element element){
         if(element instanceof Graph) {

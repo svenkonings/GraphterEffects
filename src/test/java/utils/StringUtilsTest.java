@@ -5,10 +5,8 @@ import utils.StringUtils;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by poesd_000 on 22/03/2017.
- */
-public class StringUtilsTest {
+
+public final class StringUtilsTest {
 
     @Test
     public void testStringUtils() {

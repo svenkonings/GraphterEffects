@@ -8,7 +8,7 @@ import org.graphstream.graph.Node;
 import java.util.*;
 
 
-public class Printer {
+public final class Printer {
 
     public static void pprint(Graph g) {
 

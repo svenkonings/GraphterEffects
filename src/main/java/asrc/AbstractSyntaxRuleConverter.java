@@ -14,10 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by user on 21-3-2017.
- */
-public class AbstractSyntaxRuleConverter {
+public final class AbstractSyntaxRuleConverter {
 
     //TODO: Labels and Flags
     //TODO: Results of algorithms

@@ -1,5 +1,6 @@
 package asrc;
 
+import abstractsyntaxconverter.Importer;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -9,12 +10,14 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceFactory;
 import org.junit.Test;
+import utils.FileUtils;
 import utils.TestUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.Rule;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,28 +26,25 @@ import java.util.Map;
 
 import static utils.TestUtils.*;
 
-/**
- * Created by user on 21-3-2017.
- */
-public class AbstractSyntaxRuleConverterTest {
+public final class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph1.dot");
+        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph2.dot");
+        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog,graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        DefaultGraph graph = importDGraph("resources/asrc_testgraphs/graph3.dot");
+        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
@@ -79,7 +79,7 @@ public class AbstractSyntaxRuleConverterTest {
         answers = jatalog.query(Expr.expr("node","ID"));
         assert answers.size() == graph.getNodeSet().size();
         Collection<Map<String, String>> finalAnswers = answers;
-        graph.getNodeSet().stream().forEach(node -> {
+        graph.getNodeSet().forEach(node -> {
             try {
                 TestUtils.answerContains(finalAnswers, "ID", node.getId());
             } catch (Exception e) {
@@ -89,7 +89,7 @@ public class AbstractSyntaxRuleConverterTest {
         answers = jatalog.query(Expr.expr("edge","Target","Source","ID"));
         assert answers.size() == graph.getEdgeSet().size();
         Collection<Map<String, String>> finalAnswers1 = answers;
-        graph.getEdgeSet().stream().forEach(edge -> {
+        graph.getEdgeSet().forEach(edge -> {
             try {
                 TestUtils.answerContains(finalAnswers1, "Target", edge.getTargetNode().getId(),
                         "Source", edge.getSourceNode().getId(), "ID", edge.getId());
@@ -152,34 +152,6 @@ public class AbstractSyntaxRuleConverterTest {
         testPredicateValue(jatalog,edge,"attributecount",edge.getId(),String.valueOf(edge.getAttributeCount()));
     }
 
-    public DefaultGraph importDGraph(String filepath) throws IOException {
-        String name = filepath.replace("\"","");
-        name = name.split("/")[name.split("/").length-1];
-        DefaultGraph g = new DefaultGraph(name);
-        FileSource fs = FileSourceFactory.sourceFor(filepath);
-        fs.addSink(g);
-        fs.readAll(filepath);
-        fs.removeSink(g);
-        return g;
-    }
-
-    public SingleGraph importSGraph(String filepath) throws IOException {
-        SingleGraph g = new SingleGraph("g");
-        FileSource fs = FileSourceFactory.sourceFor(filepath);
-        fs.addSink(g);
-        fs.readAll(filepath);
-        fs.removeSink(g);
-        return g;
-    }
-
-    public MultiGraph importMGraph(String filepath) throws IOException {
-        MultiGraph g = new MultiGraph("g");
-        FileSource fs = FileSourceFactory.sourceFor(filepath);
-        fs.addSink(g);
-        fs.readAll(filepath);
-        fs.removeSink(g);
-        return g;
-    }
 
     private void addRules(Jatalog jatalog, List<Rule> rules) {
         rules.forEach(rule -> {

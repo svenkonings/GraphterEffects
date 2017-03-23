@@ -1,6 +1,4 @@
-package utils; /**
- * Created by user on 21-3-2017.
- */
+package utils;
 
 import org.graphstream.graph.Element;
 import za.co.wstoop.jatalog.DatalogException;
@@ -14,7 +12,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static utils.ExprUtils.elementExpr;
 
-public class TestUtils {
+public final class TestUtils {
 
     public static Jatalog createDatabase() throws DatalogException {
 
@@ -36,10 +34,7 @@ public class TestUtils {
     }
 
     public static boolean mapContains(Map<String, String> map, String key, String value) {
-        if(map.containsKey(key)) {
-            return map.get(key).equals(value);
-        }
-        return false;
+        return map.containsKey(key) && map.get(key).equals(value);
     }
 
     public static boolean mapContains(Map<String, String> haystack, Map<String, String> needle) {
@@ -53,7 +48,7 @@ public class TestUtils {
     }
 
     public static boolean answerContains(Collection<Map<String, String>> answers, String... kvPairs) throws Exception {
-        Map<String, String> needle = new HashMap<String,String>();
+        Map<String, String> needle = new HashMap<>();
         if(kvPairs.length % 2 != 0)
             throw new Exception("kvPairs must be even");
         for(int i = 0; i < kvPairs.length/2; i++) {
