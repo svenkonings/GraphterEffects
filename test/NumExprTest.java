@@ -5,6 +5,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public class NumExprTest extends GrammarTest {
 
+    private VariableTest variableTest = new VariableTest();
+
     private static final String[] VALID_NUMBER_SAMPLES = new String[]
             {
                     "1",
@@ -12,24 +14,41 @@ public class NumExprTest extends GrammarTest {
                     "0",
                     "921345156224167352"
             };
+
+    private static final String[] NUM_EXPR = new String[]
+            {
+                    "%s %s %s",
+                    "(%s %s %s)",
+                    "%s %s (%s &s %s)",
+                    "(%s %s %s) %s %s",
+                    "%s (%s %s %s)"
+            };
     private static final String[] VALID_OPERATOR_SAMPLES = new String[]
             {
-                    "+",
                     "-",
                     "/",
-                    "*",
                     "%",
                     "==",
                     "<"
             };
     private static final String[] INVALID_SAMPLES = new String[]
             {
-
+                    "()",
+                    ")X + 1(",
+                    "_ + 1",
+                    "1 1",
+                    "1 ==",
+                    "== 1",
+                    "A # B",
+                    ""
             };
 
 
     @Override
     protected String[] getValidSamples() {
+
+
+
         return new String[0];
     }
 

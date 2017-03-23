@@ -17,6 +17,7 @@ public class MultiAtomTest extends GrammarTest {
                     "p{1,}",
                     "_p{}",
                     "p{()}",
+                    "p{}",
                     ""
             };
 
