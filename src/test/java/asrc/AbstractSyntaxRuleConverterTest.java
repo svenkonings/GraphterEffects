@@ -16,6 +16,7 @@ import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.Rule;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,21 +32,21 @@ public class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph1.dot").getPath());
+        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph2.dot").getPath());
+        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog,graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph3.dot").getPath());
+        DefaultGraph graph = importDGraph(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
@@ -80,7 +81,7 @@ public class AbstractSyntaxRuleConverterTest {
         answers = jatalog.query(Expr.expr("node","ID"));
         assert answers.size() == graph.getNodeSet().size();
         Collection<Map<String, String>> finalAnswers = answers;
-        graph.getNodeSet().stream().forEach(node -> {
+        graph.getNodeSet().forEach(node -> {
             try {
                 TestUtils.answerContains(finalAnswers, "ID", node.getId());
             } catch (Exception e) {
@@ -90,7 +91,7 @@ public class AbstractSyntaxRuleConverterTest {
         answers = jatalog.query(Expr.expr("edge","Target","Source","ID"));
         assert answers.size() == graph.getEdgeSet().size();
         Collection<Map<String, String>> finalAnswers1 = answers;
-        graph.getEdgeSet().stream().forEach(edge -> {
+        graph.getEdgeSet().forEach(edge -> {
             try {
                 TestUtils.answerContains(finalAnswers1, "Target", edge.getTargetNode().getId(),
                         "Source", edge.getSourceNode().getId(), "ID", edge.getId());
@@ -153,31 +154,29 @@ public class AbstractSyntaxRuleConverterTest {
         testPredicateValue(jatalog,edge,"attributecount",edge.getId(),String.valueOf(edge.getAttributeCount()));
     }
 
-    public DefaultGraph importDGraph(String filepath) throws IOException {
-        String name = filepath.replace("\"","");
-        name = name.split("/")[name.split("/").length-1];
-        DefaultGraph g = new DefaultGraph(name);
-        FileSource fs = FileSourceFactory.sourceFor(filepath);
+    public DefaultGraph importDGraph(File file) throws IOException {
+        DefaultGraph g = new DefaultGraph(file.getName());
+        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
         fs.addSink(g);
-        fs.readAll(filepath);
+        fs.readAll(file.getAbsolutePath());
         fs.removeSink(g);
         return g;
     }
 
-    public SingleGraph importSGraph(String filepath) throws IOException {
+    public SingleGraph importSGraph(File file) throws IOException {
         SingleGraph g = new SingleGraph("g");
-        FileSource fs = FileSourceFactory.sourceFor(filepath);
+        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
         fs.addSink(g);
-        fs.readAll(filepath);
+        fs.readAll(file.getAbsolutePath());
         fs.removeSink(g);
         return g;
     }
 
-    public MultiGraph importMGraph(String filepath) throws IOException {
+    public MultiGraph importMGraph(File file) throws IOException {
         MultiGraph g = new MultiGraph("g");
-        FileSource fs = FileSourceFactory.sourceFor(filepath);
+        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
         fs.addSink(g);
-        fs.readAll(filepath);
+        fs.readAll(file.getAbsolutePath());
         fs.removeSink(g);
         return g;
     }
