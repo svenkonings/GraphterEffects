@@ -2,6 +2,8 @@ import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  *
  */
@@ -9,9 +11,9 @@ public abstract class GrammarTest {
 
     private static final boolean SHOW_PROCESS = true;
 
-    protected abstract String[] getValidSamples();
+    protected abstract List<String> getValidSamples();
 
-    protected abstract String[] getInvalidSamples();
+    protected abstract List<String> getInvalidSamples();
 
     protected abstract ParserRuleContext parse(GraafvisParser parser);
 

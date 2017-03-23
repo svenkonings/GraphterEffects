@@ -1,21 +1,25 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
 public class VariableTest extends GrammarTest {
 
-    private static final String[] VALID_SAMPLES = new String[]
-            {
+    public static final List<String> VALID_SAMPLES = Arrays.asList
+            (
                     "A",
                     "ABC",
                     "Aa",
                     "A_bc",
                     "A_",
                     "A1"
-            };
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+            );
+
+    public static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "",
                     "aA",
                     "_A",
@@ -23,15 +27,15 @@ public class VariableTest extends GrammarTest {
                     "a",
                     "1A",
                     "1"
-            };
+            );
 
     @Override
-    protected String[] getValidSamples() {
+    protected List<String> getValidSamples() {
         return VALID_SAMPLES;
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
     }
 
@@ -44,6 +48,5 @@ public class VariableTest extends GrammarTest {
     protected String getRuleName() {
         return "variable";
     }
-
 
 }

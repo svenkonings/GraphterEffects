@@ -1,22 +1,55 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
 public class AtomTest extends GrammarTest {
 
-    private PredicateTest predicateTest = new PredicateTest();
-    private TermTest termTest = new TermTest();
-
-    private static final String[] ATOMS = new String[]
-            {
+    private static final List<String> ATOMS = Arrays.asList
+            (
                     "%s(%s)",
                     "%s(%s,%s)",
                     "%s(%s,%s,%s)",
                     "%s()"
-            };
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+            );
+
+    public static final List<String> VALID_SAMPLES = new ArrayList<>();
+    static {
+        List<String> terms = TermTest.VALID_SAMPLES;
+        List<String> predicates = PredicateTest.VALID_SAMPLES;
+        // Add atom 0
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(0), predicate, terms.get(0)));
+        }
+        for (String term : terms) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(0), predicates.get(0), term));
+        }
+        // Add atom 1
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(1), predicate, terms.get(0), terms.get(0)));
+        }
+        for (String term : terms) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(1), predicates.get(0), term, term));
+        }
+        // Add atom 2
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(2), predicate, terms.get(0), terms.get(0), terms.get(0)));
+        }
+        for (String term : terms) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(2), predicates.get(0), term, term, term));
+        }
+        // Add atom 3
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(3), predicate));
+        }
+    }
+
+    public static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "test",
                     "p)(",
                     "P(x)",
@@ -31,74 +64,16 @@ public class AtomTest extends GrammarTest {
                     "p(q(x))",
                     "q(3,)",
                     ""
-            };
+            );
 
     @Override
-    protected String[] getValidSamples() {
-        String[] validTerms = termTest.getValidSamples();
-        String[] validPredicates = predicateTest.getValidSamples();
-
-        int atomCount = 0;
-        // Atom 0
-        atomCount += validPredicates.length + validTerms.length;
-        // Atom 1
-        atomCount += validPredicates.length + (2 * validTerms.length);
-        // Atom 2
-        atomCount += validPredicates.length + (3 * validTerms.length);
-        // Atom 3
-        atomCount += validPredicates.length;
-        // Create array to store possible atoms
-        String[] samples = new String[atomCount];
-        // Add atom examples
-        int samplePointer = 0;
-        // AtomType 0
-        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[0], validPredicates[i], validTerms[0]);
-        }
-        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[0], validPredicates[0], validTerms[i]);
-        }
-        // AtomType 1
-        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[1], validPredicates[i], validTerms[0], validTerms[0]);
-        }
-        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[1], validPredicates[0], validTerms[i], validTerms[0]);
-        }
-        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[1], validPredicates[0], validTerms[0], validTerms[i]);
-        }
-        // AtomType 2
-        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[2], validPredicates[i], validTerms[0], validTerms[0], validTerms[0]);
-        }
-        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[2], validPredicates[0], validTerms[i], validTerms[0], validTerms[0]);
-        }
-        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[2], validPredicates[0], validTerms[0], validTerms[i], validTerms[0]);
-        }
-        for (int i = 0; i < validTerms.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[2], validPredicates[0], validTerms[0], validTerms[0], validTerms[i]);
-        }
-        // AtomType 3
-        for (int i = 0; i < validPredicates.length; i++, samplePointer++) {
-            samples[samplePointer] = String.format(ATOMS[3], validPredicates[i]);
-        }
-        return samples;
+    protected List<String> getValidSamples() {
+        return VALID_SAMPLES;
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
-    }
-
-    @Override
-    public void test() {
-//        System.out.println("hoi");
-        predicateTest.test();
-        termTest.test();
-        super.test();
     }
 
     @Override
@@ -110,6 +85,4 @@ public class AtomTest extends GrammarTest {
     protected String getRuleName() {
         return "atom";
     }
-
-
 }

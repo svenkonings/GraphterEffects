@@ -1,35 +1,40 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
 public class PredicateTest extends GrammarTest {
 
-    private static final String[] VALID_SAMPLES = new String[]
-            {
+    public static final List<String> VALID_SAMPLES = Arrays.asList
+            (
                     "predicate",
                     "p",
                     "p_q",
                     "p1",
                     "p_",
                     "p1_"
-            };
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+            );
+
+    public static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "Predicate",
                     "1p",
                     "",
                     "_predicate",
                     "!@#predicate"
-            };
+            );
+
 
     @Override
-    protected String[] getValidSamples() {
+    protected List<String> getValidSamples() {
         return VALID_SAMPLES;
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
     }
 
