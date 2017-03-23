@@ -13,13 +13,13 @@ program: import_vis*
 import_vis: IMPORT_TOKEN STRING EOL;
 
 // TO DO check if this generates only predicates or not
-/* Specify which labels should have generated identifiers: predicates and constants */
+/* Specify which labels should have generated identifiers for predicates and constants */
 node_label_gen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 
 /* Define and rename a label */
-// TO DO de label moet toch een string zijn?
-label: STRING RENAME_TOKEN predicate;
+// TO DO in tree walker kijken of de "as identifier" nodig was vanwege complexe string
+label: STRING (RENAME_TOKEN predicate)?;
 
 /* Implicative clauses */
 clause: (antecedent ARROW)? consequence EOL;
