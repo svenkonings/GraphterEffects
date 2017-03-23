@@ -63,7 +63,8 @@ public class GXLReader {
             String id = getID(elem);
             Edge e = tograph.addEdge(id, elem.getAttribute("from"), elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
-                e.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
+                GXLValue content = (elem.getAttrAt(p)).getValue();
+                e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content) );
             }
         }
         return tograph;
@@ -77,6 +78,20 @@ public class GXLReader {
         }
         int end = gxml.indexOf("</attr>", index2);
         return removeDupAttr(gxml.substring(0, index2) + gxml.substring(end + 6));
+    }
+
+    private static Object getFromGXLValue(GXLValue in) {
+        if (in instanceof GXLAtomicValue) {
+            return ((GXLAtomicValue) in).getValue();
+        } else if (in instanceof GXLCompositeValue) {
+            List<Object> res = new LinkedList<>();
+            GXLCompositeValue a = (GXLCompositeValue) in;
+            for (int i = 0; i<a.getValueCount(); i++) {
+                res.add(getFromGXLValue(a.getValueAt(i)));
+            }
+            return res;
+        }
+        throw new UnsupportedOperationException();
     }
 
     private static String getID(GXLGraphElement in) {
