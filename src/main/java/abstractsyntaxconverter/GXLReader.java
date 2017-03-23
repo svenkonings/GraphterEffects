@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-final class GXLReader {
+public final class GXLReader {
 
 
     private static Set<String> ids = new HashSet<>();
@@ -32,6 +32,7 @@ final class GXLReader {
 
     public static MultiGraph read(String path) throws IOException, SAXException {
         ids.clear();
+        idcounter = 0;
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         String gxml = new String(encoded, "UTF-8");
         gxml = gxml.replaceAll(" xmlns=\"http://www.gupro.de/GXL/gxl-1.0.dtd\"", "");
