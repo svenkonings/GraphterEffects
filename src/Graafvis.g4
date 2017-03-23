@@ -19,7 +19,7 @@ edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 
 /* Define and rename a label */
 // TO DO in tree walker kijken of de "as identifier" nodig was vanwege complexe string
-label: STRING (RENAME_TOKEN predicate)?;
+label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
 clause: (antecedent ARROW)? consequence EOL;
@@ -47,7 +47,7 @@ atom: predicate PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 multi_atom: predicate BRACE_OPEN (term (COMMA term)*)? BRACE_CLOSE;
 
 /* Predicates start with lowercase letter */
-predicate: NAME_LO;
+predicate: ID;
 
 /* Terms are either ground terms, free variables, underscores or a tuple of more terms */
 term: ground_term
@@ -59,16 +59,17 @@ term: ground_term
 /* Ground terms contain no free variables */
 ground_term: STRING
            | NUMBER
-           | NAME_LO
+           | ID
            ;
 
 /* Variables start with uppercase letter */
-variable: NAME_HI;
+variable: HID;
 
 bool_expr: NOT bool_expr
          | num_expr eq_op num_expr
          | bool_expr bool_op bool_expr
          | PAR_OPEN bool_expr PAR_CLOSE
+         | variable
          | TRUE
          | FALSE
          ;
@@ -77,17 +78,14 @@ num_expr: num_expr pow_op num_expr
         | num_expr mult_op num_expr
         | num_expr plus_op num_expr
         | PAR_OPEN num_expr PAR_CLOSE
+        | variable
         | NUMBER
         ;
 
-bool_op: OR | AND | COMMA;
+bool_op: COMMA | AND | OR;
 eq_op: EQ | NQ | GT | LT | GE | LE;
 
 pow_op: POW;
 mult_op: MULT | DIV | MOD;
 plus_op: PLUS | MINUS;
-
-
-
-
 
