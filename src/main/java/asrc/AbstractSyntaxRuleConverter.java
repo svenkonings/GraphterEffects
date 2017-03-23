@@ -98,6 +98,9 @@ public final class AbstractSyntaxRuleConverter {
         return rulelist;
     }
 
+    // attriute("label",X,T) -> label(X,T).
+    //
+
     /**
      * TODO: Write a description
      * @param  edge the edge for which to generate the rules
