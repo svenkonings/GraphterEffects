@@ -1,38 +1,60 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
 public class NumExprTest extends GrammarTest {
 
-    private VariableTest variableTest = new VariableTest();
-
-    private static final String[] VALID_NUMBER_SAMPLES = new String[]
-            {
-                    "1",
-                    "0123",
-                    "0",
-                    "921345156224167352"
-            };
-
-    private static final String[] NUM_EXPR = new String[]
-            {
+    private static final List<String> NUM_EXPR = Arrays.asList
+            (
                     "%s %s %s",
                     "(%s %s %s)",
-                    "%s %s (%s &s %s)",
-                    "(%s %s %s) %s %s",
-                    "%s (%s %s %s)"
-            };
-    private static final String[] VALID_OPERATOR_SAMPLES = new String[]
-            {
-                    "-",
-                    "/",
-                    "%",
-                    "==",
-                    "<"
-            };
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+                    "%s %s (%s %s %s)",
+                    "(%s %s %s) %s %s"
+            );
+
+    public static final List<String> VALID_SAMPLES = new ArrayList<>();
+    static {
+        List<String> vals = new ArrayList<>();
+        vals.addAll(VALID_NUMBER_SAMPLES);
+        vals.addAll(VariableTest.VALID_SAMPLES);
+
+        // Add expr 0
+        for (String sample : vals) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(0), sample, VALID_NUM_OP_SAMPLES.get(0), sample));
+        }
+        for (String operator : VALID_NUM_OP_SAMPLES) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(0), vals.get(0), operator, vals.get(0)));
+        }
+        // Add expr 1
+        for (String sample : vals) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(1), sample, VALID_NUM_OP_SAMPLES.get(0), sample));
+        }
+        for (String operator : VALID_NUM_OP_SAMPLES) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(1), vals.get(0), operator, vals.get(0)));
+        }
+        // Add expr 2
+        for (String sample : vals) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(2), sample, VALID_NUM_OP_SAMPLES.get(0), sample, VALID_NUM_OP_SAMPLES.get(0), sample));
+        }
+        for (String operator : VALID_NUM_OP_SAMPLES) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(2), vals.get(0), operator, vals.get(0), operator, vals.get(0)));
+        }
+        // Add expr 3
+        for (String sample : vals) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(3), sample, VALID_NUM_OP_SAMPLES.get(0), sample, VALID_NUM_OP_SAMPLES.get(0), sample));
+        }
+        for (String operator : VALID_NUM_OP_SAMPLES) {
+            VALID_SAMPLES.add(String.format(NUM_EXPR.get(3), vals.get(0), operator, vals.get(0), operator, vals.get(0)));
+        }
+    }
+
+    public static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "()",
                     ")X + 1(",
                     "_ + 1",
@@ -41,19 +63,15 @@ public class NumExprTest extends GrammarTest {
                     "== 1",
                     "A # B",
                     ""
-            };
-
+            );
 
     @Override
-    protected String[] getValidSamples() {
-
-
-
-        return new String[0];
+    protected List<String> getValidSamples() {
+        return VALID_SAMPLES;
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
     }
 
