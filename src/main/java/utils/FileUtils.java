@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.LinkedList;
@@ -17,7 +18,8 @@ public final class FileUtils {
     }
 
     public static File fromResources(String path) {
-        return new File(FileUtils.class.getClassLoader().getResource(path).getFile());
+        URL url = FileUtils.class.getClassLoader().getResource(path);
+        return new File(url.getFile());
     }
 
     public static List<File> recursiveInDirectory(File dir) {
