@@ -8,6 +8,7 @@ import org.graphstream.stream.file.FileSourceFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 final class GraphstreamAcceptedImportReader {
@@ -25,5 +26,9 @@ final class GraphstreamAcceptedImportReader {
         fs.readAll(file.getAbsolutePath());
         fs.removeSink(g);
         return g;
+    }
+
+    public static Iterator<String> accepted() {
+        return acceptslist.iterator();
     }
 }
