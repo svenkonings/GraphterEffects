@@ -43,7 +43,7 @@ public final class GXLReader {
         GXLGXL a = doc.getDocumentElement();
         GXLGraph graph = a.getGraphAt(0);
 
-        MultiGraph tograph = new MultiGraph(graph.getAttribute("id"), true, false);
+        MultiGraph tograph = new MultiGraph("_" + graph.getAttribute("id"), true, false);
         boolean directed = graph.getAttribute("edgemode").equals("directed");
 
         List<GXLGraphElement> nodes = new LinkedList<>();
