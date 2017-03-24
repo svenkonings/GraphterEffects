@@ -18,8 +18,8 @@ public final class Importer {
         if (GXLReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
             return GXLReader.read(file);
         }
-        if (file.getName().toLowerCase().endsWith(".dot")) {
-            return GraphstreamAcceptedImportReader.readDOT(file);
+        if (GraphstreamAcceptedImportReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
+            return GraphstreamAcceptedImportReader.read(file);
         }
         throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
     }
