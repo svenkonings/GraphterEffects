@@ -99,14 +99,14 @@ public abstract class GrammarTest {
 
     private static void myAssertEquals(String type, String sample, int expected, int actual) {
         if (SHOW_PROCESS) {
-            System.out.printf("Parsed %s: %s. Expected %d errors. Found %d\n\r", type, sample, expected, actual);
+            System.out.printf("Parsed %s: %s | Expected %d errors. Found %d\n\r", type, sample, expected, actual);
         }
         Assert.assertEquals(sample, expected, actual);
     }
 
     private static void myAssertNotEquals(String type, String sample, int unexpected, int actual) {
         if (SHOW_PROCESS) {
-            System.out.printf("Parsed %s: %s. Did not expect %d errors. Found %d\n\r", type, sample, unexpected, actual);
+            System.out.printf("Parsed %s: %s | Did not expect %d errors. Found %d\n\r", type, sample, unexpected, actual);
         }
         Assert.assertNotEquals(sample, unexpected, actual);
     }
