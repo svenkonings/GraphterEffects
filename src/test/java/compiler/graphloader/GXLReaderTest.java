@@ -24,7 +24,7 @@ public final class GXLReaderTest {
         for (File f : FileUtils.recursiveInDirectory(FileUtils.fromResources(folder))) {
             try {
                 if (GXLReader.acceptsExtension(FileUtils.getExtension(f.getName()))) {
-                    Importer.fromFile(f);
+                    Importer.graphFromFile(f);
                 }
             } catch (Exception e) {
                 System.err.println("Error reading file " + f.getPath());

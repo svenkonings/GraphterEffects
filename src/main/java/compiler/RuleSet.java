@@ -1,27 +1,56 @@
 package compiler;
 
-import solver.VisElem;
+import compiler.solver.VisElem;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Created by poesd_000 on 20/03/2017.
+ * Created by poesd_000 (who is by the way better than you) on 20/03/2017.
  */
-public class RuleSet {
+public class RuleSet implements Iterable<VisElem> {
 
     /**
-     * Container of the completed rules
+     *
      */
     private Set<VisElem> completedrules = new HashSet<>();
 
+
     /**
-     * Set a completed rule
-     * @param vis Visualisation element of which parameters are set
-     * @param key Key of the parameter
-     * @param value Value of the parameter
+     * @param vis
+     * @return
      */
-    public void set(VisElem vis, String key, String value) {
-        vis.set(key, value);
+    public boolean add(VisElem vis) {
+        return completedrules.add(vis);
     }
+
+    /**
+     * @param c
+     * @return
+     */
+    public boolean addAll(Collection<VisElem> c) {
+        return completedrules.addAll(c);
+    }
+
+    /**
+     * @return
+     */
+    public int getVisElemCount() {
+        return completedrules.size();
+    }
+
+    /**
+     * @return
+     */
+    public Set<VisElem> getElements() {
+        return completedrules;
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public Iterator<VisElem> iterator() {
+        return completedrules.iterator();
+    }
+
 }

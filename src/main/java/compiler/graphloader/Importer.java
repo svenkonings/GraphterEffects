@@ -1,5 +1,6 @@
 package compiler.graphloader;
 
+
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
@@ -9,11 +10,11 @@ import java.io.IOException;
 
 public final class Importer {
 
-    public static Graph fromFile(String path) throws IOException, SAXException {
-        return fromFile(new File(path));
+    public static Graph graphFromFile(String path) throws IOException, SAXException {
+        return graphFromFile(new File(path));
     }
 
-    public static Graph fromFile(File file) throws IOException, SAXException {
+    public static Graph graphFromFile(File file) throws IOException, SAXException {
         if (GXLReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
             return GXLReader.read(file);
         }
