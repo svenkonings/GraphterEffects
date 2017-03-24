@@ -9,23 +9,20 @@ import utils.TestUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
-import za.co.wstoop.jatalog.Rule;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static utils.TestUtils.testAttributesCorrect;
-import static utils.TestUtils.testPredicateValue;
-import static utils.TestUtils.testSimpleFact;
+import static utils.TestUtils.*;
 
 public class GraphRuleTests {
 
     public static Jatalog generateGraphJatalog(Graph graph) throws DatalogException {
-        List<Rule> rulesList = AbstractSyntaxRuleConverter.convertToRules(graph);
+        List<Expr> exprList = AbstractSyntaxRuleConverter.convertToRules(graph);
         Jatalog jatalog = new Jatalog();
-        addRules(jatalog,rulesList);
+        addRules(jatalog,exprList);
 
         return jatalog;
     }
@@ -126,16 +123,11 @@ public class GraphRuleTests {
     }
 
 
-    public static void addRules(Jatalog jatalog, List<Rule> rules) {
-        rules.forEach(rule -> {
+    public static void addRules(Jatalog jatalog, List<Expr> facts) {
+        facts.forEach(fact -> {
             try {
-                if (rule.getBody().size() == 0){
-                    jatalog.fact(rule.getHead());
-                } else {
-                    jatalog.rule(rule);
-                }
+                jatalog.fact(fact);
             } catch (DatalogException e) {
-                //System.out.println(rule.toString());
                 e.printStackTrace();
             }
         });

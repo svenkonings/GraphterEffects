@@ -4,6 +4,7 @@ import compiler.graphloader.Importer;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 import utils.FileUtils;
+import utils.GraphUtils;
 import utils.Printer;
 import za.co.wstoop.jatalog.Jatalog;
 
@@ -51,7 +52,8 @@ public final class ASRCIntergrationTest {
     @Test
     public void intergrationTestDGS() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("dgs/graph1.dgs"));
-        Printer.pprint(graph);
+        graph = GraphUtils.changeIDs(graph);
+        //Printer.pprint(graph);
 
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);

@@ -79,9 +79,11 @@ public final class TestUtils {
                 attributeKey -> {
                     try {
                         Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
+                        String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
                         assert TestUtils.answerContains(
-                                answers, "Value", element.getAttribute(attributeKey).toString());
+                                answers, "Value", expectedValue);
                     } catch (Exception e) {
+
                         e.printStackTrace();
                     }
                 }
