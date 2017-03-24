@@ -14,7 +14,7 @@ public final class ASRCIntergrationTest {
 
     @Test
     public void intergrationTest1() throws Exception {
-        Graph graph = Importer.fromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
         Printer.pprint(graph);
 
         Jatalog jatalog = generateGraphJatalog(graph);
