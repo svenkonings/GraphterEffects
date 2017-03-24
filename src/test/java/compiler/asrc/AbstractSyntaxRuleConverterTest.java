@@ -32,7 +32,4 @@ public final class AbstractSyntaxRuleConverterTest {
         graphTest(jatalog, graph);
     }
 
-
-
-
 }
