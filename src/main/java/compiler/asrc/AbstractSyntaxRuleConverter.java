@@ -120,8 +120,14 @@ public final class AbstractSyntaxRuleConverter {
 
         rulelist.add(generateRule("attributecount",edge.getId(), String.valueOf(edge.getAttributeCount())));
         for (String attributeKey: edge.getAttributeKeySet()){
-            rulelist.add(generateRule("attribute",attributeKey, edge.getId(), edge.getAttribute(attributeKey)));
+            try {
+                rulelist.add(generateRule("attribute", attributeKey, edge.getId(), edge.getAttribute(attributeKey).toString()));
+            } catch (Exception e){
+                System.out.println("WTF???");
+            }
         }
+
+
 
         return rulelist;
     }

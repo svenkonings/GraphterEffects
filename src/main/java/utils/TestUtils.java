@@ -80,7 +80,7 @@ public final class TestUtils {
                     try {
                         Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
                         assert TestUtils.answerContains(
-                                answers, "Value", element.getAttribute(attributeKey));
+                                answers, "Value", element.getAttribute(attributeKey).toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

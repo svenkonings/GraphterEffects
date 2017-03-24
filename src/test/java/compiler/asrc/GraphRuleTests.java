@@ -135,7 +135,7 @@ public class GraphRuleTests {
                     jatalog.rule(rule);
                 }
             } catch (DatalogException e) {
-                System.out.println(rule.toString());
+                //System.out.println(rule.toString());
                 e.printStackTrace();
             }
         });
