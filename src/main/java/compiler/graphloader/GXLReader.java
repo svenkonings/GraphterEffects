@@ -61,7 +61,8 @@ public final class GXLReader {
             String id = getID(elem);
             Node n = tograph.addNode(id);
             for (int p = 0; p < elem.getAttrCount(); p++) {
-                n.setAttribute(elem.getAttrAt(p).getName(), ((GXLAtomicValue) (elem.getAttrAt(p)).getValue()).getValue());
+                GXLValue content = (elem.getAttrAt(p)).getValue();
+                n.setAttribute(elem.getAttrAt(p).getName(), "\"" + getFromGXLValue(content).toString() + "\"");
             }
         }
 
@@ -70,7 +71,7 @@ public final class GXLReader {
             Edge e = tograph.addEdge(id, "_" + elem.getAttribute("from"), "_" + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
-                e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content) );
+                e.setAttribute(elem.getAttrAt(p).getName(), "\"" + getFromGXLValue(content).toString() + "\"");
             }
         }
         return tograph;
