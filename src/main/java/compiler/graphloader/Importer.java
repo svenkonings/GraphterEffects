@@ -17,10 +17,16 @@ public final class Importer {
     public static Graph graphFromFile(File file) throws IOException, SAXException {
         if (GXLReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
             return GXLReader.read(file);
-        }
-        if (GraphstreamAcceptedImportReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
+        } else if (GraphstreamAcceptedImportReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
             return GraphstreamAcceptedImportReader.read(file);
         }
-        throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
+
+
+        try{
+            return GXLReader.read(file);
+        } catch (SAXException e) {}
+
+        return GraphstreamAcceptedImportReader.read(file);
+        //throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
     }
 }
