@@ -11,7 +11,7 @@ public final class GXLReaderTest {
 
     @Test
     public void GPLWithoutError() throws IOException, SAXException {
-        testFromFolder("gpl_and_gst");
+        testFromFolder("groovegraphs");
     }
 
     @Test
