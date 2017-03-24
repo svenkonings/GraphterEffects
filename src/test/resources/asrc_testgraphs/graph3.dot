@@ -4,7 +4,7 @@ digraph {
 	a -> c[label="0.3",weight="0.3"];
 	c -> b[label="0.8",weight="0.8"];
 	c -> e[label="0.7",weight="0.7"];
-	e -> e[label="0.2",weight="0.2"];
+	e -> d[label="0.2",weight="0.2"];
 	e -> b[label="0.7",weight="0.7"];
 	e -> a[label="0.1",weight="0.1"];
 }
