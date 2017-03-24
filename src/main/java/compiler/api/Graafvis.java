@@ -1,6 +1,7 @@
 package compiler.api;
 
 
+import compiler.graphloader.Importer;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
 
@@ -14,8 +15,7 @@ public class Graafvis {
 
 
     public static Graph importGraph(File file) throws UnknownFormatException, IOException, SAXException {
-        //return Importer.graphFromFile(file);
-        return null;
+        return Importer.graphFromFile(file);
     }
 
     public static Constraintset importGraafvis(String path) {

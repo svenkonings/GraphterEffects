@@ -26,6 +26,10 @@ public final class StringUtils {
             digs = input.charAt(input.length()-1) + digs;
             input = input.substring(0, input.length()-1);
         }
-        return new Pair<>(input, Integer.parseInt(digs));
+        try {
+            return new Pair<>(input, Integer.parseInt(digs));
+        } catch (NumberFormatException e) {
+            return new Pair<>(input, -1);
+        }
     }
 }
