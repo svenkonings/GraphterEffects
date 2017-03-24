@@ -1,6 +1,8 @@
 package utils;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public final class StringUtils {
 
@@ -30,6 +32,28 @@ public final class StringUtils {
             return new Pair<>(input, Integer.parseInt(digs));
         } catch (NumberFormatException e) {
             return new Pair<>(input, -1);
+        }
+    }
+
+    public static String ObjectToString(Object in) {
+        if (in instanceof String) {
+            return (String) in;
+        } else if (in instanceof Number) {
+            return String.valueOf(in);
+        } else if (in instanceof List) {
+            List<String> to = new LinkedList<>();
+            for (Object i : ((List)in)) {
+                to.add(ObjectToString(i));
+            }
+            return to.toString();
+        } else if (in instanceof Object[]) {
+            String[] res = new String[((Object[]) in).length];
+            for (int i = 0; i<((Object[]) in).length; i++) {
+                res[i] = ObjectToString(((Object[]) in)[i]);
+            }
+            return Arrays.toString(res);
+        } else {
+            return in.toString();
         }
     }
 }

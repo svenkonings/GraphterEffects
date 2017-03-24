@@ -54,7 +54,7 @@ public final class Printer {
             builder.append("\t{");
             String attrstring = "";
             for (String key : e.getAttributeKeySet()) {
-                attrstring += keyq + key + keyq + ":" + valq + e.getAttribute(key) + valq + ",";
+                attrstring += keyq + key + keyq + ":" + valq + StringUtils.ObjectToString(e.getAttribute(key)) + valq + ",";
             }
             if (attrstring.endsWith(",")) {
                 attrstring = attrstring.substring(0, attrstring.length()-1);
