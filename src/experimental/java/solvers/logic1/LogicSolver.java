@@ -1,4 +1,4 @@
-package solver.logic1;
+package solvers.logic1;
 
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;

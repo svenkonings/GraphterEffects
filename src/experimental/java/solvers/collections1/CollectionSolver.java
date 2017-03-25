@@ -1,4 +1,4 @@
-package solver.collections1;
+package solvers.collections1;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;

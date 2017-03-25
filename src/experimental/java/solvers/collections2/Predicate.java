@@ -1,4 +1,4 @@
-package solver.collections2;
+package solvers.collections2;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package solver.collections3;
+package solvers.collections3;
 
 import java.util.*;
 import java.util.stream.Collectors;

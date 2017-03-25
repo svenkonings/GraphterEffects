@@ -1,6 +1,6 @@
 package compiler;
 
-import solver.VisElem;
+import compiler.solver.VisElem;
 
 import java.util.HashSet;
 import java.util.Set;

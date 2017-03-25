@@ -1,4 +1,4 @@
-package solver.collections1;
+package solvers.collections1;
 
 public class Term<T> {
     private T value;

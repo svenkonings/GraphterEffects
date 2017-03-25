@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static za.co.wstoop.jatalog.Expr.expr;
+import static za.co.wstoop.jatalog.Expr.not;
 
 public class SolverTest {
     public static void main(String[] args) throws DatalogException, IOException {
@@ -24,11 +25,10 @@ public class SolverTest {
             jatalog.fact("node", "a")
                     .fact("node", "b")
                     .fact("node", "c")
-                    .fact("node", "d")
-                    .fact("node", "e")
-                    .fact("node", "f")
-                    .fact("node", "g")
-                    .fact("node", "h")
+                    .fact("edge", "ac")
+                    .fact("edge", "bc")
+                    .fact("edge", "a", "c")
+                    .fact("edge", "b", "c")
                     .fact("edge", "a", "c", "ac")
                     .fact("edge", "b", "c", "bc")
                     .fact("label", "a", "\"Toos\"")
@@ -36,7 +36,7 @@ public class SolverTest {
                     .fact("label", "c", "\"Vera\"")
                     .fact("label", "ac", "\"dad\"")
                     .fact("label", "bc", "\"mom\"")
-                    .rule(expr("type", "X", "Y"), expr("shape", "X", "Y"))
+                    .rule(expr("negate", "X", "Y"), expr("node", "X"), expr("node", "Y"), not("edge", "X", "Y"))
                     .rule(expr("edge_with_label", "X", "Y", "S"), expr("edge", "X", "Y", "E"), expr("label", "E", "S"))
                     .rule(expr("female", "X"), expr("edge_with_label", "X", "Y", "\"mom\""))
                     .rule(expr("male", "X"), expr("edge_with_label", "X", "Y", "\"dad\""))

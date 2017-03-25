@@ -1,4 +1,4 @@
-package solver.constraints1;
+package solvers.constraints1;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.extension.Tuples;
