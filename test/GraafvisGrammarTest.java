@@ -36,9 +36,6 @@ public class GraafvisGrammarTest {
         /* Num expr */
         res = core.run(NumExprTest.class);
         Assert.assertEquals(0, res.getFailureCount());
-//        /* Bool expr */
-//        res = core.run(BoolExprTest.class);
-//        Assert.assertEquals(0, res.getFailureCount());
         /* Propositional formula */
         res = core.run(PropositionalFormulaTest.class);
         Assert.assertEquals(0, res.getFailureCount());
@@ -53,6 +50,18 @@ public class GraafvisGrammarTest {
         Assert.assertEquals(0, res.getFailureCount());
         /* Label */
         res = core.run(LabelTest.class);
+        Assert.assertEquals(0, res.getFailureCount());
+        /* Node label gen */
+        res = core.run(NodeLabelGenTest.class);
+        Assert.assertEquals(0, res.getFailureCount());
+        /* Edge label gen */
+        res = core.run(EdgeLabelGenTest.class);
+        Assert.assertEquals(0, res.getFailureCount());
+        /* Import vis */
+        res = core.run(ImportVisTest.class);
+        Assert.assertEquals(0, res.getFailureCount());
+        /* Program */
+        res = core.run(ProgramTest.class);
         Assert.assertEquals(0, res.getFailureCount());
 
     }
