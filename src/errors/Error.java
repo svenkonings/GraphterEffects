@@ -10,26 +10,23 @@ public abstract class Error {
     Error(int row, int column) {
         this.row = row;
         this.column = column;
-        this.msg = "D'OH";
     }
 
     public Error(int row, int column, String msg) {
         this.row = row;
         this.column = column;
         this.msg = msg;
-
     }
 
     @Override
     public String toString() {
-        return String.format("D'OH at line %d:%d - %s", row, column, msg);
-    }
-
-    public String getMsg() {
+        if (msg == null) {
+            return String.format("Error at line %d:%d", row, column);
+        }
         return msg;
     }
 
-    public void setMsg(String msg) {
+    protected void setMsg(String msg) {
         this.msg = msg;
     }
 
