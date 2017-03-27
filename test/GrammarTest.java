@@ -2,6 +2,9 @@ import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +17,21 @@ public abstract class GrammarTest {
      * Flags
      */
 
-    private static final boolean SHOW_PROCESS = true;
+    private static final boolean PRINT_PROCESS = false;
+    private static final boolean LOG_PROCESS = true;
+
+    /**
+     * Log
+     */
+
+    private static PrintWriter writer;
+    static {
+        try {
+            writer = new PrintWriter("test/testLog.txt", "UTF-8");
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Token samples
@@ -98,15 +115,29 @@ public abstract class GrammarTest {
     }
 
     private static void myAssertEquals(String type, String sample, int expected, int actual) {
-        if (SHOW_PROCESS) {
-            System.out.printf("Parsed %s: %s | Expected %d errors. Found %d\n\r", type, sample, expected, actual);
+        if (PRINT_PROCESS | LOG_PROCESS) {
+            String msg = String.format("Parsed %s: %s | Expected %d errors. Found %d\n", type, sample, expected, actual);
+            if (PRINT_PROCESS) {
+                System.out.print(msg);
+            }
+            if (LOG_PROCESS) {
+                writer.write(msg);
+                writer.flush();
+            }
         }
         Assert.assertEquals(sample, expected, actual);
     }
 
     private static void myAssertNotEquals(String type, String sample, int unexpected, int actual) {
-        if (SHOW_PROCESS) {
-            System.out.printf("Parsed %s: %s | Did not expect %d errors. Found %d\n\r", type, sample, unexpected, actual);
+        if (PRINT_PROCESS | LOG_PROCESS) {
+            String msg = String.format("Parsed %s: %s | Did not expect %d errors. Found %d\n", type, sample, unexpected, actual);
+            if (PRINT_PROCESS) {
+                System.out.print(msg);
+            }
+            if (LOG_PROCESS) {
+                writer.write(msg);
+                writer.flush();
+            }
         }
         Assert.assertNotEquals(sample, unexpected, actual);
     }
