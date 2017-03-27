@@ -1,6 +1,6 @@
-grammar GraafvisParser;
+grammar Graafvis;
 
-import GraafvisLexer;
+import GraafvisVocab;
 
 /* A Graafvis script consists out of a list of imports, label predicate generation and a list of clauses */
 program: import_vis*

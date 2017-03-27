@@ -51,6 +51,9 @@ public class GraafvisGrammarTest {
         /* Clause */
         res = core.run(ClauseTest.class);
         Assert.assertEquals(0, res.getFailureCount());
+        /* Label */
+        res = core.run(LabelTest.class);
+        Assert.assertEquals(0, res.getFailureCount());
 
     }
 

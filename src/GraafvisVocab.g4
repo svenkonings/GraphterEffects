@@ -1,4 +1,4 @@
-lexer grammar GraafvisLexer;
+lexer grammar GraafvisVocab;
 
 // TODO so far no lists, no Java imports
 
