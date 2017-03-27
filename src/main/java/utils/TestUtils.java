@@ -38,13 +38,7 @@ public final class TestUtils {
     }
 
     public static boolean mapContains(Map<String, String> haystack, Map<String, String> needle) {
-        for(String key : needle.keySet()) {
-            if(!haystack.containsKey(key))
-                return false;
-            if(!haystack.get(key).equals(needle.get(key)))
-                return false;
-        }
-        return true;
+        return haystack.entrySet().containsAll(needle.entrySet());
     }
 
     public static boolean answerContains(Collection<Map<String, String>> answers, String... kvPairs) throws Exception {

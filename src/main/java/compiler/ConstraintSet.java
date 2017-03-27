@@ -59,4 +59,15 @@ public class ConstraintSet {
     public List<Rule> getRules(){
         return rules;
     }
+
+
+    /**
+     * Merges a ConstraintSet into this ConstraintSet.
+     * @param from ConstraintSet to merge with this one.
+     */
+    public void merge(ConstraintSet from) {
+        imports.addAll(from.getImports());
+        facts.addAll(from.getFacts());
+        rules.addAll(from.getRules());
+    }
 }
