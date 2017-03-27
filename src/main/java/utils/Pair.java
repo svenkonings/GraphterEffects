@@ -13,7 +13,7 @@ public class Pair<T, U> implements Iterable {
      */
     private final T t;
     /**
-     * Seconf Object contained in this Pair.
+     * Second Object contained in this Pair.
      */
     private final U u;
 

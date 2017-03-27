@@ -9,16 +9,40 @@ import utils.GraphUtils;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Class responsible for importing Graphs from a graph-representing format.
+ */
 public final class Importer {
 
+    /**
+     * Reads a graph from a variety of formats.
+     * @param path Path to the file from which to read the Graph.
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
     public static Graph graphFromFile(String path) throws IOException, SAXException {
         return graphFromFile(new File(path));
     }
 
+    /**
+     * Reads a graph from a variety of formats.
+     * @param file File from which to read the Graph
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
     public static Graph graphFromFile(File file) throws IOException, SAXException {
         return graphFromFile(file,true);
     }
 
+    /**
+     * @param file File from which to read the Graph
+     * @param addUnderscores <tt>true</tt> if underscores should be added to the IDs in the graph.
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
     public static Graph graphFromFile(File file, boolean addUnderscores) throws IOException, SAXException {
         Graph g = null;
         String extension = FileUtils.getExtension(file.getName());

@@ -1,7 +1,7 @@
 package compiler.api;
 
 
-import compiler.Constraintset;
+import compiler.ConstraintSet;
 import compiler.graphloader.Importer;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -12,26 +12,26 @@ import java.io.IOException;
 public class Graafvis {
 
     private Graph graph;
-    private Constraintset constraints;
+    private ConstraintSet constraints;
 
 
     public static Graph importGraph(File file) throws UnknownFormatException, IOException, SAXException {
         return Importer.graphFromFile(file);
     }
 
-    public static Constraintset importGraafvis(String path) {
+    public static ConstraintSet importGraafvis(String path) {
         return null;
     }
 
-    public static Constraintset importGraafvis(File file) {
+    public static ConstraintSet importGraafvis(File file) {
         return importGraafvis(file.getAbsolutePath());
     }
 
-    public static Constraintset getGraafvisFromString(String script) {
+    public static ConstraintSet getGraafvisFromString(String script) {
         return null;
     }
 
-    public String getSVG(Graph g, Constraintset s) {
+    public String getSVG(Graph g, ConstraintSet s) {
         return null;
     }
 }
