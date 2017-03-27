@@ -9,26 +9,52 @@ import utils.GraphUtils;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Class responsible for importing Graphs from a graph-representing format.
+ */
 public final class Importer {
 
+    /**
+     * Reads a graph from a variety of formats.
+     * @param path Path to the file from which to read the Graph.
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
     public static Graph graphFromFile(String path) throws IOException, SAXException {
         return graphFromFile(new File(path));
     }
 
+    /**
+     * Reads a graph from a variety of formats.
+     * @param file File from which to read the Graph
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
     public static Graph graphFromFile(File file) throws IOException, SAXException {
         return graphFromFile(file,true);
     }
 
+    /**
+     * @param file File from which to read the Graph
+     * @param addUnderscores <tt>true</tt> if underscores should be added to the IDs in the graph.
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
     public static Graph graphFromFile(File file, boolean addUnderscores) throws IOException, SAXException {
         Graph g = null;
-        if (GXLReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
-            g =  GXLReader.read(file);
-        } else if (GraphstreamAcceptedImportReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
-            g = GraphstreamAcceptedImportReader.read(file);
+        String extension = FileUtils.getExtension(file.getName());
+        if (GXLImporter.acceptsExtension(extension)) {
+            g =  GXLImporter.read(file);
+        } else if (GraphStreamImporter.acceptsExtension(extension)) {
+            g = GraphStreamImporter.read(file);
         } else {
             try {
-                g = GXLReader.read(file);
+                g = GXLImporter.read(file);
             } catch (SAXException e) {
+                g=null;
             }
         }
         if (g==null) {
