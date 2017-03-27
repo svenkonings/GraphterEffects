@@ -299,7 +299,7 @@ public class Expr implements Indexable<String> {
      * and other quotes escaped.
      * caveat: You're going to have trouble if you have other special characters in your strings */
     private static StringBuilder termToString(StringBuilder sb, String term) {
-        if(term.startsWith("\""))
+        if(term.startsWith("\"") /* Manually added by Lindsay: */ && !term.endsWith("\""))
             sb.append('"').append(term.substring(1).replaceAll("\"", "\\\\\"")).append('"');
         else
             sb.append(term);

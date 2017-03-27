@@ -66,7 +66,9 @@ public class StackMap<K,V> implements Map<K,V> {
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
         Set<K> keys = new HashSet<>(self.keySet());
-        keys.addAll(parent.keySet());
+        if (parent != null) { // Manually added check
+            keys.addAll(parent.keySet());
+        }
         int s = keys.size(), i = 0;
         for(K k : keys) {
             sb.append(k).append(": ");
