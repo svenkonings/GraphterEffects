@@ -46,12 +46,12 @@ public class VisMap {
     }
 
     /**
-     * Get a copy of the list of visualiztion elements of this map
+     * Get the collection of visualiztion elements of this map
      *
-     * @return A list of visualization elements.
+     * @return A collection of visualization elements.
      */
-    public List<VisElem> values() {
-        return new ArrayList<>(mapping.values());
+    public Collection<VisElem> values() {
+        return mapping.values();
     }
 
     @Override

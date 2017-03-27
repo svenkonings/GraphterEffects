@@ -93,7 +93,7 @@ public class Expr implements Indexable<String> {
      */
     public boolean isBuiltIn() {
         char op = predicate.charAt(0);
-        return !Character.isLetterOrDigit(op) && op != '\"';
+        return !Character.isLetterOrDigit(op) && op != '\"' && op != '_';
     }
 
     /**

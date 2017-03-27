@@ -3,8 +3,12 @@ package svg;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import solver.VisElem;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -54,5 +58,25 @@ public class SvgDocumentGenerator {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
                 .max().orElse(0);
+    }
+
+    /**
+     * Write the given document to the file with the given filename.
+     *
+     * @param document The given document.
+     * @param filename The given filename.
+     * @throws IOException If unable to write to the file
+     */
+    public static void writeDocument(Document document, String filename) throws IOException {
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter writer = null;
+        try {
+            writer = new XMLWriter(new FileWriter(filename), format);
+            writer.write(document);
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
     }
 }
