@@ -27,7 +27,7 @@ public class SvgDocumentGenerator {
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         setViewBox(root, visElems);
         visElems.stream()
-                .sorted(Comparator.comparing(elem -> elem.getVar("z").getValue()))
+                .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
                 .forEach(visElem -> SvgElementGenerator.addElement(visElem, root));
         return document;
     }

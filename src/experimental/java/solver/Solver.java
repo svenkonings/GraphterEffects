@@ -26,7 +26,7 @@ public class Solver {
     }
 
     // TODO: Extendibility
-    public List<Map<String, String>> solve() throws DatalogException {
+    public List<VisElem> solve() throws DatalogException {
         attributesPredicate("shape", "type");
         attributesPredicate("pos", "x1", "y1", "z");
         attributesPredicate("posX", "x1");
@@ -38,9 +38,7 @@ public class Solver {
         varPredicate("left", vars -> vars.get(1).ge(vars.get(0)).post(), "x2", "x1");
         varValuePredicate("left", (vars, value) -> vars.get(1).sub(vars.get(0)).eq(value).post(), "x2", "x1");
         model.getSolver().solve();
-        return visMap.values().stream()
-                .map(VisElem::getValues)
-                .collect(Collectors.toList());
+        return visMap.values();
     }
 
     private void attributesPredicate(String name, String... attributes) {
