@@ -1,7 +1,6 @@
-package compiler.solver;
+package solver.old;
 
 import org.dom4j.Document;
-import compiler.svg.SvgDocumentGenerator;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
 
@@ -17,8 +16,8 @@ public class SolverTest {
         testData(jatalog);
         Solver solver = new Solver(jatalog);
         List<VisElem> visElems = solver.solve();
-        Document document = SvgDocumentGenerator.generate(visElems);
-        SvgDocumentGenerator.writeDocument(document, "test.svg");
+        Document document = SvgGenerator.generate(visElems);
+        Util.writeDocument(document, "test.svg");
     }
 
     private static void testData(Jatalog jatalog) {
@@ -41,18 +40,16 @@ public class SolverTest {
                     .rule(expr("edge_with_label", "X", "Y", "S"), expr("edge", "X", "Y", "E"), expr("label", "E", "S"))
                     .rule(expr("female", "X"), expr("edge_with_label", "X", "Y", "\"mom\""))
                     .rule(expr("male", "X"), expr("edge_with_label", "X", "Y", "\"dad\""))
-                    .rule(expr("_shape_1", "N", "rectangle"), expr("female", "N"))
-                    .rule(expr("_color_1", "N", "green"), expr("female", "N"))
-                    .rule(expr("_left_1_1", "N1", "N2", "10"), expr("female", "N1"), expr("male", "N2"))
-                    .rule(expr("_posY_1", "N", "20"), expr("female", "N"))
-                    .rule(expr("_width_1", "N", "60"), expr("female", "N"))
-                    .rule(expr("_height_1", "N", "30"), expr("female", "N"))
-                    .rule(expr("_shape_1", "N", "ellipse"), expr("male", "N"))
-                    .rule(expr("_posX_1", "N", "100"), expr("male", "N"))
-                    .rule(expr("_posY_1", "N", "20"), expr("male", "N"))
-                    .rule(expr("_width_1", "N", "60"), expr("male", "N"))
-                    .rule(expr("_height_1", "N", "30"), expr("male", "N"))
-                    .rule(expr("_color_1", "N", "red"), expr("male", "N"));
+                    .rule(expr("shape", "N", "rectangle"), expr("female", "N"))
+                    .rule(expr("posX", "N", "10"), expr("female", "N"))
+                    .rule(expr("posY", "N", "20"), expr("female", "N"))
+                    .rule(expr("width", "N", "60"), expr("female", "N"))
+                    .rule(expr("height", "N", "30"), expr("female", "N"))
+                    .rule(expr("shape", "N", "ellipse"), expr("male", "N"))
+                    .rule(expr("posX", "N", "100"), expr("male", "N"))
+                    .rule(expr("posY", "N", "100"), expr("male", "N"))
+                    .rule(expr("width", "N", "60"), expr("male", "N"))
+                    .rule(expr("height", "N", "30"), expr("male", "N"));
         } catch (DatalogException e) {
             e.printStackTrace();
         }

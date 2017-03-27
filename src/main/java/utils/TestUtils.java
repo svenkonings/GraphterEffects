@@ -38,13 +38,7 @@ public final class TestUtils {
     }
 
     public static boolean mapContains(Map<String, String> haystack, Map<String, String> needle) {
-        for(String key : needle.keySet()) {
-            if(!haystack.containsKey(key))
-                return false;
-            if(!haystack.get(key).equals(needle.get(key)))
-                return false;
-        }
-        return true;
+        return haystack.entrySet().containsAll(needle.entrySet());
     }
 
     public static boolean answerContains(Collection<Map<String, String>> answers, String... kvPairs) throws Exception {
@@ -79,9 +73,11 @@ public final class TestUtils {
                 attributeKey -> {
                     try {
                         Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
+                        String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
                         assert TestUtils.answerContains(
-                                answers, "Value", element.getAttribute(attributeKey));
+                                answers, "Value", expectedValue);
                     } catch (Exception e) {
+
                         e.printStackTrace();
                     }
                 }
@@ -92,6 +88,9 @@ public final class TestUtils {
     public static void testSimpleFact(Jatalog jatalog, Element element, String predicate, String expectedID, boolean shouldExist) throws DatalogException {
         assertEquals(shouldExist, !jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID)).isEmpty());
     }
+
+
+
 
 
 }

@@ -1,0 +1,16 @@
+//A random network
+graph {
+	a -- b;
+	a -- c;
+	c -- b;
+	c -- e;
+	e -- d;
+	e -- b;
+	e -- a;
+
+	a[label="a"];
+	b[label="b"];
+	c[label="c"];
+	d[label="d"];
+	e[label="e"];
+}

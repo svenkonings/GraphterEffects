@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.chocosolver.solver.variables.IntVar.MAX_INT_BOUND;
+import static org.chocosolver.solver.variables.IntVar.MIN_INT_BOUND;
 
 /**
- * The {@code VisElem} class respresents a visualization element. A visualization element has a single {@code VisType}
- * type with a combination of String values and Integer Variables.
+ * The {@code VisElem} class respresents a visualization element. A visualization element consists of name-value pairs,
+ * with the values being {@link String} constants, and name-variable pairs, with the variables being {@link IntVar}
+ * variables. The values of instantiated variables can also be retreiverd as {@link String} constants.
  */
-// TODO: Improve exception handling
-// TODO: Add ability to replace existing values/vars?
+// TODO: Convert to real vars?
+// TODO: Improve exception handling (or return bool?)
+// TODO: Add ability to replace values?
 public class VisElem {
-
-    /** The type of this element. */
-    private VisType type;
 
     /** The model associated with this element. */
     private final Model model;
@@ -43,113 +43,121 @@ public class VisElem {
 
     /**
      * Initializes the default variables. The defaults are:
-     * <ul>
-     * <li>z position</li>
-     * <li>x and y posistions</li>
-     * <li>x1 and y1 positions (same as x and y)</li>
-     * <li>width and heigth</li>
-     * <li>x2 and y2 posistions (x + width and y + heigth)</li>
-     * <li>cx and cy positions (center x and center y)</li>
-     * </ul>
+     * <table summary="Defaults" border="1">
+     * <tr><td><b>Name</b></td> <td><b>Description</b></td> <td><b>Value</b></td></tr>
+     * <tr><td>z</td>           <td>z position</td>         <td>[MIN, MAX]</td></tr>
+     * <tr><td>x1</td>          <td>x start position</td>   <td>[0, MAX]</td></tr>
+     * <tr><td>y1</td>          <td>y start position</td>   <td>[0, MAX]</td></tr>
+     * <tr><td>width</td>       <td>width</td>              <td>[0, MAX]</td></tr>
+     * <tr><td>height</td>      <td>height</td>             <td>[0, MAX]</td></tr>
+     * <tr><td>x2</td>          <td>x end position</td>     <td>x1 + width</td></tr>
+     * <tr><td>y2</td>          <td>y end position</td>     <td>y1 + height</td></tr>
+     * <tr><td>radiusX</td>     <td>x radius</td>           <td>width / 2</td></tr>
+     * <tr><td>radiusY</td>     <td>y radius</td>           <td>height / 2</td></tr>
+     * <tr><td>centerX</td>     <td>x center position</td>  <td>x1 + radiusX</td></tr>
+     * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
+     * </table>
      */
     private void setDefaultVars() {
-        getVar("z");
-        setVar("x1", getVar("x"));
-        setVar("y1", getVar("y"));
-        setVar("x2", getVar("x").add(getVar("width")).intVar());
-        setVar("y2", getVar("y").add(getVar("height")).intVar());
-        setVar("cx", getVar("x").add(getVar("width").div(2)).intVar());
-        setVar("cy", getVar("y").add(getVar("heigth").div(2)).intVar());
+        setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
+
+        IntVar x1 = setVar("x1", 0, MAX_INT_BOUND);
+        IntVar y1 = setVar("y1", 0, MAX_INT_BOUND);
+        IntVar width = setVar("width", 0, MAX_INT_BOUND);
+        IntVar height = setVar("height", 0, MAX_INT_BOUND);
+        setVar("x2", x1.add(width).intVar());
+        setVar("y2", y1.add(height).intVar());
+
+        IntVar radiusX = setVar("radiusX", width.div(2).intVar());
+        IntVar radiusY = setVar("radiusY", height.div(2).intVar());
+        setVar("centerX", x1.add(radiusX).intVar());
+        setVar("centerY", y1.add(radiusY).intVar());
     }
 
     /**
-     * @return The type of this element.
-     */
-    public VisType getType() {
-        return type;
-    }
-
-    /**
-     * Sets the type of this element, if not already set, and initializes the default values belonging to the given type
-     *
-     * @param newType The type to set.
-     * @throws ElementException If the type of this element is already set.
-     */
-    public void setType(VisType newType) {
-        if (type != null && !type.equals(newType)) {
-            throw new ElementException("This element already has type %s instead of %s", type, newType);
-        }
-        type = newType;
-        setTypeVars();
-    }
-
-    /**
-     * Initializes the default values belonging to the type of this element.
-     *
-     * @throws ElementException If this element has no type.
-     */
-    private void setTypeVars() {
-        if (type == null) {
-            throw new ElementException("Type not set");
-        }
-        switch (type) {
-            case ELLIPSE:
-                setVar("rx", getVar("width").div(2).intVar());
-                setVar("ry", getVar("height").div(2).intVar());
-                break;
-        }
-    }
-
-    /**
-     * Set the given name-value pair. If the value is parsable by {@link Integer#parseInt(String)}, then it will be
-     * treated as the value of an {@link IntVar} variable. Otherwise the value will be treated as a {@link String}
-     * constant.
+     * If the value is parsable by {@link Integer#parseInt(String)} it will be treated as the value of an {@link IntVar}
+     * variable and set the name-variable pair. Otherwise the value will be treated as a {@link String} constant and set
+     * the name-value pair.
      *
      * @param name  The given name.
      * @param value The given value.
-     * @throws ElementException If the name is already assigned to a different value.
+     * @throws ElementException If the name can't be assigned to the given value.
      */
     public void set(String name, String value) {
         try {
-            int varValue = Integer.parseInt(value);
-            setVarValue(name, varValue);
+            int constant = Integer.parseInt(value);
+            setVar(name, constant);
         } catch (NumberFormatException e) {
             setValue(name, value);
         }
     }
 
     /**
-     * Set the given name-value pair. The value is treated as a {@link String} constant.
+     * Set the given name-value pair.
      *
      * @param name  The given name.
      * @param value The given {@link String} constant.
-     * @throws ElementException If the name is already assigned to a different value.
+     * @return The value.
+     * @throws ElementException If the name is already assigned to a variable or to a different value.
      */
-    private void setValue(String name, String value) {
+    public String setValue(String name, String value) {
         if (vars.containsKey(name)) {
             throw new ElementException("%s is already defined as a variable", name);
-        } else if (values.containsKey(name) && !Objects.equals(values.get(name), value)) {
-            throw new ElementException("%s already has a different value", name);
+        } else if (values.containsKey(name)) {
+            if (!Objects.equals(values.get(name), value)) {
+                throw new ElementException("%s already has a different value", name);
+            }
+            return value;
         } else {
             values.put(name, value);
+            return value;
         }
     }
 
     /**
-     * Sets the given name-value pair. The value is treated as the value of an {@link IntVar} variable.
+     * Sets the given name-variable pair. The value is treated as the constant of an {@link IntVar} variable.
      *
      * @param name     The given name.
-     * @param varValue The given {@link IntVar} value.
-     * @throws ElementException If the name is already assigned to a {@link String} constant.
+     * @param constant The given value.
+     * @return The variable.
+     * @throws ElementException If the name is already assigned to a value.
      */
-    private void setVarValue(String name, int varValue) {
+    public IntVar setVar(String name, int constant) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
         } else if (vars.containsKey(name)) {
-            vars.get(name).eq(varValue).post();
+            IntVar var = vars.get(name);
+            var.eq(constant).post();
+            return var;
         } else {
-            IntVar var = model.intVar(model.generateName(name), varValue);
+            IntVar var = model.intVar(constant);
             vars.put(name, var);
+            return var;
+        }
+    }
+
+    /**
+     * Set the given name-variable pair. The values are treated as the lower and upper bound of an {@link IntVar}
+     * varaible.
+     *
+     * @param name The given name.
+     * @param lb   The given lower bound value.
+     * @param ub   The given upper bound value.
+     * @return The variable.
+     * @throws ElementException If the name is already assigned to a value.
+     */
+    public IntVar setVar(String name, int lb, int ub) {
+        if (values.containsKey(name)) {
+            throw new ElementException("%s is already defined as a value", name);
+        } else if (vars.containsKey(name)) {
+            IntVar var = vars.get(name);
+            var.ge(lb).post();
+            var.le(ub).post();
+            return var;
+        } else {
+            IntVar var = model.intVar(lb, ub);
+            vars.put(name, var);
+            return var;
         }
     }
 
@@ -158,15 +166,18 @@ public class VisElem {
      *
      * @param name The given name.
      * @param var  The given {@link IntVar} variable.
-     * @throws ElementException If the name is already defined.
+     * @return The variable.
+     * @throws ElementException If the name is already assigned to a value.
      */
-    public void setVar(String name, IntVar var) {
+    public IntVar setVar(String name, IntVar var) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
         } else if (vars.containsKey(name)) {
-            throw new ElementException("%s is already defined as a variable", name);
+            vars.get(name).eq(var).post();
+            return var;
         } else {
             vars.put(name, var);
+            return var;
         }
     }
 
@@ -174,7 +185,7 @@ public class VisElem {
      * Converts the value of an {@link IntVar} variable to a {@link String} value.
      *
      * @param var The variable to convert.
-     * @return The String value, or {@code null} if the {@link IntVar} isn't instantiated.
+     * @return The value, or {@code null} if the {@link IntVar} isn't instantiated.
      */
     private static String varToValue(IntVar var) {
         if (var.isInstantiated()) {
@@ -184,7 +195,24 @@ public class VisElem {
     }
 
     /**
-     * Get the {@link String} value belonging to the given name.
+     * Returns whether there is a value belonging to the given name. Instatiated variables also count as values.
+     *
+     * @param name The given name.
+     * @return {@code true} if there is a value, {@code false} otherwise.
+     */
+    public boolean hasValue(String name) {
+        if (values.containsKey(name)) {
+            return true;
+        } else if (vars.containsKey(name)) {
+            return vars.get(name).isInstantiated();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get the {@link String} value belonging to the given name. The value of a variable is determined by {@link
+     * VisElem#varToValue(IntVar)}.
      *
      * @param name The given name.
      * @return The value, or {@code null} if it doesn't exists.
@@ -200,18 +228,23 @@ public class VisElem {
     }
 
     /**
+     * Returns whether there is a variable belonging to the given name.
+     *
+     * @param name The given name.
+     * @return {@code true} if there is a variable, {@code false} otherwise.
+     */
+    public boolean hasVar(String name) {
+        return vars.containsKey(name);
+    }
+
+    /**
      * Get the {@link IntVar} variable belonging to the given name.
      *
      * @param name The given name.
      * @return The {@link IntVar} variable.
-     * @throws ElementException If the name belongs to a value instead of a variable.
      */
-    // TODO: Modify automatic generation, support negative vars
     public IntVar getVar(String name) {
-        if (values.containsKey(name)) {
-            throw new ElementException("%s is already defined as a value", name);
-        }
-        return vars.computeIfAbsent(name, key -> model.intVar(model.generateName(key), 0, MAX_INT_BOUND));
+        return vars.get(name);
     }
 
     /**

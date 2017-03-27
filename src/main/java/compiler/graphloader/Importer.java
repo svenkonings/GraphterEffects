@@ -1,25 +1,68 @@
 package compiler.graphloader;
 
+
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
+import utils.GraphUtils;
 
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Class responsible for importing Graphs from a graph-representing format.
+ */
 public final class Importer {
 
-    public static Graph fromFile(String path) throws IOException, SAXException {
-        return fromFile(new File(path));
+    /**
+     * Reads a graph from a variety of formats.
+     * @param path Path to the file from which to read the Graph.
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
+    public static Graph graphFromFile(String path) throws IOException, SAXException {
+        return graphFromFile(new File(path));
     }
 
-    public static Graph fromFile(File file) throws IOException, SAXException {
-        if (GXLReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
-            return GXLReader.read(file);
+    /**
+     * Reads a graph from a variety of formats.
+     * @param file File from which to read the Graph
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
+    public static Graph graphFromFile(File file) throws IOException, SAXException {
+        return graphFromFile(file,true);
+    }
+
+    /**
+     * @param file File from which to read the Graph
+     * @param addUnderscores <tt>true</tt> if underscores should be added to the IDs in the graph.
+     * @return A GraphStream graph read from the file.
+     * @throws IOException Thrown when the File could not be read.
+     * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
+     */
+    public static Graph graphFromFile(File file, boolean addUnderscores) throws IOException, SAXException {
+        Graph g = null;
+        String extension = FileUtils.getExtension(file.getName());
+        if (GXLImporter.acceptsExtension(extension)) {
+            g =  GXLImporter.read(file);
+        } else if (GraphStreamImporter.acceptsExtension(extension)) {
+            g = GraphStreamImporter.read(file);
+        } else {
+            try {
+                g = GXLImporter.read(file);
+            } catch (SAXException e) {
+                g=null;
+            }
         }
-        if (file.getName().toLowerCase().endsWith(".dot")) {
-            return GraphstreamAcceptedImportReader.readDOT(file);
+        if (g==null) {
+            throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
+        } else if (addUnderscores){
+            return GraphUtils.changeIDs(g);
+        } else {
+            return g;
         }
-        throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
     }
 }

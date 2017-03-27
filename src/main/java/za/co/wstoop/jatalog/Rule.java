@@ -1,13 +1,8 @@
 package za.co.wstoop.jatalog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import za.co.wstoop.jatalog.engine.Engine;
+
+import java.util.*;
 
 /**
  * Class that represents a Datalog rule.

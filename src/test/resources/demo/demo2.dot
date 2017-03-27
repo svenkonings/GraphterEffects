@@ -7,4 +7,10 @@ digraph {
 	e -> d[label="0.2",weight="0.2"];
 	e -> b[label="0.7",weight="0.7"];
 	e -> a[label="0.1",weight="0.1"];
+
+	a[label="a"];
+    b[label="b"];
+    c[label="c"];
+    d[label="d"];
+    e[label="e"];
 }
