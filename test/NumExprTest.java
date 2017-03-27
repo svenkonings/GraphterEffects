@@ -1,5 +1,9 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
@@ -31,8 +35,8 @@ public class NumExprTest extends GrammarTest {
                     "==",
                     "<"
             };
-    private static final String[] INVALID_SAMPLES = new String[]
-            {
+    private static final List<String> INVALID_SAMPLES = Arrays.asList
+            (
                     "()",
                     ")X + 1(",
                     "_ + 1",
@@ -41,19 +45,19 @@ public class NumExprTest extends GrammarTest {
                     "== 1",
                     "A # B",
                     ""
-            };
+            );
 
-
+    // TODO @Ron Something broke here and I figured you could much easier fix this.
     @Override
-    protected String[] getValidSamples() {
+    protected List<String> getValidSamples() {
 
 
 
-        return new String[0];
+        return new ArrayList<String>();
     }
 
     @Override
-    protected String[] getInvalidSamples() {
+    protected List<String> getInvalidSamples() {
         return INVALID_SAMPLES;
     }
 

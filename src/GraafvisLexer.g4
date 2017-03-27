@@ -1,14 +1,14 @@
-lexer grammar GraafvisVocab;
+lexer grammar GraafvisLexer;
+
+// TODO so far no lists, no Java imports
 
 fragment LETTER_LO: [a-z];
 fragment LETTER_HI: [A-Z];
-fragment BEGIN_COMMENT: '%';
 
 ARROW: '->';
 COLON: ':';
 
 EOL: '.';
-NEWLINE: '\n';
 
 PAR_OPEN: '(';
 PAR_CLOSE: ')';
@@ -56,6 +56,6 @@ NUMBER: [0-9]+;
 ID: LETTER_LO (LETTER_LO | LETTER_HI | NUMBER | UNDERSCORE)*;
 HID: LETTER_HI (LETTER_LO | LETTER_HI | NUMBER | UNDERSCORE)*;
 
-WS:             [ \t\r\n]+ -> skip;
-BLOCKCOMMENT:   '/*' .*? '*/' -> skip;
-LINECOMMENT: BEGIN_COMMENT .*? NEWLINE -> skip; //TODO -- does this even work?
+WS:             [ \t\r\n]+              -> skip;
+BLOCKCOMMENT:   '/*' .*? '*/'           -> skip;
+LINECOMMENT:    '//' ~[\r\n]*           -> skip; // Double // otherwise only a /* is also deemed as a correct comment even though that is an unfinished block comment

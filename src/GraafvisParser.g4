@@ -1,6 +1,6 @@
-grammar Graafvis;
+grammar GraafvisParser;
 
-import GraafvisVocab;
+import GraafvisLexer;
 
 /* A Graafvis script consists out of a list of imports, label predicate generation and a list of clauses */
 program: import_vis*
@@ -12,7 +12,8 @@ program: import_vis*
 /** Import another vis file. The .vis is implied. */
 import_vis: IMPORT_TOKEN STRING EOL;
 
-// TO DO check if this generates only predicates or not
+// TODO do we actually need generated constants if the predicates are already generated?
+// River crossing example shows it can be used though
 /* Specify which labels should have generated identifiers for predicates and constants */
 node_label_gen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
@@ -40,6 +41,7 @@ literal: atom                   #atomLiteral
        | bool_expr              #boolLiteral
        ;
 
+// TODO the others have a different meaning for atom
 /* Atoms are predicates applied to a tuple of terms */
 atom: predicate PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 
@@ -65,6 +67,7 @@ ground_term: STRING
 /* Variables start with uppercase letter */
 variable: HID;
 
+// TODO Waarvoor hebben we dit nodig? Als var geen bool kunnen zijn, hebben we dit nodig.
 bool_expr: NOT bool_expr
          | num_expr eq_op num_expr
          | bool_expr bool_op bool_expr
