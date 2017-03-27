@@ -1,10 +1,12 @@
 package compiler.asrc;
 
+import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
+import utils.ExprUtils;
 import utils.StringUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
@@ -137,6 +139,13 @@ public final class AbstractSyntaxRuleConverter {
             exprlist.add(new Expr(attributeKey, graph.getId(), graph.getAttribute(attributeKey)));
         }
 
+        //For the minimum spanning tree:
+        Kruskal kruskal = new Kruskal();
+        kruskal.init(graph);
+        kruskal.compute();
+        kruskal.getTreeEdges().forEach(edge ->
+        exprlist.add(new Expr("inmst", ExprUtils.elementExpr(edge).getTerms())));
+        System.out.println("test");
         return exprlist;
     }
 
