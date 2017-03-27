@@ -1,8 +1,8 @@
 package solver.temp;
 
 import org.chocosolver.solver.Model;
-import solver.VisElem;
-import solver.VisMap;
+import compiler.solver.VisElem;
+import compiler.solver.VisMap;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.Rule;

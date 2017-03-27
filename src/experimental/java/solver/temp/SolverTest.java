@@ -1,9 +1,9 @@
 package solver.temp;
 
 import org.dom4j.Document;
-import solver.Solver;
-import solver.VisElem;
-import svg.SvgDocumentGenerator;
+import compiler.solver.Solver;
+import compiler.solver.VisElem;
+import compiler.svg.SvgDocumentGenerator;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
 
