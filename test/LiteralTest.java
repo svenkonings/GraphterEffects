@@ -13,7 +13,7 @@ public class LiteralTest extends GrammarTest {
     static {
         VALID_SAMPLES.addAll(AtomTest.VALID_SAMPLES);
         VALID_SAMPLES.addAll(MultiAtomTest.VALID_SAMPLES);
-        VALID_SAMPLES.addAll(BoolExprTest.VALID_SAMPLES);
+//        VALID_SAMPLES.addAll(BoolExprTest.VALID_SAMPLES);
     }
 
     public static final List<String> INVALID_SAMPLES = Arrays.asList
