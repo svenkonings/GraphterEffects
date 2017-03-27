@@ -121,7 +121,7 @@ public class Jatalog {
 			}
 			return answers;
 		} catch (DatalogException e) {
-			throw new DatalogException("[line " + scan.lineno() + "] Error executing statement", e);
+			throw new DatalogException("[line " + scan.lineno() + "] VisError executing statement", e);
 		}
     }
 

@@ -10,7 +10,7 @@ program: import_vis*
          EOF;
 
 /** Import another vis file. The .vis is implied. */
-import_vis: IMPORT_TOKEN STRING EOL;
+import_vis: IMPORT_TOKEN STRING EOL;            // TODO? java predicates import
 
 // TODO do we actually need generated constants if the predicates are already generated?
 // River crossing example shows it can be used though
