@@ -27,10 +27,10 @@ clause: (antecedent ARROW)? consequence EOL;
 
 antecedent: propositional_formula;
 
-propositional_formula: NOT propositional_formula
-                     | propositional_formula bool_op propositional_formula
-                     | PAR_OPEN propositional_formula PAR_CLOSE
-                     | literal
+propositional_formula: NOT propositional_formula                            # pfNot
+                     | propositional_formula bool_op propositional_formula  # pfBool
+                     | PAR_OPEN propositional_formula PAR_CLOSE             # pfNest
+                     | literal                                              # pfLit
                      ;
 
 consequence: literal (COMMA literal)*;
@@ -52,10 +52,10 @@ multi_atom: predicate BRACE_OPEN term (COMMA term)* BRACE_CLOSE;
 predicate: ID;
 
 /* Terms are either ground terms, free variables, underscores or a tuple of more terms */
-term: ground_term
-    | variable
-    | UNDERSCORE
-    | PAR_OPEN term (COMMA term)* PAR_CLOSE
+term: ground_term                               # termGround
+    | variable                                  # termVar
+    | UNDERSCORE                                # wildcard
+    | PAR_OPEN term (COMMA term)* PAR_CLOSE     # tuple
     ;
 
 /* Ground terms contain no free variables */
