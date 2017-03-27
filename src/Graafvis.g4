@@ -36,9 +36,9 @@ propositional_formula: NOT propositional_formula
 consequence: literal (COMMA literal)*;
 
 /* Literals are atomic formulas or boolean expressions*/
-literal: atom                   #atomLiteral
-       | multi_atom             #multiAtomLiteral
-       | num_expr               #numExprLiteral
+literal: atom                                   #atomLiteral
+       | multi_atom                             #multiAtomLiteral
+       | num_expr eq_op num_expr                #numExprLiteral
        ;
 
 // TODO the others have a different meaning for atom
