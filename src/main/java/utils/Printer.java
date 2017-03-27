@@ -8,8 +8,15 @@ import org.graphstream.graph.Node;
 import java.util.*;
 
 
+/**
+ * Class used to print textual representations into the console.
+ */
 public final class Printer {
 
+    /**
+     * Prints a user-friendly text representation of a Graph into the console.
+     * @param g Graph to be printed.
+     */
     public static void pprint(Graph g) {
 
         StringBuilder builder = new StringBuilder();
@@ -39,6 +46,13 @@ public final class Printer {
     }
 
 
+    /**
+     * Adds a String representation of elements of a graph to a Stringbuilder.
+     * @param builder Builder to add the String representation to.
+     * @param list List of elements of which the String representation needs to be added.
+     * @param keyquotes True if quotes are added around keys of a key-value pair.
+     * @param valuequotes True if quotes are added around values of a key-value pair.
+     */
     private static void addfromlist(StringBuilder builder, List<Element> list, boolean keyquotes, boolean valuequotes) {
         String keyq = "";
         String valq = "";
@@ -48,7 +62,6 @@ public final class Printer {
         if (valuequotes) {
             valq = "\"";
         }
-
         for (Element e : list) {
             builder.append("\t").append(e);
             builder.append("\t{");

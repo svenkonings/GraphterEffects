@@ -21,14 +21,16 @@ public final class Importer {
 
     public static Graph graphFromFile(File file, boolean addUnderscores) throws IOException, SAXException {
         Graph g = null;
-        if (GXLReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
-            g =  GXLReader.read(file);
-        } else if (GraphstreamAcceptedImportReader.acceptsExtension(FileUtils.getExtension(file.getName()))) {
-            g = GraphstreamAcceptedImportReader.read(file);
+        String extension = FileUtils.getExtension(file.getName());
+        if (GXLImporter.acceptsExtension(extension)) {
+            g =  GXLImporter.read(file);
+        } else if (GraphStreamImporter.acceptsExtension(extension)) {
+            g = GraphStreamImporter.read(file);
         } else {
             try {
-                g = GXLReader.read(file);
+                g = GXLImporter.read(file);
             } catch (SAXException e) {
+                g=null;
             }
         }
         if (g==null) {

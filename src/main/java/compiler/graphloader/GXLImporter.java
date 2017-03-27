@@ -14,27 +14,27 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public final class GXLReader {
+final class GXLImporter {
 
 
     private static Set<String> ids = new HashSet<>();
     private static int idcounter = 0;
     private static final List<String> acceptslist = Arrays.asList("gxl", "gst", "gpl", "gst", "gpr", "gty");
 
-    public static boolean acceptsExtension(String ext) {
+    static boolean acceptsExtension(String ext) {
         return acceptslist.contains(ext.toLowerCase());
     }
 
 
-    public static MultiGraph read(File file) throws IOException, SAXException {
+    static MultiGraph read(File file) throws IOException, SAXException {
         return read(file.getAbsolutePath());
     }
 
-    public static MultiGraph read(String path) throws IOException, SAXException {
+    static MultiGraph read(String path) throws IOException, SAXException {
         return read(path, false);
     }
 
-    public static MultiGraph read(String path, boolean addUnderscores) throws IOException, SAXException {
+    static MultiGraph read(String path, boolean addUnderscores) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
         String underscore = "";

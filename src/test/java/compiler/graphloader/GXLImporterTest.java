@@ -7,7 +7,7 @@ import utils.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-public final class GXLReaderTest {
+public final class GXLImporterTest {
 
     @Test
     public void GPLWithoutError() throws IOException, SAXException {
@@ -23,7 +23,7 @@ public final class GXLReaderTest {
     private void testFromFolder(String folder) throws IOException, SAXException {
         for (File f : FileUtils.recursiveInDirectory(FileUtils.fromResources(folder))) {
             try {
-                if (GXLReader.acceptsExtension(FileUtils.getExtension(f.getName()))) {
+                if (GXLImporter.acceptsExtension(FileUtils.getExtension(f.getName()))) {
                     Importer.graphFromFile(f);
                 }
             } catch (Exception e) {

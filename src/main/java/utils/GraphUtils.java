@@ -9,10 +9,15 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
- * Created by poesd_000 (who is by the way better than you) on 24/03/2017.
+ * Class used for methods to manipulate Graph Objects and related tasks.
  */
 public final class GraphUtils {
 
+    /**
+     * Changes a Graph such that all objects in the Graph have a new ID that is the old one prefixed by an underscore.
+     * @param input Graph to change.
+     * @return Changed graph.
+     */
     public static Graph changeIDs(Graph input) {
         Graph res;
         if (input instanceof DefaultGraph) {
