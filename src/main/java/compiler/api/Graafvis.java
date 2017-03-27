@@ -22,6 +22,10 @@ public class Graafvis {
         return null;
     }
 
+    public static Constraintset importGraafvis(File file) {
+        return importGraafvis(file.getAbsolutePath());
+    }
+
     public static Constraintset getGraafvisFromString(String script) {
         return null;
     }

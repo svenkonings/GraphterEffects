@@ -52,7 +52,6 @@ public final class ASRCIntergrationTest {
     @Test
     public void intergrationTestDGS() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("dgs/graph1.dgs"));
-        graph = GraphUtils.changeIDs(graph);
         //Printer.pprint(graph);
 
         Jatalog jatalog = generateGraphJatalog(graph);

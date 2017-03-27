@@ -31,8 +31,16 @@ public final class GXLReader {
     }
 
     public static MultiGraph read(String path) throws IOException, SAXException {
+        return read(path, false);
+    }
+
+    public static MultiGraph read(String path, boolean addUnderscores) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
+        String underscore = "";
+        if (addUnderscores) {
+            underscore = "_";
+        }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         String gxml = new String(encoded, "UTF-8");
         gxml = gxml.replaceAll(" xmlns=\"http://www.gupro.de/GXL/gxl-1.0.dtd\"", "");
@@ -43,7 +51,7 @@ public final class GXLReader {
         GXLGXL a = doc.getDocumentElement();
         GXLGraph graph = a.getGraphAt(0);
 
-        MultiGraph tograph = new MultiGraph("_" + graph.getAttribute("id"), true, false);
+        MultiGraph tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
         boolean directed = graph.getAttribute("edgemode").equals("directed");
 
         List<GXLGraphElement> nodes = new LinkedList<>();
@@ -58,7 +66,7 @@ public final class GXLReader {
         }
 
         for (GXLGraphElement elem : nodes) {
-            String id = getID(elem);
+            String id = getID(elem, addUnderscores);
             Node n = tograph.addNode(id);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
@@ -67,8 +75,8 @@ public final class GXLReader {
         }
 
         for (GXLGraphElement elem : edges) {
-            String id = getID(elem);
-            Edge e = tograph.addEdge(id, "_" + elem.getAttribute("from"), "_" + elem.getAttribute("to"), directed);
+            String id = getID(elem, addUnderscores);
+            Edge e = tograph.addEdge(id, underscore + elem.getAttribute("from"), underscore + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
                 e.setAttribute(elem.getAttrAt(p).getName(), "\"" + getFromGXLValue(content) + "\"");
@@ -101,11 +109,15 @@ public final class GXLReader {
         throw new UnsupportedOperationException();
     }
 
-    private static String getID(GXLGraphElement in) {
+    private static String getID(GXLGraphElement in, boolean addUnderscore) {
+        String underscore = "";
+        if (addUnderscore) {
+            underscore = "_";
+        }
         String idgotten = in.getAttribute("id");
-        if (idgotten != null && !ids.contains("_" + idgotten)) {
-            ids.add("_" + idgotten);
-            return "_" + idgotten;
+        if (idgotten != null && !ids.contains(underscore + idgotten)) {
+            ids.add(underscore + idgotten);
+            return underscore + idgotten;
         }
         String prefix = "UNKNOWN";
         if (in instanceof GXLNode) {
@@ -113,10 +125,10 @@ public final class GXLReader {
         } else if (in instanceof GXLEdge){
             prefix = "e";
         }
-        while (ids.contains("_" + prefix + "ID?" + idcounter)) {
+        while (ids.contains(underscore + prefix + "ID?" + idcounter)) {
             idcounter++;
         }
-        idgotten = "_" + prefix + "ID?" + idcounter;
+        idgotten = underscore + prefix + "ID?" + idcounter;
         ids.add(idgotten);
         return idgotten;
     }

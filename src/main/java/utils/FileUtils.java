@@ -17,8 +17,11 @@ public final class FileUtils {
         return getExtension(filename.substring(filename.indexOf(".")+1));
     }
 
-    public static File fromResources(String path) {
+    public static File fromResources(String path) throws IOException {
         URL url = FileUtils.class.getClassLoader().getResource(path);
+        if (url == null) {
+            throw new IOException("Resource file " + path + " not found.");
+        }
         return new File(url.getFile());
     }
 
