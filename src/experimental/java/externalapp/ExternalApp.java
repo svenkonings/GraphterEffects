@@ -1,6 +1,7 @@
 package externalapp;
 
-import compiler.api.Constraintset;
+
+import compiler.Constraintset;
 import compiler.api.Graafvis;
 import compiler.api.UnknownFormatException;
 import compiler.graphloader.Importer;
@@ -15,6 +16,6 @@ public class ExternalApp {
         Graafvis gv = new Graafvis();
         Graph g = Importer.graphFromFile(FileUtils.fromResources("dinges.dot"));
         Constraintset cs = Graafvis.importGraafvis(FileUtils.fromResources("dsl.vis"));
-        //System.out.println(gv.getSVG(g, cs));
+        System.out.println(gv.getSVG(g, cs));
     }
 }

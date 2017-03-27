@@ -1,6 +1,7 @@
 package compiler.api;
 
 
+import compiler.Constraintset;
 import compiler.graphloader.Importer;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
