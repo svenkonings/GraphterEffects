@@ -38,7 +38,7 @@ consequence: literal (COMMA literal)*;
 /* Literals are atomic formulas or boolean expressions*/
 literal: atom                   #atomLiteral
        | multi_atom             #multiAtomLiteral
-       | bool_expr              #boolLiteral
+       | num_expr               #numExprLiteral
        ;
 
 // TODO the others have a different meaning for atom
@@ -66,16 +66,6 @@ ground_term: STRING
 
 /* Variables start with uppercase letter */
 variable: HID;
-
-// TODO Waarvoor hebben we dit nodig? Als var geen bool kunnen zijn, hebben we dit nodig.
-bool_expr: NOT bool_expr
-         | num_expr eq_op num_expr
-         | bool_expr bool_op bool_expr
-         | PAR_OPEN bool_expr PAR_CLOSE
-         | variable
-         | TRUE
-         | FALSE
-         ;
 
 num_expr: num_expr pow_op num_expr
         | num_expr mult_op num_expr
