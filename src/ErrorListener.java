@@ -1,4 +1,4 @@
-import errors.Error;
+import errors.VisError;
 import errors.SyntaxError;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
@@ -14,10 +14,10 @@ class ErrorListener extends BaseErrorListener {
     /**
      * Errors collected by the listener.
      */
-    private final List<Error> errors;
+    private final List<VisError> errors;
 
     public ErrorListener() {
-        this.errors = new ArrayList<Error>();
+        this.errors = new ArrayList<VisError>();
     }
 
     @Override
@@ -37,7 +37,7 @@ class ErrorListener extends BaseErrorListener {
     /**
      * Returns the (possibly empty) list of errors collected by the listener.
      */
-    public List<Error> getErrors() {
+    public List<VisError> getErrors() {
         return this.errors;
     }
 
