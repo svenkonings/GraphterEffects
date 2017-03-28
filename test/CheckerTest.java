@@ -1,4 +1,6 @@
-import errors.VisError;
+import graafvis.Checker;
+import graafvis.ErrorListener;
+import graafvis.VisError;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -48,7 +50,7 @@ public class CheckerTest {
         Assert.assertNotEquals(0, check(invalidProgram3).size());
     }
 
-    /** Run the checker on a program. Return resulting errors */
+    /** Run the checker on a program. Return resulting graafvis.errors */
     private ArrayList<VisError> check(String program) {
         CharStream stream = new ANTLRInputStream(program);
         GraafvisLexer lexer = new GraafvisLexer(stream);

@@ -19,7 +19,6 @@ node_label_gen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 edge_label_gen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 
 /* Define and rename a label */
-// TODO in tree walker kijken of de "as identifier" nodig was vanwege complexe string
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
@@ -42,7 +41,6 @@ literal: atom                                   #atomLiteral
        | num_expr eq_op num_expr                #numExprLiteral
        ;
 
-// TODO the others have a different meaning for atom
 /* Atoms are predicates applied to a tuple of terms */
 atom: predicate PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 

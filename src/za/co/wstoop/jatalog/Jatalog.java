@@ -143,7 +143,7 @@ public class Jatalog {
      * @param reader The reader from which the statements are read.
      * @param output The object through which output should be written. Can be {@code null} in which case no output will be written.
      * @return The answer of the last statement in the file, as a Collection of variable mappings.
-     * @throws DatalogException on syntax and I/O errors encountered while executing.
+     * @throws DatalogException on syntax and I/O graafvis.errors encountered while executing.
      * @see QueryOutput
      */
     public Collection<Map<String, String>> executeAll(Reader reader, QueryOutput output) throws DatalogException {
@@ -169,7 +169,7 @@ public class Jatalog {
      * @param statements the statements to execute as a string.
      * @return The answer of the string, as a Collection of variable mappings.
      * 	See {@link #executeAll(Reader, QueryOutput)} for details on how to interpret the result.
-     * @throws DatalogException on syntax errors encountered while executing.
+     * @throws DatalogException on syntax graafvis.errors encountered while executing.
      */
     public Collection<Map<String, String>> executeAll(String statements) throws DatalogException {
         // It would've been fun to wrap the results in a java.sql.ResultSet, but damn,
@@ -185,7 +185,7 @@ public class Jatalog {
      * @param bindings An optional (nullable) mapping of variable names to values.
      * @return The answer of the last statement in the file, as a Collection of variable mappings.
      * 	See {@link OutputUtils#answersToString(Collection)} for details on how to interpret the result.
-     * @throws DatalogException on syntax errors encountered while executing.
+     * @throws DatalogException on syntax graafvis.errors encountered while executing.
      */
 	public Collection<Map<String, String>> query(List<Expr> goals, Map<String, String> bindings)
 			throws DatalogException {
@@ -197,7 +197,7 @@ public class Jatalog {
      * @param goals The list of goals of the query.
      * @return The answer of the last statement in the file, as a Collection of variable mappings.
      * 	See {@link OutputUtils#answersToString(Collection)} for details on how to interpret the result.
-     * @throws DatalogException on syntax errors encountered while executing.
+     * @throws DatalogException on syntax graafvis.errors encountered while executing.
 	 */
 	public Collection<Map<String, String>> query(List<Expr> goals) throws DatalogException {
 		return query(goals, null);
@@ -211,7 +211,7 @@ public class Jatalog {
 	 *         variable mappings. See {@link #executeAll(Reader, QueryOutput)} for
 	 *         details on how to interpret the result.
 	 * @throws DatalogException
-	 *             on syntax errors encountered while executing.
+	 *             on syntax graafvis.errors encountered while executing.
 	 */
 	public Collection<Map<String, String>> query(Expr... goals) throws DatalogException {
 		return query(Arrays.asList(goals), null);
@@ -305,7 +305,7 @@ public class Jatalog {
      * Deletes all the facts in the database that matches a specific query
      * @param goals The query to which to match the facts.
      * @return true if any facts were deleted.
-     * @throws DatalogException on errors encountered during evaluation.
+     * @throws DatalogException on graafvis.errors encountered during evaluation.
      */
     public boolean delete(Expr... goals) throws DatalogException {
         return delete(Arrays.asList(goals), null);
@@ -316,7 +316,7 @@ public class Jatalog {
      * @param goals The query to which to match the facts.
      * @param bindings An optional (nullable) mapping of variable names to values.
      * @return true if any facts were deleted.
-     * @throws DatalogException on errors encountered during evaluation.
+     * @throws DatalogException on graafvis.errors encountered during evaluation.
      */
     public boolean delete(List<Expr> goals, Map<String, String> bindings) throws DatalogException {
         Collection<Map<String, String>> answers = query(goals, bindings);
@@ -331,7 +331,7 @@ public class Jatalog {
      * Deletes all the facts in the database that matches a specific query
      * @param goals The query to which to match the facts.
      * @return true if any facts were deleted.
-     * @throws DatalogException on errors encountered during evaluation.
+     * @throws DatalogException on graafvis.errors encountered during evaluation.
      */
     public boolean delete(List<Expr> goals) throws DatalogException {
     	return delete(goals, null);

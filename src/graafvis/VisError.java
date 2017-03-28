@@ -1,4 +1,4 @@
-package errors;
+package graafvis;
 
 public abstract class VisError {
 

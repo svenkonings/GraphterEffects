@@ -1,5 +1,7 @@
-import errors.VisError;
-import errors.SyntaxError;
+package graafvis;
+
+import graafvis.VisError;
+import graafvis.SyntaxError;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Antlr error listener to collect errors rather than send them to stderr.
+ * Antlr error listener to collect graafvis.errors rather than send them to stderr.
  */
 class ErrorListener extends BaseErrorListener {
     /**
@@ -28,14 +30,14 @@ class ErrorListener extends BaseErrorListener {
     }
 
     /**
-     * Indicates if the listener has collected any errors.
+     * Indicates if the listener has collected any graafvis.errors.
      */
     public boolean hasErrors() {
         return !this.errors.isEmpty();
     }
 
     /**
-     * Returns the (possibly empty) list of errors collected by the listener.
+     * Returns the (possibly empty) list of graafvis.errors collected by the listener.
      */
     public List<VisError> getErrors() {
         return this.errors;

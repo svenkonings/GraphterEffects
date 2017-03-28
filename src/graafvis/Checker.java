@@ -1,5 +1,5 @@
-import errors.BlacklistedPredicateError;
-import errors.VisError;
+package graafvis;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -42,7 +42,7 @@ public class Checker extends GraafvisBaseListener {
     /** Set of predicates that cannot be used in consequences */
     private final HashSet<String> consequenceBlackList;
 
-    /** List of errors obtained during the checking phase */
+    /** List of graafvis.errors obtained during the checking phase */
     private final ArrayList<VisError> errors;
 
     private final ParseTreeProperty<HashSet<String>> clauseScope; // TODO -- use this to check proper variable use?
@@ -136,11 +136,12 @@ public class Checker extends GraafvisBaseListener {
             TokenStream tokenStream = new CommonTokenStream(lexer);
             GraafvisParser parser = new GraafvisParser(tokenStream);
             ErrorListener errorListener = new ErrorListener();
+            /* Make sure parse graafvis.errors are captured */
             lexer.removeErrorListeners();
             lexer.addErrorListener(errorListener);
             parser.removeErrorListeners();
             parser.addErrorListener(errorListener);
-            /* Check for errors */
+            /* Check for graafvis.errors */
             this.errors.addAll(errorListener.getErrors());
             /* Add the label to the blacklist */
             this.consequenceBlackList.add(predicateToGenerate);
