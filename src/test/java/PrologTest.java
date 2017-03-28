@@ -50,17 +50,45 @@ public class PrologTest {
 
     @Test
     public void test4() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
-        Struct clause0 = new Struct(":-", new Struct("node", new Struct(new Term[] {new Struct("a"), new Struct("b")}), new Struct("e")), new Struct("true"));
-        Struct clause1 = new Struct(":-", new Struct("p", new Var("X")), new Struct("q", new Var("X")));
-        Struct clause2 = new Struct(":-", new Struct("q", new Int(0)), new Struct("true"));
+        Struct clause0 =
+                new Struct(":-",
+                        new Struct("node",
+                                new Struct(new Term[]{new Struct("a"), new Struct("b")}),
+                                new Struct("e")
+                        ),
+                        new Struct("true")
+                );
+        Struct clause1 =
+                new Struct(":-",
+                        new Struct("p", new Var("X")),
+                        new Struct("q", new Var("X"))
+                );
+        Struct clause2 =
+                new Struct(":-",
+                        new Struct("q", new Int(0)),
+                        new Struct("true")
+                );
+
         System.out.println(clause0 + " is a clause? " + clause0.isClause());
         System.out.println(clause1 + " is a clause? " + clause1.isClause());
         System.out.println(clause2 + " is a clause? " + clause2.isClause());
+
         Prolog engine = new Prolog();
-        Struct clauseList = new Struct(clause0, new Struct(clause1, new Struct(clause2, new Struct())));
+
+        Struct clauseList =
+                new Struct(clause0,
+                        new Struct(clause1,
+                                new Struct(clause2,
+                                        new Struct()
+                                )
+                        )
+                );
+
         System.out.println(clauseList + " is a list? " + clauseList.isList());
+
         Theory t = new Theory(clauseList);
         engine.addTheory(t);
+
         SolveInfo info = engine.solve(new Struct("p", new Var("X")));
         while (info.isSuccess()) { // taken from the previous example
             System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
@@ -70,6 +98,7 @@ public class PrologTest {
                 break;
             }
         }
+
         info = engine.solve(new Struct("node", new Var("X"), new Var("Y")));
         while (info.isSuccess()) { // taken from the previous example
             System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
@@ -81,5 +110,149 @@ public class PrologTest {
         }
     }
 
-    // TODO: Write negation test
+    @Test
+    public void test5() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
+        Struct clause0 =
+                new Struct(":-",
+                        new Struct("node", new Struct("a")),
+                        new Struct("true")
+                );
+        Struct clause1 =
+                new Struct(":-",
+                        new Struct("node", new Struct("b")),
+                        new Struct("true")
+                );
+        Struct clause2 =
+                new Struct(":-",
+                        new Struct("node", new Struct("c")),
+                        new Struct("true")
+                );
+        Struct clause3 =
+                new Struct(":-",
+                        new Struct("edge", new Struct("a"), new Struct("b")),
+                        new Struct("true")
+                );
+        Struct clause4 =
+                new Struct(":-",
+                        new Struct("test", new Var("N1"), new Var("N2")),
+                        new Struct(",",
+                                new Struct("node", new Var("N1")),
+                                new Struct(",",
+                                        new Struct("node", new Var("N2")),
+                                        new Struct("not",
+                                                new Struct("edge", new Var("N1"), new Var("N2"))
+                                        )
+                                )
+                        )
+                );
+
+        System.out.println(clause0 + " is a clause? " + clause0.isClause());
+        System.out.println(clause1 + " is a clause? " + clause1.isClause());
+        System.out.println(clause2 + " is a clause? " + clause2.isClause());
+        System.out.println(clause3 + " is a clause? " + clause3.isClause());
+        System.out.println(clause4 + " is a clause? " + clause4.isClause());
+
+        Prolog engine = new Prolog();
+
+        Struct clauseList =
+                new Struct(clause0,
+                        new Struct(clause1,
+                                new Struct(clause2,
+                                        new Struct(clause3,
+                                                new Struct(clause4,
+                                                        new Struct()
+                                                )
+                                        )
+                                )
+                        )
+                );
+
+        System.out.println(clauseList + " is a list? " + clauseList.isList());
+
+        Theory t = new Theory(clauseList);
+        engine.addTheory(t);
+
+        SolveInfo info = engine.solve(new Struct("test", new Var("N1"), new Var("N2")));
+        while (info.isSuccess()) { // taken from the previous example
+            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
+            if (engine.hasOpenAlternatives()) {
+                info = engine.solveNext();
+            } else {
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void test6() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
+        Struct clause0 =
+                new Struct(":-",
+                        new Struct("mom", new Struct("a"), new Struct("c")),
+                        new Struct("true")
+                );
+        Struct clause1 =
+                new Struct(":-",
+                        new Struct("dad", new Struct("b"), new Struct("c")),
+                        new Struct("true")
+                );
+        Struct clause2 =
+                new Struct(":-",
+                        new Struct("parent", new Var("X")),
+                        new Struct(";",
+                                new Struct("mom", new Var("X"), new Var()),
+                                new Struct("dad", new Var("X"), new Var())
+                        )
+                );
+        Struct clause3 =
+                new Struct(":-",
+                        new Struct("child", new Var("X")),
+                        new Struct(";",
+                                new Struct("mom", new Var(), new Var("X")),
+                                new Struct("dad", new Var(), new Var("X"))
+                        )
+                );
+
+        System.out.println(clause0 + " is a clause? " + clause0.isClause());
+        System.out.println(clause1 + " is a clause? " + clause1.isClause());
+        System.out.println(clause2 + " is a clause? " + clause2.isClause());
+        System.out.println(clause3 + " is a clause? " + clause3.isClause());
+
+        Prolog engine = new Prolog();
+
+        Struct clauseList =
+                new Struct(clause0,
+                        new Struct(clause1,
+                                new Struct(clause2,
+                                        new Struct(clause3,
+                                                new Struct()
+                                        )
+                                )
+                        )
+                );
+
+        System.out.println(clauseList + " is a list? " + clauseList.isList());
+
+        Theory t = new Theory(clauseList);
+        engine.addTheory(t);
+
+        SolveInfo info = engine.solve(new Struct("parent", new Var("X")));
+        while (info.isSuccess()) { // taken from the previous example
+            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
+            if (engine.hasOpenAlternatives()) {
+                info = engine.solveNext();
+            } else {
+                break;
+            }
+        }
+
+        info = engine.solve(new Struct("child", new Var("X")));
+        while (info.isSuccess()) { // taken from the previous example
+            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
+            if (engine.hasOpenAlternatives()) {
+                info = engine.solveNext();
+            } else {
+                break;
+            }
+        }
+    }
 }
