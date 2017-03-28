@@ -1,4 +1,4 @@
-package graafvis;
+package graafvis.errors;
 
 public abstract class VisError {
 
@@ -7,15 +7,9 @@ public abstract class VisError {
 
     private String msg;
 
-    VisError(int row, int column) {
+    public VisError(int row, int column) {
         this.row = row;
         this.column = column;
-    }
-
-    public VisError(int row, int column, String msg) {
-        this.row = row;
-        this.column = column;
-        this.msg = msg;
     }
 
     @Override

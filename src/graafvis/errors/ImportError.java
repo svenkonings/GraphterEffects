@@ -1,4 +1,4 @@
-package graafvis;
+package graafvis.errors;
 
 /**
  *

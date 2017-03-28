@@ -1,5 +1,8 @@
-package graafvis;
+package graafvis.checkers;
 
+
+import graafvis.GraafvisBaseVisitor;
+import graafvis.GraafvisParser;
 
 /**
  *

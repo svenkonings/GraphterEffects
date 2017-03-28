@@ -1,7 +1,7 @@
 package graafvis;
 
-import graafvis.VisError;
-import graafvis.SyntaxError;
+import graafvis.errors.SyntaxError;
+import graafvis.errors.VisError;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;

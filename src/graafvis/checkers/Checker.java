@@ -1,5 +1,11 @@
-package graafvis;
+package graafvis.checkers;
 
+import graafvis.ErrorListener;
+import graafvis.GraafvisBaseListener;
+import graafvis.GraafvisLexer;
+import graafvis.GraafvisParser;
+import graafvis.errors.BlacklistedPredicateError;
+import graafvis.errors.VisError;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
