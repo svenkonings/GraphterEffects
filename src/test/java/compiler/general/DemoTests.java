@@ -74,16 +74,16 @@ public final class DemoTests {
 
                 //Colour the nodes depending on the number of neighbours
                 //Yellow = 1
-                .rule(expr("colour", "N", "yellow"), expr("neighbourcount", "N", "1"))
+                .rule(expr("colour", "N", "green"), expr("neighbourcount", "N", "1"))
 
                 //Orange = 2
-                .rule(expr("colour", "N", "orange"), expr("neighbourcount", "N", "2"))
+                .rule(expr("colour", "N", "yellow"), expr("neighbourcount", "N", "2"))
 
                 //Red = 3
-                .rule(expr("colour", "N", "red"), expr("neighbourcount", "N", "3"))
+                .rule(expr("colour", "N", "orange"), expr("neighbourcount", "N", "3"))
 
                 //Dark red= 4
-                .rule(expr("colour", "N", "darkred"), expr("neighbourcount", "N", "4"));
+                .rule(expr("colour", "N", "red"), expr("neighbourcount", "N", "4"));
 
         Solver solver = new Solver(jatalog);
 
