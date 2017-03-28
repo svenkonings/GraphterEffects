@@ -1,3 +1,5 @@
+package graafvis;
+
 /**
  * Created by Lindsay on 28-Mar-17.
  */

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Antlr error listener to collect graafvis.errors rather than send them to stderr.
  */
-class ErrorListener extends BaseErrorListener {
+public class ErrorListener extends BaseErrorListener {
     /**
      * Errors collected by the listener.
      */

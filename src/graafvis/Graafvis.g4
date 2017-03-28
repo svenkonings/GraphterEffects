@@ -61,7 +61,6 @@ term: ground_term                               # termGround
 ground_term: STRING
            | NUMBER
            | ID
-           | UNDERSCORE ID // TODO Afvangen dat user geen underscore typt
            ;
 
 /* Variables start with uppercase letter */

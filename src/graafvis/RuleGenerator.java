@@ -1,13 +1,12 @@
-import com.sun.org.omg.CORBA.ParDescriptionSeqHelper;
+package graafvis;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.Rule;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 

@@ -1,6 +1,4 @@
-import graafvis.Checker;
-import graafvis.ErrorListener;
-import graafvis.VisError;
+import graafvis.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;

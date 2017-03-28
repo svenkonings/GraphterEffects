@@ -1,4 +1,6 @@
 import graafvis.ErrorListener;
+import graafvis.GraafvisLexer;
+import graafvis.GraafvisParser;
 import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,3 +1,5 @@
+package graafvis;
+
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
@@ -22,7 +24,7 @@ public class ConstraintSet {
     private final List<Rule> rules;
 
     /**
-     * Creates a new ConstraintSet.
+     * Creates a new graafvis.ConstraintSet.
      * @param imports Set of Strings indicating imports in the Graafvis String.
      * @param facts List of facts given through the Graafvis String.
      * @param rules List of rules given through the Graafvis String.
@@ -58,8 +60,8 @@ public class ConstraintSet {
     }
 
     /**
-     * Merges a ConstraintSet into this ConstraintSet.
-     * @param from ConstraintSet to merge with this one.
+     * Merges a graafvis.ConstraintSet into this graafvis.ConstraintSet.
+     * @param from graafvis.ConstraintSet to merge with this one.
      */
     public void merge(ConstraintSet from) {
         imports.addAll(from.getImports());

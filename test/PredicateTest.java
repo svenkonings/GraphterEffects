@@ -1,3 +1,4 @@
+import graafvis.GraafvisParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Arrays;
