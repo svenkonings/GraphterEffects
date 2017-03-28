@@ -1,9 +1,6 @@
 import com.sun.org.omg.CORBA.ParDescriptionSeqHelper;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.*;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
@@ -20,11 +17,12 @@ import static za.co.wstoop.jatalog.Expr.expr;
  * Created by Lindsay on 27-Mar-17.
  */
 public class RuleGenerator extends GraafvisBaseListener {
-    public static final String WILD_CARD_PREFIX = "*";
+    public static final String WILD_CARD_PREFIX = "X*"; // Cap letter to make it a var, * to make it illegal
     private ConstraintSet cs;
     private List<Expr> facts = new ArrayList<>();
     private List<Rule> rules = new ArrayList<>();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
+    private ParseTreeProperty<List<Expr>> exprsPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<String> stringPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<Integer> cntPTP = new ParseTreeProperty<>();
 
@@ -47,16 +45,25 @@ public class RuleGenerator extends GraafvisBaseListener {
 //        ;
 //        System.out.println(jl);
 //        System.out.println(jl.query(expr("shape", "X", "square")));
-        generate(new RuleGenerator(), "p(X).");
+        generate("p(X), q(X).");
+        generate("label(X, \"wolf\").");
+        generate("label(X, \"wolf\") -> check(X).");
+        generate("label(X, \"wolf\") -> check(X), colour(X, red).");
+        generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
+        generate("node(X), label(X, _) -> check(X), colour(X, blue).");
     }
 
-    public static ConstraintSet generate(RuleGenerator rg, String script) {
+    public static ConstraintSet generate(String script) {
+        System.out.println("\n" + script);
+        RuleGenerator rg = new RuleGenerator();
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
         ParseTree tree = parser.program();
-        System.out.println(rg.getCs().getFacts());
-        System.out.println(rg.getCs().getRules());
+        new ParseTreeWalker().walk(rg, tree);
+        System.out.println("\tTree: " + tree);
+        System.out.println("\tFacts: " + rg.getCs().getFacts());
+        System.out.println("\tRules: " + rg.getCs().getRules());
         return rg.getCs();
     }
 
@@ -74,7 +81,9 @@ public class RuleGenerator extends GraafvisBaseListener {
     // TODO Edge label gen
 
 
-    @Override public void enterClause(GraafvisParser.ClauseContext ctx) {
+    @Override public void enterClause(GraafvisParser.ClauseContext ctx) { }
+
+    @Override public void exitClause(GraafvisParser.ClauseContext ctx) {
         // Consequence
         GraafvisParser.ConsequenceContext consequence = ctx.consequence();
         List<Expr> consequence_exprs = new ArrayList<>();
@@ -83,10 +92,13 @@ public class RuleGenerator extends GraafvisBaseListener {
         }
 
         // Antecedent
-        if (ctx.antecedent() != null) {
+        GraafvisParser.AntecedentContext ante = ctx.antecedent();
+        if (ante != null) {
             // The clause is a rule
-            GraafvisParser.Propositional_formulaContext formula = ctx.antecedent().propositional_formula();
-            // TODO Wss moet ik de antecedent een List<Expr> door laten geven
+            List<Expr> ante_exprs = getExprs(ctx.antecedent().propositional_formula());
+            for (Expr e : consequence_exprs) {
+                addRule(new Rule(e, ante_exprs));
+            }
         } else {
             // The clause is a fact
             for (Expr e : consequence_exprs) {
@@ -95,21 +107,35 @@ public class RuleGenerator extends GraafvisBaseListener {
         }
     }
 
-    @Override public void exitClause(GraafvisParser.ClauseContext ctx) { }
-
-    // TODO Out of scope: pfNot, pfBool, pfNest
+    // TODO Out of scope: pfNot, pfBool (OR!!!), pfNest
     @Override public void exitPfLit(GraafvisParser.PfLitContext ctx) {
-        setExpr(ctx, getExpr(ctx.literal()));
+        List<Expr> exprs = new ArrayList<>();
+        exprs.add(getExpr(ctx.literal()));
+        setExprs(ctx, exprs);
+    }
+
+    @Override public void exitPfBool(GraafvisParser.PfBoolContext ctx) {
+        List<Expr> exprs = new ArrayList<>();
+        // Ignoring ORs
+        for (GraafvisParser.Propositional_formulaContext pf : ctx.propositional_formula()) {
+            exprs.addAll(getExprs(pf));
+        }
+        setExprs(ctx, exprs);
+    }
+
+    @Override public void exitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) {
+        setExpr(ctx, getExpr(ctx.atom()));
     }
 
     // --- ATOMS ---
 
     @Override public void exitAtom(GraafvisParser.AtomContext ctx) {
-        List<String> terms = new ArrayList<>();
-        for (GraafvisParser.TermContext trm : ctx.term()) {
-            terms.add(getStr(trm)); // TODO terms goede String laten doorgeven
+        int n = ctx.term().size();
+        String[] terms = new String[n];
+        for (int i = 0; i < n; i++) {
+            terms[i] = getStr(ctx.term(i));
         }
-        setExpr(ctx, expr(ctx.predicate().getText(), (String[]) terms.toArray()));
+        setExpr(ctx, expr(ctx.predicate().getText(), terms));
     }
 
     @Override public void exitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
@@ -154,6 +180,14 @@ public class RuleGenerator extends GraafvisBaseListener {
 
     private void setExpr(ParseTree node, Expr expr) {
         this.exprPTP.put(node, expr);
+    }
+
+    private List<Expr> getExprs(ParseTree node) {
+        return this.exprsPTP.get(node);
+    }
+
+    private void setExprs(ParseTree node, List<Expr> exprs) {
+        this.exprsPTP.put(node, exprs);
     }
 
     private String getStr(ParseTree node) {
