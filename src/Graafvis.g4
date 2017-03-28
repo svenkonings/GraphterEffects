@@ -28,7 +28,8 @@ clause: (antecedent ARROW)? consequence EOL;
 antecedent: propositional_formula;
 
 propositional_formula: NOT propositional_formula                            # pfNot
-                     | propositional_formula bool_op propositional_formula  # pfBool
+                     | propositional_formula and_op propositional_formula   # pfAnd
+                     | propositional_formula OR propositional_formula       # pfOr
                      | PAR_OPEN propositional_formula PAR_CLOSE             # pfNest
                      | literal                                              # pfLit
                      ;
@@ -62,6 +63,7 @@ term: ground_term                               # termGround
 ground_term: STRING
            | NUMBER
            | ID
+           | UNDERSCORE ID // TODO Afvangen dat user geen underscore typt
            ;
 
 /* Variables start with uppercase letter */
@@ -75,7 +77,7 @@ num_expr: num_expr pow_op num_expr
         | NUMBER
         ;
 
-bool_op: COMMA | AND | OR;
+and_op: COMMA | AND;
 eq_op: EQ | NQ | GT | LT | GE | LE;
 
 pow_op: POW;

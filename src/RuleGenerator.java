@@ -32,25 +32,12 @@ public class RuleGenerator extends GraafvisBaseListener {
     **********************/
 
     public static void main(String[] args) throws DatalogException {
-//        // Used for trying out JataLog
-//        Jatalog jl = new Jatalog();
-//        jl
-//            .fact("node", "_a")
-//            .fact("label", "_a", "\"Els\"")
-//            .rule(expr("shape", "X", "square"), expr("node", "X"))
-//            .rule(expr("shape", "X", "square"), expr("node", "X"), expr("label", "\"wolf\""))
-//            .rule(expr("shape", "X", "square"), expr("node", "X"), expr("label", "\"wolf\""))
-//            .rule(expr("shape", "X", "square"), expr("node", "X"), expr("label", "_"))
-//            .rule(expr("shape", "X", "square"), expr("node", "X"), expr("label", "A**&"))
-//        ;
-//        System.out.println(jl);
-//        System.out.println(jl.query(expr("shape", "X", "square")));
-        generate("p(X), q(X).");
-        generate("label(X, \"wolf\").");
-        generate("label(X, \"wolf\") -> check(X).");
-        generate("label(X, \"wolf\") -> check(X), colour(X, red).");
+        generate("node(_a), label(_a, \"wolf\").");
+        generate("node(X), label(X, \"wolf\") -> wolf(X).");
         generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
-        generate("node(X), label(X, _) -> check(X), colour(X, blue).");
+        generate("node(X), label(X, _) -> shape(X, square).");
+        generate("parent(X,Z), parent(Y,Z), edge(X, Y) -> family(X, Y, Z), child(Z), left(X, Y).");
+        // Error: generate("node(X), label(X, _) -> check(X), colour(X, blue)");
     }
 
     public static ConstraintSet generate(String script) {
@@ -61,7 +48,7 @@ public class RuleGenerator extends GraafvisBaseListener {
         GraafvisParser parser = new GraafvisParser(tokens);
         ParseTree tree = parser.program();
         new ParseTreeWalker().walk(rg, tree);
-        System.out.println("\tTree: " + tree);
+//        System.out.println("\tTree: " + tree);
         System.out.println("\tFacts: " + rg.getCs().getFacts());
         System.out.println("\tRules: " + rg.getCs().getRules());
         return rg.getCs();
@@ -107,14 +94,14 @@ public class RuleGenerator extends GraafvisBaseListener {
         }
     }
 
-    // TODO Out of scope: pfNot, pfBool (OR!!!), pfNest
+    // TODO Out of scope: pfNot, pfOr, pfNest
     @Override public void exitPfLit(GraafvisParser.PfLitContext ctx) {
         List<Expr> exprs = new ArrayList<>();
         exprs.add(getExpr(ctx.literal()));
         setExprs(ctx, exprs);
     }
 
-    @Override public void exitPfBool(GraafvisParser.PfBoolContext ctx) {
+    @Override public void exitPfAnd(GraafvisParser.PfAndContext ctx) {
         List<Expr> exprs = new ArrayList<>();
         // Ignoring ORs
         for (GraafvisParser.Propositional_formulaContext pf : ctx.propositional_formula()) {

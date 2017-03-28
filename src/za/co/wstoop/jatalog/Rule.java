@@ -111,6 +111,7 @@ public class Rule {
 			if(i < getBody().size() - 1)
 				sb.append(", ");
 		}
+		sb.append("."); // Manually added by Lindsay. Useful for intuitively displaying Rule collections.
 		return sb.toString();
 	}
 
