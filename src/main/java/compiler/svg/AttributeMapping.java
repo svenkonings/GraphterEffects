@@ -1,7 +1,7 @@
 package compiler.svg;
 
-import org.dom4j.Element;
 import compiler.solver.VisElem;
+import org.dom4j.Element;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +37,11 @@ public class AttributeMapping {
         Element element = parent.addElement(name);
         visElem.getValues().forEach((key, value) -> {
             if (mapping.containsKey(key)) {
+                // TODO: Temporary
+                if (key.equals("centerX") || key.equals("centerY") || key.equals("x1") || key.equals("y1") || key.equals("x2") || key.equals("y2")) {
+                    value = Integer.toString(20 * Integer.parseInt(value));
+                }
+
                 element.addAttribute(mapping.get(key), value);
             }
         });

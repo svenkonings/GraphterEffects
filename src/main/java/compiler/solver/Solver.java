@@ -2,11 +2,14 @@ package compiler.solver;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
+import utils.FileUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.Rule;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -28,15 +31,60 @@ public class Solver {
     // TODO: Extendibility
     public List<VisElem> solve() throws DatalogException {
         attributesPredicate("shape", "type");
+        attributesPredicate("pos", "x1", "y1");
         attributesPredicate("pos", "x1", "y1", "z");
         attributesPredicate("posX", "x1");
         attributesPredicate("posY", "y1");
         attributesPredicate("posZ", "z");
         attributesPredicate("width", "width");
         attributesPredicate("height", "height");
-        attributesPredicate("color", "color");
-        varPredicate("left", vars -> vars.get(1).ge(vars.get(0)).post(), "x2", "x1");
+        attributesPredicate("colour", "colour");
+        attributesPredicate("border-colour", "border-colour");
+
+        // TODO: More than two keys
+        varPredicate("alignX", vars -> vars.get(0).eq(vars.get(1)).post(), "x1", "x1");
+        varPredicate("alignY", vars -> vars.get(0).eq(vars.get(1)).post(), "y1", "y1");
+
+        varPredicate("above", vars -> vars.get(1).gt(vars.get(0)).post(), "y2", "y1");
+        varValuePredicate("above", (vars, value) -> vars.get(1).sub(vars.get(0)).eq(value).post(), "y2", "y1");
+        varPredicate("below", vars -> vars.get(0).gt(vars.get(1)).post(), "y1", "y2");
+        varValuePredicate("below", (vars, value) -> vars.get(0).sub(vars.get(1)).eq(value).post(), "y1", "y2");
+        varPredicate("right", vars -> vars.get(0).gt(vars.get(1)).post(), "x1", "x2");
+        varValuePredicate("right", (vars, value) -> vars.get(0).sub(vars.get(1)).eq(value).post(), "x1", "x2");
+        varPredicate("left", vars -> vars.get(1).gt(vars.get(0)).post(), "x2", "x1");
         varValuePredicate("left", (vars, value) -> vars.get(1).sub(vars.get(0)).eq(value).post(), "x2", "x1");
+
+        varPredicate("before", vars -> vars.get(0).lt(vars.get(1)).post(), "z", "z");
+        varPredicate("after", vars -> vars.get(0).gt(vars.get(1)).post(), "z", "z");
+
+        // TODO: Temporary
+        predicate("line", 0, (visElems, values) -> {
+            visElems.get(0).set("type", "line");
+            visElems.get(0).setVar("x1", visElems.get(1).getVar("centerX"));
+            visElems.get(0).setVar("y1", visElems.get(1).getVar("centerY"));
+            visElems.get(0).setVar("x2", visElems.get(2).getVar("centerX"));
+            visElems.get(0).setVar("y2", visElems.get(2).getVar("centerY"));
+        });
+
+        // FIXME
+        predicate("image", 1, ((visElems, values) -> {
+            String image;
+            try {
+                image = FileUtils.ImageToBase64(new File(values.get(0)));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            visElems.forEach(visElem -> {
+                visElem.set("type", "image");
+                visElem.set("image", image);
+            });
+        }));
+
+        // TODO: Temporary
+        model.allDifferent(visMap.values().stream().filter(visElem -> visElem.getValue("type").equals("ellipse")).map(visElem -> visElem.getVar("centerX")).toArray(IntVar[]::new)).post();
+        model.allDifferent(visMap.values().stream().filter(visElem -> visElem.getValue("type").equals("ellipse")).map(visElem -> visElem.getVar("centerY")).toArray(IntVar[]::new)).post();
+
         model.getSolver().solve();
         return visMap.values();
     }
@@ -123,10 +171,16 @@ public class Solver {
     }
 
     private static int[] nameToArityArray(String name) {
-        return Arrays.stream(name.split("_"))
+        int[] arity = Arrays.stream(name.split("_"))
                 .skip(2)
                 .mapToInt(Integer::parseInt)
                 .toArray();
+
+        // TODO: Temporary
+        if (arity.length == 0) {
+            arity = new int[]{1};
+        }
+        return arity;
     }
 
     private static String[] generateList(int length) {
