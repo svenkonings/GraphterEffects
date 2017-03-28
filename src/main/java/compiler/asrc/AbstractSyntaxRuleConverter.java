@@ -145,7 +145,6 @@ public final class AbstractSyntaxRuleConverter {
         kruskal.compute();
         kruskal.getTreeEdges().forEach(edge ->
         exprlist.add(new Expr("inmst", ExprUtils.elementExpr(edge).getTerms())));
-        System.out.println("test");
         return exprlist;
     }
 
