@@ -50,6 +50,13 @@
             <systemPath>${project.basedir}/lib/gxl.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>alice</groupId>
+            <artifactId>tuprolog</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/tuprolog.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
