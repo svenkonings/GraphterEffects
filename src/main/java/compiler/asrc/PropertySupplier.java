@@ -2,12 +2,9 @@ package compiler.asrc;
 
 import org.graphstream.graph.Element;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public abstract class PropertySupplier<T extends Element> {
 
+    /*
     public static final String[] TRUE = {};
     public static final String[] FALSE = null;
 
@@ -22,4 +19,5 @@ public abstract class PropertySupplier<T extends Element> {
     }
 
     public abstract String[] getProperty(T input, String key);
+    */
 }

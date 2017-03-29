@@ -1,23 +1,20 @@
 package compiler.asrc;
 
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
-import za.co.wstoop.jatalog.Expr;
-
-import java.util.*;
 
 public final class DefaultGraphPropertySupplier extends PropertySupplier<Graph> {
 
+    /*
     public DefaultGraphPropertySupplier() {
         String[] tosupport = {"graph", "directed", "undirected", "mixed", "attribute"};
         supported = tosupport;
     }
 
     @Override
-    public String[] getProperty(Graph graph, String key) {
+    public List<Term> getProperty(Graph graph, String key) {
         switch (key) {
             case "graph":
-                return TRUE;
+                return NULL;
             case "directed":
                 for (Edge edge: graph.getEdgeSet()) {
                     if (!edge.isDirected()) {
@@ -59,4 +56,5 @@ public final class DefaultGraphPropertySupplier extends PropertySupplier<Graph> 
         }
         return null;
     }
+    */
 }

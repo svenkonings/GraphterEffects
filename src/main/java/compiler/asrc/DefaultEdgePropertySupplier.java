@@ -4,6 +4,7 @@ import org.graphstream.graph.Edge;
 
 public class DefaultEdgePropertySupplier extends PropertySupplier<Edge> {
 
+   /*
     public DefaultEdgePropertySupplier() {
         String[] tosupport = {"edge", "directed", "undirected", "attributecount", "attribute"};
         supported = tosupport;
@@ -13,4 +14,5 @@ public class DefaultEdgePropertySupplier extends PropertySupplier<Edge> {
     public String[] getProperty(Edge input, String key) {
         return null;
     }
+    */
 }
