@@ -1,7 +1,7 @@
 package compiler.svg;
 
-import org.dom4j.Element;
 import compiler.solver.VisElem;
+import org.dom4j.Element;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,29 +36,46 @@ public class SvgElementGenerator {
         elementMapping = new HashMap<>();
         elementMapping.put("rectangle", rectangle());
         elementMapping.put("ellipse", ellipse());
+        elementMapping.put("line", line());
     }
 
     public AttributeMapping getMapping(String type) {
         return elementMapping.get(type);
     }
 
+    private static AttributeMapping shape(String name) {
+        AttributeMapping mapping = new AttributeMapping(name);
+        mapping.putMapping("colour", "fill");
+        mapping.putMapping("border-colour", "stroke");
+        mapping.putDefault("fill", "white");
+        mapping.putDefault("stroke", "black");
+        return mapping;
+    }
+
     private static AttributeMapping rectangle() {
-        AttributeMapping mapping = new AttributeMapping("rect");
+        AttributeMapping mapping = shape("rect");
         mapping.putMapping("x1", "x");
         mapping.putMapping("y1", "y");
         mapping.putMapping("width", "width");
         mapping.putMapping("height", "height");
-        mapping.putMapping("colour", "fill");
         return mapping;
     }
 
     private static AttributeMapping ellipse() {
-        AttributeMapping mapping = new AttributeMapping("ellipse");
+        AttributeMapping mapping = shape("ellipse");
         mapping.putMapping("centerX", "cx");
         mapping.putMapping("centerY", "cy");
         mapping.putMapping("radiusX", "rx");
         mapping.putMapping("radiusY", "ry");
-        mapping.putMapping("colour", "fill");
+        return mapping;
+    }
+
+    private static AttributeMapping line() {
+        AttributeMapping mapping = shape("line");
+        mapping.putMapping("x1", "x1");
+        mapping.putMapping("x2", "x2");
+        mapping.putMapping("y1", "y1");
+        mapping.putMapping("y2", "y2");
         return mapping;
     }
 }

@@ -7,18 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.chocosolver.solver.variables.IntVar.MAX_INT_BOUND;
-import static org.chocosolver.solver.variables.IntVar.MIN_INT_BOUND;
-
 /**
  * The {@code VisElem} class respresents a visualization element. A visualization element consists of name-value pairs,
  * with the values being {@link String} constants, and name-variable pairs, with the variables being {@link IntVar}
  * variables. The values of instantiated variables can also be retreiverd as {@link String} constants.
  */
-// TODO: Convert to real vars?
 // TODO: Improve exception handling (or return bool?)
-// TODO: Add ability to replace values?
 public class VisElem {
+
+    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
+    private static final int MIN_INT_BOUND = 0;
 
     /** The model associated with this element. */
     private final Model model;
@@ -58,6 +56,7 @@ public class VisElem {
      * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
      * </table>
      */
+    // TODO: Only add defaults if they don't exist at the end of solve()
     private void setDefaultVars() {
         setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
 
