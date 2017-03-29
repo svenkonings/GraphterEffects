@@ -34,6 +34,15 @@ public class ConstraintSet {
     }
 
     /**
+     * Creates a new ConstraintSet with no initial values.
+     */
+    public ConstraintSet() {
+        this.imports = new HashSet<>();;
+        this.facts = new ArrayList<>();;
+        this.rules = new ArrayList<>();;
+    }
+
+    /**
      * Returns the imports.
      * @return A Set of Strings indicating imports in the Graafvis String.
      */
@@ -55,6 +64,22 @@ public class ConstraintSet {
      */
     public List<Rule> getRules(){
         return rules;
+    }
+
+    /**
+     * Adds a fact.
+     * @param e The expression that represents the fact that is to be added.
+     */
+    public void addFact(Expr e) {
+        facts.add(e);
+    }
+
+    /**
+     * Adds a rule.
+     * @param r The rule to be added.
+     */
+    public void addRule(Rule r) {
+        rules.add(r);
     }
 
     /**
