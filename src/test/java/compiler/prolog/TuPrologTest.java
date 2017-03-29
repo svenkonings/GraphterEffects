@@ -3,7 +3,7 @@ package compiler.prolog;
 import alice.tuprolog.*;
 import org.junit.Test;
 
-import static prolog.TuProlog.*;
+import static compiler.prolog.TuProlog.*;
 
 public class TuPrologTest {
     @Test

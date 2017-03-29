@@ -1,4 +1,4 @@
-package prolog;
+package compiler.prolog;
 
 import alice.tuprolog.Double;
 import alice.tuprolog.Float;
