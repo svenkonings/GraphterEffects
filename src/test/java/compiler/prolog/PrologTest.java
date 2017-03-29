@@ -1,3 +1,5 @@
+package compiler.prolog;
+
 import alice.tuprolog.*;
 import org.junit.Test;
 

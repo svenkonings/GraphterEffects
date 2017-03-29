@@ -6,9 +6,8 @@ import alice.tuprolog.*;
 import alice.tuprolog.Long;
 import alice.tuprolog.Number;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class TuProlog {
@@ -91,5 +90,43 @@ public class TuProlog {
             struct = compound(name, term, struct);
         }
         return struct;
+    }
+
+    // Class start
+    private final Prolog prolog;
+
+    public TuProlog() {
+        prolog = new Prolog();
+    }
+
+    public void addTheory(Term... terms) throws InvalidTheoryException {
+        Theory theory = new Theory(list(terms));
+        prolog.addTheory(theory);
+    }
+
+    public void setTheory(Term... terms) throws InvalidTheoryException {
+        Theory theory = new Theory(list(terms));
+        prolog.setTheory(theory);
+    }
+
+    public List<Map<String, Term>> query(Term term) throws NoSolutionException {
+        List<Map<String, Term>> results = new ArrayList<>();
+        SolveInfo info = prolog.solve(term);
+        while (info.isSuccess()) {
+            List<Var> vars = info.getBindingVars();
+            Map<String, Term> result = vars.stream().collect(Collectors.toMap(Var::getOriginalName, Var::getTerm));
+            results.add(result);
+            if (prolog.hasOpenAlternatives()) {
+                try {
+                    info = prolog.solveNext();
+                } catch (NoMoreSolutionException e) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        prolog.solveEnd();
+        return results;
     }
 }
