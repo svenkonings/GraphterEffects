@@ -1,11 +1,11 @@
 package compiler.svg;
 
+import compiler.solver.VisElem;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import compiler.solver.VisElem;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,11 +24,11 @@ public class SvgDocumentGenerator {
      */
     public static Document generate(List<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("compiler/svg", "http://www.w3.org/2000/svg");
+        Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         setViewBox(root, visElems);
         visElems.stream()
                 .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
-                .forEach(visElem -> SvgElementGenerator.addElement(visElem, root));
+                .forEachOrdered(visElem -> SvgElementGenerator.addElement(visElem, root));
         return document;
     }
 
@@ -40,10 +40,12 @@ public class SvgDocumentGenerator {
      * @param visElems The given list of visualization elements.
      */
     private static void setViewBox(Element element, List<VisElem> visElems) {
+        int minX = min(visElems, "x1");
+        int minY = min(visElems, "y1");
         int maxX = max(visElems, "x2");
         int maxY = max(visElems, "y2");
-        if (maxX > 0 && maxY > 0) {
-            element.addAttribute("viewBox", String.format("0 0 %d %d", maxX, maxY));
+        if (minX >= 0 && minY >= 0 && maxX >= 0 && maxY >= 0) {
+            element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, maxX, maxY));
         }
     }
 
@@ -57,7 +59,20 @@ public class SvgDocumentGenerator {
     private static int max(List<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
-                .max().orElse(0);
+                .max().orElse(-1);
+    }
+
+    /**
+     * Calculate the minimum value of the attribute with the given name.
+     *
+     * @param visElems The list of visualization elements.
+     * @param name     The name of the attribute.
+     * @return The minimum value.
+     */
+    private static int min(List<VisElem> visElems, String name) {
+        return visElems.stream()
+                .mapToInt(visElem -> visElem.getVar(name).getValue())
+                .min().orElse(-1);
     }
 
     /**
