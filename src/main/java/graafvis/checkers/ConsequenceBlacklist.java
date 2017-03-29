@@ -1,11 +1,11 @@
 package graafvis.checkers;
 
 import graafvis.ErrorListener;
-import graafvis.GraafvisBaseVisitor;
-import graafvis.GraafvisLexer;
-import graafvis.GraafvisParser;
 import graafvis.errors.BlacklistedPredicateError;
 import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisBaseVisitor;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -75,6 +75,8 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
             lexer.addErrorListener(errorListener);
             parser.removeErrorListeners();
             parser.addErrorListener(errorListener);
+            /* Parse the predicate */
+            parser.predicate();
             /* Check for graafvis.errors */
             this.errors.addAll(errorListener.getErrors());
             /* Add the label to the blacklist */
