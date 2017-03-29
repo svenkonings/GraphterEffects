@@ -1,3 +1,5 @@
+package graafvis;
+
 import graafvis.*;
 import graafvis.checkers.Checker;
 import graafvis.errors.VisError;

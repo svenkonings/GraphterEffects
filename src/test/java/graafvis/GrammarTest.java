@@ -1,3 +1,5 @@
+package graafvis;
+
 import graafvis.ErrorListener;
 import graafvis.GraafvisLexer;
 import graafvis.GraafvisParser;
