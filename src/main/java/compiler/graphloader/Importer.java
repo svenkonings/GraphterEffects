@@ -5,6 +5,7 @@ import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
 import utils.GraphUtils;
+import utils.Printer;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public final class Importer {
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
     public static Graph graphFromFile(File file, boolean addUnderscores) throws IOException, SAXException {
-        Graph g = null;
+        Graph g;
         String extension = FileUtils.getExtension(file.getName());
         if (GXLImporter.acceptsExtension(extension)) {
             g =  GXLImporter.read(file);
@@ -57,12 +58,13 @@ public final class Importer {
                 g=null;
             }
         }
+
         if (g==null) {
             throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
         } else if (addUnderscores){
-            return GraphUtils.changeIDs(g);
-        } else {
-            return g;
+            g = GraphUtils.changeIDs(g);
         }
+        return g;
+
     }
 }

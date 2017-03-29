@@ -8,6 +8,10 @@ import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 /**
  * Class used for methods to manipulate Graph Objects and related tasks.
  */
@@ -29,16 +33,38 @@ public final class GraphUtils {
         } else {
             throw new UnsupportedOperationException();
         }
-        Graphs.copyAttributes(res, input);
+        for (String key : input.getAttributeKeySet()) {
+            String[] arr = {input.getAttribute(key)};
+            res.setAttribute(key, arr);
+        }
         for (Node node : input.getEachNode()) {
             Node added = res.addNode("_" + node.getId());
-            Graphs.copyAttributes(node, added);
+            for (String key : node.getAttributeKeySet()) {
+                Object[] arr = {node.getAttribute(key)};
+                added.setAttribute(key, arr);
+            }
         }
         for (Edge edge : input.getEachEdge()) {
             Edge added = res.addEdge("_" + edge.getId(), "_" + edge.getSourceNode(), "_" + edge.getTargetNode(), edge.isDirected());
-            Graphs.copyAttributes(edge, added);
+            for (String key : edge.getAttributeKeySet()) {
+                Object[] arr = {edge.getAttribute(key)};
+                added.setAttribute(key, arr);
+            }
         }
 
         return res;
+    }
+
+    public static Set<Node> neighbours(Node node) {
+        Set<Node> neighbours = new HashSet<>();
+        for (Edge e : node.getEachEdge()) {
+            neighbours.add(e.getOpposite(node));
+        }
+        neighbours.remove(node);
+        return neighbours;
+    }
+
+    public static int neighbourCount(Node node) {
+        return neighbours(node).size();
     }
 }

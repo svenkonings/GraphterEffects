@@ -3,7 +3,7 @@ package externalapp;
 
 import compiler.ConstraintSet;
 import compiler.api.Graafvis;
-import compiler.api.UnknownFormatException;
+import exceptions.UnknownFormatException;
 import compiler.graphloader.Importer;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
