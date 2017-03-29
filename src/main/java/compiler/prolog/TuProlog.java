@@ -105,8 +105,8 @@ public class TuProlog {
         prolog.setTheory(theory);
     }
 
-    public List<Map<String, String>> query(Term term) {
-        List<Map<String, String>> results = new ArrayList<>();
+    public List<Map<String, Term>> query(Term term) {
+        List<Map<String, Term>> results = new ArrayList<>();
         SolveInfo info = prolog.solve(term);
         while (info.isSuccess()) {
             List<Var> vars;
@@ -115,7 +115,7 @@ public class TuProlog {
             } catch (NoSolutionException e) {
                 break;
             }
-            Map<String, String> result = vars.stream().collect(Collectors.toMap(Var::getOriginalName, var -> termToString(var.getTerm())));
+            Map<String, Term> result = vars.stream().collect(Collectors.toMap(Var::getOriginalName, Var::getTerm));
             results.add(result);
             if (prolog.hasOpenAlternatives()) {
                 try {
@@ -129,21 +129,5 @@ public class TuProlog {
         }
         prolog.solveEnd();
         return results;
-    }
-
-    private static String termToString(Term term) {
-        String result;
-        if (term instanceof Int) {
-            result = Integer.toString(((Int) term).intValue());
-        } else if (term instanceof Long) {
-            result = java.lang.Long.toString(((Long) term).longValue());
-        } else if (term instanceof Float) {
-            result = java.lang.Float.toString(((Float) term).floatValue());
-        } else if (term instanceof Double) {
-            result = java.lang.Double.toString(((Double) term).doubleValue());
-        } else {
-            result = term.toString();
-        }
-        return result;
     }
 }

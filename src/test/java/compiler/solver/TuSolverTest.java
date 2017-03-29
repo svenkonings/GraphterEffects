@@ -35,22 +35,23 @@ public class TuSolverTest {
         result.add(struct("label", struct("c"), struct("\"Vera\"")));
         result.add(struct("label", struct("ac"), struct("\"dad\"")));
         result.add(struct("label", struct("bc"), struct("\"mom\"")));
-        result.add(clause(
-                struct("edge_with_label", var("X"), var("Y"), var("S")),
-                and(
-                        struct("edge", var("X"), var("Y"), var("E")),
-                        struct("label", var("E"), var("S"))
-                )
-        ));
+        result.add(clause(struct("edge_with_label", var("X"), var("Y"), var("S")), and(
+                struct("edge", var("X"), var("Y"), var("E")),
+                struct("label", var("E"), var("S"))
+        )));
         result.add(clause(struct("female", var("X")), struct("edge_with_label", var("X"), var(), struct("\"mom\""))));
         result.add(clause(struct("male", var("X")), struct("edge_with_label", var("X"), var(), struct("\"dad\""))));
         result.add(clause(struct("shape", var("X"), struct("rectangle")), struct("female", var("X"))));
-        result.add(clause(struct("color", var("X"), struct("green")), struct("female", var("X"))));
-        result.add(clause(struct("dimensions", var("X"), struct("60"), struct("30")), struct("female", var("X"))));
+        result.add(clause(struct("colour", var("X"), struct("green")), struct("female", var("X"))));
+        result.add(clause(struct("dimensions", var("X"), intVal(60), intVal(30)), struct("female", var("X"))));
+        result.add(clause(struct("left", var("X"), var("Y"), intVal(60)), and(
+                struct("female", var("X")),
+                struct("male", var("Y"))
+        )));
         result.add(clause(struct("shape", var("X"), struct("ellipse")), struct("male", var("X"))));
-        result.add(clause(struct("color", var("X"), struct("red")), struct("male", var("X"))));
-        result.add(clause(struct("pos", var("X"), struct("60"), struct("30"), struct("1")), struct("male", var("X"))));
-        result.add(clause(struct("dimensions", var("X"), struct("60"), struct("30")), struct("male", var("X"))));
+        result.add(clause(struct("colour", var("X"), struct("red")), struct("male", var("X"))));
+        result.add(clause(struct("pos", var("X"), intVal(60), intVal(30), intVal(1)), struct("male", var("X"))));
+        result.add(clause(struct("dimensions", var("X"), intVal(60), intVal(30)), struct("male", var("X"))));
         return result;
     }
 }

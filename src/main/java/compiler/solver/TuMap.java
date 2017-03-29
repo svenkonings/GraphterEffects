@@ -29,6 +29,16 @@ public class TuMap {
     }
 
     /**
+     * Get or compute the visualization element that belongs to the given term.
+     *
+     * @param term The given term.
+     * @return The visualization element.
+     */
+    public VisElem get(Term term) {
+        return get(term.toString());
+    }
+
+    /**
      * Get or compute the visualization element that belongs to the given key.
      *
      * @param key The given key.

@@ -16,8 +16,8 @@ import java.util.Objects;
 // TODO: Improve exception handling (or return bool?)
 public class VisElem {
 
-    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
     private static final int MIN_INT_BOUND = 0;
+    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
 
     /** The model associated with this element. */
     private final Model model;
@@ -209,7 +209,11 @@ public class VisElem {
      * @return The {@link IntVar} variable.
      */
     public IntVar getVar(String name) {
-        return vars.get(name);
+        if (vars.containsKey(name)) {
+            return vars.get(name);
+        } else {
+            return setVar(name, MIN_INT_BOUND, MAX_INT_BOUND);
+        }
     }
 
     /**
@@ -256,7 +260,7 @@ public class VisElem {
      * </table>
      */
     public void setDefaults() {
-        if (!hasVar("z")) setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
+        getVar("z");
 
         setDefaultDimensions("width", "radiusX");
         setDefaultDimensions("height", "radiusY");
@@ -270,7 +274,6 @@ public class VisElem {
         boolean hasDiameter = hasVar(diameter);
         boolean hasRadius = hasVar(radius);
         if (!hasDiameter && !hasRadius) {
-            setVar(diameter, 0, MAX_INT_BOUND);
             setVar(radius, getVar(diameter).div(2).intVar());
         } else if (hasDiameter) {
             setConstraint(radius, hasRadius, getVar(diameter).div(2));
@@ -286,7 +289,6 @@ public class VisElem {
         boolean hasCenter = hasVar(center);
         boolean hasEnd = hasVar(end);
         if (!hasStart && !hasCenter && !hasEnd) {
-            setVar(start, 0, MAX_INT_BOUND);
             setVar(center, getVar(start).add(getVar(radius)).intVar());
             setVar(end, getVar(start).add(getVar(diameter)).intVar());
         } else if (hasStart) {
@@ -299,6 +301,7 @@ public class VisElem {
             setConstraint(start, hasStart, getVar(end).sub(getVar(diameter)));
             setConstraint(center, hasCenter, getVar(end).sub(getVar(radius)));
         }
+//        getVar(start).gt(getVar(end)).post(); TODO: Not guaranteed for lines
     }
 
     private void setConstraint(String name, boolean exists, ArExpression constraint) {
