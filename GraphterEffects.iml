@@ -47,6 +47,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: alice:tuprolog:1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/tuprolog.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.6" level="project" />
   </component>
