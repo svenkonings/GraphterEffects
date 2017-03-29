@@ -66,5 +66,10 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/gxl.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.airhacks</groupId>
+            <artifactId>afterburner.fx</artifactId>
+            <version>1.6.0</version>
+        </dependency>
     </dependencies>
 </project>
