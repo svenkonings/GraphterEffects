@@ -1,3 +1,6 @@
+import graafvis.ErrorListener;
+import graafvis.GraafvisLexer;
+import graafvis.GraafvisParser;
 import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -116,7 +119,7 @@ public abstract class GrammarTest {
 
     private static void myAssertEquals(String type, String sample, int expected, int actual) {
         if (PRINT_PROCESS | LOG_PROCESS) {
-            String msg = String.format("Parsed %s: %s | Expected %d errors. Found %d\n", type, sample, expected, actual);
+            String msg = String.format("Parsed %s: %s | Expected %d graafvis.errors. Found %d\n", type, sample, expected, actual);
             if (PRINT_PROCESS) {
                 System.out.print(msg);
             }
@@ -130,7 +133,7 @@ public abstract class GrammarTest {
 
     private static void myAssertNotEquals(String type, String sample, int unexpected, int actual) {
         if (PRINT_PROCESS | LOG_PROCESS) {
-            String msg = String.format("Parsed %s: %s | Did not expect %d errors. Found %d\n", type, sample, unexpected, actual);
+            String msg = String.format("Parsed %s: %s | Did not expect %d graafvis.errors. Found %d\n", type, sample, unexpected, actual);
             if (PRINT_PROCESS) {
                 System.out.print(msg);
             }

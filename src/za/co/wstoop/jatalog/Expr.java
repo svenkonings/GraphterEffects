@@ -194,7 +194,7 @@ public class Expr implements Indexable<String> {
         } else {
             try {
             	
-            	// These errors can be detected in the validate method:
+            	// These graafvis.errors can be detected in the validate method:
                 if(Jatalog.isVariable(term1) || Jatalog.isVariable(term2)) {
                 	// Rule#validate() was supposed to catch this condition
                 	throw new RuntimeException("Unbound variable in evaluation of " + this);
