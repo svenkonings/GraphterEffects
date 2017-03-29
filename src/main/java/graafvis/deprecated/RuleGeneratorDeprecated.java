@@ -1,9 +1,9 @@
 package graafvis.deprecated;
 
 import graafvis.ConstraintSet;
-import graafvis.GraafvisBaseListener;
-import graafvis.GraafvisLexer;
-import graafvis.GraafvisParser;
+import graafvis.grammar.GraafvisBaseListener;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import za.co.wstoop.jatalog.DatalogException;
@@ -13,6 +13,8 @@ import za.co.wstoop.jatalog.Rule;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import static za.co.wstoop.jatalog.Expr.expr;
 
 /**
  * Created by Lindsay on 27-Mar-17.

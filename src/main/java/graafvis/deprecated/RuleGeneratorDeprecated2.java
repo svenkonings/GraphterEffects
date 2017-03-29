@@ -1,5 +1,6 @@
-package graafvis;
+package graafvis.deprecated;
 
+import graafvis.ConstraintSet;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
@@ -9,7 +10,6 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
@@ -22,7 +22,7 @@ import static za.co.wstoop.jatalog.Expr.expr;
 /**
  * Created by Lindsay on 28-Mar-17.
  */
-public class RuleGenerator<T> extends GraafvisBaseVisitor<T> {
+public class RuleGeneratorDeprecated2<T> extends GraafvisBaseVisitor<T> {
     public static final String WILD_CARD_PREFIX = "X*"; // Cap letter to make it a var, * to make it illegal
     private ConstraintSet cs = new ConstraintSet();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
@@ -47,7 +47,7 @@ public class RuleGenerator<T> extends GraafvisBaseVisitor<T> {
 
     public static ConstraintSet generate(String script) {
         System.out.println("\n" + script);
-        RuleGenerator rg = new RuleGenerator();
+        RuleGeneratorDeprecated2 rg = new RuleGeneratorDeprecated2();
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
