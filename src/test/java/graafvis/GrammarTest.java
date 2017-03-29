@@ -1,8 +1,5 @@
 package graafvis;
 
-import graafvis.ErrorListener;
-import graafvis.GraafvisLexer;
-import graafvis.GraafvisParser;
 import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +29,7 @@ public abstract class GrammarTest {
     private static PrintWriter writer;
     static {
         try {
-            writer = new PrintWriter("test/testLog.txt", "UTF-8");
+            writer = new PrintWriter("src\\test\\java\\graafvis\\testLog.txt", "UTF-8");
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
