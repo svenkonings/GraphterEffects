@@ -36,41 +36,6 @@ public class VisElem {
         this.model = model;
         this.values = new HashMap<>();
         this.vars = new HashMap<>();
-        setDefaultVars();
-    }
-
-    /**
-     * Initializes the default variables. The defaults are:
-     * <table summary="Defaults" border="1">
-     * <tr><td><b>Name</b></td> <td><b>Description</b></td> <td><b>Value</b></td></tr>
-     * <tr><td>z</td>           <td>z position</td>         <td>[MIN, MAX]</td></tr>
-     * <tr><td>x1</td>          <td>x start position</td>   <td>[0, MAX]</td></tr>
-     * <tr><td>y1</td>          <td>y start position</td>   <td>[0, MAX]</td></tr>
-     * <tr><td>width</td>       <td>width</td>              <td>[0, MAX]</td></tr>
-     * <tr><td>height</td>      <td>height</td>             <td>[0, MAX]</td></tr>
-     * <tr><td>x2</td>          <td>x end position</td>     <td>x1 + width</td></tr>
-     * <tr><td>y2</td>          <td>y end position</td>     <td>y1 + height</td></tr>
-     * <tr><td>radiusX</td>     <td>x radius</td>           <td>width / 2</td></tr>
-     * <tr><td>radiusY</td>     <td>y radius</td>           <td>height / 2</td></tr>
-     * <tr><td>centerX</td>     <td>x center position</td>  <td>x1 + radiusX</td></tr>
-     * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
-     * </table>
-     */
-    // TODO: Only add defaults if they don't exist at the end of solve()
-    private void setDefaultVars() {
-        setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
-
-        IntVar x1 = setVar("x1", 0, MAX_INT_BOUND);
-        IntVar y1 = setVar("y1", 0, MAX_INT_BOUND);
-        IntVar width = setVar("width", 0, MAX_INT_BOUND);
-        IntVar height = setVar("height", 0, MAX_INT_BOUND);
-        setVar("x2", x1.add(width).intVar());
-        setVar("y2", y1.add(height).intVar());
-
-        IntVar radiusX = setVar("radiusX", width.div(2).intVar());
-        IntVar radiusY = setVar("radiusY", height.div(2).intVar());
-        setVar("centerX", x1.add(radiusX).intVar());
-        setVar("centerY", y1.add(radiusY).intVar());
     }
 
     /**
@@ -270,5 +235,52 @@ public class VisElem {
      */
     public Map<String, IntVar> getVars() {
         return new HashMap<>(vars);
+    }
+
+    /**
+     * Initializes the default variables. The defaults are:
+     * <table summary="Defaults" border="1">
+     * <tr><td><b>Name</b></td> <td><b>Description</b></td> <td><b>Value</b></td></tr>
+     * <tr><td>z</td>           <td>z position</td>         <td>[MIN, MAX]</td></tr>
+     * <tr><td>x1</td>          <td>x start position</td>   <td>[0, MAX]</td></tr>
+     * <tr><td>y1</td>          <td>y start position</td>   <td>[0, MAX]</td></tr>
+     * <tr><td>width</td>       <td>width</td>              <td>[0, MAX]</td></tr>
+     * <tr><td>height</td>      <td>height</td>             <td>[0, MAX]</td></tr>
+     * <tr><td>x2</td>          <td>x end position</td>     <td>x1 + width</td></tr>
+     * <tr><td>y2</td>          <td>y end position</td>     <td>y1 + height</td></tr>
+     * <tr><td>radiusX</td>     <td>x radius</td>           <td>width / 2</td></tr>
+     * <tr><td>radiusY</td>     <td>y radius</td>           <td>height / 2</td></tr>
+     * <tr><td>centerX</td>     <td>x center position</td>  <td>x1 + radiusX</td></tr>
+     * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
+     * </table>
+     */
+    public void setDefaultVars() {
+        if (!hasVar("z")) setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
+
+        setDefaultDimensions("width", "radiusX");
+        setDefaultDimensions("height", "radiusY");
+
+        if (!hasVar("width")) setVar("width", 0, MAX_INT_BOUND);
+        if (!hasVar("height")) setVar("height", 0, MAX_INT_BOUND);
+        if (!hasVar("radiusX")) setVar("radiusX", 0, MAX_INT_BOUND);
+        if (!hasVar("radiusY")) setVar("radiusY", 0, MAX_INT_BOUND);
+
+        if (!hasVar("x1")) setVar("x1", 0, MAX_INT_BOUND);
+        if (!hasVar("y1")) setVar("y1", 0, MAX_INT_BOUND);
+        if (!hasVar("x2")) setVar("x2", 0, MAX_INT_BOUND);
+        if (!hasVar("y2")) setVar("y2", 0, MAX_INT_BOUND);
+        if (!hasVar("centerX")) setVar("centerX", 0, MAX_INT_BOUND);
+        if (!hasVar("centerY")) setVar("centerY", 0, MAX_INT_BOUND);
+    }
+
+    private void setDefaultDimensions(String diameter, String radius) {
+        if (!hasVar(diameter) && !hasVar(radius)) {
+            setVar(diameter, 0, MAX_INT_BOUND);
+            setVar(radius, getVar(diameter).div(2).intVar());
+        } else if (hasVar(diameter) && !hasVar(radius)) {
+            setVar(radius, getVar(diameter).div(2).intVar());
+        } else if (hasVar(radius) && !hasVar(diameter)) {
+            setVar(diameter, getVar(radius).mul(2).intVar());
+        }
     }
 }
