@@ -1,6 +1,7 @@
 package compiler.solver;
 
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.expression.discrete.arithmetic.ArExpression;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.HashMap;
@@ -254,33 +255,57 @@ public class VisElem {
      * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
      * </table>
      */
-    public void setDefaultVars() {
+    public void setDefaults() {
         if (!hasVar("z")) setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
 
         setDefaultDimensions("width", "radiusX");
         setDefaultDimensions("height", "radiusY");
 
-        if (!hasVar("width")) setVar("width", 0, MAX_INT_BOUND);
-        if (!hasVar("height")) setVar("height", 0, MAX_INT_BOUND);
-        if (!hasVar("radiusX")) setVar("radiusX", 0, MAX_INT_BOUND);
-        if (!hasVar("radiusY")) setVar("radiusY", 0, MAX_INT_BOUND);
-
-        if (!hasVar("x1")) setVar("x1", 0, MAX_INT_BOUND);
-        if (!hasVar("y1")) setVar("y1", 0, MAX_INT_BOUND);
-        if (!hasVar("x2")) setVar("x2", 0, MAX_INT_BOUND);
-        if (!hasVar("y2")) setVar("y2", 0, MAX_INT_BOUND);
-        if (!hasVar("centerX")) setVar("centerX", 0, MAX_INT_BOUND);
-        if (!hasVar("centerY")) setVar("centerY", 0, MAX_INT_BOUND);
+        setDefaultPositions("x1", "centerX", "x2", "width", "radiusX");
+        setDefaultPositions("y1", "centerY", "y2", "height", "radiusY");
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setDefaultDimensions(String diameter, String radius) {
-        if (!hasVar(diameter) && !hasVar(radius)) {
+        boolean hasDiameter = hasVar(diameter);
+        boolean hasRadius = hasVar(radius);
+        if (!hasDiameter && !hasRadius) {
             setVar(diameter, 0, MAX_INT_BOUND);
             setVar(radius, getVar(diameter).div(2).intVar());
-        } else if (hasVar(diameter) && !hasVar(radius)) {
-            setVar(radius, getVar(diameter).div(2).intVar());
-        } else if (hasVar(radius) && !hasVar(diameter)) {
-            setVar(diameter, getVar(radius).mul(2).intVar());
+        } else if (hasDiameter) {
+            setConstraint(radius, hasRadius, getVar(diameter).div(2));
+        } else if (hasRadius) {
+            setConstraint(diameter, hasDiameter, getVar(radius).mul(2));
+        }
+    }
+
+    // Assumes dimensions are set
+    @SuppressWarnings("ConstantConditions")
+    private void setDefaultPositions(String start, String center, String end, String diameter, String radius) {
+        boolean hasStart = hasVar(start);
+        boolean hasCenter = hasVar(center);
+        boolean hasEnd = hasVar(end);
+        if (!hasStart && !hasCenter && !hasEnd) {
+            setVar(start, 0, MAX_INT_BOUND);
+            setVar(center, getVar(start).add(getVar(radius)).intVar());
+            setVar(end, getVar(start).add(getVar(diameter)).intVar());
+        } else if (hasStart) {
+            setConstraint(center, hasCenter, getVar(start).add(getVar(radius)));
+            setConstraint(end, hasEnd, getVar(start).add(getVar(diameter)));
+        } else if (hasCenter) {
+            setConstraint(start, hasStart, getVar(center).sub(getVar(radius)));
+            setConstraint(end, hasEnd, getVar(center).add(getVar(radius)));
+        } else if (hasEnd) {
+            setConstraint(start, hasStart, getVar(end).sub(getVar(diameter)));
+            setConstraint(center, hasCenter, getVar(end).sub(getVar(radius)));
+        }
+    }
+
+    private void setConstraint(String name, boolean exists, ArExpression constraint) {
+        if (exists) {
+            constraint.eq(getVar(name)).post();
+        } else {
+            setVar(name, constraint.intVar());
         }
     }
 }
