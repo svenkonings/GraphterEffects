@@ -23,6 +23,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.6</version>
+        </dependency>
+        <dependency>
             <groupId>org.choco-solver</groupId>
             <artifactId>choco-solver</artifactId>
             <version>4.0.2</version>
@@ -43,11 +48,9 @@
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge</groupId>
-            <artifactId>gxl</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gxl.jar</systemPath>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>alice</groupId>
@@ -57,14 +60,11 @@
             <systemPath>${project.basedir}/lib/tuprolog.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.6</version>
+            <groupId>net.sourceforge</groupId>
+            <artifactId>gxl</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gxl.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
