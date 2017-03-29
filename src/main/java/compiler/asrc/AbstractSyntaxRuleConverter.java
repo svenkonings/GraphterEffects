@@ -1,5 +1,6 @@
 package compiler.asrc;
 
+import exceptions.UnknownGraphTypeException;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -7,6 +8,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.ExprUtils;
+import utils.GraphUtils;
 import utils.StringUtils;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
@@ -26,7 +28,7 @@ public final class AbstractSyntaxRuleConverter {
      * @return the image at the specified URL
      */
 
-    public static List<Expr> convertToRules(Graph graph) throws DatalogException {
+    public static List<Expr> convertToRules(Graph graph) throws DatalogException, UnknownGraphTypeException {
         List<Expr> exprlist = new LinkedList<>();
 
         for (Node node: graph.getNodeSet()){
@@ -42,8 +44,11 @@ public final class AbstractSyntaxRuleConverter {
             exprlist.addAll(generateEdgeRules(edge));
         }
 
-        //TODO: is an graph with 0 edges directed or undirected or mixed?
-        if (fullydirected) {
+        if (fullydirected && fullyundirected) {
+            exprlist.add(new Expr("directed", graph.getId()));
+            exprlist.add(new Expr("undirected", graph.getId()));
+            exprlist.add(new Expr("mixed", graph.getId()));
+        } else if (fullydirected) {
             exprlist.add(new Expr("directed", graph.getId()));
         } else if (fullyundirected) {
             exprlist.add(new Expr("undirected", graph.getId()));
@@ -53,7 +58,9 @@ public final class AbstractSyntaxRuleConverter {
 
         exprlist.addAll(generateGraphRules(graph));
 
-        //TODO: read graph properties
+        for (String attributeKey : graph.getAttributeKeySet()) {
+            exprlist.add(new Expr("attribute", attributeKey, graph.getId(), graph.getAttribute(attributeKey)));
+        }
 
         return exprlist;
     }
@@ -64,11 +71,10 @@ public final class AbstractSyntaxRuleConverter {
      * @return the generated rules
      */
     private static List<Expr> generateNodeRules(Node node) {
-        //TODO: neighbourcount toevoegen. Want degrees tellen ook loops naar jezelf mee, je kan dus meerdere lijnen naar dezelfde hebben en loops worden ook meegerekend.
-        // TODO: Deze worden 2x meegerkend/
         List<Expr> exprlist = new LinkedList<>();
 
         exprlist.add(new Expr("node",node.getId()));
+        exprlist.add(new Expr("neighbourcount", String.valueOf(GraphUtils.neighbourCount(node))));
 
         exprlist.add(new Expr("degree",node.getId(),String.valueOf(node.getDegree())));
         exprlist.add(new Expr("indegree",node.getId(),String.valueOf(node.getInDegree())));
@@ -126,7 +132,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param  graph the graph for which to generate the rules
      * @return the generated rules
      */
-    public static List<Expr> generateGraphRules(Graph graph) {
+    public static List<Expr> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
         List<Expr> exprlist = new LinkedList<>();
         exprlist.add(new Expr("graph",graph.getId()));
 
@@ -153,7 +159,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param  graph the graph for which to generate the rules
      * @return the generated rules
      */
-    private static List<Expr> generateGraphTypeRules(Graph graph){
+    private static List<Expr> generateGraphTypeRules(Graph graph) throws UnknownGraphTypeException {
         List<Expr> exprlist = new LinkedList<>();
         if (graph instanceof SingleGraph) {
             exprlist.add(new Expr("singlegraph", graph.getId()));
@@ -162,7 +168,8 @@ public final class AbstractSyntaxRuleConverter {
             exprlist.add(new Expr("multigraph", graph.getId()));
         }
         else {
-            //TODO, figure out which class it is then and throw an error.
+            throw new UnknownGraphTypeException("Unknown graph type: " + graph.getClass().getName());
+             //TODO, figure out which class it is then and throw an error.
             //If You manage to do this, you wouldn't the if/else structure above and can
             //just apply it directly.
         }
