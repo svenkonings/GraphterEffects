@@ -1,11 +1,13 @@
-import graafvis.*;
-import graafvis.checkers.Checker;
+package graafvis.checkers;
+
+import graafvis.ErrorListener;
+import graafvis.GraafvisLexer;
+import graafvis.GraafvisParser;
 import graafvis.errors.VisError;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 /**
  *
  */
-public class CheckerTest {
+public class ConsequenceBlacklistTest {
 
     @Test
     public void testDefaultBlackList() {
@@ -62,10 +64,10 @@ public class CheckerTest {
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
 
-        ParseTreeWalker walker = new ParseTreeWalker();
-        Checker checker = new Checker();
-        walker.walk(checker, parser.program());
-        return checker.getErrors();
+        GraafvisParser.ProgramContext ctx = parser.program();
+        ConsequenceBlacklist blacklist = new ConsequenceBlacklist();
+        ctx.accept(blacklist);
+        return blacklist.getErrors();
     }
 
 
