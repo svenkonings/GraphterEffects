@@ -12,7 +12,13 @@ import java.util.stream.Collectors;
 public class TuProlog {
     // More generic version, parses the given String
     public static Term term(String term) {
-        return Term.createTerm(term);
+        System.out.println(term);
+        try {
+            return Term.createTerm(term);
+        } catch (InvalidTermException e) {
+            // TODO: Attributes, labels and names should probably be Strings anyway
+            return Term.createTerm(String.format("\"%s\"", term));
+        }
     }
 
     // More generic version, parses the given String
@@ -90,9 +96,9 @@ public class TuProlog {
         prolog = new Prolog();
     }
 
-    public TuProlog(Term... terms) throws InvalidTheoryException {
+    public TuProlog(Collection<Term> terms) throws InvalidTheoryException {
         this();
-        setTheory(terms);
+        setTheory(terms.toArray(new Term[0]));
     }
 
     public void addTheory(Term... terms) throws InvalidTheoryException {

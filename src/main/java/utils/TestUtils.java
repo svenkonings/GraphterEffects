@@ -1,86 +1,86 @@
 package utils;
 
+import alice.tuprolog.InvalidTheoryException;
+import alice.tuprolog.Term;
+import compiler.prolog.TuProlog;
 import org.graphstream.graph.Element;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Jatalog;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static compiler.prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
-import static utils.ExprUtils.elementExpr;
+import static utils.TermUtils.elementTerm;
 
 public final class TestUtils {
 
-    public static Jatalog createDatabase() throws DatalogException {
-
-        Jatalog jatalog = new Jatalog();
-
-        jatalog.fact("parent", "a", "aa")
-                .fact("parent", "a", "ab")
-                .fact("parent", "aa", "aaa")
-                .fact("parent", "aa", "aab")
-                .fact("parent", "aaa", "aaaa")
-                .fact("parent", "c", "ca");
-
-        jatalog.rule(Expr.expr("ancestor", "X", "Y"), Expr.expr("parent", "X", "Z"), Expr.expr("ancestor", "Z", "Y"))
-                .rule(Expr.expr("ancestor", "X", "Y"), Expr.expr("parent", "X", "Y"))
-                .rule(Expr.expr("sibling", "X", "Y"), Expr.expr("parent", "Z", "X"), Expr.expr("parent", "Z", "Y"), Expr.ne("X", "Y"))
-                .rule(Expr.expr("related", "X", "Y"), Expr.expr("ancestor", "Z", "X"), Expr.expr("ancestor", "Z", "Y"));
-
-        return jatalog;
+    public static TuProlog createDatabase() throws InvalidTheoryException {
+        TuProlog prolog = new TuProlog();
+        prolog.addTheory(
+                struct("parent", term("a"), term("aa")),
+                struct("parent", term("a"), term("ab")),
+                struct("parent", term("aa"), term("aaa")),
+                struct("parent", term("aa"), term("aab")),
+                struct("parent", term("aaa"), term("aaaa")),
+                struct("parent", term("c"), term("ca"))
+        );
+        prolog.addTheory(
+                struct("ancestor", var("X"), var("Y")),
+                struct("parent", var("X"), var("Z")),
+                struct("ancestor", var("Z"), var("Y")),
+                and(struct("ancestor", var("X"), var("Y")), struct("parent", var("X"), var("Y"))),
+                and(struct("sibling", var("X"), var("Y")), struct("parent", var("Z"), var("X")), struct("parent", var("Z"), var("Y")), struct("=\\\\=", var("X"), var("Y"))),
+                and(struct("related", var("X"), var("Y")), struct("ancestor", var("Z"), var("X")), struct("ancestor", var("Z"), var("Y")))
+        );
+        return prolog;
     }
 
-    public static boolean mapContains(Map<String, String> map, String key, String value) {
+    public static boolean mapContains(Map<String, Term> map, String key, Term value) {
         return map.containsKey(key) && map.get(key).equals(value);
     }
 
-    public static boolean mapContains(Map<String, String> haystack, Map<String, String> needle) {
+    public static boolean mapContains(Map<String, Term> haystack, Map<String, Term> needle) {
         return haystack.entrySet().containsAll(needle.entrySet());
     }
 
-    public static boolean answerContains(Collection<Map<String, String>> answers, String... kvPairs) throws Exception {
-        Map<String, String> needle = new HashMap<>();
-        if(kvPairs.length % 2 != 0)
+    public static boolean answerContains(Collection<Map<String, Term>> answers, String... kvPairs) throws Exception {
+        Map<String, Term> needle = new HashMap<>();
+        if (kvPairs.length % 2 != 0)
             throw new Exception("kvPairs must be even");
-        for(int i = 0; i < kvPairs.length; i+=2) {
+        for (int i = 0; i < kvPairs.length; i += 2) {
             String k = kvPairs[i];
             String v = kvPairs[i + 1];
-            needle.put(k, v);
+            needle.put(k, term(v));
         }
-        for(Map<String, String> answer : answers) {
-            if(mapContains(answer, needle))
+        for (Map<String, Term> answer : answers) {
+            if (mapContains(answer, needle))
                 return true;
         }
         return false;
     }
 
-    public static void testPredicateValue(Jatalog jatalog, Element element, String predicate, String expectedID, String expectedValue) throws DatalogException {
-        Collection<Map<String, String>> answers;
-        answers = jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID, "Value"));
+    public static void testPredicateValue(TuProlog prolog, Element element, String predicate, String expectedID, String expectedValue) {
+        Collection<Map<String, Term>> answers = prolog.query(and(elementTerm(element), struct(predicate, term(expectedID), var("Value"))));
         assert answers.size() == 1;
         try {
-            assert TestUtils.answerContains(answers,"Value",expectedValue);
+            assert answerContains(answers, "Value", expectedValue);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void testAttributesCorrect(Jatalog jatalog, Element element) throws DatalogException {
+    public static void testAttributesCorrect(TuProlog prolog, Element element) {
         element.getAttributeKeySet().forEach(
                 attributeKey -> {
                     try {
-                        Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
+                        Collection<Map<String, Term>> answers = prolog.query(and(elementTerm(element), struct("attribute", term(attributeKey), term(element.getId()), var("Value"))));
                         String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
-                        assert TestUtils.answerContains(
-                                answers, "Value", expectedValue);
+                        assert answerContains(answers, "Value", expectedValue);
                     } catch (Exception e) {
 
                         e.printStackTrace();
@@ -90,8 +90,8 @@ public final class TestUtils {
     }
 
 
-    public static void testSimpleFact(Jatalog jatalog, Element element, String predicate, String expectedID, boolean shouldExist) throws DatalogException {
-        assertEquals(shouldExist, !jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID)).isEmpty());
+    public static void testSimpleFact(TuProlog prolog, Element element, String predicate, String expectedID, boolean shouldExist) {
+        assertEquals(shouldExist, !prolog.query(and(elementTerm(element), struct(predicate, term(expectedID)))).isEmpty());
     }
 
 

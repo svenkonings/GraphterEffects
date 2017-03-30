@@ -25,7 +25,7 @@ public class Solver {
     private final VisMap visMap;
 
     public Solver(List<Term> terms) throws InvalidTheoryException {
-        prolog = new TuProlog(terms.toArray(new Term[0]));
+        prolog = new TuProlog(terms);
         model = new Model();
         visMap = new VisMap(model);
     }

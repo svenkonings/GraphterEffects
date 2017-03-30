@@ -8,7 +8,7 @@ import static compiler.prolog.TuProlog.*;
 public class TuPrologTest {
     @Test
     public void test4() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
-        Struct clause0 = struct("node", list(struct("a"), struct("b")), struct("e"));
+        Struct clause0 = struct("node", list(term("a"), term("b")), term("e"));
         Struct clause1 = clause(struct("p", var("X")), struct("q", var("X")));
         Struct clause2 = struct("q", intVal(0));
 
@@ -46,10 +46,10 @@ public class TuPrologTest {
 
     @Test
     public void test5() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
-        Struct clause0 = struct("node", struct("a"));
-        Struct clause1 = struct("node", struct("b"));
-        Struct clause2 = struct("node", struct("c"));
-        Struct clause3 = struct("edge", struct("a"), struct("b"));
+        Struct clause0 = struct("node", term("a"));
+        Struct clause1 = struct("node", term("b"));
+        Struct clause2 = struct("node", term("c"));
+        Struct clause3 = struct("edge", term("a"), term("b"));
         Struct clause4 = clause(struct("test", var("N1"), var("N2")), and(
                 struct("node", var("N1")),
                 struct("node", var("N2")),
@@ -82,8 +82,8 @@ public class TuPrologTest {
 
     @Test
     public void test6() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
-        Struct clause0 = struct("mom", struct("a"), struct("c"));
-        Struct clause1 = struct("dad", struct("b"), struct("c"));
+        Struct clause0 = struct("mom", term("a"), term("c"));
+        Struct clause1 = struct("dad", term("b"), term("c"));
         Struct clause2 = clause(struct("parent", var("X")), or(
                 struct("mom", var("X"), var()),
                 struct("dad", var("X"), var())
