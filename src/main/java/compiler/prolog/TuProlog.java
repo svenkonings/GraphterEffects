@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class TuProlog {
     // More generic version, parses the given String
     public static Term term(String term) {
-        System.out.println(term);
         try {
             return Term.createTerm(term);
         } catch (InvalidTermException e) {

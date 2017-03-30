@@ -25,7 +25,11 @@ public class Solver {
     private final VisMap visMap;
 
     public Solver(List<Term> terms) throws InvalidTheoryException {
-        prolog = new TuProlog(terms);
+        this(new TuProlog(terms));
+    }
+
+    public Solver(TuProlog tuProlog) {
+        prolog = tuProlog;
         model = new Model();
         visMap = new VisMap(model);
     }
@@ -50,6 +54,7 @@ public class Solver {
             VisElem elem1 = visMap.get(term1);
             VisElem elem2 = visMap.get(term2);
             VisElem line = visMap.get(list(term1, term2));
+            line.set("type", "line");
             line.setVar("x1", elem1.getVar("centerX"));
             line.setVar("y1", elem1.getVar("centerY"));
             line.setVar("x2", elem2.getVar("centerX"));

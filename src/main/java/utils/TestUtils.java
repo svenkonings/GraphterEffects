@@ -1,6 +1,5 @@
 package utils;
 
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
 import org.graphstream.graph.Element;
@@ -18,27 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static utils.TermUtils.elementTerm;
 
 public final class TestUtils {
-
-    public static TuProlog createDatabase() throws InvalidTheoryException {
-        TuProlog prolog = new TuProlog();
-        prolog.addTheory(
-                struct("parent", term("a"), term("aa")),
-                struct("parent", term("a"), term("ab")),
-                struct("parent", term("aa"), term("aaa")),
-                struct("parent", term("aa"), term("aab")),
-                struct("parent", term("aaa"), term("aaaa")),
-                struct("parent", term("c"), term("ca"))
-        );
-        prolog.addTheory(
-                struct("ancestor", var("X"), var("Y")),
-                struct("parent", var("X"), var("Z")),
-                struct("ancestor", var("Z"), var("Y")),
-                and(struct("ancestor", var("X"), var("Y")), struct("parent", var("X"), var("Y"))),
-                and(struct("sibling", var("X"), var("Y")), struct("parent", var("Z"), var("X")), struct("parent", var("Z"), var("Y")), struct("=\\\\=", var("X"), var("Y"))),
-                and(struct("related", var("X"), var("Y")), struct("ancestor", var("Z"), var("X")), struct("ancestor", var("Z"), var("Y")))
-        );
-        return prolog;
-    }
 
     public static boolean mapContains(Map<String, Term> map, String key, Term value) {
         return map.containsKey(key) && map.get(key).equals(value);
