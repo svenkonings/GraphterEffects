@@ -5,6 +5,11 @@ import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Jatalog;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,9 +50,9 @@ public final class TestUtils {
         Map<String, String> needle = new HashMap<>();
         if(kvPairs.length % 2 != 0)
             throw new Exception("kvPairs must be even");
-        for(int i = 0; i < kvPairs.length/2; i++) {
-            String k = kvPairs[i*2];
-            String v = kvPairs[i*2 + 1];
+        for(int i = 0; i < kvPairs.length; i+=2) {
+            String k = kvPairs[i];
+            String v = kvPairs[i + 1];
             needle.put(k, v);
         }
         for(Map<String, String> answer : answers) {
@@ -90,7 +95,25 @@ public final class TestUtils {
     }
 
 
+    public static void showImage(Image image) {
+        JFrame f = new JFrame();
+        JLabel label = new JLabel();
+        label.setIcon(new ImageIcon(image));
+        f.add(label);
+        f.setVisible(true);
+        f.pack();
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
 
-
+    public static void showSVG(File file, long time) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("\"/Program Files (x86)/Google/Chrome/Application/chrome.exe\"", file.getAbsolutePath(), "--new-window");
+        Process p = pb.start();
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        p.destroy();
+    }
 
 }

@@ -1,19 +1,23 @@
 package compiler.asrc;
 
+import alice.tuprolog.Term;
+import exceptions.UnknownGraphTypeException;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
-import utils.ExprUtils;
+import utils.GraphUtils;
 import utils.StringUtils;
 import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import static compiler.prolog.TuProlog.*;
 
 public final class AbstractSyntaxRuleConverter {
 
@@ -26,11 +30,11 @@ public final class AbstractSyntaxRuleConverter {
      * @return the image at the specified URL
      */
 
-    public static List<Expr> convertToRules(Graph graph) throws DatalogException {
-        List<Expr> exprlist = new LinkedList<>();
+    public static List<Term> convertToRules(Graph graph) throws DatalogException, UnknownGraphTypeException {
+        List<Term> termList = new ArrayList<>();
 
         for (Node node: graph.getNodeSet()){
-            exprlist.addAll(generateNodeRules(node));
+            termList.addAll(generateNodeRules(node));
         }
 
         boolean fullydirected = true;
@@ -39,23 +43,24 @@ public final class AbstractSyntaxRuleConverter {
         for (Edge edge: graph.getEdgeSet()) {
             fullydirected = fullydirected && edge.isDirected();
             fullyundirected = fullyundirected && !edge.isDirected();
-            exprlist.addAll(generateEdgeRules(edge));
+            termList.addAll(generateEdgeRules(edge));
         }
 
-        //TODO: is an graph with 0 edges directed or undirected or mixed?
-        if (fullydirected) {
-            exprlist.add(new Expr("directed", graph.getId()));
+        if (fullydirected && fullyundirected) {
+            termList.add(fact(compound("directed", atom(graph.getId()))));
+            termList.add(fact(compound("undirected", atom(graph.getId()))));
+            termList.add(fact(compound("mixed", atom(graph.getId()))));
+        } else if (fullydirected) {
+            termList.add(fact(compound("directed", atom(graph.getId()))));
         } else if (fullyundirected) {
-            exprlist.add(new Expr("undirected", graph.getId()));
+            termList.add(fact(compound("undirected", atom(graph.getId()))));
         } else {
-            exprlist.add(new Expr("mixed", graph.getId()));
+            termList.add(fact(compound("mixed", atom(graph.getId()))));
         }
 
-        exprlist.addAll(generateGraphRules(graph));
+        termList.addAll(generateGraphRules(graph));
 
-        //TODO: read graph properties
-
-        return exprlist;
+        return termList;
     }
 
     /**
@@ -63,16 +68,15 @@ public final class AbstractSyntaxRuleConverter {
      * @param  node the node for which to generate the rules
      * @return the generated rules
      */
-    private static List<Expr> generateNodeRules(Node node) {
-        //TODO: neighbourcount toevoegen. Want degrees tellen ook loops naar jezelf mee, je kan dus meerdere lijnen naar dezelfde hebben en loops worden ook meegerekend.
-        // TODO: Deze worden 2x meegerkend/
-        List<Expr> exprlist = new LinkedList<>();
+    private static List<Term> generateNodeRules(Node node) {
+        List<Term> termList = new ArrayList<>();
+        
+        termList.add(fact(compound("node",atom(node.getId()))));
+        termList.add(fact(compound("neighbourcount", intVal(GraphUtils.neighbourCount(node)))));
 
-        exprlist.add(new Expr("node",node.getId()));
-
-        exprlist.add(new Expr("degree",node.getId(),String.valueOf(node.getDegree())));
-        exprlist.add(new Expr("indegree",node.getId(),String.valueOf(node.getInDegree())));
-        exprlist.add(new Expr("outdegree",node.getId(),String.valueOf(node.getOutDegree())));
+        termList.add(fact(compound("degree", atom(node.getId()), intVal(node.getDegree()))));
+        termList.add(fact(compound("indegree", atom(node.getId()), intVal(node.getInDegree()))));
+        termList.add(fact(compound("outdegree", atom(node.getId()), intVal(node.getOutDegree()))));
 
         int neighbourcount = 0;
         Iterator it = node.getNeighborNodeIterator();
@@ -80,14 +84,14 @@ public final class AbstractSyntaxRuleConverter {
             neighbourcount++;
             it.next();
         }
-        exprlist.add(new Expr("neighbourcount",node.getId(),String.valueOf(neighbourcount)));
+        termList.add(fact(compound("neighbourcount",atom(node.getId()),intVal((neighbourcount)))));
 
-        exprlist.add(new Expr("attributecount",node.getId(), String.valueOf(node.getAttributeCount())));
+        termList.add(fact(compound("attributecount", atom(node.getId()), intVal(node.getAttributeCount()))));
         for (String attributeKey: node.getAttributeKeySet()){
             String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
-            exprlist.add(new Expr("attribute",attributeKey, node.getId(), attributeString ));
+            termList.add(fact(compound("attribute", atom(attributeKey), atom(node.getId()), atom(attributeString) )));
         }
-        return exprlist;
+        return termList;
     }
 
     // attriute("label",X,T) -> label(X,T).
@@ -98,27 +102,24 @@ public final class AbstractSyntaxRuleConverter {
      * @param  edge the edge for which to generate the rules
      * @return the generated rules
      */
-    private static List<Expr> generateEdgeRules(Edge edge) {
+    private static List<Term> generateEdgeRules(Edge edge) {
         //TODO: Willen we iets doen met loop? (Does the source and target of this edge identify the same node ?)
-        List<Expr> exprlist = new LinkedList<>();
+        List<Term> termList = new ArrayList<>();
 
-        exprlist.add(new Expr("edge",edge.getTargetNode().getId(), edge.getSourceNode().getId(),edge.getId()));
+        termList.add(fact(compound("edge",atom(edge.getTargetNode().getId()), atom(edge.getSourceNode().getId()), atom(edge.getId()))));
 
         if (edge.isDirected()) {
-            exprlist.add(new Expr("directed", edge.getId()));
+            termList.add(fact(compound("directed",atom(edge.getId()))));
         } else {
-            exprlist.add(new Expr("undirected", edge.getId()));
+            termList.add(fact(compound("undirected",atom(edge.getId()))));
         }
 
-        exprlist.add(new Expr("attributecount",edge.getId(), String.valueOf(edge.getAttributeCount())));
+        termList.add(fact(compound("attributecount", atom(edge.getId()), intVal(edge.getAttributeCount()))));
         for (String attributeKey: edge.getAttributeKeySet()){
             String attributeString = StringUtils.ObjectToString(edge.getAttribute(attributeKey));
-            exprlist.add(new Expr("attribute", attributeKey, edge.getId(), attributeString));
+            termList.add(fact(compound("attribute", atom(attributeKey), atom(edge.getId()), atom(attributeString) )));
         }
-
-
-
-        return exprlist;
+        return termList;
     }
 
     /**
@@ -126,17 +127,18 @@ public final class AbstractSyntaxRuleConverter {
      * @param  graph the graph for which to generate the rules
      * @return the generated rules
      */
-    public static List<Expr> generateGraphRules(Graph graph) {
-        List<Expr> exprlist = new LinkedList<>();
-        exprlist.add(new Expr("graph",graph.getId()));
+    public static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
+        List<Term> termList = new ArrayList<>();
+        termList.add(fact(compound("graph",atom(graph.getId()))));
 
-        exprlist.addAll(generateGraphTypeRules(graph));
-        exprlist.add(new Expr("edgecount",graph.getId(), String.valueOf(graph.getEdgeCount())));
-        exprlist.add(new Expr("nodecount",graph.getId(), String.valueOf(graph.getNodeCount())));
+        termList.addAll(generateGraphTypeRules(graph));
+        termList.add(fact(compound("edgecount",atom(graph.getId()),intVal((graph.getEdgeSet().size())))));
+        termList.add(fact(compound("nodecount",atom(graph.getId()),intVal((graph.getEdgeSet().size())))));
 
-        exprlist.add(new Expr("attributecount",graph.getId(), String.valueOf(graph.getAttributeCount())));
+        termList.add(fact(compound("attributecount", atom(graph.getId()), intVal(graph.getAttributeCount()))));
         for (String attributeKey: graph.getAttributeKeySet()){
-            exprlist.add(new Expr(attributeKey, graph.getId(), graph.getAttribute(attributeKey)));
+            String attributeString = StringUtils.ObjectToString(graph.getAttribute(attributeKey));
+            termList.add(fact(compound("attribute", atom(attributeKey), atom(graph.getId()), atom(attributeString) ))); //TODO: Attributes aren't always strings.
         }
 
         //For the minimum spanning tree:
@@ -144,8 +146,9 @@ public final class AbstractSyntaxRuleConverter {
         kruskal.init(graph);
         kruskal.compute();
         kruskal.getTreeEdges().forEach(edge ->
-        exprlist.add(new Expr("inmst", ExprUtils.elementExpr(edge).getTerms())));
-        return exprlist;
+                termList.add(fact(compound("inmst", atom(edge.getId()))))
+        );
+        return termList;
     }
 
     /**
@@ -153,20 +156,21 @@ public final class AbstractSyntaxRuleConverter {
      * @param  graph the graph for which to generate the rules
      * @return the generated rules
      */
-    private static List<Expr> generateGraphTypeRules(Graph graph){
-        List<Expr> exprlist = new LinkedList<>();
+    private static List<Term> generateGraphTypeRules(Graph graph) throws UnknownGraphTypeException {
+        List<Term> termList = new LinkedList<>();
         if (graph instanceof SingleGraph) {
-            exprlist.add(new Expr("singlegraph", graph.getId()));
+            termList.add(fact(compound("singlegraph",atom(graph.getId()))));
         }
         else if (graph instanceof MultiGraph) {
-            exprlist.add(new Expr("multigraph", graph.getId()));
+            termList.add(fact(compound("multigraph", atom(graph.getId()))));
         }
         else {
-            //TODO, figure out which class it is then and throw an error.
+            throw new UnknownGraphTypeException("Unknown graph type: " + graph.getClass().getName());
+             //TODO, figure out which class it is then and throw an error.
             //If You manage to do this, you wouldn't the if/else structure above and can
             //just apply it directly.
         }
-        return exprlist;
+        return termList;
     }
 
 

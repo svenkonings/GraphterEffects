@@ -1,8 +1,7 @@
 package graafvis.checkers;
 
-
-import graafvis.GraafvisBaseVisitor;
-import graafvis.GraafvisParser;
+import graafvis.grammar.GraafvisBaseVisitor;
+import graafvis.grammar.GraafvisParser;
 
 /**
  *

@@ -1,5 +1,7 @@
 package utils;
 
+import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -74,6 +76,11 @@ public final class FileUtils {
     public static String ImageToBase64(File file) throws IOException {
         return Base64.getEncoder().encodeToString(org.apache.commons.io.FileUtils.readFileToByteArray(file));
     }
+
+    public static String readFromFile(File file) throws IOException {
+        return org.apache.commons.io.FileUtils.readFileToString(file, "UTF-8");
+    }
+
 
     /**
      * Reads a file and returns a String containing its Base64 String representation that can be used in an SVG image.

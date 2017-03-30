@@ -1,16 +1,8 @@
 package compiler.asrc;
 
-import compiler.graphloader.Importer;
-import org.graphstream.graph.Graph;
-import org.junit.Test;
-import utils.FileUtils;
-import za.co.wstoop.jatalog.Jatalog;
-
-import static compiler.asrc.GraphRuleTests.generateGraphJatalog;
-import static compiler.asrc.GraphRuleTests.graphTest;
-
 public final class AbstractSyntaxRuleConverterTest {
 
+    /*
     @Test
     public void convertToRulesGraph1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
@@ -31,5 +23,13 @@ public final class AbstractSyntaxRuleConverterTest {
         Jatalog jatalog = generateGraphJatalog(graph);
         graphTest(jatalog, graph);
     }
+
+    @Test
+    public void convertToRulesGraph4() throws Exception {
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        Jatalog jatalog = generateGraphJatalog(graph);
+        graphTest(jatalog, graph);
+    }
+    */
 
 }

@@ -1,24 +1,8 @@
 package compiler.asrc;
 
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.graph.implementations.SingleGraph;
-import utils.TestUtils;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Jatalog;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static utils.TestUtils.*;
-
 public class GraphRuleTests {
 
+    /*
     public static Jatalog generateGraphJatalog(Graph graph) throws DatalogException {
         List<Expr> exprList = AbstractSyntaxRuleConverter.convertToRules(graph);
         Jatalog jatalog = new Jatalog();
@@ -132,4 +116,5 @@ public class GraphRuleTests {
             }
         });
     }
+    */
 }

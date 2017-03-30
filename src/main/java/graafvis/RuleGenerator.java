@@ -1,5 +1,8 @@
 package graafvis;
 
+import graafvis.grammar.GraafvisBaseVisitor;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
