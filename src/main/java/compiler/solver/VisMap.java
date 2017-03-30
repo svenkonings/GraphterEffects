@@ -1,11 +1,13 @@
 package compiler.solver;
 
+import alice.tuprolog.Term;
 import org.chocosolver.solver.Model;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
- * Represents a mapping of keys (consisting of multiple strings) to visualization elements.
+ * Represents a mapping of terms to visualization elements.
  */
 public class VisMap {
 
@@ -13,7 +15,7 @@ public class VisMap {
     private final Model model;
 
     /** The internal mapping. */
-    private final HashMap<List<String>, VisElem> mapping;
+    private final HashMap<String, VisElem> mapping;
 
     /**
      * Creates a new {@code VisMap} with the given model and an empty mapping.
@@ -26,13 +28,13 @@ public class VisMap {
     }
 
     /**
-     * Get or compute the visualization element that belongs to the given key.
+     * Get or compute the visualization element that belongs to the given term.
      *
-     * @param key The given key.
+     * @param term The given term.
      * @return The visualization element.
      */
-    public VisElem get(String... key) {
-        return get(Arrays.asList(key));
+    public VisElem get(Term term) {
+        return get(term.toString());
     }
 
     /**
@@ -41,17 +43,18 @@ public class VisMap {
      * @param key The given key.
      * @return The visualization element.
      */
-    public VisElem get(List<String> key) {
-        return mapping.computeIfAbsent(Collections.unmodifiableList(key), k -> new VisElem(model));
+    public VisElem get(String key) {
+        return mapping.computeIfAbsent(key, k -> new VisElem(model));
     }
 
     /**
-     * Get a copy of the list of visualiztion elements of this map
+     * Returns a Collection view of the values contained in this map. The collection is backed by the map, so changes to
+     * the map are reflected in the collection, and vice-versa.
      *
-     * @return A list of visualization elements.
+     * @return A view of the values contained in this map.
      */
-    public List<VisElem> values() {
-        return new ArrayList<>(mapping.values());
+    public Collection<VisElem> values() {
+        return mapping.values();
     }
 
     @Override

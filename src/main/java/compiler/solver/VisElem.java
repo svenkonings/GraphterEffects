@@ -1,6 +1,7 @@
 package compiler.solver;
 
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.expression.discrete.arithmetic.ArExpression;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.HashMap;
@@ -15,8 +16,8 @@ import java.util.Objects;
 // TODO: Improve exception handling (or return bool?)
 public class VisElem {
 
-    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
     private static final int MIN_INT_BOUND = 0;
+    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
 
     /** The model associated with this element. */
     private final Model model;
@@ -36,41 +37,6 @@ public class VisElem {
         this.model = model;
         this.values = new HashMap<>();
         this.vars = new HashMap<>();
-        setDefaultVars();
-    }
-
-    /**
-     * Initializes the default variables. The defaults are:
-     * <table summary="Defaults" border="1">
-     * <tr><td><b>Name</b></td> <td><b>Description</b></td> <td><b>Value</b></td></tr>
-     * <tr><td>z</td>           <td>z position</td>         <td>[MIN, MAX]</td></tr>
-     * <tr><td>x1</td>          <td>x start position</td>   <td>[0, MAX]</td></tr>
-     * <tr><td>y1</td>          <td>y start position</td>   <td>[0, MAX]</td></tr>
-     * <tr><td>width</td>       <td>width</td>              <td>[0, MAX]</td></tr>
-     * <tr><td>height</td>      <td>height</td>             <td>[0, MAX]</td></tr>
-     * <tr><td>x2</td>          <td>x end position</td>     <td>x1 + width</td></tr>
-     * <tr><td>y2</td>          <td>y end position</td>     <td>y1 + height</td></tr>
-     * <tr><td>radiusX</td>     <td>x radius</td>           <td>width / 2</td></tr>
-     * <tr><td>radiusY</td>     <td>y radius</td>           <td>height / 2</td></tr>
-     * <tr><td>centerX</td>     <td>x center position</td>  <td>x1 + radiusX</td></tr>
-     * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
-     * </table>
-     */
-    // TODO: Only add defaults if they don't exist at the end of solve()
-    private void setDefaultVars() {
-        setVar("z", MIN_INT_BOUND, MAX_INT_BOUND);
-
-        IntVar x1 = setVar("x1", 0, MAX_INT_BOUND);
-        IntVar y1 = setVar("y1", 0, MAX_INT_BOUND);
-        IntVar width = setVar("width", 0, MAX_INT_BOUND);
-        IntVar height = setVar("height", 0, MAX_INT_BOUND);
-        setVar("x2", x1.add(width).intVar());
-        setVar("y2", y1.add(height).intVar());
-
-        IntVar radiusX = setVar("radiusX", width.div(2).intVar());
-        IntVar radiusY = setVar("radiusY", height.div(2).intVar());
-        setVar("centerX", x1.add(radiusX).intVar());
-        setVar("centerY", y1.add(radiusY).intVar());
     }
 
     /**
@@ -163,20 +129,23 @@ public class VisElem {
     /**
      * Sets the given name-variable pair. The variable being an {@link IntVar}.
      *
-     * @param name The given name.
-     * @param var  The given {@link IntVar} variable.
+     * @param name   The given name.
+     * @param newVar The given {@link IntVar} variable.
      * @return The variable.
      * @throws ElementException If the name is already assigned to a value.
      */
-    public IntVar setVar(String name, IntVar var) {
+    public IntVar setVar(String name, IntVar newVar) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
         } else if (vars.containsKey(name)) {
-            vars.get(name).eq(var).post();
+            IntVar var = vars.get(name);
+            if (!Objects.equals(var, newVar)) {
+                var.eq(newVar).post();
+            }
             return var;
         } else {
-            vars.put(name, var);
-            return var;
+            vars.put(name, newVar);
+            return newVar;
         }
     }
 
@@ -243,7 +212,11 @@ public class VisElem {
      * @return The {@link IntVar} variable.
      */
     public IntVar getVar(String name) {
-        return vars.get(name);
+        if (vars.containsKey(name)) {
+            return vars.get(name);
+        } else {
+            return setVar(name, MIN_INT_BOUND, MAX_INT_BOUND);
+        }
     }
 
     /**
@@ -270,5 +243,75 @@ public class VisElem {
      */
     public Map<String, IntVar> getVars() {
         return new HashMap<>(vars);
+    }
+
+    /**
+     * Initializes the default variables. The defaults are:
+     * <table summary="Defaults" border="1">
+     * <tr><td><b>Name</b></td> <td><b>Description</b></td> <td><b>Value</b></td></tr>
+     * <tr><td>z</td>           <td>z position</td>         <td>[MIN, MAX]</td></tr>
+     * <tr><td>x1</td>          <td>x start position</td>   <td>[0, MAX]</td></tr>
+     * <tr><td>y1</td>          <td>y start position</td>   <td>[0, MAX]</td></tr>
+     * <tr><td>width</td>       <td>width</td>              <td>[0, MAX]</td></tr>
+     * <tr><td>height</td>      <td>height</td>             <td>[0, MAX]</td></tr>
+     * <tr><td>x2</td>          <td>x end position</td>     <td>x1 + width</td></tr>
+     * <tr><td>y2</td>          <td>y end position</td>     <td>y1 + height</td></tr>
+     * <tr><td>radiusX</td>     <td>x radius</td>           <td>width / 2</td></tr>
+     * <tr><td>radiusY</td>     <td>y radius</td>           <td>height / 2</td></tr>
+     * <tr><td>centerX</td>     <td>x center position</td>  <td>x1 + radiusX</td></tr>
+     * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
+     * </table>
+     */
+    public void setDefaults() {
+        getVar("z");
+
+        setDefaultDimensions("width", "radiusX");
+        setDefaultDimensions("height", "radiusY");
+
+        setDefaultPositions("x1", "centerX", "x2", "width", "radiusX");
+        setDefaultPositions("y1", "centerY", "y2", "height", "radiusY");
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void setDefaultDimensions(String diameter, String radius) {
+        boolean hasDiameter = hasVar(diameter);
+        boolean hasRadius = hasVar(radius);
+        if (!hasDiameter && !hasRadius) {
+            setVar(radius, getVar(diameter).div(2).intVar());
+        } else if (hasDiameter) {
+            setConstraint(radius, hasRadius, getVar(diameter).div(2));
+        } else if (hasRadius) {
+            setConstraint(diameter, hasDiameter, getVar(radius).mul(2));
+        }
+    }
+
+    // Assumes dimensions are set
+    @SuppressWarnings("ConstantConditions")
+    private void setDefaultPositions(String start, String center, String end, String diameter, String radius) {
+        boolean hasStart = hasVar(start);
+        boolean hasCenter = hasVar(center);
+        boolean hasEnd = hasVar(end);
+        if (!hasStart && !hasCenter && !hasEnd) {
+            setVar(center, getVar(start).add(getVar(radius)).intVar());
+            setVar(end, getVar(start).add(getVar(diameter)).intVar());
+        } else if (hasStart) {
+            setConstraint(center, hasCenter, getVar(start).add(getVar(radius)));
+            setConstraint(end, hasEnd, getVar(start).add(getVar(diameter)));
+        } else if (hasCenter) {
+            setConstraint(start, hasStart, getVar(center).sub(getVar(radius)));
+            setConstraint(end, hasEnd, getVar(center).add(getVar(radius)));
+        } else if (hasEnd) {
+            setConstraint(start, hasStart, getVar(end).sub(getVar(diameter)));
+            setConstraint(center, hasCenter, getVar(end).sub(getVar(radius)));
+        }
+//        getVar(start).gt(getVar(end)).post(); TODO: Not guaranteed for lines
+    }
+
+    private void setConstraint(String name, boolean exists, ArExpression constraint) {
+        if (exists) {
+            constraint.eq(getVar(name)).post();
+        } else {
+            setVar(name, constraint.intVar());
+        }
     }
 }

@@ -1,135 +1,118 @@
 package compiler.asrc;
 
+import alice.tuprolog.InvalidTheoryException;
+import alice.tuprolog.Term;
+import compiler.prolog.TuProlog;
+import exceptions.UnknownGraphTypeException;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
-import utils.TestUtils;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Jatalog;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static compiler.prolog.TuProlog.struct;
+import static compiler.prolog.TuProlog.var;
 import static utils.TestUtils.*;
 
 public class GraphRuleTests {
 
-    public static Jatalog generateGraphJatalog(Graph graph) throws DatalogException {
-        List<Expr> exprList = AbstractSyntaxRuleConverter.convertToRules(graph);
-        Jatalog jatalog = new Jatalog();
-        addRules(jatalog,exprList);
-
-        return jatalog;
+    public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException, InvalidTheoryException {
+        List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
+        return new TuProlog(terms);
     }
 
-    public static void graphTest(Jatalog jatalog, Graph graph) throws DatalogException {
-        structureTest(jatalog,graph);
-        graphPropertiesTest(jatalog,graph);
-        graphIntegerInvariantsTest(jatalog,graph);
+    public static void graphTest(TuProlog prolog, Graph graph) {
+        structureTest(prolog, graph);
+        graphPropertiesTest(prolog, graph);
+        graphIntegerInvariantsTest(prolog, graph);
 
-        for (Node node: graph.getNodeSet()){
-            nodePropertiesTest(jatalog,node);
-            nodeIntegerInvariantsTest(jatalog,node);
+        for (Node node : graph.getNodeSet()) {
+            nodePropertiesTest(prolog, node);
+            nodeIntegerInvariantsTest(prolog, node);
         }
 
-        for (Edge edge: graph.getEdgeSet()){
-            edgePropertiesTest(jatalog, edge);
-            edgeIntegerInvariantsTest(jatalog,edge);
+        for (Edge edge : graph.getEdgeSet()) {
+            edgePropertiesTest(prolog, edge);
+            edgeIntegerInvariantsTest(prolog, edge);
         }
     }
 
-    public static void structureTest(Jatalog jatalog, Graph graph) throws DatalogException {
-        Collection<Map<String, String>> answers;
-
-        answers = jatalog.query(Expr.expr("node","ID"));
-        assert answers.size() == graph.getNodeSet().size();
-        Collection<Map<String, String>> finalAnswers = answers;
+    public static void structureTest(TuProlog prolog, Graph graph) {
+        Collection<Map<String, Term>> answers1 = prolog.query(struct("node", var("ID")));
+        assert answers1.size() == graph.getNodeSet().size();
         graph.getNodeSet().forEach(node -> {
             try {
-                TestUtils.answerContains(finalAnswers, "ID", node.getId());
+                answerContains(answers1, "ID", node.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        answers = jatalog.query(Expr.expr("edge","Target","Source","ID"));
-        assert answers.size() == graph.getEdgeSet().size();
-        Collection<Map<String, String>> finalAnswers1 = answers;
+        Collection<Map<String, Term>> answers2 = prolog.query(struct("edge", var("Target"), var("Source"), var("ID")));
+        assert answers2.size() == graph.getEdgeSet().size();
         graph.getEdgeSet().forEach(edge -> {
             try {
-                TestUtils.answerContains(finalAnswers1, "Target", edge.getTargetNode().getId(),
-                        "Source", edge.getSourceNode().getId(), "ID", edge.getId());
+                answerContains(answers2, "Target", edge.getTargetNode().getId(), "Source", edge.getSourceNode().getId(), "ID", edge.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public static void graphPropertiesTest(Jatalog jatalog, Graph graph) throws DatalogException {
+    public static void graphPropertiesTest(TuProlog prolog, Graph graph) {
         boolean fullydirected = true;
         boolean fullyundirected = true;
-        for (Edge edge: graph.getEdgeSet()) {
+        for (Edge edge : graph.getEdgeSet()) {
             fullydirected = fullydirected && edge.isDirected();
             fullyundirected = fullyundirected && !edge.isDirected();
         }
 
-        testSimpleFact(jatalog,graph,"directed",graph.getId(),fullydirected);
-        testSimpleFact(jatalog,graph,"undirected",graph.getId(),fullyundirected);
-        testSimpleFact(jatalog,graph,"mixed",graph.getId(),!(fullydirected||fullyundirected));
+        testSimpleFact(prolog, graph, "directed", graph.getId(), fullydirected);
+        testSimpleFact(prolog, graph, "undirected", graph.getId(), fullyundirected);
+        testSimpleFact(prolog, graph, "mixed", graph.getId(), !(fullydirected || fullyundirected));
 
-        testSimpleFact(jatalog,graph,"singlegraph",graph.getId(),graph instanceof SingleGraph);
-        testSimpleFact(jatalog,graph,"multigraph",graph.getId(),graph instanceof MultiGraph);
+        testSimpleFact(prolog, graph, "singlegraph", graph.getId(), graph instanceof SingleGraph);
+        testSimpleFact(prolog, graph, "multigraph", graph.getId(), graph instanceof MultiGraph);
 
-        testAttributesCorrect(jatalog,graph);
+        testAttributesCorrect(prolog, graph);
     }
 
-    public static void graphIntegerInvariantsTest(Jatalog jatalog, Graph graph) throws DatalogException {
-        testPredicateValue(jatalog,graph,"nodecount",graph.getId(),String.valueOf(graph.getNodeSet().size()));
-        testPredicateValue(jatalog,graph,"edgecount",graph.getId(),String.valueOf(graph.getEdgeSet().size()));
-        testPredicateValue(jatalog,graph,"attributecount",graph.getId(),String.valueOf(graph.getAttributeKeySet().size()));
+    public static void graphIntegerInvariantsTest(TuProlog prolog, Graph graph) {
+        testPredicateValue(prolog, graph, "nodecount", graph.getId(), String.valueOf(graph.getNodeSet().size()));
+        testPredicateValue(prolog, graph, "edgecount", graph.getId(), String.valueOf(graph.getEdgeSet().size()));
+        testPredicateValue(prolog, graph, "attributecount", graph.getId(), String.valueOf(graph.getAttributeKeySet().size()));
     }
 
-    public static void nodePropertiesTest(Jatalog jatalog, Node node) throws DatalogException {
-        testAttributesCorrect(jatalog,node);
+    public static void nodePropertiesTest(TuProlog prolog, Node node) {
+        testAttributesCorrect(prolog, node);
     }
 
-    public static void nodeIntegerInvariantsTest(Jatalog jatalog, Node node) throws DatalogException {
-        testPredicateValue(jatalog,node,"degree",node.getId(),String.valueOf(node.getDegree()));
-        testPredicateValue(jatalog,node,"indegree",node.getId(),String.valueOf(node.getInDegree()));
-        testPredicateValue(jatalog,node,"outdegree",node.getId(),String.valueOf(node.getOutDegree()));
-        testPredicateValue(jatalog,node,"attributecount",node.getId(),String.valueOf(node.getAttributeCount()));
+    public static void nodeIntegerInvariantsTest(TuProlog prolog, Node node) {
+        testPredicateValue(prolog, node, "degree", node.getId(), String.valueOf(node.getDegree()));
+        testPredicateValue(prolog, node, "indegree", node.getId(), String.valueOf(node.getInDegree()));
+        testPredicateValue(prolog, node, "outdegree", node.getId(), String.valueOf(node.getOutDegree()));
+        testPredicateValue(prolog, node, "attributecount", node.getId(), String.valueOf(node.getAttributeCount()));
 
         int neighbourcount = 0;
         Iterator it = node.getNeighborNodeIterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             neighbourcount++;
             it.next();
         }
-        testPredicateValue(jatalog,node,"neighbourcount",node.getId(),String.valueOf(neighbourcount));
+        testPredicateValue(prolog, node, "neighbourcount", node.getId(), String.valueOf(neighbourcount));
     }
 
-    public static void edgePropertiesTest(Jatalog jatalog, Edge edge) throws DatalogException {
-        testSimpleFact(jatalog,edge,"directed",edge.getId(),edge.isDirected());
-        testSimpleFact(jatalog,edge,"undirected",edge.getId(),!edge.isDirected());
-        testAttributesCorrect(jatalog,edge);
+    public static void edgePropertiesTest(TuProlog prolog, Edge edge) {
+        testSimpleFact(prolog, edge, "directed", edge.getId(), edge.isDirected());
+        testSimpleFact(prolog, edge, "undirected", edge.getId(), !edge.isDirected());
+        testAttributesCorrect(prolog, edge);
     }
 
-    public static void edgeIntegerInvariantsTest(Jatalog jatalog, Edge edge) throws DatalogException {
-        testPredicateValue(jatalog,edge,"attributecount",edge.getId(),String.valueOf(edge.getAttributeCount()));
-    }
-
-
-    public static void addRules(Jatalog jatalog, List<Expr> facts) {
-        facts.forEach(fact -> {
-            try {
-                jatalog.fact(fact);
-            } catch (DatalogException e) {
-                e.printStackTrace();
-            }
-        });
+    public static void edgeIntegerInvariantsTest(TuProlog prolog, Edge edge) {
+        testPredicateValue(prolog, edge, "attributecount", edge.getId(), String.valueOf(edge.getAttributeCount()));
     }
 }

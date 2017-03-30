@@ -39,14 +39,13 @@ public class SvgDocumentGenerator {
      * @param element  The given element.
      * @param visElems The given list of visualization elements.
      */
+    // TODO: Improve calculation
     private static void setViewBox(Element element, List<VisElem> visElems) {
-        int minX = min(visElems, "x1");
-        int minY = min(visElems, "y1");
+//        int minX = min(visElems, "x1");
+//        int minY = min(visElems, "y1");
         int maxX = max(visElems, "x2");
         int maxY = max(visElems, "y2");
-        if (minX >= 0 && minY >= 0 && maxX >= 0 && maxY >= 0) {
-            element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, maxX, maxY));
-        }
+        element.addAttribute("viewBox", String.format("0 0 %d %d", maxX, maxY));
     }
 
     /**
@@ -59,7 +58,7 @@ public class SvgDocumentGenerator {
     private static int max(List<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
-                .max().orElse(-1);
+                .max().orElse(0);
     }
 
     /**
@@ -72,7 +71,7 @@ public class SvgDocumentGenerator {
     private static int min(List<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
-                .min().orElse(-1);
+                .min().orElse(0);
     }
 
     /**

@@ -1,181 +1,158 @@
 package compiler.solver;
 
+import alice.tuprolog.InvalidTheoryException;
+import alice.tuprolog.Term;
+import alice.tuprolog.Var;
+import compiler.prolog.TuProlog;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Jatalog;
-import za.co.wstoop.jatalog.Rule;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-import static za.co.wstoop.jatalog.Expr.expr;
+import static compiler.prolog.TuProlog.list;
+import static compiler.prolog.TuProlog.struct;
 
 public class Solver {
-    private final Jatalog jatalog;
+    private final TuProlog prolog;
     private final Model model;
     private final VisMap visMap;
 
-    public Solver(Jatalog jatalog) {
-        this.jatalog = jatalog;
-        this.model = new Model();
-        this.visMap = new VisMap(model);
+    public Solver(List<Term> terms) throws InvalidTheoryException {
+        this(new TuProlog(terms));
+    }
+
+    public Solver(TuProlog tuProlog) {
+        prolog = tuProlog;
+        model = new Model();
+        visMap = new VisMap(model);
     }
 
     // TODO: Extendibility
-    public List<VisElem> solve() throws DatalogException {
-        attributesPredicate("shape", "type");
-        attributesPredicate("pos", "x1", "y1");
-        attributesPredicate("pos", "x1", "y1", "z");
-        attributesPredicate("posX", "x1");
-        attributesPredicate("posY", "y1");
-        attributesPredicate("posZ", "z");
-        attributesPredicate("width", "width");
-        attributesPredicate("height", "height");
-        attributesPredicate("colour", "colour");
-        attributesPredicate("border-colour", "border-colour");
+    public List<VisElem> solve() {
+        attributePredicate("shape", "type");
+        attributePredicate("pos", "x1", "y1", "z");
+        attributePredicate("pos", "x1", "y1");
+        attributePredicate("posX", "x1");
+        attributePredicate("posY", "y1");
+        attributePredicate("posZ", "z");
+        attributePredicate("dimensions", "width", "height");
+        attributePredicate("width", "width");
+        attributePredicate("height", "height");
+        attributePredicate("colour", "colour");
+        attributePredicate("border-colour", "border-colour");
 
-        // TODO: More than two keys
-        varPredicate("alignX", vars -> vars.get(0).eq(vars.get(1)).post(), "x1", "x1");
-        varPredicate("alignY", vars -> vars.get(0).eq(vars.get(1)).post(), "y1", "y1");
+        predicate("line", (visMap, values) -> {
+            Term term1 = values.get("N1");
+            Term term2 = values.get("N2");
+            VisElem elem1 = visMap.get(term1);
+            VisElem elem2 = visMap.get(term2);
+            VisElem line = visMap.get(list(term1, term2));
+            line.set("type", "line");
+            line.setVar("x1", elem1.getVar("centerX"));
+            line.setVar("y1", elem1.getVar("centerY"));
+            line.setVar("x2", elem2.getVar("centerX"));
+            line.setVar("y2", elem2.getVar("centerY"));
+        }, "N1", "N2");
 
-        varPredicate("above", vars -> vars.get(1).gt(vars.get(0)).post(), "y2", "y1");
-        varValuePredicate("above", (vars, value) -> vars.get(1).sub(vars.get(0)).eq(value).post(), "y2", "y1");
-        varPredicate("below", vars -> vars.get(0).gt(vars.get(1)).post(), "y1", "y2");
-        varValuePredicate("below", (vars, value) -> vars.get(0).sub(vars.get(1)).eq(value).post(), "y1", "y2");
-        varPredicate("right", vars -> vars.get(0).gt(vars.get(1)).post(), "x1", "x2");
-        varValuePredicate("right", (vars, value) -> vars.get(0).sub(vars.get(1)).eq(value).post(), "x1", "x2");
-        varPredicate("left", vars -> vars.get(1).gt(vars.get(0)).post(), "x2", "x1");
-        varValuePredicate("left", (vars, value) -> vars.get(1).sub(vars.get(0)).eq(value).post(), "x2", "x1");
-
-        varPredicate("before", vars -> vars.get(0).lt(vars.get(1)).post(), "z", "z");
-        varPredicate("after", vars -> vars.get(0).gt(vars.get(1)).post(), "z", "z");
-
-        // FIXME
-        predicate("line", 0, (visElems, values) -> {
-            visElems.get(0).set("type", "line");
-            visElems.get(0).setVar("x1", visElems.get(1).getVar("centerX"));
-            visElems.get(0).setVar("y1", visElems.get(1).getVar("centerY"));
-            visElems.get(0).setVar("x2", visElems.get(2).getVar("centerX"));
-            visElems.get(0).setVar("y2", visElems.get(2).getVar("centerY"));
-        });
-
-        // FIXME
-        predicate("image", 1, ((visElems, values) -> {
+        predicate("image", (visMap, values) -> {
+            VisElem elem = visMap.get(values.get("N"));
             String image;
             try {
-                image = FileUtils.ImageToBase64(new File(values.get(0)));
+                image = FileUtils.ImageToBase64(new File(values.get("Image").toString()));
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
             }
-            visElems.forEach(visElem -> {
-                visElem.set("type", "image");
-                visElem.set("image", image);
-            });
-        }));
+            elem.set("type", "image");
+            elem.set("image", image);
+        }, "N", "Image");
 
+        alignPredicate("alignX", "x1");
+        alignPredicate("alignY", "y1");
+
+        positionPredicate("below", "y1", "y2", true);
+        positionPredicate("above", "y2", "y1", false);
+        positionPredicate("right", "x1", "x2", true);
+        positionPredicate("left", "x2", "x1", false);
+        positionPredicate("after", "z", "z", true);
+        positionPredicate("before", "z", "z", false);
+
+        visMap.values().forEach(VisElem::setDefaults);
         model.getSolver().solve();
-        return visMap.values();
+        return new ArrayList<>(visMap.values());
     }
 
-    private void attributesPredicate(String name, String... attributes) {
-        predicate(name, attributes.length, ((visElems, values) -> visElems.forEach(visElem -> {
-            for (int i = 0; i < attributes.length; i++) {
-                visElem.set(attributes[i], values.get(i));
+    private void predicate(String name, BiConsumer<VisMap, Map<String, Term>> consumer, String... args) {
+        query(name, args).forEach(resultMap -> consumer.accept(visMap, resultMap));
+    }
+
+    private void attributePredicate(String name, String... attributes) {
+        String[] varNames = varNames(attributes.length + 1);
+        predicate(name, (visMap, values) -> {
+            // Assume the first term is the key
+            VisElem visElem = visMap.get(values.get(varNames[0]));
+            for (int i = 1; i < varNames.length; i++) {
+                visElem.set(attributes[i - 1], values.get(varNames[i]).toString());
             }
-        })));
+        }, varNames);
     }
 
-    private void varPredicate(String name, Consumer<List<IntVar>> consumer, String... varNames) {
-        varValuesPredicate(name, 0, ((vars, values) -> consumer.accept(vars)), varNames);
-    }
-
-    private void varValuePredicate(String name, BiConsumer<List<IntVar>, Integer> consumer, String... varNames) {
-        varValuesPredicate(name, 1, ((vars, values) -> consumer.accept(vars, values.get(0))), varNames);
-    }
-
-    private void varValuesPredicate(String name, int valueArity, BiConsumer<List<IntVar>, List<Integer>> consumer, String... varNames) {
-        predicate(name, valueArity, ((visElems, values) -> {
-            List<IntVar> vars = getVars(visElems, varNames);
-            List<Integer> intValues = values.stream().map(Integer::valueOf).collect(Collectors.toList());
-            consumer.accept(vars, intValues);
-        }));
-    }
-
-    private static List<IntVar> getVars(List<VisElem> visElems, String[] varNames) {
-        List<IntVar> results = new ArrayList<>(varNames.length);
-        for (int i = 0; i < varNames.length; i++) {
-            results.add(visElems.get(i).getVar(varNames[i]));
-        }
-        return results;
-    }
-
-    private void predicate(String name, int valueArity, BiConsumer<List<VisElem>, List<String>> consumer) {
-        jatalog.getIdb().stream()
-                .map(Rule::getHead)
-                .filter(expr -> expr.getPredicate().equals(name) || expr.getPredicate().startsWith("_" + name + "_"))
-                .forEach(expr -> predicate(expr, valueArity, consumer));
-    }
-
-    private void predicate(Expr expr, int valueArity, BiConsumer<List<VisElem>, List<String>> consumer) {
-        int[] keyArityArray = nameToArityArray(expr.getPredicate());
-        if (!checkArity(keyArityArray, expr.arity(), valueArity)) {
-            return;
-        }
-        String[] args = generateList(expr.arity());
-        Collection<Map<String, String>> results = query(expr(expr.getPredicate(), args));
-        for (Map<String, String> result : results) {
-            List<VisElem> visElems = new ArrayList<>();
-            List<String> values = new ArrayList<>();
-            int position = 0;
-            for (int keyArity : keyArityArray) {
-                String[] key = new String[keyArity];
-                for (int i = 0; i < keyArity; i++) {
-                    key[i] = result.get(args[position++]);
-                }
-                visElems.add(visMap.get(key));
+    private void alignPredicate(String name, String varName) {
+        predicate(name, (visMap, values) -> {
+            VisElem elem1 = visMap.get(values.get("N1"));
+            VisElem elem2 = visMap.get(values.get("N2"));
+            if (elem1.hasVar(varName)) {
+                elem2.setVar(varName, elem1.getVar(varName));
+            } else {
+                elem1.setVar(varName, elem2.getVar(varName));
             }
-            while (position < args.length) {
-                values.add(result.get(args[position++]));
+        }, "N1", "N2");
+    }
+
+    private void positionPredicate(String name, String varName1, String varName2, boolean greater) {
+        // Relative
+        predicate(name, (visMap, values) -> {
+            VisElem elem1 = visMap.get(values.get("N1"));
+            VisElem elem2 = visMap.get(values.get("N2"));
+            IntVar var1 = elem1.getVar(varName1);
+            IntVar var2 = elem2.getVar(varName2);
+            if (greater) {
+                var1.gt(var2).post();
+            } else {
+                var2.gt(var1).post();
             }
-            consumer.accept(visElems, values);
-        }
+        }, "N1", "N2");
+
+        // Absolute
+        predicate(name, (visMap, values) -> {
+            VisElem elem1 = visMap.get(values.get("N1"));
+            VisElem elem2 = visMap.get(values.get("N2"));
+            IntVar var1 = elem1.getVar(varName1);
+            IntVar var2 = elem2.getVar(varName2);
+            int value = Integer.parseInt(values.get("V").toString());
+            if (greater) {
+                var1.sub(var2).eq(value).post();
+            } else {
+                var2.sub(var1).eq(value).post();
+            }
+        }, "N1", "N2", "V");
     }
 
-    private Collection<Map<String, String>> query(Expr goal) {
-        Collection<Map<String, String>> results = null;
-        try {
-            results = jatalog.query(goal);
-        } catch (DatalogException e) {
-            e.printStackTrace();
-        }
-        return results;
+    private List<Map<String, Term>> query(String name, String... args) {
+        Var[] vars = Arrays.stream(args).map(TuProlog::var).toArray(Var[]::new);
+        return prolog.query(struct(name, vars));
     }
 
-    private static boolean checkArity(int[] keyArityArray, int exprArity, int valueArity) {
-        for (int keyArrity : keyArityArray) {
-            exprArity -= keyArrity;
-        }
-        return exprArity == valueArity;
-    }
-
-    private static int[] nameToArityArray(String name) {
-        return Arrays.stream(name.split("_"))
-                .skip(2)
-                .mapToInt(Integer::parseInt)
-                .toArray();
-    }
-
-    private static String[] generateList(int length) {
-        String[] result = new String[length];
-        for (int i = 0; i < length; i++) {
+    private static String[] varNames(int amount) {
+        String[] result = new String[amount];
+        for (int i = 0; i < amount; i++) {
             result[i] = "X" + i;
         }
         return result;

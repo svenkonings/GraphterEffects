@@ -1,60 +1,57 @@
 package compiler.solver;
 
-import org.dom4j.Document;
+import alice.tuprolog.InvalidTheoryException;
+import alice.tuprolog.Term;
 import compiler.svg.SvgDocumentGenerator;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Jatalog;
+import org.dom4j.Document;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import static za.co.wstoop.jatalog.Expr.expr;
-import static za.co.wstoop.jatalog.Expr.not;
+import static compiler.prolog.TuProlog.*;
 
 public class SolverTest {
-    public static void main(String[] args) throws DatalogException, IOException {
-        Jatalog jatalog = new Jatalog();
-        testData(jatalog);
-        Solver solver = new Solver(jatalog);
+    public static void main(String[] args) throws InvalidTheoryException, IOException {
+        Solver solver = new Solver(testData());
         List<VisElem> visElems = solver.solve();
         Document document = SvgDocumentGenerator.generate(visElems);
         SvgDocumentGenerator.writeDocument(document, "test.svg");
     }
 
-    private static void testData(Jatalog jatalog) {
-        try {
-            jatalog.fact("node", "a")
-                    .fact("node", "b")
-                    .fact("node", "c")
-                    .fact("edge", "ac")
-                    .fact("edge", "bc")
-                    .fact("edge", "a", "c")
-                    .fact("edge", "b", "c")
-                    .fact("edge", "a", "c", "ac")
-                    .fact("edge", "b", "c", "bc")
-                    .fact("label", "a", "\"Toos\"")
-                    .fact("label", "b", "\"Els\"")
-                    .fact("label", "c", "\"Vera\"")
-                    .fact("label", "ac", "\"dad\"")
-                    .fact("label", "bc", "\"mom\"")
-                    .rule(expr("negate", "X", "Y"), expr("node", "X"), expr("node", "Y"), not("edge", "X", "Y"))
-                    .rule(expr("edge_with_label", "X", "Y", "S"), expr("edge", "X", "Y", "E"), expr("label", "E", "S"))
-                    .rule(expr("female", "X"), expr("edge_with_label", "X", "Y", "\"mom\""))
-                    .rule(expr("male", "X"), expr("edge_with_label", "X", "Y", "\"dad\""))
-                    .rule(expr("_shape_1", "N", "rectangle"), expr("female", "N"))
-                    .rule(expr("_color_1", "N", "green"), expr("female", "N"))
-                    .rule(expr("_left_1_1", "N1", "N2", "10"), expr("female", "N1"), expr("male", "N2"))
-                    .rule(expr("_posY_1", "N", "20"), expr("female", "N"))
-                    .rule(expr("_width_1", "N", "60"), expr("female", "N"))
-                    .rule(expr("_height_1", "N", "30"), expr("female", "N"))
-                    .rule(expr("_shape_1", "N", "ellipse"), expr("male", "N"))
-                    .rule(expr("_posX_1", "N", "100"), expr("male", "N"))
-                    .rule(expr("_posY_1", "N", "20"), expr("male", "N"))
-                    .rule(expr("_width_1", "N", "60"), expr("male", "N"))
-                    .rule(expr("_height_1", "N", "30"), expr("male", "N"))
-                    .rule(expr("_color_1", "N", "red"), expr("male", "N"));
-        } catch (DatalogException e) {
-            e.printStackTrace();
-        }
+    private static List<Term> testData() {
+        List<Term> result = new ArrayList<>();
+        result.add(struct("node", term("a")));
+        result.add(struct("node", term("b")));
+        result.add(struct("node", term("c")));
+        result.add(struct("edge", term("ac")));
+        result.add(struct("edge", term("bc")));
+        result.add(struct("edge", term("a"), term("c")));
+        result.add(struct("edge", term("a"), term("c")));
+        result.add(struct("edge", term("a"), term("c"), term("ac")));
+        result.add(struct("edge", term("b"), term("c"), term("bc")));
+        result.add(struct("label", term("a"), term("\"Toos\"")));
+        result.add(struct("label", term("b"), term("\"Els\"")));
+        result.add(struct("label", term("c"), term("\"Vera\"")));
+        result.add(struct("label", term("ac"), term("\"dad\"")));
+        result.add(struct("label", term("bc"), term("\"mom\"")));
+        result.add(clause(struct("edge_with_label", var("X"), var("Y"), var("S")), and(
+                struct("edge", var("X"), var("Y"), var("E")),
+                struct("label", var("E"), var("S"))
+        )));
+        result.add(clause(struct("female", var("X")), struct("edge_with_label", var("X"), var(), term("\"mom\""))));
+        result.add(clause(struct("male", var("X")), struct("edge_with_label", var("X"), var(), term("\"dad\""))));
+        result.add(clause(struct("shape", var("X"), term("rectangle")), struct("female", var("X"))));
+        result.add(clause(struct("colour", var("X"), term("green")), struct("female", var("X"))));
+        result.add(clause(struct("dimensions", var("X"), intVal(60), intVal(30)), struct("female", var("X"))));
+        result.add(clause(struct("left", var("X"), var("Y"), intVal(60)), and(
+                struct("female", var("X")),
+                struct("male", var("Y"))
+        )));
+        result.add(clause(struct("shape", var("X"), term("ellipse")), struct("male", var("X"))));
+        result.add(clause(struct("colour", var("X"), term("red")), struct("male", var("X"))));
+        result.add(clause(struct("pos", var("X"), intVal(60), intVal(30), intVal(1)), struct("male", var("X"))));
+        result.add(clause(struct("dimensions", var("X"), intVal(60), intVal(30)), struct("male", var("X"))));
+        return result;
     }
 }
