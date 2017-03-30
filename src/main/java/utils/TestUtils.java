@@ -1,81 +1,64 @@
 package utils;
 
+import alice.tuprolog.Term;
+import compiler.prolog.TuProlog;
 import org.graphstream.graph.Element;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Jatalog;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static compiler.prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
-import static utils.ExprUtils.elementExpr;
+import static utils.TermUtils.elementTerm;
 
 public final class TestUtils {
 
-    public static Jatalog createDatabase() throws DatalogException {
-
-        Jatalog jatalog = new Jatalog();
-
-        jatalog.fact("parent", "a", "aa")
-                .fact("parent", "a", "ab")
-                .fact("parent", "aa", "aaa")
-                .fact("parent", "aa", "aab")
-                .fact("parent", "aaa", "aaaa")
-                .fact("parent", "c", "ca");
-
-        jatalog.rule(Expr.expr("ancestor", "X", "Y"), Expr.expr("parent", "X", "Z"), Expr.expr("ancestor", "Z", "Y"))
-                .rule(Expr.expr("ancestor", "X", "Y"), Expr.expr("parent", "X", "Y"))
-                .rule(Expr.expr("sibling", "X", "Y"), Expr.expr("parent", "Z", "X"), Expr.expr("parent", "Z", "Y"), Expr.ne("X", "Y"))
-                .rule(Expr.expr("related", "X", "Y"), Expr.expr("ancestor", "Z", "X"), Expr.expr("ancestor", "Z", "Y"));
-
-        return jatalog;
-    }
-
-    public static boolean mapContains(Map<String, String> map, String key, String value) {
+    public static boolean mapContains(Map<String, Term> map, String key, Term value) {
         return map.containsKey(key) && map.get(key).equals(value);
     }
 
-    public static boolean mapContains(Map<String, String> haystack, Map<String, String> needle) {
+    public static boolean mapContains(Map<String, Term> haystack, Map<String, Term> needle) {
         return haystack.entrySet().containsAll(needle.entrySet());
     }
 
-    public static boolean answerContains(Collection<Map<String, String>> answers, String... kvPairs) throws Exception {
-        Map<String, String> needle = new HashMap<>();
-        if(kvPairs.length % 2 != 0)
+    public static boolean answerContains(Collection<Map<String, Term>> answers, String... kvPairs) throws Exception {
+        Map<String, Term> needle = new HashMap<>();
+        if (kvPairs.length % 2 != 0)
             throw new Exception("kvPairs must be even");
-        for(int i = 0; i < kvPairs.length/2; i++) {
-            String k = kvPairs[i*2];
-            String v = kvPairs[i*2 + 1];
-            needle.put(k, v);
+        for (int i = 0; i < kvPairs.length; i += 2) {
+            String k = kvPairs[i];
+            String v = kvPairs[i + 1];
+            needle.put(k, term(v));
         }
-        for(Map<String, String> answer : answers) {
-            if(mapContains(answer, needle))
+        for (Map<String, Term> answer : answers) {
+            if (mapContains(answer, needle))
                 return true;
         }
         return false;
     }
 
-    public static void testPredicateValue(Jatalog jatalog, Element element, String predicate, String expectedID, String expectedValue) throws DatalogException {
-        Collection<Map<String, String>> answers;
-        answers = jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID, "Value"));
+    public static void testPredicateValue(TuProlog prolog, Element element, String predicate, String expectedID, String expectedValue) {
+        Collection<Map<String, Term>> answers = prolog.query(and(elementTerm(element), struct(predicate, term(expectedID), var("Value"))));
         assert answers.size() == 1;
         try {
-            assert TestUtils.answerContains(answers,"Value",expectedValue);
+            assert answerContains(answers, "Value", expectedValue);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void testAttributesCorrect(Jatalog jatalog, Element element) throws DatalogException {
+    public static void testAttributesCorrect(TuProlog prolog, Element element) {
         element.getAttributeKeySet().forEach(
                 attributeKey -> {
                     try {
-                        Collection<Map<String, String>> answers = jatalog.query(elementExpr(element), Expr.expr("attribute", attributeKey, element.getId(), "Value"));
+                        Collection<Map<String, Term>> answers = prolog.query(and(elementTerm(element), struct("attribute", term(attributeKey), term(element.getId()), var("Value"))));
                         String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
-                        assert TestUtils.answerContains(
-                                answers, "Value", expectedValue);
+                        assert answerContains(answers, "Value", expectedValue);
                     } catch (Exception e) {
 
                         e.printStackTrace();
@@ -85,12 +68,30 @@ public final class TestUtils {
     }
 
 
-    public static void testSimpleFact(Jatalog jatalog, Element element, String predicate, String expectedID, boolean shouldExist) throws DatalogException {
-        assertEquals(shouldExist, !jatalog.query(elementExpr(element), Expr.expr(predicate, expectedID)).isEmpty());
+    public static void testSimpleFact(TuProlog prolog, Element element, String predicate, String expectedID, boolean shouldExist) {
+        assertEquals(shouldExist, !prolog.query(and(elementTerm(element), struct(predicate, term(expectedID)))).isEmpty());
     }
 
 
+    public static void showImage(Image image) {
+        JFrame f = new JFrame();
+        JLabel label = new JLabel();
+        label.setIcon(new ImageIcon(image));
+        f.add(label);
+        f.setVisible(true);
+        f.pack();
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
 
-
+    public static void showSVG(File file, long time) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("\"/Program Files (x86)/Google/Chrome/Application/chrome.exe\"", file.getAbsolutePath(), "--new-window");
+        Process p = pb.start();
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        p.destroy();
+    }
 
 }

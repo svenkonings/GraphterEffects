@@ -3,6 +3,7 @@ package compiler.api;
 
 import compiler.ConstraintSet;
 import compiler.graphloader.Importer;
+import exceptions.UnknownFormatException;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
 

@@ -16,28 +16,24 @@ import java.util.ArrayList;
 /**
  *
  */
-public class ConsequenceBlacklistTest {
+public class VariableUsageCheckTest {
 
     @Test
-    public void testDefaultBlackList() {
+    public void test() {
         validityCheck("node(X) -> a(X).");
-        validityCheck("edge(X) -> a(X).");
-        validityCheck("node{X, Y} -> a(X), a(Y).");
+        validityCheck("a(X), b(X) -> c(X).");
+        validityCheck("a(X, Y) -> b(X).");
+        validityCheck("a(X, X) -> b(X).");
+        validityCheck("a{X, Y} -> b(Y).");
+        validityCheck("a{(X, Y), Z} -> b(Y).");
+        validityCheck("a(X, _) -> b(X).");
+        validityCheck("a() -> b().");
+        validityCheck("a() -> b().");
 
-        invalidityCheck("node(x).");
-        invalidityCheck("a(X) -> node(X).");
-        invalidityCheck("a(X), b(Y) -> edge(X, Y).");
-    }
-
-    @Test
-    public void testGeneratedBlackList() {
-        validityCheck("wolf(x).");
-        validityCheck("node labels: \"goat\" as boat. goat(x).");
-        validityCheck("node labels: \"#@$%\" as wolf. test(x).");
-
-        invalidityCheck("node labels: \"wolf\". wolf(x).");
-        invalidityCheck("node labels: \"#olf\" as wolf. wolf(x).");
-        invalidityCheck("node labels: \"wolf\" as wolf. a(x) -> wolf(x).");
+        invalidityCheck("a(X) -> b(Y).");
+        invalidityCheck("a(X) -> b(X, Y).");
+        invalidityCheck("a() -> b(X).");
+        invalidityCheck("a(X), b() -> c(Y).");
     }
 
     private void validityCheck(String program) {
@@ -61,9 +57,9 @@ public class ConsequenceBlacklistTest {
         parser.addErrorListener(errorListener);
 
         GraafvisParser.ProgramContext ctx = parser.program();
-        ConsequenceBlacklist blacklist = new ConsequenceBlacklist();
-        ctx.accept(blacklist);
-        return blacklist.getErrors();
+        VariableUsageCheck checker = new VariableUsageCheck();
+        ctx.accept(checker);
+        return checker.getErrors();
     }
 
 

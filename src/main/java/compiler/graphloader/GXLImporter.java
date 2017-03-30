@@ -5,6 +5,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.xml.sax.SAXException;
+import utils.Printer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -90,6 +91,13 @@ final class GXLImporter {
         GXLGraph graph = a.getGraphAt(0);
 
         MultiGraph tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
+        for (int p = 0; p < graph.getAttrCount(); p++) {
+            GXLValue content = (graph.getAttrAt(p)).getValue();
+            tograph.setAttribute(graph.getAttrAt(p).getName(), getFromGXLValue(content, true));
+
+        }
+
+
         boolean directed = graph.getAttribute("edgemode").equals("directed");
 
         List<GXLGraphElement> nodes = new LinkedList<>();
@@ -107,7 +115,7 @@ final class GXLImporter {
             Node n = tograph.addNode(id);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
-                n.setAttribute(elem.getAttrAt(p).getName(), "\"" + getFromGXLValue(content) + "\"");
+                n.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content, true));
             }
         }
         for (GXLGraphElement elem : edges) {
@@ -115,7 +123,7 @@ final class GXLImporter {
             Edge e = tograph.addEdge(id, underscore + elem.getAttribute("from"), underscore + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
-                e.setAttribute(elem.getAttrAt(p).getName(), "\"" + getFromGXLValue(content) + "\"");
+                e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content, true));
             }
         }
         return tograph;
@@ -141,14 +149,15 @@ final class GXLImporter {
      * @param in GXLValue to be read from.
      * @return String or List Object, depending on whether it's an atomic or composite GXLValue.
      */
-    private static Object getFromGXLValue(GXLValue in) {
+    private static Object getFromGXLValue(GXLValue in, boolean addQuotes) {
+        String quotes = addQuotes? "\"" : "";
         if (in instanceof GXLAtomicValue) {
-            return ((GXLAtomicValue) in).getValue();
+            return quotes + ((GXLAtomicValue) in).getValue() + quotes;
         } else if (in instanceof GXLCompositeValue) {
             List<Object> res = new LinkedList<>();
             GXLCompositeValue a = (GXLCompositeValue) in;
             for (int i = 0; i<a.getValueCount(); i++) {
-                res.add(getFromGXLValue(a.getValueAt(i)));
+                res.add(getFromGXLValue(a.getValueAt(i), addQuotes));
             }
             return res;
         }

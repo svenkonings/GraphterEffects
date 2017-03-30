@@ -9,11 +9,15 @@ import alice.tuprolog.Number;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class TuProlog {
     // More generic version, parses the given String
     public static Term term(String term) {
-        return Term.createTerm(term);
+        try {
+            return Term.createTerm(term);
+        } catch (InvalidTermException e) {
+            // TODO: Attributes, labels and names should probably be Strings anyway
+            return Term.createTerm(String.format("\"%s\"", term));
+        }
     }
 
     // More generic version, parses the given String
@@ -45,27 +49,19 @@ public class TuProlog {
         return new Var(name);
     }
 
-    public static Struct atom() {
-        return new Struct();
-    }
-
-    public static Struct atom(String name) {
-        return new Struct(name);
-    }
-
     public static Struct list(Term... terms) {
-        return new Struct(terms);
+        if (terms.length == 0) {
+            return new Struct();
+        } else {
+            return new Struct(terms);
+        }
     }
 
-    public static Struct compound(String name, Term... terms) {
+    public static Struct struct(String name, Term... terms) {
         return new Struct(name, terms);
     }
 
-    public static Struct fact(Struct fact) {
-        return clause(fact, atom("true"));
-    }
-
-    public static Struct clause(Struct head, Struct body) {
+    public static Struct clause(Term head, Term body) {
         return new Struct(":-", head, body);
     }
 
@@ -80,14 +76,14 @@ public class TuProlog {
     public static Struct concatTerms(String name, Term... terms) {
         Deque<Term> deque = new ArrayDeque<>(Arrays.asList(terms));
         while (deque.size() < 2) {
-            deque.addLast(atom());
+            deque.addLast(list());
         }
         Term term2 = deque.removeLast();
         Term term1 = deque.removeLast();
-        Struct struct = compound(name, term1, term2);
+        Struct struct = struct(name, term1, term2);
         while (!deque.isEmpty()) {
             Term term = deque.removeLast();
-            struct = compound(name, term, struct);
+            struct = struct(name, term, struct);
         }
         return struct;
     }
@@ -97,6 +93,11 @@ public class TuProlog {
 
     public TuProlog() {
         prolog = new Prolog();
+    }
+
+    public TuProlog(Collection<Term> terms) throws InvalidTheoryException {
+        this();
+        setTheory(terms.toArray(new Term[0]));
     }
 
     public void addTheory(Term... terms) throws InvalidTheoryException {
@@ -109,11 +110,16 @@ public class TuProlog {
         prolog.setTheory(theory);
     }
 
-    public List<Map<String, Term>> query(Term term) throws NoSolutionException {
+    public List<Map<String, Term>> query(Term term) {
         List<Map<String, Term>> results = new ArrayList<>();
         SolveInfo info = prolog.solve(term);
         while (info.isSuccess()) {
-            List<Var> vars = info.getBindingVars();
+            List<Var> vars;
+            try {
+                vars = info.getBindingVars();
+            } catch (NoSolutionException e) {
+                break;
+            }
             Map<String, Term> result = vars.stream().collect(Collectors.toMap(Var::getOriginalName, Var::getTerm));
             results.add(result);
             if (prolog.hasOpenAlternatives()) {
