@@ -13,7 +13,7 @@ import static compiler.prolog.TuProlog.*;
 
 public class TuSolverTest {
     public static void main(String[] args) throws InvalidTheoryException, IOException {
-        TuSolver solver = new TuSolver(testData());
+        Solver solver = new Solver(testData());
         List<VisElem> visElems = solver.solve();
         Document document = SvgDocumentGenerator.generate(visElems);
         SvgDocumentGenerator.writeDocument(document, "test.svg");

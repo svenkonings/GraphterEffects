@@ -129,20 +129,23 @@ public class VisElem {
     /**
      * Sets the given name-variable pair. The variable being an {@link IntVar}.
      *
-     * @param name The given name.
-     * @param var  The given {@link IntVar} variable.
+     * @param name   The given name.
+     * @param newVar The given {@link IntVar} variable.
      * @return The variable.
      * @throws ElementException If the name is already assigned to a value.
      */
-    public IntVar setVar(String name, IntVar var) {
+    public IntVar setVar(String name, IntVar newVar) {
         if (values.containsKey(name)) {
             throw new ElementException("%s is already defined as a value", name);
         } else if (vars.containsKey(name)) {
-            vars.get(name).eq(var).post();
+            IntVar var = vars.get(name);
+            if (!Objects.equals(var, newVar)) {
+                var.eq(newVar).post();
+            }
             return var;
         } else {
-            vars.put(name, var);
-            return var;
+            vars.put(name, newVar);
+            return newVar;
         }
     }
 
