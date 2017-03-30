@@ -4,10 +4,10 @@ import graafvis.errors.UndefinedVariableError;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisParser;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -19,7 +19,7 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     private final ArrayList<VisError> errors;
 
     /** Stores for each clause the variables that are used in the antecedent of that clause. */
-    private final ParseTreeProperty<HashSet<String>> variables;
+    private final ParseTreeProperty<HashMap<String, LocationInProgram>> variables;
 
     /** Create a new variable usage check */
     VariableUsageCheck() {
@@ -44,19 +44,18 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     @Override
     public Void visitClause(GraafvisParser.ClauseContext ctx) {
         /* Create two sets used for storing used variables in antecedent and consequence */
-        HashSet<String> antecedentSet = new HashSet<>(), consequenceSet = new HashSet<>();
+        HashMap<String, LocationInProgram> antecedentMap = new HashMap<>(), consequenceMap = new HashMap<>();
         if (ctx.antecedent() != null) {
-            variables.put(ctx.antecedent(), antecedentSet);
+            variables.put(ctx.antecedent(), antecedentMap);
         }
-        variables.put(ctx.consequence(), consequenceSet);
+        variables.put(ctx.consequence(), consequenceMap);
         /* Visit antecedent and consequence */
         visitChildren(ctx);
         /* Compare sets */
-        for (String variable : consequenceSet) {
-            if (!antecedentSet.contains(variable)) {
-                int line = ctx.ARROW().getSymbol().getLine();
-                int column = ctx.ARROW().getSymbol().getCharPositionInLine();
-                errors.add(new UndefinedVariableError(line, column, variable));
+        for (String variable : consequenceMap.keySet()) {
+            if (!antecedentMap.keySet().contains(variable)) {
+                LocationInProgram location = consequenceMap.get(variable);
+                errors.add(new UndefinedVariableError(location.getLine(), location.getColumn(), variable));
             }
         }
         return null;
@@ -222,7 +221,9 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     /** Add the variable */
     @Override
     public Void visitVariable(GraafvisParser.VariableContext ctx) {
-        variables.get(ctx).add(ctx.HID().getText());
+        int line = ctx.HID().getSymbol().getLine();
+        int column = ctx.HID().getSymbol().getCharPositionInLine();
+        variables.get(ctx).put(ctx.HID().getText(), new LocationInProgram(line, column));
         return null;
     }
 
@@ -233,5 +234,30 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     public ArrayList<VisError> getErrors() {
         return errors;
     }
+
+    /*
+     * Help classes
+     */
+
+    private final class LocationInProgram {
+
+        private final int line;
+        private final int column;
+
+        private LocationInProgram(int line, int column) {
+            this.line = line;
+            this.column = column;
+        }
+
+        public int getLine() {
+            return line;
+        }
+
+        public int getColumn() {
+            return column;
+        }
+
+    }
+
 
 }

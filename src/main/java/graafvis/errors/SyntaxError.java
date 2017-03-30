@@ -10,7 +10,7 @@ public class SyntaxError extends VisError {
 
     public SyntaxError(int row, int column, String msg) {
         super(row, column);
-        this.setMsg("Syntax VisError: " + msg);
+        this.setMsg(String.format("Syntax error at line %d:%d: %s", row, column, msg));
     }
 
 }
