@@ -1,29 +1,32 @@
 package compiler.asrc;
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public final class DefaultGraphPropertySupplier extends PropertySupplier<Graph> {
 
-    /*
     public DefaultGraphPropertySupplier() {
         String[] tosupport = {"graph", "directed", "undirected", "mixed", "attribute"};
         supported = tosupport;
     }
 
     @Override
-    public List<Term> getProperty(Graph graph, String key) {
+    public String[] getProperty(Graph graph, String key) {
         switch (key) {
             case "graph":
-                return NULL;
+                return null;
             case "directed":
-                for (Edge edge: graph.getEdgeSet()) {
+                for (Edge edge : graph.getEdgeSet()) {
                     if (!edge.isDirected()) {
                         return FALSE;
                     }
                 }
                 return TRUE;
             case "undirected":
-                for (Edge edge: graph.getEdgeSet()) {
+                for (Edge edge : graph.getEdgeSet()) {
                     if (edge.isDirected()) {
                         return FALSE;
                     }
@@ -35,7 +38,7 @@ public final class DefaultGraphPropertySupplier extends PropertySupplier<Graph> 
                 }
                 boolean dir = false;
                 boolean undir = false;
-                for (Edge edge: graph.getEdgeSet()) {
+                for (Edge edge : graph.getEdgeSet()) {
                     if (edge.isDirected()) {
                         dir = true;
                     } else {
@@ -52,9 +55,7 @@ public final class DefaultGraphPropertySupplier extends PropertySupplier<Graph> 
             //TODO
 
 
-
         }
         return null;
     }
-    */
 }
