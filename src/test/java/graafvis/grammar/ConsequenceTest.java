@@ -38,7 +38,7 @@ public class ConsequenceTest extends GrammarTest {
     public static final List<String> INVALID_SAMPLES = Arrays.asList
             (
                     "",
-                    "p(X) and p(Y)",
+                    "p(X) and p",
                     "p(X) or q(x)",
                     "P(X)"
             );

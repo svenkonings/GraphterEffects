@@ -42,11 +42,11 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     /** Visit all children of the program, except imports */
     @Override
     public Void visitProgram(GraafvisParser.ProgramContext ctx) {
-        if (ctx.node_label_gen() != null) {
-            visitNode_label_gen(ctx.node_label_gen()); // Add generated node labels to blacklist
+        if (ctx.nodeLabelGen() != null) {
+            visitNodeLabelGen(ctx.nodeLabelGen()); // Add generated node labels to blacklist
         }
-        if (ctx.edge_label_gen() != null) {
-            visitEdge_label_gen(ctx.edge_label_gen()); // Add generated edge labels to blacklist
+        if (ctx.edgeLabelGen() != null) {
+            visitEdgeLabelGen(ctx.edgeLabelGen()); // Add generated edge labels to blacklist
         }
         ctx.clause().forEach(this::visitClause);
         return null;
@@ -73,26 +73,56 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
         return visitConsequence(ctx.consequence());
     }
 
-    /** Num expr literals can be ignored */
+    /** Check the predicate of the atom */
     @Override
-    public Void visitNumExprLiteral(GraafvisParser.NumExprLiteralContext ctx) {
+    public Void visitAtom(GraafvisParser.AtomContext ctx) {
+        blacklistCheck(ctx.predicate());
+        return visitTermTuple(ctx.termTuple());
+    }
+
+    /** Check the predicate of the multi atom */
+    @Override
+    public Void visitMultiAtom(GraafvisParser.MultiAtomContext ctx) {
+        blacklistCheck(ctx.predicate());
+        for (GraafvisParser.TermContext term : ctx.term()) {
+            visit(term);
+        }
+        for (GraafvisParser.TermTupleContext tuple : ctx.termTuple()) {
+            visitTermTuple(tuple);
+        }
         return null;
     }
 
-    /** Check the atom's predicate */
+    /** Variables can be ignored */
     @Override
-    public Void visitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) {
-        blacklistCheck(ctx.atom().predicate());
+    public Void visitTermVar(GraafvisParser.TermVarContext ctx) {
         return null;
     }
 
-    /** Check the multi atom's predicate */
+    /** Wildcards can be ignored */
     @Override
-    public Void visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
-        blacklistCheck(ctx.multi_atom().predicate());
+    public Void visitTermWildcard(GraafvisParser.TermWildcardContext ctx) {
         return null;
     }
-    
+
+    /** Strings can be ignored */
+    @Override
+    public Void visitTermString(GraafvisParser.TermStringContext ctx) {
+        return null;
+    }
+
+    /** Numbers can be ignored */
+    @Override
+    public Void visitTermNumber(GraafvisParser.TermNumberContext ctx) {
+        return null;
+    }
+
+    /** IDs can be ignored */
+    @Override
+    public Void visitTermID(GraafvisParser.TermIDContext ctx) {
+        return null;
+    }
+
     /*
      * Helper methods
      */

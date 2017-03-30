@@ -65,16 +65,16 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     /** Pass on the set to its children */
     @Override
     public Void visitAntecedent(GraafvisParser.AntecedentContext ctx) {
-        variables.put(ctx.propositional_formula(), variables.get(ctx));
-        visit(ctx.propositional_formula());
+        variables.put(ctx.propositionalFormula(), variables.get(ctx));
+        visit(ctx.propositionalFormula());
         return null;
     }
 
     /** Pass on the set to its children */
     @Override
     public Void visitPfNot(GraafvisParser.PfNotContext ctx) {
-        variables.put(ctx.propositional_formula(), variables.get(ctx));
-        visit(ctx.propositional_formula());
+        variables.put(ctx.propositionalFormula(), variables.get(ctx));
+        visit(ctx.propositionalFormula());
         return null;
     }
 
@@ -89,7 +89,7 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     /** Pass on the set to its children */
     @Override
     public Void visitPfAnd(GraafvisParser.PfAndContext ctx) {
-        for (GraafvisParser.Propositional_formulaContext formula : ctx.propositional_formula()) {
+        for (GraafvisParser.PropositionalFormulaContext formula : ctx.propositionalFormula()) {
             variables.put(formula, variables.get(ctx));
             visit(formula);
         }
@@ -99,7 +99,7 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     /** Pass on the set to its children */
     @Override
     public Void visitPfOr(GraafvisParser.PfOrContext ctx) {
-        for (GraafvisParser.Propositional_formulaContext formula : ctx.propositional_formula()) {
+        for (GraafvisParser.PropositionalFormulaContext formula : ctx.propositionalFormula()) {
             variables.put(formula, variables.get(ctx));
             visit(formula);
         }
@@ -109,8 +109,8 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     /** Pass on the set to its children */
     @Override
     public Void visitPfNest(GraafvisParser.PfNestContext ctx) {
-        variables.put(ctx.propositional_formula(), variables.get(ctx));
-        visit(ctx.propositional_formula());
+        variables.put(ctx.propositionalFormula(), variables.get(ctx));
+        visit(ctx.propositionalFormula());
         return null;
     }
 
@@ -128,59 +128,44 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     @Override
     public Void visitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) {
         variables.put(ctx.atom(), variables.get(ctx));
-        visitAtom(ctx.atom());
-        return null;
+        return visitAtom(ctx.atom());
     }
 
     /** Pass on the set to its children */
     @Override
     public Void visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
-        variables.put(ctx.multi_atom(), variables.get(ctx));
-        visitMulti_atom(ctx.multi_atom());
-        return null;
-    }
-
-    /** Pass on the set to its children */
-    @Override
-    public Void visitNumExprLiteral(GraafvisParser.NumExprLiteralContext ctx) {
-        for (GraafvisParser.Num_exprContext numExpr : ctx.num_expr()) {
-            variables.put(numExpr, variables.get(ctx));
-            visitNum_expr(numExpr);
-        }
+        variables.put(ctx.multiAtom(), variables.get(ctx));
+        visitMultiAtom(ctx.multiAtom());
         return null;
     }
 
     /** Pass on the set to its children */
     @Override
     public Void visitAtom(GraafvisParser.AtomContext ctx) {
+        variables.put(ctx.termTuple(), variables.get(ctx));
+        return visitTermTuple(ctx.termTuple());
+    }
+
+    /** Pass on the set to its children */
+    @Override
+    public Void visitMultiAtom(GraafvisParser.MultiAtomContext ctx) {
         for (GraafvisParser.TermContext term : ctx.term()) {
             variables.put(term, variables.get(ctx));
             visit(term);
+        }
+        for (GraafvisParser.TermTupleContext termTuple : ctx.termTuple()) {
+            variables.put(termTuple, variables.get(ctx));
+            visitTermTuple(termTuple);
         }
         return null;
     }
 
     /** Pass on the set to its children */
     @Override
-    public Void visitMulti_atom(GraafvisParser.Multi_atomContext ctx) {
+    public Void visitTermTuple(GraafvisParser.TermTupleContext ctx) {
         for (GraafvisParser.TermContext term : ctx.term()) {
             variables.put(term, variables.get(ctx));
             visit(term);
-        }
-        return null;
-    }
-
-    /** Pass on the set to its children */
-    @Override
-    public Void visitNum_expr(GraafvisParser.Num_exprContext ctx) {
-        for (ParseTree child : ctx.children) {
-            if (child instanceof GraafvisParser.VariableContext) {
-                variables.put(child, variables.get(ctx));
-                visitVariable((GraafvisParser.VariableContext) child);
-            } else if (child instanceof GraafvisParser.Num_exprContext) {
-                variables.put(child, variables.get(ctx));
-                visitNum_expr((GraafvisParser.Num_exprContext) child);
-            }
         }
         return null;
     }
@@ -195,7 +180,14 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
 
     /** Pass on the set to its children */
     @Override
-    public Void visitTuple(GraafvisParser.TupleContext ctx) {
+    public Void visitTermAtom(GraafvisParser.TermAtomContext ctx) {
+        variables.put(ctx.atom(), variables.get(ctx));
+        return visitAtom(ctx.atom());
+    }
+
+    /** Pass on the set to its children */
+    @Override
+    public Void visitTermList(GraafvisParser.TermListContext ctx) {
         for (GraafvisParser.TermContext term : ctx.term()) {
             variables.put(term, variables.get(ctx));
             visit(term);
@@ -203,16 +195,28 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
         return null;
     }
 
-    /** Ignore ground terms */
+    /** Ignore wildcards */
     @Override
-    public Void visitTermGround(GraafvisParser.TermGroundContext ctx) {
+    public Void visitTermWildcard(GraafvisParser.TermWildcardContext ctx) {
         return null;
     }
 
-    /** Ignore wildcards */
+    /** Ignore strings */
     @Override
-    public Void visitWildcard(GraafvisParser.WildcardContext ctx) {
+    public Void visitTermString(GraafvisParser.TermStringContext ctx) {
         return null;
+    }
+
+    /** Ignore numbers */
+    @Override
+    public Void visitTermNumber(GraafvisParser.TermNumberContext ctx) {
+        return null;
+    }
+
+    /** Ignore IDs */
+    @Override
+    public Void visitTermID(GraafvisParser.TermIDContext ctx) {
+        return super.visitTermID(ctx);
     }
 
     /** Add the variable */

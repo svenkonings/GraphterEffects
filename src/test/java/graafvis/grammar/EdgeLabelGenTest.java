@@ -50,7 +50,7 @@ public class EdgeLabelGenTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.edge_label_gen();
+        return parser.edgeLabelGen();
     }
 
     @Override
