@@ -110,6 +110,10 @@ public class TuProlog {
         prolog.setTheory(theory);
     }
 
+    public List<Map<String, Term>> query(String termString) {
+        return query(term(termString));
+    }
+
     public List<Map<String, Term>> query(Term term) {
         List<Map<String, Term>> results = new ArrayList<>();
         SolveInfo info = prolog.solve(term);
