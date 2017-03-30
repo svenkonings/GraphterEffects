@@ -53,14 +53,14 @@ predicate: ID;
 /* Terms are either ground terms, free variables, underscores or a tuple of more terms */
 term: ground_term                               # termGround
     | variable                                  # termVar
-    | UNDERSCORE                                # wildcard
-    | PAR_OPEN term (COMMA term)* PAR_CLOSE     # tuple
+    | UNDERSCORE                                # termWild
+    | PAR_OPEN term (COMMA term)* PAR_CLOSE     # termTuple
     ;
 
 /* Ground terms contain no free variables */
-ground_term: STRING
-           | NUMBER
-           | ID
+ground_term: STRING     # groundString
+           | NUMBER     # groundNum
+           | ID         # groundID
            ;
 
 /* Variables start with uppercase letter */
