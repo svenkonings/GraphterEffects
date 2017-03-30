@@ -1,8 +1,11 @@
 package graafvis;
 
+import alice.tuprolog.*;
+import alice.tuprolog.Number;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
+import graafvis.grammar.GraafvisParser.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
@@ -10,24 +13,27 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import org.junit.Test;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static za.co.wstoop.jatalog.Expr.expr;
 
 /**
  * Created by Lindsay on 28-Mar-17.
  */
-public class RuleGenerator<T> extends GraafvisBaseVisitor<T> {
-    public static final String WILD_CARD_PREFIX = "X*"; // Cap letter to make it a var, * to make it illegal
-    private ConstraintSet cs = new ConstraintSet();
+public class RuleGenerator extends GraafvisBaseVisitor<Term> {
+    public static final String TUP_WILD_CARD = "_";
+    public static final String TUP_AND = ",";
+    public static final String TUP_HORN = ":-";
+    private List<Term> result = new ArrayList<>();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<List<Expr>> exprsPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<String> stringPTP = new ParseTreeProperty<>();
@@ -35,141 +41,191 @@ public class RuleGenerator<T> extends GraafvisBaseVisitor<T> {
 
 
     /**********************
-     --- Calling  ---
+        --- Calling  ---
      **********************/
+    // --- Testing TU Prolog ---
 
-    public static void main(String[] args) throws DatalogException {
-        generate("node(a), label(a, \"wolf\").");
-        generate("node(X), label(X, \"wolf\") -> wolf(X).");
-        generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
-        generate("node(X), label(X, _) -> shape(X, square).");
-        generate("parent(X,Z), parent(Y,Z), edge(X, Y) -> family(X, Y, Z), child(Z), left(X, Y).");
-        // Error: generate("node(X), label(X, _) -> check(X), colour(X, blue)");
-        generate("shape((X,id1), square).");
+    public static void tupTest() throws NoMoreSolutionException, InvalidTheoryException, DatalogException, NoSolutionException {
+        Struct[] clauses = new Struct[]{
+                new Struct("node", new Struct("a")),
+                new Struct("node", new Struct("b")),
+                new Struct("edge", new Struct("a"), new Struct("b")),
+                new Struct("edge", new Struct("b"), new Struct("a")),
+                new Struct("label", new Struct("a"), new Struct("\"wolf\""))
+        };
+        Struct prog = new Struct(clauses);
+        query(prog, new Struct("node", new Var("X")));
+        query(prog, new Struct("edge", new Var("X"), new Var("Y")));
+        query(prog, new Struct("label", new Var("Y"), new Struct("\"wolf\"")));
+        Struct q = new Struct(
+                ",",
+                new Struct("edge", new Var("X"), new Var("Y")),
+                new Struct("label", new Var("X"), new Struct("\"wolf\""))
+        );
+        query(prog, q);
     }
 
-    public static ConstraintSet generate(String script) {
-        System.out.println("\n" + script);
+    public static void query(Struct prog, Struct query) throws DatalogException, InvalidTheoryException, NoSolutionException, NoMoreSolutionException {
+        System.out.println("\n> ?- " + query + "\n");
+        Prolog engine = new Prolog();
+        Theory t = new Theory(prog);
+        engine.addTheory(t);
+        SolveInfo info = engine.solve(query);
+        while (info.isSuccess()) { // taken from the previous example
+            System.out.println("Solution: " + info.getSolution() + "\nBindings: " + info);
+            if (engine.hasOpenAlternatives()) {
+                info = engine.solveNext();
+            } else {
+                break;
+            }
+        }
+    }
+
+    // --- Rule generation ---
+
+    public static void main(String[] args) throws NoMoreSolutionException, InvalidTheoryException, DatalogException, NoSolutionException {
+//        tupTest();
+//        generate("node(a), label(a, \"wolf\").");
+//        generate("node(X), label(X, \"wolf\") -> wolf(X).");
+//        generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
+//        generate("node(X), label(X, _) -> shape(X, square).");
+//        generate("parent(X,Z), parent(Y,Z), edge(X, Y) -> family(X, Y, Z), child(Z), left(X, Y).");
+//        // Error: generate("node(X), label(X, _) -> check(X), colour(X, blue)");
+//        generate("shape((X,id1), square).");
+    }
+
+    public static List<Term> generate(String script) {
+        System.out.println("\nParsing: " + script);
         RuleGenerator rg = new RuleGenerator();
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
         ParseTree tree = parser.program();
         tree.accept(rg);
-//        new ParseTreeWalker().walk(rg, tree);
-//        System.out.println("\tTree: " + tree);
-        System.out.println("\tFacts: " + rg.getCs().getFacts());
-        System.out.println("\tRules: " + rg.getCs().getRules());
-        return rg.getCs();
+        System.out.println(rg.getResult());
+//        System.out.println("\tFacts: " + rg.getCs().getFacts());
+//        System.out.println("\tRules: " + rg.getCs().getRules());
+        return rg.getResult();
     }
 
+    @Test
+    public void test() {
+        Struct list = new Struct(
+                new Term[]{
+                        new Var("X"),
+                        new Var("Y")
+                }
+        );
+        List<Term> test1 = Arrays.asList(new Struct("p", new Var("X")));
+        assertEquals(test1, generate("p(X)."));
+        List<Term> test2 = Arrays.asList(new Struct("edge", new Var("X"), new Var("Y")));
+        assertEquals(test2, generate("edge(X,Y)."));
+        List<Term> test3 = Arrays.asList(new Struct("p", new Term[]{new Var("X"), new Var("Y")}));
+        assertEquals(test3, generate("p(X,Y)."));
+        List<Term> test4 = Arrays.asList(new Struct("p", list));
+        assertEquals(test4, generate("p((X,Y)).")); // TODO aanpassen naar []
+        List<Term> test5 = Arrays.asList(
+            new Struct("shape",
+            new Term[]{
+                list,
+                new Struct("square")
+            }));
+        assertEquals(test5, generate("shape((X,Y), square).")); // TODO aanpassen naar []
+//        List<Term> test6 = Arrays.asList(new Struct("p", new Var(TUP_WILD_CARD)));
+//        Struct s = new Struct("p", new Var(TUP_WILD_CARD));
+//        List<Term> me6 = generate("p(_).");
+//        assertEquals(test6, me6); // TODO aanpassen naar []
+    }
 
     /*************************
-     --- Tree walker ---
+        --- Tree walker ---
      *************************/
 
-    @Override public T visitProgram(GraafvisParser.ProgramContext ctx) {
-        // TODO imports
-        T t = visitChildren(ctx);
-        return t;
-    }
+//    @Override public Term visitProgram(ProgramContext ctx) {
+//        // TODO imports, labels
+//        return null;
+//    }
 
     // TODO Node label gen
     // TODO Edge label gen
 
-    @Override public T visitClause(GraafvisParser.ClauseContext ctx) {
-        T t = visitChildren(ctx);
-        // Consequence
-        GraafvisParser.ConsequenceContext consequence = ctx.consequence();
-        List<Expr> consequence_exprs = new ArrayList<>();
-        for (GraafvisParser.LiteralContext lit : consequence.literal()) {
-            consequence_exprs.add(getExpr(lit));
-        }
-
-        // Antecedent
-        GraafvisParser.AntecedentContext ante = ctx.antecedent();
-        if (ante != null) {
-            // The clause is a rule
-            List<Expr> ante_exprs = getExprs(ctx.antecedent().propositional_formula());
-            for (Expr e : consequence_exprs) {
-                addRule(new Rule(e, ante_exprs));
+    @Override public Term visitClause(ClauseContext ctx) {
+        if (ctx.antecedent() == null) {
+            // Fact
+            for (LiteralContext conseqLit : ctx.consequence().literal()) {
+                addClause(visit(conseqLit));
             }
         } else {
-            // The clause is a fact
-            for (Expr e : consequence_exprs) {
-                addFact(e);
+            Term antecedent = visit(ctx.antecedent());
+            // Rule
+            for (LiteralContext conseqLit : ctx.consequence().literal()) {
+                addClause(new Struct(TUP_HORN, visit(conseqLit), antecedent));
             }
         }
-        return t;
+        return null;
     }
 
     // TODO Out of scope: pfNot, pfOr, pfNest
-    @Override public T visitPfLit(GraafvisParser.PfLitContext ctx) {
-        T t = visitChildren(ctx);
-        List<Expr> exprs = new ArrayList<>();
-        exprs.add(getExpr(ctx.literal()));
-        setExprs(ctx, exprs);
-        return t;
+    @Override public Term visitPfLit(PfLitContext ctx) {
+        return visitChildren(ctx); // TODO is dit ok? want dat an deze eig weg
     }
 
-    @Override public T visitPfAnd(GraafvisParser.PfAndContext ctx) {
-        T t = visitChildren(ctx);
-        List<Expr> exprs = new ArrayList<>();
-        // Ignoring ORs
-        for (GraafvisParser.Propositional_formulaContext pf : ctx.propositional_formula()) {
-            exprs.addAll(getExprs(pf));
-        }
-        setExprs(ctx, exprs);
-        return t;
+    @Override public Term visitPfAnd(PfAndContext ctx) {
+        return new Struct(TUP_AND, visit(ctx.propositional_formula(0)), visit(ctx.propositional_formula(1)));
     }
 
-    @Override public T visitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) {
-        T t = visitChildren(ctx);
-        setExpr(ctx, getExpr(ctx.atom()));
-        return t;
+    @Override public Term visitAtomLiteral(AtomLiteralContext ctx) {
+        return visitChildren(ctx); // TODO Mogelijk visit(ctx.atom()) ofzo
     }
 
     // --- ATOMS ---
 
-    @Override public T visitAtom(GraafvisParser.AtomContext ctx) {
-        T t = visitChildren(ctx);
-        int n = ctx.term().size();
-        String[] terms = new String[n];
-        for (int i = 0; i < n; i++) {
-            terms[i] = getStr(ctx.term(i));
-        }
-        setExpr(ctx, expr(ctx.predicate().getText(), terms));
-        return t;
+    @Override public Term visitAtom(AtomContext ctx) {
+        return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.term())); // TODO geen agg in geval van enkele term?
     }
 
-    @Override public T visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
+    @Override public Term visitMultiAtomLiteral(MultiAtomLiteralContext ctx) {
         // TODO
         return visitChildren(ctx);
     }
 
     // --- TERMS ----
 
-    @Override public T visitTermGround(GraafvisParser.TermGroundContext ctx) {
-        setStr(ctx, ctx.getText());
+    @Override public Term visitTermGround(TermGroundContext ctx) {
+        System.out.println("GROUND TERM IS " + ctx.getText());
         return visitChildren(ctx);
+        // TODO other grounds
     }
 
-    @Override public T visitTermVar(GraafvisParser.TermVarContext ctx) {
-        setStr(ctx, ctx.getText());
-        return visitChildren(ctx);
+    @Override public Term visitGroundString(GroundStringContext ctx) {
+        System.out.println("STRING IS " + new Struct(ctx.getText()));
+        return new Struct(ctx.getText());
     }
 
-    @Override public T visitWildcard(GraafvisParser.WildcardContext ctx) {
-        // TODO Use the upCnt function to keep a counter per encapsulating clause, but
-        // that is a bit too complex for now. So for now, a very very very hacky random function.
-        setStr(ctx, WILD_CARD_PREFIX + Math.random());
-        return visitChildren(ctx);
+    @Override public Term visitGroundNum(GroundNumContext ctx) {
+        System.out.println("NUM IS " + ctx.getText());
+        return Number.createNumber(ctx.getText());
     }
 
-    @Override public T visitTuple(GraafvisParser.TupleContext ctx) {
-        // TODO
-        setStr(ctx, "<HI I AM TUPLE>");
-        return visitChildren(ctx);
+    @Override public Term visitGroundID(GroundIDContext ctx) {
+        System.out.println("ID IS " + ctx.getText());
+        return new Struct(ctx.getText());
+    }
+
+    @Override public Term visitTermVar(TermVarContext ctx) {
+        System.out.println("VAR IS " + ctx.getText());
+        return new Var(ctx.getText());
+    }
+
+    @Override public Term visitTermWild(TermWildContext ctx) {
+        System.out.println("WILD IS " + ctx.getText());
+        return new Var(TUP_WILD_CARD);
+    }
+
+    @Override public Term visitTermTuple(TermTupleContext ctx) {
+        // TODO dit is een list nu
+        System.out.println("TUPLE IS " + ctx.getText());
+        return new Struct(aggregateVisit(ctx.term()));
     }
 
     // ---------
@@ -178,8 +234,24 @@ public class RuleGenerator<T> extends GraafvisBaseVisitor<T> {
 
 
     /*****************************
-     --- Helper methods ---
+        --- Helper methods ---
      *****************************/
+
+    // --- Change AbstractParseTreeVisitor behaviour ---
+//    // TODO check for all aggregate cases
+//    @Override public Term aggregateResult(Term aggregate, Term nextResult) {
+//        return new Struct(new Term[]{aggregate, nextResult});
+//    }
+
+    // --- Return one term for multiple visits ---
+    public Term[] aggregateVisit(List<? extends ParseTree> ctxs) {
+        int n = ctxs.size();
+        Term[] terms = new Term[n];
+        for (int i = 0; i < n; i++) {
+            terms[i] = visit(ctxs.get(i));
+        }
+        return terms;
+    }
 
     // --- ParseTreeProperties ---
 
@@ -218,22 +290,18 @@ public class RuleGenerator<T> extends GraafvisBaseVisitor<T> {
 
     // --- Update logic model ---
 
-    private void addFact(Expr e) {
-        cs.addFact(e);
-    }
-
-    private void addRule(Rule r) {
-        cs.addRule(r);
+    private void addClause(Term t) {
+        result.add(t);
     }
 
     // --- Getters & setters ---
 
-    public ConstraintSet getCs() {
-        return cs;
+    public List<Term> getResult() {
+        return result;
     }
 
-    public void setCs(ConstraintSet cs) {
-        this.cs = cs;
+    public void setResult(List<Term> ts) {
+        this.result = ts;
     }
 
 }
