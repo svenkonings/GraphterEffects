@@ -1,29 +1,30 @@
 package graafvis.deprecated;
 
 import graafvis.ConstraintSet;
-import graafvis.grammar.GraafvisBaseListener;
+import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static za.co.wstoop.jatalog.Expr.expr;
 
 /**
- * Created by Lindsay on 27-Mar-17.
+ * Created by Lindsay on 28-Mar-17.
  */
-public class RuleGeneratorDeprecated extends GraafvisBaseListener {
+public class RuleGeneratorDeprecated2<T> extends GraafvisBaseVisitor<T> {
     public static final String WILD_CARD_PREFIX = "X*"; // Cap letter to make it a var, * to make it illegal
-    private ConstraintSet cs;
-    private List<Expr> facts = new ArrayList<>();
-    private List<Rule> rules = new ArrayList<>();
+    private ConstraintSet cs = new ConstraintSet();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<List<Expr>> exprsPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<String> stringPTP = new ParseTreeProperty<>();
@@ -31,11 +32,11 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
 
 
     /**********************
-        --- Calling  ---
-    **********************/
+     --- Calling  ---
+     **********************/
 
     public static void main(String[] args) throws DatalogException {
-        generate("node(_a), label(_a, \"wolf\").");
+        generate("node(a), label(a, \"wolf\").");
         generate("node(X), label(X, \"wolf\") -> wolf(X).");
         generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
         generate("node(X), label(X, _) -> shape(X, square).");
@@ -46,12 +47,13 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
 
     public static ConstraintSet generate(String script) {
         System.out.println("\n" + script);
-        RuleGeneratorDeprecated rg = new RuleGeneratorDeprecated();
+        RuleGeneratorDeprecated2 rg = new RuleGeneratorDeprecated2();
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
         ParseTree tree = parser.program();
-        new ParseTreeWalker().walk(rg, tree);
+        tree.accept(rg);
+//        new ParseTreeWalker().walk(rg, tree);
 //        System.out.println("\tTree: " + tree);
         System.out.println("\tFacts: " + rg.getCs().getFacts());
         System.out.println("\tRules: " + rg.getCs().getRules());
@@ -60,21 +62,20 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
 
 
     /*************************
-        --- Tree walker ---
-    *************************/
+     --- Tree walker ---
+     *************************/
 
-    @Override public void exitProgram(GraafvisParser.ProgramContext ctx) {
+    @Override public T visitProgram(GraafvisParser.ProgramContext ctx) {
         // TODO imports
-        cs = new ConstraintSet(new HashSet<String>(), facts, rules);
+        T t = visitChildren(ctx);
+        return t;
     }
 
     // TODO Node label gen
     // TODO Edge label gen
 
-
-    @Override public void enterClause(GraafvisParser.ClauseContext ctx) { }
-
-    @Override public void exitClause(GraafvisParser.ClauseContext ctx) {
+    @Override public T visitClause(GraafvisParser.ClauseContext ctx) {
+        T t = visitChildren(ctx);
         // Consequence
         GraafvisParser.ConsequenceContext consequence = ctx.consequence();
         List<Expr> consequence_exprs = new ArrayList<>();
@@ -96,62 +97,76 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
                 addFact(e);
             }
         }
+        return t;
     }
 
     // TODO Out of scope: pfNot, pfOr, pfNest
-    @Override public void exitPfLit(GraafvisParser.PfLitContext ctx) {
+    @Override public T visitPfLit(GraafvisParser.PfLitContext ctx) {
+        T t = visitChildren(ctx);
         List<Expr> exprs = new ArrayList<>();
         exprs.add(getExpr(ctx.literal()));
         setExprs(ctx, exprs);
+        return t;
     }
 
-    @Override public void exitPfAnd(GraafvisParser.PfAndContext ctx) {
+    @Override public T visitPfAnd(GraafvisParser.PfAndContext ctx) {
+        T t = visitChildren(ctx);
         List<Expr> exprs = new ArrayList<>();
         // Ignoring ORs
         for (GraafvisParser.Propositional_formulaContext pf : ctx.propositional_formula()) {
             exprs.addAll(getExprs(pf));
         }
         setExprs(ctx, exprs);
+        return t;
     }
 
-    @Override public void exitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) {
+    @Override public T visitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) {
+        T t = visitChildren(ctx);
         setExpr(ctx, getExpr(ctx.atom()));
+        return t;
     }
 
     // --- ATOMS ---
 
-    @Override public void exitAtom(GraafvisParser.AtomContext ctx) {
+    @Override public T visitAtom(GraafvisParser.AtomContext ctx) {
+        T t = visitChildren(ctx);
         int n = ctx.term().size();
         String[] terms = new String[n];
         for (int i = 0; i < n; i++) {
             terms[i] = getStr(ctx.term(i));
         }
         setExpr(ctx, expr(ctx.predicate().getText(), terms));
+        return t;
     }
 
-    @Override public void exitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
+    @Override public T visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
         // TODO
+        return visitChildren(ctx);
     }
 
     // --- TERMS ----
 
-    @Override public void enterTermGround(GraafvisParser.TermGroundContext ctx) {
+    @Override public T visitTermGround(GraafvisParser.TermGroundContext ctx) {
         setStr(ctx, ctx.getText());
+        return visitChildren(ctx);
     }
 
-    @Override public void enterTermVar(GraafvisParser.TermVarContext ctx) {
+    @Override public T visitTermVar(GraafvisParser.TermVarContext ctx) {
         setStr(ctx, ctx.getText());
+        return visitChildren(ctx);
     }
 
-    @Override public void enterWildcard(GraafvisParser.WildcardContext ctx) {
+    @Override public T visitWildcard(GraafvisParser.WildcardContext ctx) {
         // TODO Use the upCnt function to keep a counter per encapsulating clause, but
         // that is a bit too complex for now. So for now, a very very very hacky random function.
         setStr(ctx, WILD_CARD_PREFIX + Math.random());
+        return visitChildren(ctx);
     }
 
-    @Override public void enterTuple(GraafvisParser.TupleContext ctx) {
+    @Override public T visitTuple(GraafvisParser.TupleContext ctx) {
         // TODO
         setStr(ctx, "<HI I AM TUPLE>");
+        return visitChildren(ctx);
     }
 
     // ---------
@@ -160,8 +175,8 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
 
 
     /*****************************
-        --- Helper methods ---
-    *****************************/
+     --- Helper methods ---
+     *****************************/
 
     // --- ParseTreeProperties ---
 
@@ -201,11 +216,11 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
     // --- Update logic model ---
 
     private void addFact(Expr e) {
-        facts.add(e);
+        cs.addFact(e);
     }
 
     private void addRule(Rule r) {
-        rules.add(r);
+        cs.addRule(r);
     }
 
     // --- Getters & setters ---
@@ -217,4 +232,5 @@ public class RuleGeneratorDeprecated extends GraafvisBaseListener {
     public void setCs(ConstraintSet cs) {
         this.cs = cs;
     }
+
 }
