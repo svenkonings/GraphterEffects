@@ -2,6 +2,9 @@ package graafvis.checkers;
 
 import graafvis.ErrorListener;
 import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
+import graafvis.warnings.Warning;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -18,7 +21,8 @@ public class GraafvisCheckerTest {
             "edge labels: \"Boat\" as boat.\n" +
             "node(X), boat(X) -> predicate(X).\n" +
             "node(X) -> edge(X,Y).\n" +
-            "predicate(X) -> boat(_).\n"
+            "predicate(X) -> boat(_).\n" +
+            "predicate(X, Y) -> goat(Y)."
     ;
 
     @Test
@@ -27,6 +31,9 @@ public class GraafvisCheckerTest {
         CheckerResult checkerResult = new GraafvisChecker().check(program);
         for (VisError error : checkerResult.getErrors()) {
             System.err.println(error);
+        }
+        for (Warning warning : checkerResult.getWarnings()) {
+            System.out.println(warning);
         }
     }
 

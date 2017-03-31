@@ -2,6 +2,8 @@ package graafvis.checkers;
 
 import graafvis.errors.UndefinedVariableError;
 import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisBaseVisitor;
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.util.ArrayList;
@@ -138,8 +140,12 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     /** Pass on the set to its children */
     @Override
     public Void visitAtom(GraafvisParser.AtomContext ctx) {
-        variables.put(ctx.termTuple(), variables.get(ctx));
-        return visitTermTuple(ctx.termTuple());
+        if (ctx.termTuple() != null) {
+            variables.put(ctx.termTuple(), variables.get(ctx));
+            return visitTermTuple(ctx.termTuple());
+        } else {
+            return null;
+        }
     }
 
     /** Pass on the set to its children */

@@ -64,7 +64,6 @@ public class PropositionalFormulaTest extends GrammarTest {
                     "(p(X)",
                     "p(x) p(x)",
                     "p((x",
-                    "(x)",
                     ",",
                     ", p(x)"
             );

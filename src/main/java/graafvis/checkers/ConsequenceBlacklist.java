@@ -2,6 +2,8 @@ package graafvis.checkers;
 
 import graafvis.errors.BlacklistedPredicateError;
 import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisBaseVisitor;
+import graafvis.grammar.GraafvisParser;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -75,7 +77,11 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     @Override
     public Void visitAtom(GraafvisParser.AtomContext ctx) {
         blacklistCheck(ctx.predicate());
-        return visitTermTuple(ctx.termTuple());
+        if (ctx.termTuple() != null) {
+            return visitTermTuple(ctx.termTuple());
+        } else {
+            return null;
+        }
     }
 
     /** Check the predicate of the multi atom */

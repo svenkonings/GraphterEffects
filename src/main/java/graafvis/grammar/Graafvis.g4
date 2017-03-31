@@ -39,7 +39,7 @@ literal: atom                                   #atomLiteral
        ;
 
 /* Atoms are predicates applied to a tuple of terms */
-atom: predicate termTuple;
+atom: predicate termTuple?;
 
 /* Language feature to apply one predicate to multiple tuples of terms */
 multiAtom: predicate BRACE_OPEN (term | termTuple) (COMMA (term | termTuple))* BRACE_CLOSE;

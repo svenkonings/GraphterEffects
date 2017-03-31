@@ -60,7 +60,6 @@ public class AtomTest extends GrammarTest {
 
     public static final List<String> INVALID_SAMPLES = Arrays.asList
             (
-                    "test",
                     "p)(",
                     "P(x)",
                     "_p()",
