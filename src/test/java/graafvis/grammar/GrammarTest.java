@@ -55,7 +55,7 @@ public abstract class GrammarTest {
                     "1",
                     "0123",
                     "0",
-                    "921345156224167352"
+                    "9876543210"
             );
     protected static final List<String> VALID_ID_SAMPLES = Arrays.asList
             (
@@ -84,7 +84,8 @@ public abstract class GrammarTest {
             (
                     ",",
                     "and",
-                    "or"
+                    "or",
+                    ";"
             );
 
     /**
