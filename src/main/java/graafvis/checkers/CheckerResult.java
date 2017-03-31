@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * Result of the checking phase
  */
 public class CheckerResult {
 
