@@ -21,7 +21,6 @@ public class LiteralTest extends GrammarTest {
             (
                     "",
                     "_",
-                    "test",
                     "_(A)"
             );
 

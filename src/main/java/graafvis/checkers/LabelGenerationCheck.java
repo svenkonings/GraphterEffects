@@ -2,6 +2,9 @@ package graafvis.checkers;
 
 import graafvis.ErrorListener;
 import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisBaseVisitor;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -39,7 +42,7 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
         return null;
     }
 
-    /** Checks if a label can be  */
+    /** Checks if a label can be generated */
     @Override
     public Void visitLabel(GraafvisParser.LabelContext ctx) {
 

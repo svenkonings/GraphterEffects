@@ -7,7 +7,7 @@ public abstract class VisError {
 
     private String msg;
 
-    public VisError(int row, int column) {
+    protected VisError(int row, int column) {
         this.row = row;
         this.column = column;
     }

@@ -15,16 +15,19 @@ public class GraafvisChecker {
         final ConsequenceBlacklist consequenceBlacklist = new ConsequenceBlacklist();
         final VariableUsageCheck variableUsageCheck = new VariableUsageCheck();
         final WildcardUsageCheck wildcardUsageCheck = new WildcardUsageCheck();
+        final SingletonVariablesCheck singletonVariablesCheck = new SingletonVariablesCheck();
 
         labelGenerationCheck.visitProgram(program);
         consequenceBlacklist.visitProgram(program);
         variableUsageCheck.visitProgram(program);
         wildcardUsageCheck.visitProgram(program);
+        singletonVariablesCheck.visitProgram(program);
 
         result.addErrors(labelGenerationCheck.getErrors());
         result.addErrors(consequenceBlacklist.getErrors());
         result.addErrors(variableUsageCheck.getErrors());
         result.addErrors(wildcardUsageCheck.getErrors());
+        result.addWarnings(singletonVariablesCheck.getWarnings());
 
         return result;
     }
