@@ -51,13 +51,12 @@ public class SvgDocumentGenerator {
      * @param element  The given element.
      * @param visElems The given list of visualization elements.
      */
-    // TODO: Improve calculation
     private static void setViewBox(Element element, List<VisElem> visElems) {
-//        int minX = min(visElems, "x1");
-//        int minY = min(visElems, "y1");
-        int maxX = max(visElems, "x2");
-        int maxY = max(visElems, "y2");
-        element.addAttribute("viewBox", String.format("0 0 %d %d", maxX, maxY));
+        int minX = min(visElems, "x1");
+        int minY = min(visElems, "y1");
+        int width = max(visElems, "x2") - minX;
+        int height = max(visElems, "y2") - minY;
+        element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
     }
 
     /**

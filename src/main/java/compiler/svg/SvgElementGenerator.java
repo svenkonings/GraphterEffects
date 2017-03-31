@@ -23,6 +23,7 @@ public class SvgElementGenerator {
 
     public SvgElementGenerator() {
         generators = new HashMap<>();
+        setDefaults();
     }
 
     private void setDefaults() {
