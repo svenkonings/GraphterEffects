@@ -1,8 +1,5 @@
 package graafvis.errors;
 
-/**
- *
- */
 public class WildcardError extends VisError {
     public WildcardError(int row, int column) {
         super(row, column);

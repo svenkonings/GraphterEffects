@@ -10,16 +10,13 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.GraphUtils;
 import utils.StringUtils;
-import za.co.wstoop.jatalog.DatalogException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static compiler.prolog.TuProlog.intVal;
-import static compiler.prolog.TuProlog.struct;
-import static compiler.prolog.TuProlog.term;
+import static compiler.prolog.TuProlog.*;
 
 public final class AbstractSyntaxRuleConverter {
 

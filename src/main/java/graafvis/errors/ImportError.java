@@ -1,8 +1,5 @@
 package graafvis.errors;
 
-/**
- *
- */
 public class ImportError extends VisError {
 
     private final String fileName;

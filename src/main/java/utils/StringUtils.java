@@ -12,8 +12,9 @@ public final class StringUtils {
 
     /**
      * Repeats a character n times
+     *
      * @param in Character to be repeated.
-     * @param n Number of times to repeat.
+     * @param n  Number of times to repeat.
      * @return String containing <code>in</code> n times.
      */
     public static String repeat(char in, int n) {
@@ -24,6 +25,7 @@ public final class StringUtils {
 
     /**
      * Compare two Strings ending in integers with String first, Number second logic.
+     *
      * @param id1 First String to be compared.
      * @param id2 Second String to be compared.
      * @return -1, 0 or 1 depending on the result of the comparison.
@@ -40,14 +42,15 @@ public final class StringUtils {
 
     /**
      * Splits a String into a String part at the beginning and an Integer part at the end.
+     *
      * @param input Input to be splitted.
      * @return A Pair containing the two parts of the split.
      */
     public static Pair<String, Integer> stripTrailingNumbers(String input) {
         String digs = "";
-        while (input.length() > 0 && (Character.isDigit(input.charAt(input.length()-1)))) {
-            digs = input.charAt(input.length()-1) + digs;
-            input = input.substring(0, input.length()-1);
+        while (input.length() > 0 && (Character.isDigit(input.charAt(input.length() - 1)))) {
+            digs = input.charAt(input.length() - 1) + digs;
+            input = input.substring(0, input.length() - 1);
         }
         try {
             return new Pair<>(input, Integer.parseInt(digs));
@@ -57,20 +60,22 @@ public final class StringUtils {
     }
 
     /**
-     * Returns an accurate String representation of any Object, including arrays and collections of arrays or arrays of arrays.
+     * Returns an accurate String representation of any Object, including arrays and collections of arrays or arrays of
+     * arrays.
+     *
      * @param in Object of which the representation is required.
      * @return A String representing the Object.
      */
     public static String ObjectToString(Object in) {
         if (in instanceof Collection) {
             List<String> to = new LinkedList<>();
-            for (Object i : ((Collection)in)) {
+            for (Object i : ((Collection) in)) {
                 to.add(ObjectToString(i));
             }
             return to.toString();
         } else if (in instanceof Object[]) {
             String[] res = new String[((Object[]) in).length];
-            for (int i = 0; i<((Object[]) in).length; i++) {
+            for (int i = 0; i < ((Object[]) in).length; i++) {
                 res[i] = ObjectToString(((Object[]) in)[i]);
             }
             return Arrays.toString(res);

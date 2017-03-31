@@ -8,15 +8,9 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by poesd_000 (who is by the way better than you) on 24/03/2017.
- */
 public final class GraphUtilsTest {
 
     @Test
@@ -44,8 +38,6 @@ public final class GraphUtilsTest {
             assertTrue(sameAttributes(n, gsecond.getNode("_" + n.getId())));
         }
     }
-
-
 
 
     private boolean sameAttributes(Element e1, Element e2) {

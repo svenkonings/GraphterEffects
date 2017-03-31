@@ -1,9 +1,8 @@
 package utils;
 
 import org.junit.Test;
-import utils.StringUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 public final class StringUtilsTest {
