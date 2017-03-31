@@ -294,6 +294,7 @@ public class VisElem {
         boolean hasCenter = hasVar(center);
         boolean hasEnd = hasVar(end);
         if (!hasStart && !hasCenter && !hasEnd) {
+            setVar(start, model.intVar(domain(0, MAX_INT_BOUND, 10)));
             setVar(center, getVar(start).add(getVar(radius)).intVar());
             setVar(end, getVar(start).add(getVar(diameter)).intVar());
         } else if (hasStart) {
@@ -309,6 +310,12 @@ public class VisElem {
 //        getVar(start).gt(getVar(end)).post(); TODO: Not guaranteed for lines
     }
 
+    private void setDefaultValues() {
+        if (!hasValue("type")) setValue("type", "ellipse");
+        if (!hasValue("colour")) setValue("colour", "white");
+        if (!hasValue("border-colour")) setValue("border-colour", "black");
+    }
+
     private void setConstraint(String name, boolean exists, ArExpression constraint) {
         if (exists) {
             constraint.eq(getVar(name)).post();
@@ -317,9 +324,12 @@ public class VisElem {
         }
     }
 
-    private void setDefaultValues() {
-        if (!hasValue("type")) setValue("type", "ellipse");
-        if (!hasValue("colour")) setValue("colour", "white");
-        if (!hasValue("border-colour")) setValue("border-colour", "black");
+    private static int[] domain(int start, int end, int step) {
+        int size = (end - start) / step;
+        int[] result = new int[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = start + i * step;
+        }
+        return result;
     }
 }

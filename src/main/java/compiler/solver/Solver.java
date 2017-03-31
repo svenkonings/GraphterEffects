@@ -4,6 +4,9 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMiddle;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
 
@@ -97,11 +100,11 @@ public class Solver {
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
         visMap.values().forEach(VisElem::setDefaults);
-//        model.getSolver().setSearch(Search.intVarSearch(
-//                new FirstFail(model),
-//                new IntDomainRandom(ThreadLocalRandom.current().nextLong()),
-//                model.retrieveIntVars(false)
-//        ));
+        model.getSolver().setSearch(Search.intVarSearch(
+                new FirstFail(model),
+                new IntDomainMiddle(true),
+                model.retrieveIntVars(false)
+        ));
         model.getSolver().solve();
         return new ArrayList<>(visMap.values());
     }
