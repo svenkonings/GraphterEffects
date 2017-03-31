@@ -43,7 +43,7 @@ public class GraphRuleTests {
     }
 
     public static void structureTest(TuProlog prolog, Graph graph) {
-        Collection<Map<String, Term>> answers1 = prolog.query(struct("node", var("ID")));
+        Collection<Map<String, Term>> answers1 = prolog.solve(struct("node", var("ID")));
         assert answers1.size() == graph.getNodeSet().size();
         graph.getNodeSet().forEach(node -> {
             try {
@@ -52,7 +52,7 @@ public class GraphRuleTests {
                 e.printStackTrace();
             }
         });
-        Collection<Map<String, Term>> answers2 = prolog.query(struct("edge", var("Target"), var("Source"), var("ID")));
+        Collection<Map<String, Term>> answers2 = prolog.solve(struct("edge", var("Target"), var("Source"), var("ID")));
         assert answers2.size() == graph.getEdgeSet().size();
         graph.getEdgeSet().forEach(edge -> {
             try {

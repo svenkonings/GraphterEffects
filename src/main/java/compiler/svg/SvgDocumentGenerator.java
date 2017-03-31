@@ -16,6 +16,7 @@ import java.util.List;
  * A generator for converting visualization elements to a SVG docuemtn
  */
 public class SvgDocumentGenerator {
+
     /**
      * Generates a SVG document based on the given visualization elements.
      *
@@ -23,12 +24,23 @@ public class SvgDocumentGenerator {
      * @return a SVG document.
      */
     public static Document generate(List<VisElem> visElems) {
+        return generate(new SvgElementGenerator(), visElems);
+    }
+
+    /**
+     * Generates a SVG document based on the given visualization elements with the given element generator.
+     *
+     * @param generator The given element generator
+     * @param visElems  The given visualization elements.
+     * @return a SVG document.
+     */
+    public static Document generate(SvgElementGenerator generator, List<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         setViewBox(root, visElems);
         visElems.stream()
                 .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
-                .forEachOrdered(visElem -> SvgElementGenerator.addElement(visElem, root));
+                .forEachOrdered(visElem -> generator.addElement(visElem, root));
         return document;
     }
 

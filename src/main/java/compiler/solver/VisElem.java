@@ -270,6 +270,8 @@ public class VisElem {
 
         setDefaultPositions("x1", "centerX", "x2", "width", "radiusX");
         setDefaultPositions("y1", "centerY", "y2", "height", "radiusY");
+
+        setDefaultValues();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -313,5 +315,11 @@ public class VisElem {
         } else {
             setVar(name, constraint.intVar());
         }
+    }
+
+    private void setDefaultValues() {
+        if (!hasValue("type")) setValue("type", "ellipse");
+        if (!hasValue("colour")) setValue("colour", "white");
+        if (!hasValue("border-colour")) setValue("border-colour", "black");
     }
 }
