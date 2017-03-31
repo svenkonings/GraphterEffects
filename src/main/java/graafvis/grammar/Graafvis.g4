@@ -57,7 +57,7 @@ term: variable                                                                  
     | STRING                                                                                    # termString
     | NUMBER                                                                                    # termNumber
     | ID                                                                                        # termID
-    | BRACKET_OPEN (term (COMMA term)* (VBAR term (COMMA term)*)?)? BRACKET_CLOSE                # termList
+    | BRACKET_OPEN (term (COMMA term)* (VBAR term (COMMA term)*)?)? BRACKET_CLOSE               # termList
     ;
 
 /* Variables start with uppercase letter */

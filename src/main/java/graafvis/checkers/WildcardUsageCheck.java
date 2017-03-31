@@ -2,8 +2,6 @@ package graafvis.checkers;
 
 import graafvis.errors.VisError;
 import graafvis.errors.WildcardError;
-import graafvis.grammar.GraafvisBaseVisitor;
-import graafvis.grammar.GraafvisParser;
 
 import java.util.ArrayList;
 

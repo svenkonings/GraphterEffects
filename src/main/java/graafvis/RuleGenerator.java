@@ -16,15 +16,12 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.junit.Test;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
-import za.co.wstoop.jatalog.Rule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static za.co.wstoop.jatalog.Expr.expr;
 
 /**
  * Created by Lindsay on 28-Mar-17.
@@ -123,14 +120,14 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         List<Term> test3 = Arrays.asList(new Struct("p", new Term[]{new Var("X"), new Var("Y")}));
         assertEquals(test3, generate("p(X,Y)."));
         List<Term> test4 = Arrays.asList(new Struct("p", list));
-        assertEquals(test4, generate("p((X,Y)).")); // TODO aanpassen naar []
+        assertEquals(test4, generate("p([X,Y]).")); // TODO aanpassen naar []
         List<Term> test5 = Arrays.asList(
             new Struct("shape",
             new Term[]{
                 list,
                 new Struct("square")
             }));
-        assertEquals(test5, generate("shape((X,Y), square).")); // TODO aanpassen naar []
+        assertEquals(test5, generate("shape([X,Y], square).")); // TODO aanpassen naar []
 //        List<Term> test6 = Arrays.asList(new Struct("p", new Var(TUP_WILD_CARD)));
 //        Struct s = new Struct("p", new Var(TUP_WILD_CARD));
 //        List<Term> me6 = generate("p(_).");
@@ -171,8 +168,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitPfAnd(PfAndContext ctx) {
-        return new Struct(TUP_AND, visit(ctx.propositional_formula(0)), visit(ctx.propositional_formula(1)));
+        return new Struct(TUP_AND, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
     }
+
+    // TODO OR
 
     @Override public Term visitAtomLiteral(AtomLiteralContext ctx) {
         return visitChildren(ctx); // TODO Mogelijk visit(ctx.atom()) ofzo
@@ -181,7 +180,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // --- ATOMS ---
 
     @Override public Term visitAtom(AtomContext ctx) {
-        return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.term())); // TODO geen agg in geval van enkele term?
+        return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.termTuple().term())); // TODO geen agg in geval van enkele term?
+        // TODO mogelijk deel verplaatsen naar TermTuple
     }
 
     @Override public Term visitMultiAtomLiteral(MultiAtomLiteralContext ctx) {
@@ -191,40 +191,27 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- TERMS ----
 
-    @Override public Term visitTermGround(TermGroundContext ctx) {
-        System.out.println("GROUND TERM IS " + ctx.getText());
-        return visitChildren(ctx);
-        // TODO other grounds
-    }
-
-    @Override public Term visitGroundString(GroundStringContext ctx) {
-        System.out.println("STRING IS " + new Struct(ctx.getText()));
-        return new Struct(ctx.getText());
-    }
-
-    @Override public Term visitGroundNum(GroundNumContext ctx) {
-        System.out.println("NUM IS " + ctx.getText());
-        return Number.createNumber(ctx.getText());
-    }
-
-    @Override public Term visitGroundID(GroundIDContext ctx) {
-        System.out.println("ID IS " + ctx.getText());
-        return new Struct(ctx.getText());
-    }
-
     @Override public Term visitTermVar(TermVarContext ctx) {
-        System.out.println("VAR IS " + ctx.getText());
         return new Var(ctx.getText());
     }
 
-    @Override public Term visitTermWild(TermWildContext ctx) {
-        System.out.println("WILD IS " + ctx.getText());
+    @Override public Term visitTermWildcard(TermWildcardContext ctx) {
         return new Var(TUP_WILD_CARD);
     }
 
-    @Override public Term visitTermTuple(TermTupleContext ctx) {
-        // TODO dit is een list nu
-        System.out.println("TUPLE IS " + ctx.getText());
+    @Override public Term visitTermString(TermStringContext ctx) {
+        return new Struct(ctx.getText());
+    }
+
+    @Override public Term visitTermNumber(TermNumberContext ctx) {
+        return Number.createNumber(ctx.getText());
+    }
+
+    @Override public Term visitTermID(TermIDContext ctx) {
+        return new Struct(ctx.getText());
+    }
+
+    @Override public Term visitTermList(TermListContext ctx) {
         return new Struct(aggregateVisit(ctx.term()));
     }
 

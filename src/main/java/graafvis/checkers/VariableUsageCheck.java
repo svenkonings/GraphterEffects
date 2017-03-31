@@ -2,13 +2,10 @@ package graafvis.checkers;
 
 import graafvis.errors.UndefinedVariableError;
 import graafvis.errors.VisError;
-import graafvis.grammar.GraafvisBaseVisitor;
-import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Checks if no variables are introduced in the consequence of a clause.

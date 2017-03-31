@@ -2,8 +2,6 @@ package graafvis.checkers;
 
 import graafvis.errors.BlacklistedPredicateError;
 import graafvis.errors.VisError;
-import graafvis.grammar.GraafvisBaseVisitor;
-import graafvis.grammar.GraafvisParser;
 
 import java.util.ArrayList;
 import java.util.HashSet;
