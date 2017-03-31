@@ -125,23 +125,27 @@ public final class DemoTests {
         TuProlog prolog = generateGraphProlog(graph);
         prolog.addTheory(
                 //Shows the wolf image
-                clause(struct("image", var("N"), struct("demo/images/wolf.png")), struct("attribute", term("label"), var("N"), term("type:Wolf"))),
-                clause(struct("pos", var("N"), intVal(50), intVal(85)), struct("attribute", term("label"), var("N"), term("type:Wolf"))),
+                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/wolf.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("wolf"))),
+                clause(struct("pos", var("N"), intVal(50), intVal(85)), struct("attribute", term("label"), var("N"), term("wolf"))),
+                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("wolf"))),
 
                 //Shows the sheep image
-                clause(struct("image", var("N"), struct("demo/images/sheep.png")), struct("attribute", term("label"), var("N"), term("type:Goat"))),
+                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/sheep.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Goat"))),
                 clause(struct("pos", var("N"), intVal(200), intVal(45)), struct("attribute", term("label"), var("N"), term("type:Goat"))),
+                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("type:Goat"))),
 
                 //Shows the cabbage image
-                clause(struct("image", var("N"), struct("demo/images/cabbage.png")), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
+                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/cabbage.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
                 clause(struct("pos", var("N"), intVal(350), intVal(5)), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
+                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
 
                 //Shows the boat image
-                clause(struct("image", var("N"), struct("demo/images/boat.png")), struct("attribute", term("label"), var("N"), term("type:Boat"))),
+                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/boat.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Boat"))),
                 clause(struct("pos", var("N"), intVal(400), intVal(220)), struct("attribute", term("label"), var("N"), term("type:Boat"))),
+                clause(struct("dimensions", var("N"), intVal(450), intVal(190)), struct("attribute", term("label"), var("N"), term("type:Boat"))),
 
                 //Shows the river image
-                struct("background-image", struct("demo/images/river.png"))
+                struct("background-image", struct(FileUtils.fromResources("demo/images/river.png").getAbsolutePath()))
         );
         Solver solver = new Solver(prolog);
         List<VisElem> visElemList = solver.solve();

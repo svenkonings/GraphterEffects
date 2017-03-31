@@ -97,6 +97,11 @@ public class Solver {
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
         visMap.values().forEach(VisElem::setDefaults);
+//        model.getSolver().setSearch(Search.intVarSearch(
+//                new FirstFail(model),
+//                new IntDomainRandom(ThreadLocalRandom.current().nextLong()),
+//                model.retrieveIntVars(false)
+//        ));
         model.getSolver().solve();
         return new ArrayList<>(visMap.values());
     }
@@ -158,12 +163,13 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer imageQuery(String key, String imagePath) {
+    public static QueryConsumer imageQuery(String key, String imageValue) {
         return forEach((visMap, values) -> {
             VisElem elem = visMap.get(values.get(key));
+            String imagePath = values.get(imageValue).toString().replaceAll("'", "");
             String image;
             try {
-                image = FileUtils.ImageToBase64(new File(values.get(imagePath).toString()));
+                image = FileUtils.getImageSVG(new File(imagePath));
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
