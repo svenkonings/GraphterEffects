@@ -23,7 +23,7 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
     private final ArrayList<Warning> warnings;
 
     /** Create a new singular variables check */
-    public SingletonVariablesCheck() {
+    SingletonVariablesCheck() {
         variableCounters = new ParseTreeProperty<>();
         variableLocations = new HashMap<>();
         warnings = new ArrayList<>();
@@ -58,7 +58,7 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
         Set<String> consequenceVariables = consequenceCounter.getVariables();
         for (String variable : antecedentVariables) {
             /* Add a warning if a variable occurs only once on the LHS and never on the RHS */
-            if (antecedentCounter.get(variable) == 1 && !consequenceVariables.contains(variable)) {
+            if (antecedentCounter.count(variable) == 1 && !consequenceVariables.contains(variable)) {
                 LocationInProgram location = variableLocations.get(variable);
                 warnings.add(new SingletonVariableWarning(location.getLine(), location.getColumn(), variable));
             }
@@ -245,8 +245,10 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
      * Helper classes
      */
 
+    /** Keeps count of how many times a variable occurred */
     private class VariableCounter extends HashMap<String, Integer> {
 
+        /** Add a variable occurrence */
         void add(String var) {
             if (this.keySet().contains(var)) {
                 this.put(var, this.get(var) + 1);
@@ -255,6 +257,7 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
             }
         }
 
+        /** Get the number of times that a variable occurred */
         int count(String var) {
             if (this.keySet().contains(var)) {
                 return this.get(var);
@@ -269,6 +272,7 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
 
     }
 
+    /** A location in the program */
     private final class LocationInProgram {
 
         private final int line;
