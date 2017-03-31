@@ -78,12 +78,12 @@ public class TuProlog {
         while (deque.size() < 2) {
             deque.addLast(list());
         }
-        Term term2 = deque.removeLast();
-        Term term1 = deque.removeLast();
+        Term term1 = deque.removeFirst();
+        Term term2 = deque.removeFirst();
         Struct struct = struct(name, term1, term2);
         while (!deque.isEmpty()) {
-            Term term = deque.removeLast();
-            struct = struct(name, term, struct);
+            Term term = deque.removeFirst();
+            struct = struct(name, struct, term);
         }
         return struct;
     }

@@ -110,38 +110,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- Testing ---
 
-    @Test
-    public void test() {
-        Struct list = list(var("X"), var("Y"));
-        Struct pX = struct("p", new Var("X"));
-        Struct qX = struct("q", new Var("X"));
-
-
-        List<Term> test1 = inList(struct("p", var("X")));
-        assertEquals(test1, generate("p(X)."));
-
-        List<Term> test2 = inList(struct("edge", var("X"), var("Y")));
-        assertEquals(test2, generate("edge(X,Y)."));
-
-        List<Term> test3 = inList(struct("p", var("X"), var("Y")));
-        assertEquals(test3, generate("p(X,Y)."));
-
-        List<Term> test4 = inList(struct("p", list(var("X"), var("Y"))));
-        assertEquals(test4, generate("p([X,Y])."));
-
-        List<Term> test5 = inList(struct("shape", list(var("X"), var("Y")), struct("square")));
-        assertEquals(test5, generate("shape([X,Y], square)."));
-
-        List<Term> test6 = inList(struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square")));
-        assertEquals(test6, generate("shape([X,[3, \"wolf\"]], square)."));
-
-
-//        List<Term> test6 = Arrays.asList(new Struct());
-//        List<Term> test6 = Arrays.asList(new Struct(TUP_OR, pX, ));
-
-        // TODO Find way to test wildcards
-    }
-
     /*************************
         --- Tree walker ---
      *************************/
@@ -192,14 +160,28 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // --- ATOMS ---
 
     @Override public Term visitAtom(AtomContext ctx) {
-        return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.termTuple().term())); // TODO geen agg in geval van enkele term?
+        if (ctx.termTuple() == null) {
+            // Constant, f.e. p
+            return new Struct(ctx.predicate().getText());
+        } else {
+            // Regular predicate, f.e. p(X), p(X,Y,Z), p()
+            return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.termTuple().term())); // TODO geen agg in geval van enkele term?
+        }
         // TODO mogelijk deel verplaatsen naar TermTuple
     }
 
-    @Override public Term visitMultiAtomLiteral(MultiAtomLiteralContext ctx) {
-        // TODO
-        return visitChildren(ctx);
+    @Override public Term visitMultiAnd(MultiAndContext ctx) {
+        // TODO werken met node{X,Y,X} ipv node{(X),(Y),(Z)}
+        return and(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.multiTerm()));
     }
+
+    @Override public Term visitMultiOr(MultiOrContext ctx) {
+        return or(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.multiTerm()));
+    }
+
+//    @Override public Term visitMultiTerm(MultiTermContext ctx) {
+//
+//    }
 
     // --- TERMS ----
 
@@ -236,14 +218,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         --- Helper methods ---
      *****************************/
 
-    // --- Change AbstractParseTreeVisitor behaviour ---
-//    // TODO check for all aggregate cases
-//    @Override public Term aggregateResult(Term aggregate, Term nextResult) {
-//        return new Struct(new Term[]{aggregate, nextResult});
-//    }
-
     // --- Return one term for multiple visits ---
     public Term[] aggregateVisit(List<? extends ParseTree> ctxs) {
+        // TODO check for null: [] en p()
+        if (ctxs == null) {
+            return new Term[0];
+        }
         int n = ctxs.size();
         Term[] terms = new Term[n];
         for (int i = 0; i < n; i++) {
@@ -252,39 +232,21 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return terms;
     }
 
-    // --- ParseTreeProperties ---
-
-    private Expr getExpr(ParseTree node) {
-        return this.exprPTP.get(node);
-    }
-
-    private void setExpr(ParseTree node, Expr expr) {
-        this.exprPTP.put(node, expr);
-    }
-
-    private List<Expr> getExprs(ParseTree node) {
-        return this.exprsPTP.get(node);
-    }
-
-    private void setExprs(ParseTree node, List<Expr> exprs) {
-        this.exprsPTP.put(node, exprs);
-    }
-
-    private String getStr(ParseTree node) {
-        return this.stringPTP.get(node);
-    }
-
-    private void setStr(ParseTree node, String s) {
-        this.stringPTP.put(node, s);
-    }
-
-    // --- Wildcard counter ---
-    // A counter for the generated variables for wildcard support.
-    // Separate IDs per wildcard representing variable is needed to distinguish multiple wildcards in one clause.
-    private Integer upCnt(ParseTree node) {
-        Integer cnt = this.cntPTP.get(node) == null ? 0 : this.cntPTP.get(node);
-        this.cntPTP.put(node, cnt + 1);
-        return cnt;
+    public Term[] aggregateVisitMultiTerms(String predicate, List<? extends ParseTree> ctxs) {
+        // TODO check for null: [] en p()
+        if (ctxs == null) {
+            return new Term[0];
+        }
+        int n = ctxs.size();
+        Term[] terms = new Term[n];
+        for (int i = 0; i < n; i++) {
+            if (ctxs.get(i) instanceof TermTupleContext) {
+                terms[i] = new Struct(predicate, aggregateVisit(((TermTupleContext) ctxs.get(i)).term()));
+            } else {
+                terms[i] = new Struct(predicate, visit(ctxs.get(i)));
+            }
+        }
+        return terms;
     }
 
     // --- Update logic model ---
@@ -301,11 +263,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     public void setResult(List<Term> ts) {
         this.result = ts;
-    }
-
-    // --- Little help for tests ---
-    public static List<Term> inList(Term... ts) {
-        return Arrays.asList(ts);
     }
 
 }

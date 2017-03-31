@@ -34,15 +34,20 @@ propositionalFormula: NOT propositionalFormula                           # pfNot
 consequence: literal (andOp literal)*;
 
 /* Literals are atomic formulas or boolean expressions*/
-literal: atom                                   #atomLiteral
-       | multiAtom                              #multiAtomLiteral
+literal: atom                                   # atomLiteral
+       | multiAtom                              # multiAtomLiteral
        ;
 
 /* Atoms are predicates applied to a tuple of terms */
 atom: predicate termTuple?;
 
 /* Language feature to apply one predicate to multiple tuples of terms */
-multiAtom: predicate BRACE_OPEN (term | termTuple) (COMMA (term | termTuple))* BRACE_CLOSE;
+multiAtom: predicate BRACE_OPEN multiTerm (andOp multiTerm)* BRACE_CLOSE    # multiAnd
+         | predicate BRACE_OPEN multiTerm (orOp multiTerm)* BRACE_CLOSE     # multiOr
+         ;
+
+/* A term in the multiAtom: either a term of a termTuple */
+multiTerm: term | termTuple;
 
 /* A tuple of terms */
 termTuple: PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
