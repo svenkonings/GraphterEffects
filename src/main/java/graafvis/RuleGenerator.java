@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static compiler.prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_WILD_CARD = "_";
     public static final String TUP_AND = ",";
+    public static final String TUP_OR = ";";
     public static final String TUP_HORN = ":-";
     private List<Term> result = new ArrayList<>();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
@@ -40,6 +42,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     /**********************
         --- Calling  ---
      **********************/
+
     // --- Testing TU Prolog ---
 
     public static void tupTest() throws NoMoreSolutionException, InvalidTheoryException, DatalogException, NoSolutionException {
@@ -105,33 +108,38 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return rg.getResult();
     }
 
+    // --- Testing ---
+
     @Test
     public void test() {
-        Struct list = new Struct(
-                new Term[]{
-                        new Var("X"),
-                        new Var("Y")
-                }
-        );
-        List<Term> test1 = Arrays.asList(new Struct("p", new Var("X")));
+        Struct list = list(var("X"), var("Y"));
+        Struct pX = struct("p", new Var("X"));
+        Struct qX = struct("q", new Var("X"));
+
+
+        List<Term> test1 = inList(struct("p", var("X")));
         assertEquals(test1, generate("p(X)."));
-        List<Term> test2 = Arrays.asList(new Struct("edge", new Var("X"), new Var("Y")));
+
+        List<Term> test2 = inList(struct("edge", var("X"), var("Y")));
         assertEquals(test2, generate("edge(X,Y)."));
-        List<Term> test3 = Arrays.asList(new Struct("p", new Term[]{new Var("X"), new Var("Y")}));
+
+        List<Term> test3 = inList(struct("p", var("X"), var("Y")));
         assertEquals(test3, generate("p(X,Y)."));
-        List<Term> test4 = Arrays.asList(new Struct("p", list));
-        assertEquals(test4, generate("p([X,Y]).")); // TODO aanpassen naar []
-        List<Term> test5 = Arrays.asList(
-            new Struct("shape",
-            new Term[]{
-                list,
-                new Struct("square")
-            }));
-        assertEquals(test5, generate("shape([X,Y], square).")); // TODO aanpassen naar []
-//        List<Term> test6 = Arrays.asList(new Struct("p", new Var(TUP_WILD_CARD)));
-//        Struct s = new Struct("p", new Var(TUP_WILD_CARD));
-//        List<Term> me6 = generate("p(_).");
-//        assertEquals(test6, me6); // TODO aanpassen naar []
+
+        List<Term> test4 = inList(struct("p", list(var("X"), var("Y"))));
+        assertEquals(test4, generate("p([X,Y])."));
+
+        List<Term> test5 = inList(struct("shape", list(var("X"), var("Y")), struct("square")));
+        assertEquals(test5, generate("shape([X,Y], square)."));
+
+        List<Term> test6 = inList(struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square")));
+        assertEquals(test6, generate("shape([X,[3, \"wolf\"]], square)."));
+
+
+//        List<Term> test6 = Arrays.asList(new Struct());
+//        List<Term> test6 = Arrays.asList(new Struct(TUP_OR, pX, ));
+
+        // TODO Find way to test wildcards
     }
 
     /*************************
@@ -169,6 +177,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     @Override public Term visitPfAnd(PfAndContext ctx) {
         return new Struct(TUP_AND, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
+    }
+
+    @Override public Term visitPfOr(PfOrContext ctx) {
+        return new Struct(TUP_OR, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
     }
 
     // TODO OR
@@ -289,6 +301,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     public void setResult(List<Term> ts) {
         this.result = ts;
+    }
+
+    // --- Little help for tests ---
+    public static List<Term> inList(Term... ts) {
+        return Arrays.asList(ts);
     }
 
 }
