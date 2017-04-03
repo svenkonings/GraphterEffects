@@ -17,7 +17,8 @@ public class PredicateTest extends GrammarTest {
                     "p_q",
                     "p1",
                     "p_",
-                    "p1_"
+                    "p1_",
+                    "pP"
             );
 
     public static final List<String> INVALID_SAMPLES = Arrays.asList

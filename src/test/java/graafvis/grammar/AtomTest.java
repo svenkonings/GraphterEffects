@@ -16,7 +16,8 @@ public class AtomTest extends GrammarTest {
                     "%s(%s)",
                     "%s(%s,%s)",
                     "%s(%s,%s,%s)",
-                    "%s()"
+                    "%s()",
+                    "%s(%s(%s))"
             );
 
     public static final List<String> VALID_SAMPLES = new ArrayList<>();
@@ -48,22 +49,27 @@ public class AtomTest extends GrammarTest {
         for (String predicate : predicates) {
             VALID_SAMPLES.add(String.format(ATOMS.get(3), predicate));
         }
+        // Add atom 4
+        for (String predicate : predicates) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(4), predicate, predicate, terms.get(0)));
+        }
+        for (String term : terms) {
+            VALID_SAMPLES.add(String.format(ATOMS.get(4), predicates.get(0), predicates.get(0), term));
+        }
     }
 
     public static final List<String> INVALID_SAMPLES = Arrays.asList
             (
-                    "test",
                     "p)(",
                     "P(x)",
                     "_p()",
                     "4p(X)",
                     "p(()",
                     "p(,)",
-                    "p((,))",
+                    "p([,])",
                     "p(x,,y)",
                     "p@$%(x)",
-                    "p((x, 2)",
-                    "p(q(x))",
+                    "p([x, 2)",
                     "q(3,)",
                     ""
             );

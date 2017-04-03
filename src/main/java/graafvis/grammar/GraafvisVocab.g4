@@ -1,7 +1,5 @@
 lexer grammar GraafvisVocab;
 
-// TODO so far no lists, no Java imports
-
 fragment LETTER_LO: [a-z];
 fragment LETTER_HI: [A-Z];
 
@@ -14,6 +12,10 @@ PAR_OPEN: '(';
 PAR_CLOSE: ')';
 BRACE_OPEN: '{';
 BRACE_CLOSE: '}';
+BRACKET_OPEN: '[';
+BRACKET_CLOSE: ']';
+
+VBAR: '|';
 
 /* Eq operators */
 EQ: '==';
@@ -26,6 +28,7 @@ LE: '<=';
 /* Booloperators */
 
 COMMA: ',';
+SEMICOLON: ';';
 OR: 'or';
 AND: 'and';
 

@@ -45,7 +45,6 @@ public class MultiAtomTest extends GrammarTest {
                     "predicate()",
                     "p{1,}",
                     "_p{}",
-                    "p{()}",
                     "p{}",
                     ""
             );
@@ -62,7 +61,7 @@ public class MultiAtomTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.multi_atom();
+        return parser.multiAtom();
     }
 
     @Override
