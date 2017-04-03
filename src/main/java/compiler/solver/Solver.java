@@ -95,6 +95,8 @@ public class Solver {
 
         setQuery("alignMinX(Key1, Key2)", equalQuery("Key1", "Key2", "minX"));
         setQuery("alignMinY(Key1, Key2)", equalQuery("Key1", "Key2", "minY"));
+        setQuery("alignCenterX(Key1, Key2)", equalQuery("Key1", "Key2", "centerX"));
+        setQuery("alignCenterY(Key1, Key2)", equalQuery("Key1", "Key2", "centerY"));
         setQuery("alignMaxX(Key1, Key2)", equalQuery("Key1", "Key2", "maxX"));
         setQuery("alignMaxY(Key1, Key2)", equalQuery("Key1", "Key2", "maxY"));
         setQuery("sameWidth(Key1, Key2)", equalQuery("Key1", "Key2", "width"));
