@@ -107,7 +107,7 @@ public class RuleGeneratorTest {
 
     }
 
-    @Test // TODO
+    @Test
     public void testMultiAtoms() {
         // Comma
         singleAssert("node{X,Y,Z}.", and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))));
@@ -162,9 +162,9 @@ public class RuleGeneratorTest {
                 clause(struct("legal", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"*723^^& Illeg@l\""))))
         );
         // Node labels
-        // on(X)        :- edge(X), label(X, "on").
-        // on(X,Y)      :- edge(X,Y,Z), label(Z, "on").
-        // on(X,Y,Z)    :- edge(X,Y,Z), label(Z, "on").
+        /* on(X)        :- edge(X), label(X, "on").
+           on(X,Y)      :- edge(X,Y,Z), label(Z, "on").
+           on(X,Y,Z)    :- edge(X,Y,Z), label(Z, "on"). */
         multAssert("edge labels: \"on\".",
                 clause(struct("on", var("X")), and(struct("edge", var("X")), struct("label", var("X"), struct("\"on\"")))),
                 clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\"")))),

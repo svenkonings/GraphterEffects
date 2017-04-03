@@ -33,10 +33,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_OR = ";";
     public static final String TUP_NOT = "not";
     private List<Term> result = new ArrayList<>();
-    private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
-    private ParseTreeProperty<List<Expr>> exprsPTP = new ParseTreeProperty<>();
-    private ParseTreeProperty<String> stringPTP = new ParseTreeProperty<>();
-    private ParseTreeProperty<Integer> cntPTP = new ParseTreeProperty<>();
 
 
     /**********************
@@ -98,13 +94,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     /*************************
         --- Tree walker ---
      *************************/
-
-//    @Override public Term visitProgram(ProgramContext ctx) {
-//        // TODO imports, labels
-//        return null;
-//    }
-
-    // TODO Edge label gen
 
     @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
         for (LabelContext label : ctx.label()) {
@@ -170,12 +159,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     @Override public Term visitPfOr(PfOrContext ctx) {
         return new Struct(TUP_OR, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
-    }
-
-    // TODO OR
-
-    @Override public Term visitAtomLiteral(AtomLiteralContext ctx) {
-        return visitChildren(ctx); // TODO Mogelijk visit(ctx.atom()) ofzo
     }
 
     // --- ATOMS ---
