@@ -1,6 +1,7 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
+import graafvis.deprecated.ConsequenceBlacklist;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
@@ -16,21 +17,28 @@ import java.util.ArrayList;
 /**
  *
  */
-public class LabelGenerationCheckTest {
+public class ConsequenceBlacklistTest {
 
     @Test
-    public void testLabelCheck() {
-        validityCheck("node labels: \"Wolf\" as wolf.");
-        validityCheck("node labels: \"wolf\".");
-        validityCheck("edge labels: \"!@#$\" as goat.");
-        validityCheck("edge labels: \"go_at\".");
+    public void testDefaultBlackList() {
+        validityCheck("node(X) -> a(X).");
+        validityCheck("edge(X) -> a(X).");
+        validityCheck("node{X, Y} -> a(X), a(Y).");
 
-        invalidityCheck("node labels: \"Wolf\".");
-        invalidityCheck("node labels: \"_wolf\".");
-        invalidityCheck("node labels: \"%^&$%\".");
-        invalidityCheck("edge labels: \"Wolf\".");
-        invalidityCheck("edge labels: \"_wolf\".");
-        invalidityCheck("edge labels: \"%^&$%\".");
+        invalidityCheck("node(x).");
+        invalidityCheck("a(X) -> node(X).");
+        invalidityCheck("a(X), b(Y) -> edge(X, Y).");
+    }
+
+    @Test
+    public void testGeneratedBlackList() {
+        validityCheck("wolf(x).");
+        validityCheck("node labels: \"goat\" as boat. goat(x).");
+        validityCheck("node labels: \"#@$%\" as wolf. test(x).");
+
+        invalidityCheck("node labels: \"wolf\". wolf(x).");
+        invalidityCheck("node labels: \"#olf\" as wolf. wolf(x).");
+        invalidityCheck("node labels: \"wolf\" as wolf. a(x) -> wolf(x).");
     }
 
     private void validityCheck(String program) {
@@ -54,9 +62,10 @@ public class LabelGenerationCheckTest {
         parser.addErrorListener(errorListener);
 
         GraafvisParser.ProgramContext ctx = parser.program();
-        LabelGenerationCheck checker = new LabelGenerationCheck();
-        ctx.accept(checker);
-        return checker.getErrors();
+        ConsequenceBlacklist blacklist = new ConsequenceBlacklist();
+        ctx.accept(blacklist);
+        return blacklist.getErrors();
     }
+
 
 }

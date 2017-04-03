@@ -1,7 +1,7 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
-import graafvis.errors.VisError;
+import graafvis.deprecated.SingletonVariablesCheck;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
 import graafvis.warnings.Warning;

@@ -1,5 +1,6 @@
-package graafvis.grammar;
+package graafvis.deprecated;
 
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Arrays;

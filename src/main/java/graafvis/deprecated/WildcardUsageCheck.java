@@ -1,4 +1,4 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.errors.VisError;
 import graafvis.errors.WildcardError;

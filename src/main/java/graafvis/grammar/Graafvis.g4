@@ -10,64 +10,51 @@ program: importVis*
          EOF;
 
 /** Import another vis file. The .vis is implied. */
-importVis: IMPORT_TOKEN STRING EOL;            // TODO? java predicates import
+importVis: IMPORT_TOKEN STRING EOL;
 
 /* Specify which labels should have generated identifiers for predicates and constants */
-nodeLabelGen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
-edgeLabelGen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
+nodeLabelGen: NODE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
+edgeLabelGen: EDGE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
 
 /* Define and rename a label */
 label: STRING (RENAME_TOKEN ID)?;
 
-/* Implicative clauses */
-clause: (antecedent ARROW)? consequence EOL;
+/** Implicative clauses */
+clause: (antecedent=aTerm ARROW)? consequence=cTerm EOL;
 
-antecedent: propositionalFormula;
+/** Antecedent */
+aTerm: aTerm andOp aTerm                                                                    #andAntecedent
+     | aTerm orOp aTerm                                                                     #orAntecedent
+     | NOT aTerm                                                                            #notAntecedent
+     | predicate=ID (PAR_OPEN aTermSeries? PAR_CLOSE)?                                      #atomAntecedent
+     | predicate=ID BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE     #multiAndAtomAntecedent
+     | predicate=ID BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE      #multiOrAtomAntecedent
+     | BRACKET_OPEN (aTermSeries (VBAR aTermSeries)?)? BRACKET_CLOSE                        #listAntecedent
+     | variable=HID                                                                         #variableAntecedent
+     | wildcard=UNDERSCORE                                                                  #wildcardAntecedent
+     | STRING                                                                               #stringAntecedent
+     | NUMBER                                                                               #numberAntecedent
+     ;
 
-propositionalFormula: NOT propositionalFormula                           # pfNot
-                    | propositionalFormula andOp propositionalFormula    # pfAnd
-                    | propositionalFormula orOp propositionalFormula     # pfOr
-                    | PAR_OPEN propositionalFormula PAR_CLOSE            # pfNest
-                    | literal                                            # pfLit
-                    ;
+aTermSeries: terms+=aTerm (COMMA terms+=aTerm)*;
 
-consequence: literal (andOp literal)*;
+aMultiTerm: aTerm | PAR_OPEN aTermSeries? PAR_CLOSE;
 
-/* Literals are atomic formulas or boolean expressions*/
-literal: atom                                   # atomLiteral
-       | multiAtom                              # multiAtomLiteral
-       ;
+/** Consequence */
+cTerm: cTerm andOp cTerm                                                                    #andConsequence
+     | predicate=ID (PAR_OPEN cTermSeries? PAR_CLOSE)?                                      #atomConsequence
+     | predicate=ID BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE     #multiAtomConsequence   // Check for not predicate
+     | BRACKET_OPEN (cTermSeries (VBAR cTermSeries)?)? BRACKET_CLOSE                        #listConsequence
+     | variable=HID                                                                         #variableConsequence
+     | STRING                                                                               #stringConsequence
+     | NUMBER                                                                               #numberConsequence
+     ;
 
-/* Atoms are predicates applied to a tuple of terms */
-atom: predicate termTuple?;
+cTermSeries: terms+=cTerm (COMMA terms+=cTerm)*;
 
-/* Language feature to apply one predicate to multiple tuples of terms */
-multiAtom: predicate BRACE_OPEN multiTerm (andOp multiTerm)* BRACE_CLOSE    # multiAnd
-         | predicate BRACE_OPEN multiTerm (orOp multiTerm)* BRACE_CLOSE     # multiOr
-         ;
-
-/* A term in the multiAtom: either a term of a termTuple */
-multiTerm: term | termTuple;
-
-/* A tuple of terms */
-termTuple: PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
-
-/* Predicates start with lowercase letter */
-predicate: ID;
-
-/* Terms are either ground terms, free variables, underscores or a list of more terms */
-term: variable                                                                                  # termVar
-    | atom                                                                                      # termAtom
-    | UNDERSCORE                                                                                # termWildcard
-    | STRING                                                                                    # termString
-    | NUMBER                                                                                    # termNumber
-    | ID                                                                                        # termID
-    | BRACKET_OPEN (term (COMMA term)* (VBAR term (COMMA term)*)?)? BRACKET_CLOSE               # termList
-    ;
-
-/* Variables start with uppercase letter */
-variable: HID;
+cMultiTerm: cTerm | PAR_OPEN cTermSeries? PAR_CLOSE;
 
 /* Operators */
 andOp: COMMA | AND;
 orOp: SEMICOLON | OR;
+

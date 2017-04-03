@@ -1,6 +1,7 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
+import graafvis.deprecated.LabelGenerationCheck;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
@@ -16,24 +17,21 @@ import java.util.ArrayList;
 /**
  *
  */
-public class VariableUsageCheckTest {
+public class LabelGenerationCheckTest {
 
     @Test
-    public void test() {
-        validityCheck("node(X) -> a(X).");
-        validityCheck("a(X), b(X) -> c(X).");
-        validityCheck("a(X, Y) -> b(X).");
-        validityCheck("a(X, X) -> b(X).");
-        validityCheck("a{X, Y} -> b(Y).");
-        validityCheck("a{(X, Y), Z} -> b(Y).");
-        validityCheck("a(X, _) -> b(X).");
-        validityCheck("a() -> b().");
-        validityCheck("a() -> b().");
+    public void testLabelCheck() {
+        validityCheck("node labels: \"Wolf\" as wolf.");
+        validityCheck("node labels: \"wolf\".");
+        validityCheck("edge labels: \"!@#$\" as goat.");
+        validityCheck("edge labels: \"go_at\".");
 
-        invalidityCheck("a(X) -> b(Y).");
-        invalidityCheck("a(X) -> b(X, Y).");
-        invalidityCheck("a() -> b(X).");
-        invalidityCheck("a(X), b() -> c(Y).");
+        invalidityCheck("node labels: \"Wolf\".");
+        invalidityCheck("node labels: \"_wolf\".");
+        invalidityCheck("node labels: \"%^&$%\".");
+        invalidityCheck("edge labels: \"Wolf\".");
+        invalidityCheck("edge labels: \"_wolf\".");
+        invalidityCheck("edge labels: \"%^&$%\".");
     }
 
     private void validityCheck(String program) {
@@ -57,10 +55,9 @@ public class VariableUsageCheckTest {
         parser.addErrorListener(errorListener);
 
         GraafvisParser.ProgramContext ctx = parser.program();
-        VariableUsageCheck checker = new VariableUsageCheck();
+        LabelGenerationCheck checker = new LabelGenerationCheck();
         ctx.accept(checker);
         return checker.getErrors();
     }
-
 
 }

@@ -1,6 +1,7 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
+import graafvis.deprecated.VariableUsageCheck;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
@@ -16,16 +17,24 @@ import java.util.ArrayList;
 /**
  *
  */
-public class WildcardUsageCheckTest {
+public class VariableUsageCheckTest {
 
     @Test
     public void test() {
-        validityCheck("a(_) -> b(x).");
+        validityCheck("node(X) -> a(X).");
+        validityCheck("a(X), b(X) -> c(X).");
+        validityCheck("a(X, Y) -> b(X).");
+        validityCheck("a(X, X) -> b(X).");
+        validityCheck("a{X, Y} -> b(Y).");
+        validityCheck("a{(X, Y), Z} -> b(Y).");
         validityCheck("a(X, _) -> b(X).");
-        validityCheck("a{_,X} -> b(X), c().");
-        invalidityCheck("a(x)->b(_).");
-        invalidityCheck("a(_).");
-        invalidityCheck("a(X) -> b(X, _).");
+        validityCheck("a() -> b().");
+        validityCheck("a() -> b().");
+
+        invalidityCheck("a(X) -> b(Y).");
+        invalidityCheck("a(X) -> b(X, Y).");
+        invalidityCheck("a() -> b(X).");
+        invalidityCheck("a(X), b() -> c(Y).");
     }
 
     private void validityCheck(String program) {
@@ -49,9 +58,10 @@ public class WildcardUsageCheckTest {
         parser.addErrorListener(errorListener);
 
         GraafvisParser.ProgramContext ctx = parser.program();
-        WildcardUsageCheck checker = new WildcardUsageCheck();
+        VariableUsageCheck checker = new VariableUsageCheck();
         ctx.accept(checker);
         return checker.getErrors();
     }
+
 
 }

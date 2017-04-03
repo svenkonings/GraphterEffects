@@ -1,6 +1,7 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
+import graafvis.deprecated.WildcardUsageCheck;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
@@ -16,28 +17,16 @@ import java.util.ArrayList;
 /**
  *
  */
-public class ConsequenceBlacklistTest {
+public class WildcardUsageCheckTest {
 
     @Test
-    public void testDefaultBlackList() {
-        validityCheck("node(X) -> a(X).");
-        validityCheck("edge(X) -> a(X).");
-        validityCheck("node{X, Y} -> a(X), a(Y).");
-
-        invalidityCheck("node(x).");
-        invalidityCheck("a(X) -> node(X).");
-        invalidityCheck("a(X), b(Y) -> edge(X, Y).");
-    }
-
-    @Test
-    public void testGeneratedBlackList() {
-        validityCheck("wolf(x).");
-        validityCheck("node labels: \"goat\" as boat. goat(x).");
-        validityCheck("node labels: \"#@$%\" as wolf. test(x).");
-
-        invalidityCheck("node labels: \"wolf\". wolf(x).");
-        invalidityCheck("node labels: \"#olf\" as wolf. wolf(x).");
-        invalidityCheck("node labels: \"wolf\" as wolf. a(x) -> wolf(x).");
+    public void test() {
+        validityCheck("a(_) -> b(x).");
+        validityCheck("a(X, _) -> b(X).");
+        validityCheck("a{_,X} -> b(X), c().");
+        invalidityCheck("a(x)->b(_).");
+        invalidityCheck("a(_).");
+        invalidityCheck("a(X) -> b(X, _).");
     }
 
     private void validityCheck(String program) {
@@ -61,10 +50,9 @@ public class ConsequenceBlacklistTest {
         parser.addErrorListener(errorListener);
 
         GraafvisParser.ProgramContext ctx = parser.program();
-        ConsequenceBlacklist blacklist = new ConsequenceBlacklist();
-        ctx.accept(blacklist);
-        return blacklist.getErrors();
+        WildcardUsageCheck checker = new WildcardUsageCheck();
+        ctx.accept(checker);
+        return checker.getErrors();
     }
-
 
 }

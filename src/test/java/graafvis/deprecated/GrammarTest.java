@@ -1,6 +1,8 @@
-package graafvis.grammar;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;

@@ -8,7 +8,7 @@ import java.util.List;
 
 import static compiler.prolog.TuProlog.*;
 import static compiler.prolog.TuProlog.struct;
-import static graafvis.RuleGenerator.generate;
+import static graafvis.deprecated.RuleGenerator.generate;
 import static org.junit.Assert.assertEquals;
 
 /**

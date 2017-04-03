@@ -1,6 +1,8 @@
-package graafvis.checkers;
+package graafvis.deprecated;
 
 import graafvis.ErrorListener;
+import graafvis.checkers.CheckerResult;
+import graafvis.deprecated.GraafvisChecker;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;

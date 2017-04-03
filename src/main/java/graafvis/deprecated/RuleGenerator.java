@@ -1,4 +1,4 @@
-package graafvis;
+package graafvis.deprecated;
 
 import alice.tuprolog.*;
 import alice.tuprolog.Number;
@@ -13,12 +13,10 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-import org.junit.Test;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static compiler.prolog.TuProlog.*;

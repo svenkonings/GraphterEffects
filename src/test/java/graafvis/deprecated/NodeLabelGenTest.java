@@ -1,5 +1,6 @@
-package graafvis.grammar;
+package graafvis.deprecated;
 
+import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
@@ -9,26 +10,33 @@ import java.util.List;
 /**
  *
  */
-public class ImportVisTest extends GrammarTest {
+public class NodeLabelGenTest extends GrammarTest {
 
     private static final List<String> LINES = Arrays.asList
             (
-                    "consult %s."
+                    "node labels: %s.",
+                    "node labels: %s, %s."
             );
 
     public static final List<String> VALID_SAMPLES = new ArrayList<>();
     static {
         // Add line 0
-        for (String sample : VALID_STRING_SAMPLES) {
+        for (String sample : LabelTest.VALID_SAMPLES) {
             VALID_SAMPLES.add(String.format(LINES.get(0), sample));
+        }
+        // Add line 1
+        for (String sample : LabelTest.VALID_SAMPLES) {
+            VALID_SAMPLES.add(String.format(LINES.get(0), sample, sample));
         }
     }
 
     public static final List<String> INVALID_SAMPLES = Arrays.asList
             (
-                    "consult wolf.",
-                    "consult \"wolf\"",
-                    "consult."
+                    "",
+                    "node labels:.",
+                    "node labels: \"wolf\"",
+                    "node labels: wolf.",
+                    "node labels: \"Wolf\" as _id."
             );
 
     @Override
@@ -43,12 +51,12 @@ public class ImportVisTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.importVis();
+        return parser.nodeLabelGen();
     }
 
     @Override
     protected String getRuleName() {
-        return "import";
+        return "node label gen";
     }
 
 }
