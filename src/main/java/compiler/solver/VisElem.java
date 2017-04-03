@@ -243,22 +243,4 @@ public class VisElem {
     public Map<String, IntVar> getVars() {
         return new HashMap<>(vars);
     }
-
-    /**
-     * Initializes the default variables. The defaults are:
-     * <table summary="Defaults" border="1">
-     * <tr><td><b>Name</b></td>     <td><b>Value</b></td></tr>
-     * <tr><td>z</td>               <td>0</td></tr>
-     * <tr><td>type</td>            <td>ellipse</td></tr>
-     * <tr><td>colour</td>          <td>white</td></tr>
-     * <tr><td>border-colour</td>   <td>black</td></tr>
-     * </table>
-     */
-    public void setDefaults() {
-        if (!hasVar("z")) setVar("z", 0);
-
-        if (!hasValue("type")) setValue("type", "ellipse");
-        if (!hasValue("colour")) setValue("colour", "white");
-        if (!hasValue("border-colour")) setValue("border-colour", "black");
-    }
 }

@@ -18,16 +18,37 @@ import java.util.function.BiConsumer;
 
 import static compiler.prolog.TuProlog.list;
 
+/**
+ * The constraint solver.
+ */
 public class Solver {
+    /** The {@link TuProlog} engine. */
     private final TuProlog prolog;
+
+    /** The constraint solver {@link Model} */
     private final Model model;
+
+    /** The mapping of visualization elements. */
     private final VisMap visMap;
+
+    /** Mapping from query to {@link QueryConsumer}. */
     private final Map<String, QueryConsumer> queries;
 
+    /**
+     * Creates a new solver with the given terms.
+     *
+     * @param terms The given terms.
+     * @throws InvalidTheoryException If the {@link alice.tuprolog.Theory} is invalid.
+     */
     public Solver(List<Term> terms) throws InvalidTheoryException {
         this(new TuProlog(terms));
     }
 
+    /**
+     * Creates a new solver with the given {@link TuProlog}.
+     *
+     * @param tuProlog The given {@link TuProlog} engine.
+     */
     public Solver(TuProlog tuProlog) {
         prolog = tuProlog;
         model = new Model();
@@ -36,6 +57,9 @@ public class Solver {
         setDefaults();
     }
 
+    /**
+     * Set the default queries and their associated {@link QueryConsumer}.
+     */
     private void setDefaults() {
         setQuery("pos(Key, X, Y, Z)", attrQuery("Key", "x1", "X", "y1", "Y", "z", "Z"));
         setQuery("pos(Key, X, Y)", attrQuery("Key", "x1", "X", "y1", "Y"));
@@ -89,21 +113,45 @@ public class Solver {
         setQuery("noOverlap(Key1, Key2)", noOverlapQuery("Key1", "Key2"));
     }
 
+    /**
+     * Set the given query with the given {@link QueryConsumer}.
+     *
+     * @param query         The given query.
+     * @param queryConsumer The given {@link QueryConsumer}.
+     * @return The previous {@link QueryConsumer} associated with the query, or {@code null} if it didn't exist.
+     */
     public QueryConsumer setQuery(String query, QueryConsumer queryConsumer) {
         return queries.put(query.replaceAll("\\s+", ""), queryConsumer);
     }
 
+    /**
+     * Get the {@link QueryConsumer} associated with the given query.
+     *
+     * @param query The given query.
+     * @return The {@link QueryConsumer}.
+     */
     public QueryConsumer getQuery(String query) {
         return queries.get(query.replaceAll("\\s+", ""));
     }
 
+    /**
+     * Remove the given query.
+     *
+     * @param query The given query.
+     * @return The {@link QueryConsumer} associated to this query, or {@code null} if it didn't exist.
+     */
     public QueryConsumer removeQuery(String query) {
         return queries.remove(query.replaceAll("\\s+", ""));
     }
 
+    /**
+     * Solves the constraints and returns a {@link List} of visualization elements.
+     *
+     * @return The {@link List} of visualization elements.
+     */
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
-        visMap.values().forEach(VisElem::setDefaults);
+        visMap.values().forEach(Solver::defaultValues);
         if (!model.getSolver().solve()) {
             // TODO: Change exception type
             throw new RuntimeException("No solution found.");
@@ -111,10 +159,26 @@ public class Solver {
         return new ArrayList<>(visMap.values());
     }
 
+    /**
+     * Creates a {@link QueryConsumer} that calls the given {@link BiConsumer} for every result of the solved query. The
+     * {@link BiConsumer} receives the mapping of visualization elements and a {@link Map} of the results.
+     *
+     * @param consumer The given consumer.
+     * @return The {@link QueryConsumer}.
+     */
     public static QueryConsumer forEach(BiConsumer<VisMap, Map<String, Term>> consumer) {
         return (visMap, values) -> values.forEach(value -> consumer.accept(visMap, value));
     }
 
+    /**
+     * Creates a {@link QueryConsumer} that calls the given {@link BiConsumer} for every result of the solved query. The
+     * {@link BiConsumer} receives the visualization element that belongs to the given key and a {@link Map} of the
+     * results.
+     *
+     * @param key      The given key.
+     * @param consumer The given consumer.
+     * @return The {@link QueryConsumer}.
+     */
     public static QueryConsumer elementQuery(String key, BiConsumer<VisElem, Map<String, Term>> consumer) {
         return forEach((visMap, values) -> {
             VisElem elem = visMap.get(values.get(key));
@@ -122,6 +186,16 @@ public class Solver {
         });
     }
 
+    /**
+     * Creates a {@link QueryConsumer} that calls the given {@link TriConsumer} for every result of the solved query.
+     * The {@link TriConsumer} receives the two visualization elements that belongs to the given keys and a {@link Map}
+     * of the results.
+     *
+     * @param key1     The first key.
+     * @param key2     The second key.
+     * @param consumer The given consumer.
+     * @return The {@link QueryConsumer}.
+     */
     public static QueryConsumer elementPairQuery(String key1, String key2, TriConsumer<VisElem, VisElem, Map<String, Term>> consumer) {
         return forEach((visMap, values) -> {
             VisElem elem1 = visMap.get(values.get(key1));
@@ -133,6 +207,15 @@ public class Solver {
         });
     }
 
+    /**
+     * Creates a {@link QueryConsumer} that sets the given attribute-value pairs on the visualization element that
+     * belongs to the given key. The values should be the original names of the variables specified in the query. The
+     * values that will be set are the resulting terms associated with the variables.
+     *
+     * @param key   The given key.
+     * @param pairs The given pairs.
+     * @return The {@link QueryConsumer}.
+     */
     public static QueryConsumer attrQuery(String key, String... pairs) {
         assert pairs.length % 2 == 0;
         return elementQuery(key, (elem, values) -> {
@@ -209,6 +292,35 @@ public class Solver {
         });
     }
 
+    /**
+     * Sets the default values of the given visualization element. The defaults are:
+     * <table summary="Defaults" border="1">
+     * <tr><td><b>Name</b></td>     <td><b>Value</b></td></tr>
+     * <tr><td>z</td>               <td>0</td></tr>
+     * <tr><td>type</td>            <td>ellipse</td></tr>
+     * <tr><td>colour</td>          <td>white</td></tr>
+     * <tr><td>border-colour</td>   <td>black</td></tr>
+     * </table>
+     *
+     * @param elem The given visualization element.
+     */
+    public static void defaultValues(VisElem elem) {
+        if (!elem.hasVar("z")) elem.setVar("z", 0);
+
+        if (!elem.hasValue("type")) {
+            elem.setValue("type", "ellipse");
+            defaultConstraints(elem);
+        }
+
+        if (!elem.hasValue("colour")) elem.setValue("colour", "white");
+        if (!elem.hasValue("border-colour")) elem.setValue("border-colour", "black");
+    }
+
+    /**
+     * Sets the default constraints of the given visualization element.
+     *
+     * @param elem The given visualization element.
+     */
     public static void defaultConstraints(VisElem elem) {
         elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
         elem.setVar("radiusY", elem.getVar("height").div(2).intVar());
@@ -222,6 +334,15 @@ public class Solver {
         elem.setVar("maxY", elem.getVar("y1").add(elem.getVar("height")).intVar());
     }
 
+    /**
+     * Retreives the visualization elements associated with the given terms from the given map and sets line constraints
+     * for the given line element.
+     *
+     * @param visMap  The mapping of visualization elements.
+     * @param key     The key of the line element.
+     * @param fromKey The key of the visualization element at the start of this line.
+     * @param toKey   The key of the visualization element at the end of this line.
+     */
     public static void lineConstraints(VisMap visMap, Term key, Term fromKey, Term toKey) {
         VisElem line = visMap.get(key);
         VisElem fromElem = visMap.get(fromKey);
