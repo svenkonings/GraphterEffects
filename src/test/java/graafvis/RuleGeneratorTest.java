@@ -148,7 +148,7 @@ public class RuleGeneratorTest {
 
     @Test
     public void testLabelGen() {
-        // Edge labels
+        // Node labels
         // mom(X) :- node(X), label(X, "mom").
         singleAssert("node labels: \"mom\".",
                 clause(struct("mom", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"mom\""))))
@@ -161,7 +161,7 @@ public class RuleGeneratorTest {
                 clause(struct("dog", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"dog\"")))),
                 clause(struct("legal", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"*723^^& Illeg@l\""))))
         );
-        // Node labels
+        // Edge labels
         /* on(X)        :- edge(X), label(X, "on").
            on(X,Y)      :- edge(X,Y,Z), label(Z, "on").
            on(X,Y,Z)    :- edge(X,Y,Z), label(Z, "on"). */
