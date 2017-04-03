@@ -6,10 +6,10 @@ edge labels:
     "type:Bank" as bank,
     "on",
     "in",
+    "likes",
     "moored",
-    "go",
-    "flag:left" as leftBank,
-    "flag:right" as rightBank.
+    "flag:left" as left,
+    "flag:right" as right.
 
 wolf(X, X); goat(X, X); cabbage(X, X) -> passenger(X).
 
@@ -45,7 +45,7 @@ boat(X, X) ->
     above(X, water, -50),
     after(X, water).
 
-moored(X, Y); go(X, Y) -> distanceX(X, Y, 0).
+moored(X, Y) -> distanceX(X, Y, 0).
 
 bank(X, X) ->
     shape(X, rectangle),
@@ -61,10 +61,38 @@ shape(water, rectangle).
 colour(water, blue).
 dimensions(water, 1000, 200).
 
-leftBank(X, X) ->
+left(X, X) ->
     left(X, water, 0),
     alignMaxY(X, water).
 
-rightBank(X, X) ->
+right(X, X) ->
     right(X, water, 0),
     alignMaxY(X, water).
+
+// --- Legend ---
+/* passenger(X) -> mini(X, [X, mini]).
+passenger(X), image(X, Path), mini(X, Vis) -> image(Vis, Path), dimensions(Vis, 32, 32).*/
+
+shape(legend, rectangle).
+colour(legend, lightpink).
+posZ(legend, -1).
+alignMinX(legend, water).
+
+containedIn(X,Y) -> insideX(X,Y), insideY(X,Y).
+
+passenger(X), image(X, Path) -> image([X,1], Path), dimensions([X,1], 64, 64).
+
+likes(X, Y, Z) ->
+    image(Z, "src\test\resources\demo\images\heart.png"),
+    dimensions(Z, 64, 64),
+    above(Z, water, 400),
+    left([X,1], Z),
+    left(Z, [Y,1]),
+    alignMinY([X,1], [Y,1]),
+    alignMinY([Y,1], Z),
+    noOverlapX([X,1], [Y,1]),
+    noOverlapX([X,1], Z),
+    noOverlapX([Y,1], Z),
+    containedIn([X,1], legend),
+    containedIn([Y,1], legend),
+    containedIn(Z, legend).
