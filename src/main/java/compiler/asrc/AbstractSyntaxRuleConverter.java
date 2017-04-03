@@ -96,11 +96,13 @@ public final class AbstractSyntaxRuleConverter {
             it.next();
         }
         termList.add(struct("neighbourcount", term(node.getId()), intVal((neighbourcount))));
-
         termList.add(struct("attributecount", term(node.getId()), intVal(node.getAttributeCount())));
         for (String attributeKey : node.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
             termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
+            if (attributeKey.equals("label")) {
+                termList.add(struct(attributeKey, term(node.getId()), term(attributeString)));
+            }
         }
         return termList;
     }
@@ -130,6 +132,9 @@ public final class AbstractSyntaxRuleConverter {
         for (String attributeKey : edge.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(edge.getAttribute(attributeKey));
             termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
+            if (attributeKey.equals("label")) {
+                termList.add(struct(attributeKey, term(edge.getId()), term(attributeString)));
+            }
         }
         return termList;
     }
@@ -165,7 +170,7 @@ public final class AbstractSyntaxRuleConverter {
         WelshPowell a = new WelshPowell();
         a.init(Graphs.clone(graph));
         a.compute();
-        termList.add(struct("chromaticnumber", term(graph.getId()), term(String.valueOf(a.getChromaticNumber()))));
+        termList.add(struct("chromaticnumber", term(graph.getId()), intVal(a.getChromaticNumber())));
 
         return termList;
     }
