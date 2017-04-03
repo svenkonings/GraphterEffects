@@ -6,10 +6,47 @@ import org.dom4j.Element;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Generates SVG elements from visualization elements.
+ */
 public class SvgElementGenerator {
 
+    /** The mapping from visualization element type to {@link SvgAttributeGenerator} */
     private final Map<String, SvgAttributeGenerator> generators;
 
+    /**
+     * Creates a new generator with the default mapping.
+     */
+    public SvgElementGenerator() {
+        generators = new HashMap<>();
+        setDefaults();
+    }
+
+    /**
+     * Creates a generator with the given mapping.
+     *
+     * @param generators The given mapping.
+     */
+    public SvgElementGenerator(Map<String, SvgAttributeGenerator> generators) {
+        this.generators = generators;
+    }
+
+    /**
+     * Set the default mapping.
+     */
+    private void setDefaults() {
+        generators.put("rectangle", rectangle());
+        generators.put("ellipse", ellipse());
+        generators.put("line", line());
+        generators.put("image", image());
+    }
+
+    /**
+     * Add the SVG element generated from the given visualization element to the given parent SVG element.
+     *
+     * @param visElem The given visualization element.
+     * @param parent  The given parent SVG element.
+     */
     public void addElement(VisElem visElem, Element parent) {
         String type = visElem.getValue("type");
         if (type == null) {
@@ -21,26 +58,34 @@ public class SvgElementGenerator {
         }
     }
 
-    public SvgElementGenerator() {
-        generators = new HashMap<>();
-        setDefaults();
-    }
-
-    private void setDefaults() {
-        generators.put("rectangle", rectangle());
-        generators.put("ellipse", ellipse());
-        generators.put("line", line());
-        generators.put("image", image());
-    }
-
+    /**
+     * Set the given type with the given {@link SvgAttributeGenerator}.
+     *
+     * @param type    The given type.
+     * @param mapping The given {@link SvgAttributeGenerator}.
+     * @return The previous {@link SvgAttributeGenerator} associated with the given type, or {@code null} if it didn't
+     * exist.
+     */
     public SvgAttributeGenerator setGenerator(String type, SvgAttributeGenerator mapping) {
         return generators.put(type, mapping);
     }
 
+    /**
+     * Get the {@link SvgAttributeGenerator} associated with the given type.
+     *
+     * @param type The given type.
+     * @return The {@link SvgAttributeGenerator}, or {@code null} if it doesn't exist.
+     */
     public SvgAttributeGenerator getGenerator(String type) {
         return generators.get(type);
     }
 
+    /**
+     * Remove the given type.
+     *
+     * @param type The given type.
+     * @return The associated {@link SvgAttributeGenerator}, or {@code null} if it doesn't exist.
+     */
     public SvgAttributeGenerator removeGenerator(String type) {
         return generators.remove(type);
     }
