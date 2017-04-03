@@ -21,8 +21,8 @@ public final class GraphUtilsTest {
         //attributes unchanged
         assertTrue(sameAttributes(gfirst, gsecond));
         for (Node n : gfirst.getEachNode()) {
-            assertTrue(gsecond.getNode("_" + n.getId()) != null);
-            assertTrue(sameAttributes(n, gsecond.getNode("_" + n.getId())));
+            assertTrue(gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId()) != null);
+            assertTrue(sameAttributes(n, gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId())));
         }
     }
 
@@ -34,8 +34,8 @@ public final class GraphUtilsTest {
         //attributes unchanged
         assertTrue(sameAttributes(gfirst, gsecond));
         for (Node n : gfirst.getEachNode()) {
-            assertTrue(gsecond.getNode("_" + n.getId()) != null);
-            assertTrue(sameAttributes(n, gsecond.getNode("_" + n.getId())));
+            assertTrue(gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId()) != null);
+            assertTrue(sameAttributes(n, gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId())));
         }
     }
 

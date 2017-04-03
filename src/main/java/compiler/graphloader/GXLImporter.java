@@ -5,6 +5,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.xml.sax.SAXException;
+import utils.GraphUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -81,7 +82,7 @@ final class GXLImporter {
         idcounter = 0;
         String underscore = "";
         if (addUnderscores) {
-            underscore = "_";
+            underscore = GraphUtils.ILLEGAL_PREFIX;
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         String gxml = new String(encoded, "UTF-8");
@@ -179,7 +180,7 @@ final class GXLImporter {
     private static String getID(GXLGraphElement in, boolean addUnderscore) {
         String underscore = "";
         if (addUnderscore) {
-            underscore = "_";
+            underscore = GraphUtils.ILLEGAL_PREFIX;
         }
         String idgotten = in.getAttribute("id");
         if (idgotten != null && !ids.contains(underscore + idgotten)) {
