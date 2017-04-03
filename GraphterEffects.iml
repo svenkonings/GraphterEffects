@@ -46,7 +46,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/lib/tuprolog-src.zip!/src/" />
+          <root url="file://$MODULE_DIR$/lib/tuprolog-src.zip" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -57,7 +57,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/lib/gxl-src.zip!/" />
+          <root url="file://$MODULE_DIR$/lib/gxl-src.zip" />
         </SOURCES>
       </library>
     </orderEntry>
