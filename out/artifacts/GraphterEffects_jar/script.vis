@@ -70,13 +70,14 @@ right(X, X) ->
     alignMaxY(X, water).
 
 // --- Legend ---
-/* passenger(X) -> mini(X, [X, mini]).
-passenger(X), image(X, Path), mini(X, Vis) -> image(Vis, Path), dimensions(Vis, 32, 32).*/
+// passenger(X) -> mini(X, [X,1]).
+// passenger(X), image(X, Path), mini(X, Vis) -> image(Vis, Path), dimensions(Vis, 32, 32).
 
 shape(legend, rectangle).
 colour(legend, lightpink).
 posZ(legend, -1).
 alignMinX(legend, water).
+above(legend, water, 400).
 
 containedIn(X,Y) -> insideX(X,Y), insideY(X,Y).
 
@@ -85,14 +86,10 @@ passenger(X), image(X, Path) -> image([X,1], Path), dimensions([X,1], 64, 64).
 likes(X, Y, Z) ->
     image(Z, "src\test\resources\demo\images\heart.png"),
     dimensions(Z, 64, 64),
-    above(Z, water, 400),
     left([X,1], Z),
     left(Z, [Y,1]),
     alignMinY([X,1], [Y,1]),
     alignMinY([Y,1], Z),
-    noOverlapX([X,1], [Y,1]),
-    noOverlapX([X,1], Z),
-    noOverlapX([Y,1], Z),
     containedIn([X,1], legend),
     containedIn([Y,1], legend),
     containedIn(Z, legend).
