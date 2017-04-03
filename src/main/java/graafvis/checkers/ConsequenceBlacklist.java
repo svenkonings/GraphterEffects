@@ -85,14 +85,20 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     }
 
     /** Check the predicate of the multi atom */
-    @Override
-    public Void visitMultiAtom(GraafvisParser.MultiAtomContext ctx) {
+    public Void visitMultiAnd(GraafvisParser.MultiAndContext ctx) {
         blacklistCheck(ctx.predicate());
-        for (GraafvisParser.TermContext term : ctx.term()) {
-            visit(term);
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
+            visitMultiTerm(term);
         }
-        for (GraafvisParser.TermTupleContext tuple : ctx.termTuple()) {
-            visitTermTuple(tuple);
+        return null;
+    }
+
+    /** Check the predicate of the multi atom */
+    @Override
+    public Void visitMultiOr(GraafvisParser.MultiOrContext ctx) {
+        blacklistCheck(ctx.predicate());
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
+            visitMultiTerm(term);
         }
         return null;
     }

@@ -151,16 +151,29 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
 
     /** Pass on the counter */
     @Override
-    public Void visitMultiAtom(GraafvisParser.MultiAtomContext ctx) {
-        for (GraafvisParser.TermContext term : ctx.term()) {
+    public Void visitMultiAnd(GraafvisParser.MultiAndContext ctx) {
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
             variableCounters.put(term, variableCounters.get(ctx));
-            visit(term);
-        }
-        for (GraafvisParser.TermTupleContext tuple : ctx.termTuple()) {
-            variableCounters.put(tuple, variableCounters.get(ctx));
-            visitTermTuple(tuple);
+            visitMultiTerm(term);
         }
         return null;
+    }
+
+    /** Pass on the counter */
+    @Override
+    public Void visitMultiOr(GraafvisParser.MultiOrContext ctx) {
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
+            variableCounters.put(term, variableCounters.get(ctx));
+            visitMultiTerm(term);
+        }
+        return null;
+    }
+
+    /** Pass on the counter */
+    @Override
+    public Void visitMultiTerm(GraafvisParser.MultiTermContext ctx) {
+        variableCounters.put(ctx.getChild(0), variableCounters.get(ctx));
+        return visit(ctx.getChild(0));
     }
 
     /** Pass on the counter */

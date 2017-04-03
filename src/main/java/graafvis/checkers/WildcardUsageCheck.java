@@ -68,13 +68,18 @@ class WildcardUsageCheck extends GraafvisBaseVisitor<Void> {
     }
 
     /** Visit the terms */
-    @Override
-    public Void visitMultiAtom(GraafvisParser.MultiAtomContext ctx) {
-        for (GraafvisParser.TermContext term : ctx.term()) {
-            visit(term);
+    public Void visitMultiAnd(GraafvisParser.MultiAndContext ctx) {
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
+            visitMultiTerm(term);
         }
-        for (GraafvisParser.TermTupleContext termTuple : ctx.termTuple()) {
-            visitTermTuple(termTuple);
+        return null;
+    }
+
+    /** Pass on the set to its children */
+    @Override
+    public Void visitMultiOr(GraafvisParser.MultiOrContext ctx) {
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
+            visitMultiTerm(term);
         }
         return null;
     }
