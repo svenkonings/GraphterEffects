@@ -117,11 +117,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                     and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
             ));
             addClause(clause(
-                    struct(dslName, var("X")),
+                    struct(dslName, var("X"), var("Y")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
             ));
             addClause(clause(
-                    struct(dslName, var("X")),
+                    struct(dslName, var("X"), var("Y"), var("Z")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
             ));
         }
