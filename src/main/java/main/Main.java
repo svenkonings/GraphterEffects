@@ -26,7 +26,8 @@ public class Main {
         Printer.pprint(graph);
         List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
         terms.addAll(RuleGenerator.generate(FileUtils.readFromFile(new File(args[1]))));
-        System.out.println(terms);
+        System.out.println();
+        terms.forEach(System.out::println);
         Solver solver = new Solver(terms);
         List<VisElem> visElems = solver.solve();
         Document document = SvgDocumentGenerator.generate(visElems);

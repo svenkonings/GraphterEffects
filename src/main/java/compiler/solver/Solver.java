@@ -353,6 +353,7 @@ public class Solver {
         }
 
         line.set("type", "line");
+        if(!line.hasVar("z")) line.setVar("z", -1);
         line.setVar("x1", fromElem.getVar("centerX"));
         line.setVar("y1", fromElem.getVar("centerY"));
         line.setVar("x2", toElem.getVar("centerX"));
