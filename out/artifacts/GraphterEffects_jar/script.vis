@@ -5,9 +5,11 @@ edge labels:
     "type:Boat" as boat,
     "type:Bank" as bank,
     "on",
+    "in",
     "moored",
-    "flag:left" as left,
-    "flag:right" as right.
+    "go",
+    "flag:left" as leftBank,
+    "flag:right" as rightBank.
 
 wolf(X, X); goat(X, X); cabbage(X, X) -> passenger(X).
 
@@ -30,6 +32,12 @@ on(X, Y) ->
     insideX(X, Y),
     after(X, Y).
 
+in(X, Y) ->
+    above(X, Y, -70),
+    insideX(X, Y),
+    alignCenterX(X, Y),
+    after(X, Y).
+
 boat(X, X) ->
     image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\boat.png"),
     dimensions(X, 450, 190),
@@ -37,7 +45,7 @@ boat(X, X) ->
     above(X, water, -50),
     after(X, water).
 
-moored(X, Y) -> distanceX(X, Y, 0).
+moored(X, Y); go(X, Y) -> distanceX(X, Y, 0).
 
 bank(X, X) ->
     shape(X, rectangle),
@@ -53,10 +61,10 @@ shape(water, rectangle).
 colour(water, blue).
 dimensions(water, 1000, 200).
 
-left(X, X) ->
+leftBank(X, X) ->
     left(X, water, 0),
     alignMaxY(X, water).
 
-right(X, X) ->
+rightBank(X, X) ->
     right(X, water, 0),
     alignMaxY(X, water).
