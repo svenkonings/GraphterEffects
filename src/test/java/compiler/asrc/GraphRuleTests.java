@@ -21,9 +21,14 @@ import static utils.TestUtils.*;
 
 public class GraphRuleTests {
 
-    public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException, InvalidTheoryException {
+    public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException {
         List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
-        return new TuProlog(terms);
+        try {
+            return new TuProlog(terms);
+        } catch (InvalidTheoryException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void graphTest(TuProlog prolog, Graph graph) {
