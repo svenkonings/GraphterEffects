@@ -16,7 +16,7 @@ public final class GXLImporterTest {
 
     @Test
     public void GXLWithoutError() throws IOException, SAXException {
-         testFromFolder("gxl");
+        testFromFolder("gxl");
     }
 
 

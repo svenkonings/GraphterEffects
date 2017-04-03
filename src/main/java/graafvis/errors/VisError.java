@@ -32,5 +32,4 @@ public abstract class VisError {
         return column;
     }
 
-
 }

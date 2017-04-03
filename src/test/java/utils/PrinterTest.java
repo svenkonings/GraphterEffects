@@ -4,13 +4,14 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import utils.Printer;
-import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertTrue;
 
 public final class PrinterTest {
 

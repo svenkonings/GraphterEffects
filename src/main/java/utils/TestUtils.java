@@ -43,7 +43,7 @@ public final class TestUtils {
     }
 
     public static void testPredicateValue(TuProlog prolog, Element element, String predicate, String expectedID, String expectedValue) {
-        Collection<Map<String, Term>> answers = prolog.query(and(elementTerm(element), struct(predicate, term(expectedID), var("Value"))));
+        Collection<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct(predicate, term(expectedID), var("Value"))));
         assert answers.size() == 1;
         try {
             assert answerContains(answers, "Value", expectedValue);
@@ -56,7 +56,7 @@ public final class TestUtils {
         element.getAttributeKeySet().forEach(
                 attributeKey -> {
                     try {
-                        Collection<Map<String, Term>> answers = prolog.query(and(elementTerm(element), struct("attribute", term(attributeKey), term(element.getId()), var("Value"))));
+                        Collection<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", term(attributeKey), term(element.getId()), var("Value"))));
                         String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
                         assert answerContains(answers, "Value", expectedValue);
                     } catch (Exception e) {
@@ -69,7 +69,7 @@ public final class TestUtils {
 
 
     public static void testSimpleFact(TuProlog prolog, Element element, String predicate, String expectedID, boolean shouldExist) {
-        assertEquals(shouldExist, !prolog.query(and(elementTerm(element), struct(predicate, term(expectedID)))).isEmpty());
+        assertEquals(shouldExist, !prolog.solve(and(elementTerm(element), struct(predicate, term(expectedID)))).isEmpty());
     }
 
 
