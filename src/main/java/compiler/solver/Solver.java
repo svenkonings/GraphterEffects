@@ -128,7 +128,7 @@ public class Solver {
      * Get the {@link QueryConsumer} associated with the given query.
      *
      * @param query The given query.
-     * @return The {@link QueryConsumer}.
+     * @return The {@link QueryConsumer}, or {@code null} if it doesn't exist.
      */
     public QueryConsumer getQuery(String query) {
         return queries.get(query.replaceAll("\\s+", ""));
@@ -138,7 +138,7 @@ public class Solver {
      * Remove the given query.
      *
      * @param query The given query.
-     * @return The {@link QueryConsumer} associated to this query, or {@code null} if it didn't exist.
+     * @return The {@link QueryConsumer} associated to this query, or {@code null} if it doesn't exist.
      */
     public QueryConsumer removeQuery(String query) {
         return queries.remove(query.replaceAll("\\s+", ""));

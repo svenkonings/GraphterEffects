@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * A generator for converting visualization elements to a SVG docuemtn
  */
+// TODO: Extendability
 public class SvgDocumentGenerator {
 
     /**
