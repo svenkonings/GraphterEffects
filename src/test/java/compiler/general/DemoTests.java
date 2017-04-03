@@ -24,6 +24,7 @@ public final class DemoTests {
         prolog.addTheory(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
 
@@ -53,6 +54,7 @@ public final class DemoTests {
         prolog.addTheory(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
 
@@ -95,6 +97,7 @@ public final class DemoTests {
         prolog.addTheory(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
 
