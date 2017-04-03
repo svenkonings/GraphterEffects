@@ -32,6 +32,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_AND = ",";
     public static final String TUP_OR = ";";
     public static final String TUP_HORN = ":-";
+    public static final String TUP_NOT = "not";
     private List<Term> result = new ArrayList<>();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
     private ParseTreeProperty<List<Expr>> exprsPTP = new ParseTreeProperty<>();
@@ -108,8 +109,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return rg.getResult();
     }
 
-    // --- Testing ---
-
     /*************************
         --- Tree walker ---
      *************************/
@@ -132,7 +131,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
             Term antecedent = visit(ctx.antecedent());
             // Rule
             for (LiteralContext conseqLit : ctx.consequence().literal()) {
-                addClause(new Struct(TUP_HORN, visit(conseqLit), antecedent));
+                addClause(clause(antecedent, visit(conseqLit)));
             }
         }
         return null;
@@ -142,6 +141,14 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     @Override public Term visitPfLit(PfLitContext ctx) {
         return visitChildren(ctx); // TODO is dit ok? want dat an deze eig weg
     }
+
+    @Override public Term visitPfNot(PfNotContext ctx) {
+        return struct(TUP_NOT, visit(ctx.propositionalFormula()));
+    }
+
+//    @Override public Term visitPfNest(PfNestContext ctx) {
+//        return // TODO
+//    }
 
     @Override public Term visitPfAnd(PfAndContext ctx) {
         return new Struct(TUP_AND, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
@@ -171,17 +178,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiAnd(MultiAndContext ctx) {
-        // TODO werken met node{X,Y,X} ipv node{(X),(Y),(Z)}
         return and(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.multiTerm()));
     }
 
     @Override public Term visitMultiOr(MultiOrContext ctx) {
         return or(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.multiTerm()));
     }
-
-//    @Override public Term visitMultiTerm(MultiTermContext ctx) {
-//
-//    }
 
     // --- TERMS ----
 
@@ -212,8 +214,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // ---------
 
 
-
-
     /*****************************
         --- Helper methods ---
      *****************************/
@@ -235,14 +235,19 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public Term[] aggregateVisitMultiTerms(String predicate, List<? extends ParseTree> ctxs) {
         // TODO check for null: [] en p()
         if (ctxs == null) {
+            // No subtrees available
             return new Term[0];
         }
         int n = ctxs.size();
         Term[] terms = new Term[n];
         for (int i = 0; i < n; i++) {
-            if (ctxs.get(i) instanceof TermTupleContext) {
-                terms[i] = new Struct(predicate, aggregateVisit(((TermTupleContext) ctxs.get(i)).term()));
+            if (ctxs.get(i).getChild(0) instanceof TermTupleContext) {
+                // TermTuple
+                System.out.println("AVMT Termtuple: " + ctxs.get(i).getText());
+                terms[i] = new Struct(predicate, aggregateVisit(((TermTupleContext) ctxs.get(i).getChild(0)).term()));
             } else {
+                // Term
+                System.out.println("AVMT Term: " + ctxs.get(i).getText());
                 terms[i] = new Struct(predicate, visit(ctxs.get(i)));
             }
         }

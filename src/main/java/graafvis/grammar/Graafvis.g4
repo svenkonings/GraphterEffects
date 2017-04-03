@@ -10,11 +10,11 @@ program: importVis*
          EOF;
 
 /** Import another vis file. The .vis is implied. */
-importVis: IMPORT_TOKEN STRING EOL;            // TODO? java predicates import
+importVis: IMPORT_TOKEN STRING EOL;            // TODO RG & TODO? java predicates import
 
 /* Specify which labels should have generated identifiers for predicates and constants */
-nodeLabelGen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
-edgeLabelGen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
+nodeLabelGen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL; // TODO RG
+edgeLabelGen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL; // TODO RG
 
 /* Define and rename a label */
 label: STRING (RENAME_TOKEN ID)?;
@@ -27,7 +27,7 @@ antecedent: propositionalFormula;
 propositionalFormula: NOT propositionalFormula                           # pfNot
                     | propositionalFormula andOp propositionalFormula    # pfAnd
                     | propositionalFormula orOp propositionalFormula     # pfOr
-                    | PAR_OPEN propositionalFormula PAR_CLOSE            # pfNest
+                    | PAR_OPEN propositionalFormula PAR_CLOSE            # pfNest   // TODO RG
                     | literal                                            # pfLit
                     ;
 
@@ -56,13 +56,13 @@ termTuple: PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
 predicate: ID;
 
 /* Terms are either ground terms, free variables, underscores or a list of more terms */
-term: variable                                                                                  # termVar
-    | atom                                                                                      # termAtom
-    | UNDERSCORE                                                                                # termWildcard
-    | STRING                                                                                    # termString
-    | NUMBER                                                                                    # termNumber
-    | ID                                                                                        # termID
-    | BRACKET_OPEN (term (COMMA term)* (VBAR term (COMMA term)*)?)? BRACKET_CLOSE               # termList
+term: variable                                                                      # termVar
+    | literal                                                                       # termLiteral   // TODO test
+    | UNDERSCORE                                                                    # termWildcard
+    | STRING                                                                        # termString
+    | NUMBER                                                                        # termNumber
+    | ID                                                                            # termID
+    | BRACKET_OPEN (term (COMMA term)* (VBAR term (COMMA term)*)?)? BRACKET_CLOSE   # termList
     ;
 
 /* Variables start with uppercase letter */
