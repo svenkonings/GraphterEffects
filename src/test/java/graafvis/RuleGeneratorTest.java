@@ -167,13 +167,13 @@ public class RuleGeneratorTest {
            on(X,Y,Z)    :- edge(X,Y,Z), label(Z, "on"). */
         multAssert("edge labels: \"on\".",
                 clause(struct("on", var("X")), and(struct("edge", var("X")), struct("label", var("X"), struct("\"on\"")))),
-                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\"")))),
-                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\""))))
+                clause(struct("on", var("X"), var("Y")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\"")))),
+                clause(struct("on", var("X"), var("Y"), var("Z")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\""))))
         );
         multAssert("edge labels: \"On*&\" as on.",
                 clause(struct("on", var("X")), and(struct("edge", var("X")), struct("label", var("X"), struct("\"On*&\"")))),
-                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"On*&\"")))),
-                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"On*&\""))))
+                clause(struct("on", var("X"), var("Y")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"On*&\"")))),
+                clause(struct("on", var("X"), var("Y"), var("Z")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"On*&\""))))
         );
     }
 
