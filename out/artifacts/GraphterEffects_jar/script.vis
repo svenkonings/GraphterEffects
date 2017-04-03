@@ -1,0 +1,8 @@
+node labels: "wolf".
+edge labels: "likes".
+
+node(X) -> shape(X, ellipse), width(X, 100), height(X, 100).
+wolf(X) -> colour(purple).
+likes(_, _,Z) -> borderColour(Z, red).
+edge(X, Y, Z) -> line(Z, X, Y).
+node(X), node(Y) -> noOverlap(X, Y).

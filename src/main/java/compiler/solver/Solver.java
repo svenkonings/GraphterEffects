@@ -70,7 +70,7 @@ public class Solver {
         setQuery("width(Key, Width)", attrQuery("Key", "width", "Width"));
         setQuery("height(Key, Height)", attrQuery("Key", "height", "Height"));
         setQuery("colour(Key, Colour)", attrQuery("Key", "colour", "Colour"));
-        setQuery("border_colour(Key, Colour)", attrQuery("Key", "border-colour", "Colour"));
+        setQuery("borderColour(Key, Colour)", attrQuery("Key", "border-colour", "Colour"));
 
         setQuery("shape(Key, Shape)", elementQuery("Key", (elem, values) -> {
             elem.setValue("type", values.get("Shape").toString());

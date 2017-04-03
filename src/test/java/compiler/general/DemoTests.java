@@ -110,10 +110,10 @@ public final class DemoTests {
                 clause(struct("before", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display all the nodes with a red border
-                clause(struct("border_colour", var("N"), term("red")), struct("node", var("N"))),
+                clause(struct("borderColour", var("N"), term("red")), struct("node", var("N"))),
 
                 //colour all the edges which are in the mst in red
-                clause(struct("border_colour", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
+                clause(struct("borderColour", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
         );
         Solver solver = new Solver(prolog);
         List<VisElem> visElemList = solver.solve();
