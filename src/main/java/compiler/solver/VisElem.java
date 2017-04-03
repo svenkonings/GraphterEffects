@@ -16,7 +16,7 @@ import java.util.Objects;
 // TODO: Improve exception handling (or return bool?)
 public class VisElem {
 
-    private static final int MIN_INT_BOUND = 0;
+    private static final int MIN_INT_BOUND = -1000;
     private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
 
     /** The model associated with this element. */
@@ -268,8 +268,11 @@ public class VisElem {
         setDefaultDimensions("width", "radiusX");
         setDefaultDimensions("height", "radiusY");
 
-        setDefaultPositions("x1", "centerX", "x2", "width", "radiusX");
-        setDefaultPositions("y1", "centerY", "y2", "height", "radiusY");
+        // FIXME
+//        if (!getValue("type").equals("line")) {
+            setDefaultPositions("x1", "centerX", "x2", "width", "radiusX");
+            setDefaultPositions("y1", "centerY", "y2", "height", "radiusY");
+//        }
 
         setDefaultValues();
     }
@@ -294,12 +297,13 @@ public class VisElem {
         boolean hasCenter = hasVar(center);
         boolean hasEnd = hasVar(end);
         if (!hasStart && !hasCenter && !hasEnd) {
-            setVar(start, model.intVar(domain(0, MAX_INT_BOUND, 10)));
             setVar(center, getVar(start).add(getVar(radius)).intVar());
             setVar(end, getVar(start).add(getVar(diameter)).intVar());
         } else if (hasStart) {
             setConstraint(center, hasCenter, getVar(start).add(getVar(radius)));
-            setConstraint(end, hasEnd, getVar(start).add(getVar(diameter)));
+//            if (!"line".equals(getValue("type"))) {
+                setConstraint(end, hasEnd, getVar(start).add(getVar(diameter)));
+//            }
         } else if (hasCenter) {
             setConstraint(start, hasStart, getVar(center).sub(getVar(radius)));
             setConstraint(end, hasEnd, getVar(center).add(getVar(radius)));
@@ -307,7 +311,10 @@ public class VisElem {
             setConstraint(start, hasStart, getVar(end).sub(getVar(diameter)));
             setConstraint(center, hasCenter, getVar(end).sub(getVar(radius)));
         }
-//        getVar(start).gt(getVar(end)).post(); TODO: Not guaranteed for lines
+        // FIXME: Not guaranteed for lines
+        if (!"line".equals(getValue("type"))) {
+            getVar(start).lt(getVar(end)).post();
+        }
     }
 
     private void setDefaultValues() {
@@ -322,14 +329,5 @@ public class VisElem {
         } else {
             setVar(name, constraint.intVar());
         }
-    }
-
-    private static int[] domain(int start, int end, int step) {
-        int size = (end - start) / step;
-        int[] result = new int[size];
-        for (int i = 0; i < size; i++) {
-            result[i] = start + i * step;
-        }
-        return result;
     }
 }

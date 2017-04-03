@@ -4,16 +4,13 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMiddle;
-import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -34,7 +31,7 @@ public class Solver {
         prolog = tuProlog;
         model = new Model();
         visMap = new VisMap(model);
-        queries = new HashMap<>();
+        queries = new LinkedHashMap<>();
         setDefaults();
     }
 
@@ -83,6 +80,8 @@ public class Solver {
         setQuery("left(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "x2", "x1", false));
         setQuery("after(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "z", "z", true));
         setQuery("before(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "z", "z", false));
+
+        setQuery("noOverlap(Key1, Key2)", noOverlapQuery("Key1", "Key2"));
     }
 
     public QueryConsumer setQuery(String query, QueryConsumer queryConsumer) {
@@ -100,12 +99,10 @@ public class Solver {
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
         visMap.values().forEach(VisElem::setDefaults);
-        model.getSolver().setSearch(Search.intVarSearch(
-                new FirstFail(model),
-                new IntDomainMiddle(true),
-                model.retrieveIntVars(false)
-        ));
-        model.getSolver().solve();
+        if (!model.getSolver().solve()) {
+            // TODO: Change exception type
+            throw new RuntimeException("No solution found.");
+        }
         return new ArrayList<>(visMap.values());
     }
 
@@ -129,6 +126,9 @@ public class Solver {
         return forEach((visMap, values) -> {
             VisElem elem1 = visMap.get(values.get(key1));
             VisElem elem2 = visMap.get(values.get(key2));
+            if (elem1 == elem2) {
+                return;
+            }
             if (elem1.hasVar(varName)) {
                 elem2.setVar(varName, elem1.getVar(varName));
             } else {
@@ -141,6 +141,9 @@ public class Solver {
         return forEach((visMap, values) -> {
             VisElem elem1 = visMap.get(values.get(key1));
             VisElem elem2 = visMap.get(values.get(key2));
+            if (elem1 == elem2) {
+                return;
+            }
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
             if (greater) {
@@ -155,6 +158,9 @@ public class Solver {
         return forEach((visMap, values) -> {
             VisElem elem1 = visMap.get(values.get(key1));
             VisElem elem2 = visMap.get(values.get(key2));
+            if (elem1 == elem2) {
+                return;
+            }
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
             int value = Integer.parseInt(values.get(val).toString());
@@ -182,10 +188,32 @@ public class Solver {
         });
     }
 
+    public static QueryConsumer noOverlapQuery(String key1, String key2) {
+        return forEach((visMap, values) -> {
+            VisElem elem1 = visMap.get(values.get(key1));
+            VisElem elem2 = visMap.get(values.get(key2));
+            if (elem1 == elem2) {
+                return;
+            }
+            Model model = elem1.getVar("x1").getModel();
+            model.or(
+                    elem1.getVar("x1").gt(elem2.getVar("x2")).decompose(),
+                    elem1.getVar("x2").lt(elem2.getVar("x1")).decompose()
+            ).post();
+            model.or(
+                    elem1.getVar("y1").gt(elem2.getVar("y2")).decompose(),
+                    elem1.getVar("y2").lt(elem2.getVar("y1")).decompose()
+            ).post();
+        });
+    }
+
     public static void lineConstraint(VisMap visMap, Term key, Term fromKey, Term toKey) {
         VisElem line = visMap.get(key);
         VisElem fromElem = visMap.get(fromKey);
         VisElem toElem = visMap.get(toKey);
+        if (fromElem == toElem) {
+            return;
+        }
         line.set("type", "line");
         line.setVar("x1", fromElem.getVar("centerX"));
         line.setVar("y1", fromElem.getVar("centerY"));
