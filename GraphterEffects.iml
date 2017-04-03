@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -46,7 +46,9 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/lib/tuprolog-src.zip!/src/" />
+          <root url="file://$MODULE_DIR$/lib/tuprolog-src.zip!/src" />
+          <root url="file://$MODULE_DIR$/lib/tuprolog-src.zip!/src" />
+          <root url="file://$MODULE_DIR$/lib/tuprolog-src.zip!/src" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -57,7 +59,8 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/lib/gxl-src.zip!/" />
+          <root url="file://$MODULE_DIR$/lib/gxl-src.zip!" />
+          <root url="jar://$MODULE_DIR$/lib/gxl-src.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>

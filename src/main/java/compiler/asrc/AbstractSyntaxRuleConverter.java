@@ -101,7 +101,12 @@ public final class AbstractSyntaxRuleConverter {
             String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
             termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
             if (attributeKey.equals("label")) {
-                termList.add(struct(attributeKey, term(node.getId()), term(attributeString)));
+                termList.add(struct("label", term(node.getId()), term(attributeString)));
+                if (attributeString.startsWith("type:")) {
+                    termList.add(struct("type", term(node.getId()), term(attributeString)));
+                } else if (attributeString.startsWith("flag:")) {
+                    termList.add(struct("flag", term(node.getId()), term(attributeString)));
+                }
             }
         }
         return termList;
@@ -134,6 +139,11 @@ public final class AbstractSyntaxRuleConverter {
             termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
             if (attributeKey.equals("label")) {
                 termList.add(struct(attributeKey, term(edge.getId()), term(attributeString)));
+            }
+            if (attributeString.startsWith("type:")) {
+                termList.add(struct("type", term(edge.getId()), term(attributeString)));
+            } else if (attributeString.startsWith("flag:")) {
+                termList.add(struct("flag", term(edge.getId()), term(attributeString)));
             }
         }
         return termList;
