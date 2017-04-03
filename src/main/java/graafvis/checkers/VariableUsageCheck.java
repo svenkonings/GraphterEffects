@@ -133,8 +133,7 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
     @Override
     public Void visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) {
         variables.put(ctx.multiAtom(), variables.get(ctx));
-        visitMultiAtom(ctx.multiAtom());
-        return null;
+        return visit(ctx.multiAtom());
     }
 
     /** Pass on the set to its children */
@@ -150,16 +149,29 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
 
     /** Pass on the set to its children */
     @Override
-    public Void visitMultiAtom(GraafvisParser.MultiAtomContext ctx) {
-        for (GraafvisParser.TermContext term : ctx.term()) {
+    public Void visitMultiAnd(GraafvisParser.MultiAndContext ctx) {
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
             variables.put(term, variables.get(ctx));
-            visit(term);
-        }
-        for (GraafvisParser.TermTupleContext termTuple : ctx.termTuple()) {
-            variables.put(termTuple, variables.get(ctx));
-            visitTermTuple(termTuple);
+            visitMultiTerm(term);
         }
         return null;
+    }
+
+    /** Pass on the set to its children */
+    @Override
+    public Void visitMultiOr(GraafvisParser.MultiOrContext ctx) {
+        for (GraafvisParser.MultiTermContext term : ctx.multiTerm()) {
+            variables.put(term, variables.get(ctx));
+            visitMultiTerm(term);
+        }
+        return null;
+    }
+
+    /** Pass on the set to its children */
+    @Override
+    public Void visitMultiTerm(GraafvisParser.MultiTermContext ctx) {
+        variables.put(ctx.getChild(0), variables.get(ctx));
+        return visit(ctx.getChild(0));
     }
 
     /** Pass on the set to its children */
