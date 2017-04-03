@@ -81,14 +81,28 @@ public class RuleGeneratorTest {
                 )
         );
 
+        // Nest
+        singleAssert("p(X), (q(X); r(X)) -> s(X).",
+                clause(
+                        struct("s", var("X")),
+                        and(struct("p", var("X")), or(struct("q", var("X")), struct("r", var("X"))))
+                )
+        );
+        singleAssert("p(X), (q(X); (r(X), s(X))) -> t(X).",
+                clause(
+                        struct("t", var("X")),
+                        and(struct("p", var("X")), or(struct("q", var("X")), and(struct("r", var("X")), struct("s", var("X")))))
+                )
+        );
+
         // Not
-        singleAssert("not p(X) -> q(X).", clause(struct(TUP_NOT, struct("p", var("X"))), struct("q", var("X"))));
-        singleAssert("not not p(X) -> q(X).", clause(struct(TUP_NOT, struct(TUP_NOT, struct("p", var("X")))), struct("q", var("X"))));
+        singleAssert("not p(X) -> q(X).", clause(struct("q", var("X")), struct(TUP_NOT, struct("p", var("X")))));
+        singleAssert("not not p(X) -> q(X).", clause(struct("q", var("X")), struct(TUP_NOT, struct(TUP_NOT, struct("p", var("X"))))));
         singleAssert("not p(X), q(X) -> r(X).",
-                clause(and(struct(TUP_NOT, struct("p", var("X"))), struct("q", var("X"))), struct("r", var("X")))
+                clause(struct("r", var("X")), and(struct(TUP_NOT, struct("p", var("X"))), struct("q", var("X"))))
         );
         singleAssert("p(X), not q(X) -> r(X).",
-                clause(and(struct("p", var("X"), struct(TUP_NOT, struct("q", var("X"))))), struct("r", var("X")))
+                clause(struct("r", var("X")), and(struct("p", var("X")), struct(TUP_NOT, struct("q", var("X")))))
         );
 
     }
@@ -126,9 +140,40 @@ public class RuleGeneratorTest {
         );
         multAssert("wolf(X), node{X;Y;Z} -> check(X).",
                 clause(
-                        and(struct("wolf", var("X")), or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))),
-                        struct("check", var("X"))
+                        struct("check", var("X")),
+                        and(struct("wolf", var("X")), or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))))
                 )
+        );
+    }
+
+    @Test
+    public void testLabelGen() {
+        // Edge labels
+        // mom(X) :- node(X), label(X, "mom").
+        singleAssert("node labels: \"mom\".",
+                clause(struct("mom", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"mom\""))))
+        );
+        singleAssert("node labels: \"mom\" as mother.",
+                clause(struct("mother", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"mom\""))))
+        );
+        multAssert("node labels: \"mom\" as mother, \"dog\", \"*723^^& Illeg@l\" as legal.",
+                clause(struct("mother", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"mom\"")))),
+                clause(struct("dog", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"dog\"")))),
+                clause(struct("legal", var("X")), and(struct("node", var("X")), struct("label", var("X"), struct("\"*723^^& Illeg@l\""))))
+        );
+        // Node labels
+        // on(X)        :- edge(X), label(X, "on").
+        // on(X,Y)      :- edge(X,Y,Z), label(Z, "on").
+        // on(X,Y,Z)    :- edge(X,Y,Z), label(Z, "on").
+        multAssert("edge labels: \"on\".",
+                clause(struct("on", var("X")), and(struct("edge", var("X")), struct("label", var("X"), struct("\"on\"")))),
+                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\"")))),
+                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"on\""))))
+        );
+        multAssert("edge labels: \"On*&\" as on.",
+                clause(struct("on", var("X")), and(struct("edge", var("X")), struct("label", var("X"), struct("\"On*&\"")))),
+                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"On*&\"")))),
+                clause(struct("on", var("X")), and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct("\"On*&\""))))
         );
     }
 

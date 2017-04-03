@@ -9,12 +9,14 @@ program: importVis*
          clause*
          EOF;
 
+// TODO? java predicates import
+
 /** Import another vis file. The .vis is implied. */
-importVis: IMPORT_TOKEN STRING EOL;            // TODO RG & TODO? java predicates import
+importVis: IMPORT_TOKEN STRING EOL;            // TODO
 
 /* Specify which labels should have generated identifiers for predicates and constants */
-nodeLabelGen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL; // TODO RG
-edgeLabelGen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL; // TODO RG
+nodeLabelGen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
+edgeLabelGen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
 
 /* Define and rename a label */
 label: STRING (RENAME_TOKEN ID)?;
@@ -27,7 +29,7 @@ antecedent: propositionalFormula;
 propositionalFormula: NOT propositionalFormula                           # pfNot
                     | propositionalFormula andOp propositionalFormula    # pfAnd
                     | propositionalFormula orOp propositionalFormula     # pfOr
-                    | PAR_OPEN propositionalFormula PAR_CLOSE            # pfNest   // TODO RG
+                    | PAR_OPEN propositionalFormula PAR_CLOSE            # pfNest
                     | literal                                            # pfLit
                     ;
 
@@ -57,7 +59,7 @@ predicate: ID;
 
 /* Terms are either ground terms, free variables, underscores or a list of more terms */
 term: variable                                                                      # termVar
-    | literal                                                                       # termLiteral   // TODO test
+    | atom                                                                          # termAtom   // TODO test nested atoms, idk if/how they work
     | UNDERSCORE                                                                    # termWildcard
     | STRING                                                                        # termString
     | NUMBER                                                                        # termNumber

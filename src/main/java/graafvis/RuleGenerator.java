@@ -31,7 +31,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_WILD_CARD = "_";
     public static final String TUP_AND = ",";
     public static final String TUP_OR = ";";
-    public static final String TUP_HORN = ":-";
     public static final String TUP_NOT = "not";
     private List<Term> result = new ArrayList<>();
     private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
@@ -84,17 +83,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- Rule generation ---
 
-    public static void main(String[] args) throws NoMoreSolutionException, InvalidTheoryException, DatalogException, NoSolutionException {
-//        tupTest();
-//        generate("node(a), label(a, \"wolf\").");
-//        generate("node(X), label(X, \"wolf\") -> wolf(X).");
-//        generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
-//        generate("node(X), label(X, _) -> shape(X, square).");
-//        generate("parent(X,Z), parent(Y,Z), edge(X, Y) -> family(X, Y, Z), child(Z), left(X, Y).");
-//        // Error: generate("node(X), label(X, _) -> check(X), colour(X, blue)");
-//        generate("shape((X,id1), square).");
-    }
-
     public static List<Term> generate(String script) {
         System.out.println("\nParsing: " + script);
         RuleGenerator rg = new RuleGenerator();
@@ -104,8 +92,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         ParseTree tree = parser.program();
         tree.accept(rg);
         System.out.println(rg.getResult());
-//        System.out.println("\tFacts: " + rg.getCs().getFacts());
-//        System.out.println("\tRules: " + rg.getCs().getRules());
         return rg.getResult();
     }
 
@@ -118,8 +104,40 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 //        return null;
 //    }
 
-    // TODO Node label gen
     // TODO Edge label gen
+
+    @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
+        for (LabelContext label : ctx.label()) {
+            String asName = label.STRING().getText();
+            String dslName = label.ID() == null ? asName.substring(1, asName.length() - 1) : label.ID().getText();
+            addClause(clause(
+                    struct(dslName, var("X")),
+                    and(struct("node", var("X")), struct("label", var("X"), struct(asName)))
+            ));
+        }
+        return null;
+    }
+
+    @Override public Term visitEdgeLabelGen(EdgeLabelGenContext ctx) {
+        for (LabelContext label : ctx.label()) {
+            String asName = label.STRING().getText();
+            String dslName = label.ID() == null ? asName.substring(1, asName.length() - 1) : label.ID().getText();
+            addClause(clause(
+                    struct(dslName, var("X")),
+                    and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
+            ));
+            addClause(clause(
+                    struct(dslName, var("X")),
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
+            ));
+            addClause(clause(
+                    struct(dslName, var("X")),
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
+            ));
+        }
+        return null;
+    }
+
 
     @Override public Term visitClause(ClauseContext ctx) {
         if (ctx.antecedent() == null) {
@@ -131,24 +149,20 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
             Term antecedent = visit(ctx.antecedent());
             // Rule
             for (LiteralContext conseqLit : ctx.consequence().literal()) {
-                addClause(clause(antecedent, visit(conseqLit)));
+                addClause(clause(visit(conseqLit), antecedent));
             }
         }
         return null;
     }
 
-    // TODO Out of scope: pfNot, pfOr, pfNest
-    @Override public Term visitPfLit(PfLitContext ctx) {
-        return visitChildren(ctx); // TODO is dit ok? want dat an deze eig weg
+//    // TODO Out of scope: pfNot, pfOr, pfNest
+    @Override public Term visitPfNest(PfNestContext ctx) {
+        return visit(ctx.propositionalFormula()); // TODO is dit ok? want dat an deze eig weg
     }
 
     @Override public Term visitPfNot(PfNotContext ctx) {
         return struct(TUP_NOT, visit(ctx.propositionalFormula()));
     }
-
-//    @Override public Term visitPfNest(PfNestContext ctx) {
-//        return // TODO
-//    }
 
     @Override public Term visitPfAnd(PfAndContext ctx) {
         return new Struct(TUP_AND, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
