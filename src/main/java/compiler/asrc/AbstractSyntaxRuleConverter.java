@@ -125,9 +125,9 @@ public final class AbstractSyntaxRuleConverter {
         List<Term> termList = new ArrayList<>();
 
         // TODO Reverse target and source
-        termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId()), term(edge.getId())));
-        // TODO edge/2 termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId())));
-        // TODO edge/1 termList.add(struct("edge", term(edge.getId())));
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId()), term(edge.getId())));
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId())));
+        termList.add(struct("edge", term(edge.getId())));
 
         if (edge.isDirected()) {
             termList.add(struct("directed", term(edge.getId())));

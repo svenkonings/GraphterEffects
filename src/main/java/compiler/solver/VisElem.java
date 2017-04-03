@@ -16,7 +16,7 @@ import java.util.Objects;
 public class VisElem {
 
     private static final int MIN_INT_BOUND = 0;
-    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
+    private static final int MAX_INT_BOUND = 2000; // TODO: Find a suitable maximum
 
     /** The model associated with this element. */
     private final Model model;

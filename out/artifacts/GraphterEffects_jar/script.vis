@@ -1,8 +1,62 @@
-node labels: "wolf".
-edge labels: "likes".
+edge labels:
+    "wolf",
+    "type:Goat" as goat,
+    "type:Cabbage" as cabbage,
+    "type:Boat" as boat,
+    "type:Bank" as bank,
+    "on",
+    "moored",
+    "flag:left" as left,
+    "flag:right" as right.
 
-node(X) -> shape(X, ellipse), width(X, 100), height(X, 100).
-wolf(X) -> colour(purple).
-likes(_, _,Z) -> borderColour(Z, red).
-edge(X, Y, Z) -> line(Z, X, Y).
-node(X), node(Y) -> noOverlap(X, Y).
+wolf(X, X); goat(X, X); cabbage(X, X) -> passenger(X).
+
+passenger(X), passenger(Y) -> noOverlapX(X, Y).
+
+wolf(X, X) ->
+    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\wolf.png"),
+    dimensions(X, 128, 128).
+
+goat(X, X) ->
+    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\sheep.png"),
+    dimensions(X, 128, 128).
+
+cabbage(X, X) ->
+    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\cabbage.png"),
+    dimensions(X, 128, 128).
+
+on(X, Y) ->
+    above(X, Y, -20),
+    insideX(X, Y),
+    after(X, Y).
+
+boat(X, X) ->
+    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\boat.png"),
+    dimensions(X, 450, 190),
+    insideX(X, water),
+    above(X, water, -50),
+    after(X, water).
+
+moored(X, Y) -> distanceX(X, Y, 0).
+
+bank(X, X) ->
+    shape(X, rectangle),
+    colour(X, green).
+
+bank(X, X), bank(Y, Y) ->
+    sameWidth(X, Y),
+    alignMaxY(X, Y).
+
+boat(X, X), bank(Y, Y) -> alignMinY(X, Y).
+
+shape(water, rectangle).
+colour(water, blue).
+dimensions(water, 1000, 200).
+
+left(X, X) ->
+    left(X, water, 0),
+    alignMaxY(X, water).
+
+right(X, X) ->
+    right(X, water, 0),
+    alignMaxY(X, water).

@@ -93,8 +93,12 @@ public class Solver {
 
         setQuery("image(Key, Image)", imageQuery("Key", "Image"));
 
-        setQuery("alignX(Key1, Key2)", alignQuery("Key1", "Key2", "minX"));
-        setQuery("alignY(Key1, Key2)", alignQuery("Key1", "Key2", "minY"));
+        setQuery("alignMinX(Key1, Key2)", equalQuery("Key1", "Key2", "minX"));
+        setQuery("alignMinY(Key1, Key2)", equalQuery("Key1", "Key2", "minY"));
+        setQuery("alignMaxX(Key1, Key2)", equalQuery("Key1", "Key2", "maxX"));
+        setQuery("alignMaxY(Key1, Key2)", equalQuery("Key1", "Key2", "maxY"));
+        setQuery("sameWidth(Key1, Key2)", equalQuery("Key1", "Key2", "width"));
+        setQuery("sameHeight(Key1, Key2)", equalQuery("Key1", "Key2", "height"));
 
         setQuery("below(Key1, Key2)", relPosQuery("Key1", "Key2", "minY", "maxY", true));
         setQuery("above(Key1, Key2)", relPosQuery("Key1", "Key2", "maxY", "minY", false));
@@ -110,7 +114,23 @@ public class Solver {
         setQuery("after(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "z", "z", true));
         setQuery("before(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "z", "z", false));
 
-        setQuery("noOverlap(Key1, Key2)", noOverlapQuery("Key1", "Key2"));
+        // For the demo
+        setQuery("noOverlap(Key1, Key2)", noOverlapQuery("Key1", "Key2", true, true));
+        setQuery("noOverlapX(Key1, Key2)", noOverlapQuery("Key1", "Key2", true, false));
+        setQuery("noOverlapY(Key1, Key2)", noOverlapQuery("Key1", "Key2", false, true));
+
+        setQuery("distance(Key1, Key2, Value)", distanceQuery("Key1", "Key2", "Value", true, true));
+        setQuery("distanceX(Key1, Key2, Value)", distanceQuery("Key1", "Key2", "Value", true, false));
+        setQuery("distanceY(Key1, Key2, Value)", distanceQuery("Key1", "Key2", "Value", false, true));
+
+        setQuery("insideX(Key1, Key2)", elementPairQuery("Key1", "Key2", (elem1, elem2, values) -> {
+            elem1.getVar("minX").ge(elem2.getVar("minX")).post();
+            elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
+        }));
+        setQuery("insideY(Key1, Key2)", elementPairQuery("Key1", "Key2", (elem1, elem2, values) -> {
+            elem1.getVar("minY").ge(elem2.getVar("minY")).post();
+            elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
+        }));
     }
 
     /**
@@ -227,7 +247,7 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer alignQuery(String key1, String key2, String varName) {
+    public static QueryConsumer equalQuery(String key1, String key2, String varName) {
         return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
             if (elem1.hasVar(varName)) {
                 elem2.setVar(varName, elem1.getVar(varName));
@@ -264,7 +284,7 @@ public class Solver {
 
     public static QueryConsumer imageQuery(String key, String imageValue) {
         return elementQuery(key, (elem, values) -> {
-            String imagePath = values.get(imageValue).toString().replaceAll("'", "");
+            String imagePath = values.get(imageValue).toString().replaceAll("['\"]", "");
             String image;
             try {
                 image = FileUtils.getImageSVG(new File(imagePath));
@@ -278,16 +298,31 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer noOverlapQuery(String key1, String key2) {
+    public static QueryConsumer noOverlapQuery(String key1, String key2, boolean x, boolean y) {
         return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
             Model model = elem1.getVar("minX").getModel();
-            model.or(
+            if (x) model.or(
                     elem1.getVar("minX").gt(elem2.getVar("maxX")).decompose(),
                     elem1.getVar("maxX").lt(elem2.getVar("minX")).decompose()
             ).post();
-            model.or(
+            if (y) model.or(
                     elem1.getVar("minY").gt(elem2.getVar("maxY")).decompose(),
                     elem1.getVar("maxY").lt(elem2.getVar("minY")).decompose()
+            ).post();
+        });
+    }
+
+    public static QueryConsumer distanceQuery(String key1, String key2, String distanceValue, boolean x, boolean y) {
+        return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
+            int value = Integer.parseInt(values.get(distanceValue).toString());
+            Model model = elem1.getVar("minX").getModel();
+            if (x) model.or(
+                    elem1.getVar("minX").dist(elem2.getVar("maxX")).eq(value).decompose(),
+                    elem1.getVar("maxX").dist(elem2.getVar("minX")).eq(value).decompose()
+            ).post();
+            if (y) model.or(
+                    elem1.getVar("minY").dist(elem2.getVar("maxY")).eq(value).decompose(),
+                    elem1.getVar("maxY").dist(elem2.getVar("minY")).eq(value).decompose()
             ).post();
         });
     }
@@ -306,6 +341,8 @@ public class Solver {
      */
     public static void defaultValues(VisElem elem) {
         if (!elem.hasVar("z")) elem.setVar("z", 0);
+        if (!elem.hasVar("width")) elem.setVar("width", 10);
+        if (!elem.hasVar("height")) elem.setVar("height", 10);
 
         if (!elem.hasValue("type")) {
             elem.setValue("type", "ellipse");
@@ -353,7 +390,7 @@ public class Solver {
         }
 
         line.set("type", "line");
-        if(!line.hasVar("z")) line.setVar("z", -1);
+        if (!line.hasVar("z")) line.setVar("z", -1);
         line.setVar("x1", fromElem.getVar("centerX"));
         line.setVar("y1", fromElem.getVar("centerY"));
         line.setVar("x2", toElem.getVar("centerX"));
