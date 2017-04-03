@@ -8,6 +8,7 @@ import org.graphstream.algorithm.coloring.WelshPowell;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.GraphUtils;
@@ -162,9 +163,9 @@ public final class AbstractSyntaxRuleConverter {
         );
 
         WelshPowell a = new WelshPowell();
-        a.init(graph);
+        a.init(Graphs.clone(graph));
         a.compute();
-        termList.add(struct("chromaticnumber", term(graph.getId()), intVal(a.getChromaticNumber())));
+        termList.add(struct("chromaticnumber", term(graph.getId()), term(String.valueOf(a.getChromaticNumber()))));
 
         return termList;
     }
