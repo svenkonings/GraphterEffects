@@ -39,7 +39,7 @@ in(X, Y) ->
     after(X, Y).
 
 boat(X, X) ->
-    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\boat.png"),
+    image(X, "src\test\resources\demo\images\boat.png"),
     dimensions(X, 450, 190),
     insideX(X, water),
     above(X, water, -50),
