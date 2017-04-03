@@ -16,15 +16,15 @@ wolf(X, X); goat(X, X); cabbage(X, X) -> passenger(X).
 passenger(X), passenger(Y) -> noOverlapX(X, Y).
 
 wolf(X, X) ->
-    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\wolf.png"),
+    image(X, "src\test\resources\demo\images\wolf.png"),
     dimensions(X, 128, 128).
 
 goat(X, X) ->
-    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\sheep.png"),
+    image(X, "src\test\resources\demo\images\sheep.png"),
     dimensions(X, 128, 128).
 
 cabbage(X, X) ->
-    image(X, "C:\Users\Sven\Documents\GitHub\GraphterEffects\src\test\resources\demo\images\cabbage.png"),
+    image(X, "src\test\resources\demo\images\cabbage.png"),
     dimensions(X, 128, 128).
 
 on(X, Y) ->
