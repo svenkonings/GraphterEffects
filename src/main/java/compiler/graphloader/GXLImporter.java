@@ -2,8 +2,11 @@ package compiler.graphloader;
 
 import net.sourceforge.gxl.*;
 import org.graphstream.graph.Edge;
+import org.graphstream.graph.EdgeRejectedException;
+import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.xml.sax.SAXException;
 import utils.GraphUtils;
 
@@ -44,6 +47,23 @@ final class GXLImporter {
     }
 
 
+    static Graph read(File file, boolean addUnderscores) throws IOException, SAXException {
+        try{
+            return read(file.getAbsolutePath(), addUnderscores, false);
+        } catch (EdgeRejectedException e) {
+            return read(file.getAbsolutePath(), addUnderscores, true);
+        }
+    }
+
+    static Graph read(String path, boolean addUnderscores) throws IOException, SAXException {
+        try{
+            return read(path, addUnderscores, false);
+        } catch (EdgeRejectedException e) {
+            return read(path, addUnderscores, true);
+        }
+    }
+
+
     /**
      * Reads a file in GXL format into a GraphStream graph Object.
      *
@@ -52,23 +72,11 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static MultiGraph read(File file) throws IOException, SAXException {
-        return read(file.getAbsolutePath());
+    static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addUnderscores, multigraph);
     }
 
-    /**
-     * Reads a file in GXL format into a GraphStream graph Object.
-     *
-     * @param path Path to the file to read into a GraphsStream Graph Object.
-     * @return A GraphStream Graph Object containing the graph represented in the file.
-     * @throws IOException  Thrown when the file could not be read.
-     * @throws SAXException Thrown when the file contains incorrect syntax.
-     */
-    static MultiGraph read(String path) throws IOException, SAXException {
-        return read(path, false);
-    }
-
-    /**
+     /**
      * Reads a file in GXL format into a GraphStream graph Object.
      *
      * @param path           Path to the file to read into a GraphsStream Graph Object.
@@ -77,7 +85,7 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static MultiGraph read(String path, boolean addUnderscores) throws IOException, SAXException {
+    static Graph read(String path, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
         String underscore = "";
@@ -94,7 +102,13 @@ final class GXLImporter {
         GXLGXL a = doc.getDocumentElement();
         GXLGraph graph = a.getGraphAt(0);
 
-        MultiGraph tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
+        Graph tograph;
+        if (multigraph) {
+            tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
+        } else {
+            tograph = new SingleGraph(underscore + graph.getAttribute("id"), true, false);
+        }
+
         for (int p = 0; p < graph.getAttrCount(); p++) {
             GXLValue content = (graph.getAttrAt(p)).getValue();
             tograph.setAttribute(graph.getAttrAt(p).getName(), getFromGXLValue(content, true));

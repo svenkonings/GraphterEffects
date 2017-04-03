@@ -3,12 +3,15 @@ package compiler.asrc;
 import alice.tuprolog.Term;
 import exceptions.UnknownGraphTypeException;
 import org.graphstream.algorithm.Kruskal;
+import org.graphstream.algorithm.ConnectedComponents;
+import org.graphstream.algorithm.coloring.WelshPowell;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.GraphUtils;
+import utils.Printer;
 import utils.StringUtils;
 
 import java.util.ArrayList;
@@ -58,8 +61,14 @@ public final class AbstractSyntaxRuleConverter {
             termList.add(struct("mixed", term(graph.getId())));
         }
 
+        ConnectedComponents a = new ConnectedComponents();
+        a.init(graph);
+        int ccount = a.getConnectedComponentsCount();
+        termList.add(struct("componentcount", term(graph.getId()), intVal(ccount)));
+        if (ccount==1){
+            termList.add(struct("isconnected", term(graph.getId())));
+        }
         termList.addAll(generateGraphRules(graph));
-
         return termList;
     }
 
@@ -151,6 +160,12 @@ public final class AbstractSyntaxRuleConverter {
         kruskal.getTreeEdges().forEach(edge ->
                 termList.add(struct("inmst", term(edge.getId())))
         );
+
+        WelshPowell a = new WelshPowell();
+        a.init(graph);
+        a.compute();
+        termList.add(struct("chromaticnumber", term(graph.getId()), intVal(a.getChromaticNumber())));
+
         return termList;
     }
 
@@ -174,6 +189,4 @@ public final class AbstractSyntaxRuleConverter {
         }
         return termList;
     }
-
-
 }

@@ -105,6 +105,10 @@ public class TuProlog {
         prolog.addTheory(theory);
     }
 
+    public Theory getTheory() {
+        return prolog.getTheory();
+    }
+
     public void setTheory(Term... terms) throws InvalidTheoryException {
         Theory theory = new Theory(list(terms));
         prolog.setTheory(theory);
@@ -138,5 +142,10 @@ public class TuProlog {
         }
         prolog.solveEnd();
         return results;
+    }
+
+    @Override
+    public String toString() {
+        return getTheory().toString();
     }
 }

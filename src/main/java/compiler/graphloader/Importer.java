@@ -1,7 +1,9 @@
 package compiler.graphloader;
 
 
+import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.IdAlreadyInUseException;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
 import utils.GraphUtils;
@@ -49,17 +51,16 @@ public final class Importer {
         Graph g;
         String extension = FileUtils.getExtension(file.getName());
         if (GXLImporter.acceptsExtension(extension)) {
-            g = GXLImporter.read(file);
+            g = GXLImporter.read(file, false);
         } else if (GraphStreamImporter.acceptsExtension(extension)) {
             g = GraphStreamImporter.read(file);
         } else {
             try {
-                g = GXLImporter.read(file);
+                    g = GXLImporter.read(file, false, false);
             } catch (SAXException e) {
                 g = null;
             }
         }
-
         if (g == null) {
             throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
         } else if (addUnderscores) {

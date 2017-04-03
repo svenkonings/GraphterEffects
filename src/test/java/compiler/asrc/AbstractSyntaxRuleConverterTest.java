@@ -43,9 +43,16 @@ public final class AbstractSyntaxRuleConverterTest {
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
+//TODO
+//    @Test
+//    public void convertToRulesGraph4() throws Exception {
+//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/multi1.dot"));
+//        TuProlog prolog = generateGraphProlog(graph);
+//        graphTest(prolog, graph);
+//    }
 
     @Test
-    public void convertToRulesGraph4() throws Exception {
+    public void convertToRulesGraph5() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
@@ -80,6 +87,13 @@ public final class AbstractSyntaxRuleConverterTest {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
         MSTTest(graph);
     }
+
+    //TODO
+//    @Test
+//    public void TestMST6() throws Exception {
+//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/multi1.dot"));
+//        MSTTest(graph);
+//    }
 
 
     private void MSTTest(Graph graph) throws Exception {
