@@ -1,14 +1,11 @@
 package utils;
 
-import javax.swing.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Base64;
 
 /**
  * Class used for methods to read from- save to- or manipulate File Objects and related tasks.
@@ -18,6 +15,7 @@ public final class FileUtils {
 
     /**
      * Retrieves the extension of a file given its filename.
+     *
      * @param filename Filename of the file.
      * @return The extension of the file.
      */
@@ -25,11 +23,12 @@ public final class FileUtils {
         if (!filename.contains(".")) {
             return filename;
         }
-        return getExtension(filename.substring(filename.indexOf(".")+1));
+        return getExtension(filename.substring(filename.indexOf(".") + 1));
     }
 
     /**
      * Retrieves a file from the Resources folder of Graphter Effects.
+     *
      * @param path Path that indicates the location of the file in question from the resource folder.
      * @return The file requested.
      * @throws IOException Thrown when the file could not be loaded.
@@ -44,6 +43,7 @@ public final class FileUtils {
 
     /**
      * Returns a list of ALL files in a directory and all its subdirectories, recursively.
+     *
      * @param dir Directory to search files in.
      * @return All files within this directory.
      */
@@ -69,6 +69,7 @@ public final class FileUtils {
 
     /**
      * Reads a file and returns its Base64 String representation.
+     *
      * @param file The file to be read.
      * @return The Base64 String representation.
      * @throws IOException Thrown when the file could not be read.
@@ -84,6 +85,7 @@ public final class FileUtils {
 
     /**
      * Reads a file and returns a String containing its Base64 String representation that can be used in an SVG image.
+     *
      * @param file The File to be read.
      * @return The String representation that can be used in SVG generation.
      * @throws IOException Thrown when the File could not be read.
@@ -106,9 +108,6 @@ public final class FileUtils {
                 return "data:image/false;base64," + ImageToBase64(file);
         }
     }
-
-
-
 
 
 }

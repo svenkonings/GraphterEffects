@@ -16,6 +16,7 @@ import java.util.List;
  * A generator for converting visualization elements to a SVG docuemtn
  */
 public class SvgDocumentGenerator {
+
     /**
      * Generates a SVG document based on the given visualization elements.
      *
@@ -23,12 +24,23 @@ public class SvgDocumentGenerator {
      * @return a SVG document.
      */
     public static Document generate(List<VisElem> visElems) {
+        return generate(new SvgElementGenerator(), visElems);
+    }
+
+    /**
+     * Generates a SVG document based on the given visualization elements with the given element generator.
+     *
+     * @param generator The given element generator
+     * @param visElems  The given visualization elements.
+     * @return a SVG document.
+     */
+    public static Document generate(SvgElementGenerator generator, List<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         setViewBox(root, visElems);
         visElems.stream()
                 .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
-                .forEachOrdered(visElem -> SvgElementGenerator.addElement(visElem, root));
+                .forEachOrdered(visElem -> generator.addElement(visElem, root));
         return document;
     }
 
@@ -42,11 +54,9 @@ public class SvgDocumentGenerator {
     private static void setViewBox(Element element, List<VisElem> visElems) {
         int minX = min(visElems, "x1");
         int minY = min(visElems, "y1");
-        int maxX = max(visElems, "x2");
-        int maxY = max(visElems, "y2");
-        if (minX >= 0 && minY >= 0 && maxX >= 0 && maxY >= 0) {
-            element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, maxX, maxY));
-        }
+        int width = max(visElems, "x2") - minX;
+        int height = max(visElems, "y2") - minY;
+        element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
     }
 
     /**
@@ -59,7 +69,7 @@ public class SvgDocumentGenerator {
     private static int max(List<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
-                .max().orElse(-1);
+                .max().orElse(0);
     }
 
     /**
@@ -72,7 +82,7 @@ public class SvgDocumentGenerator {
     private static int min(List<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
-                .min().orElse(-1);
+                .min().orElse(0);
     }
 
     /**

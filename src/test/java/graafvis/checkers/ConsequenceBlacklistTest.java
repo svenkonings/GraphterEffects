@@ -20,36 +20,32 @@ public class ConsequenceBlacklistTest {
 
     @Test
     public void testDefaultBlackList() {
-        String validProgram1 = "node(X) -> a(X).";
-        Assert.assertEquals(0, check(validProgram1).size());
-        String validProgram2 = "edge(X) -> a(X).";
-        Assert.assertEquals(0, check(validProgram2).size());
-        String validProgram3 = "node{X, Y} -> a(X), a(Y).";
-        Assert.assertEquals(0, check(validProgram3).size());
+        validityCheck("node(X) -> a(X).");
+        validityCheck("edge(X) -> a(X).");
+        validityCheck("node{X, Y} -> a(X), a(Y).");
 
-        String invalidProgram1 = "node(x).";
-        Assert.assertNotEquals(0, check(invalidProgram1).size());
-        String invalidProgram2 = "a(X) -> node(X).";
-        Assert.assertNotEquals(0, check(invalidProgram2).size());
-        String invalidProgram3 = "a(X), b(Y) -> edge(X, Y).";
-        Assert.assertNotEquals(0, check(invalidProgram3).size());
+        invalidityCheck("node(x).");
+        invalidityCheck("a(X) -> node(X).");
+        invalidityCheck("a(X), b(Y) -> edge(X, Y).");
     }
 
     @Test
     public void testGeneratedBlackList() {
-        String validProgram1 = "wolf(x).";
-        Assert.assertEquals(0, check(validProgram1).size());
-        String validProgram2 = "node labels: \"goat\" as boat. goat(x).";
-        Assert.assertEquals(0, check(validProgram2).size());
-        String validProgram3 = "node labels: \"#@$%\" as wolf. test(x).";
-        Assert.assertEquals(0, check(validProgram3).size());
+        validityCheck("wolf(x).");
+        validityCheck("node labels: \"goat\" as boat. goat(x).");
+        validityCheck("node labels: \"#@$%\" as wolf. test(x).");
 
-        String invalidProgram1 = "node labels: \"wolf\". wolf(x).";
-        Assert.assertNotEquals(0, check(invalidProgram1).size());
-        String invalidProgram2 = "node labels: \"#olf\" as wolf. wolf(x).";
-        Assert.assertNotEquals(0, check(invalidProgram2).size());
-        String invalidProgram3 = "node labels: \"wolf\" as wolf. a(x) -> wolf(x).";
-        Assert.assertNotEquals(0, check(invalidProgram3).size());
+        invalidityCheck("node labels: \"wolf\". wolf(x).");
+        invalidityCheck("node labels: \"#olf\" as wolf. wolf(x).");
+        invalidityCheck("node labels: \"wolf\" as wolf. a(x) -> wolf(x).");
+    }
+
+    private void validityCheck(String program) {
+        Assert.assertEquals(0, check(program).size());
+    }
+
+    private void invalidityCheck(String program) {
+        Assert.assertNotEquals(0, check(program).size());
     }
 
     /** Run the checker on a program. Return resulting graafvis.errors */

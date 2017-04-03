@@ -1,6 +1,5 @@
 package graafvis.errors;
 
-
 public class SyntaxError extends VisError {
 
     public SyntaxError(int row, int column) {

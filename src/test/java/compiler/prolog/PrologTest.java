@@ -52,21 +52,26 @@ public class PrologTest {
 
     @Test
     public void test4() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, NoMoreSolutionException {
+        // node(a
         Struct clause0 =
-                new Struct(":-",
-                        new Struct("node",
+                new Struct(
+                        ":-",
+                        new Struct(
+                                "node",
                                 new Struct(new Term[]{new Struct("a"), new Struct("b")}),
                                 new Struct("e")
                         ),
                         new Struct("true")
                 );
         Struct clause1 =
-                new Struct(":-",
+                new Struct(
+                        ":-",
                         new Struct("p", new Var("X")),
                         new Struct("q", new Var("X"))
                 );
         Struct clause2 =
-                new Struct(":-",
+                new Struct(
+                        ":-",
                         new Struct("q", new Int(0)),
                         new Struct("true")
                 );

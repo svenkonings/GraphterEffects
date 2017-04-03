@@ -1,48 +1,97 @@
 package compiler.asrc;
 
+import alice.tuprolog.InvalidTheoryException;
+import alice.tuprolog.Term;
 import compiler.graphloader.Importer;
+import compiler.prolog.TuProlog;
 import exceptions.UnknownGraphTypeException;
+import org.graphstream.algorithm.Kruskal;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 import utils.FileUtils;
-import utils.Printer;
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Jatalog;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
-import static compiler.asrc.GraphRuleTests.generateGraphJatalog;
+import static compiler.asrc.GraphRuleTests.generateGraphProlog;
 import static compiler.asrc.GraphRuleTests.graphTest;
+import static compiler.prolog.TuProlog.struct;
+import static compiler.prolog.TuProlog.term;
+import static compiler.prolog.TuProlog.var;
+import static org.junit.Assert.assertEquals;
 
 public final class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
-        Jatalog jatalog = generateGraphJatalog(graph);
-        graphTest(jatalog, graph);
+        TuProlog prolog = generateGraphProlog(graph);
+        graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
-        Jatalog jatalog = generateGraphJatalog(graph);
-        graphTest(jatalog,graph);
+        TuProlog prolog = generateGraphProlog(graph);
+        graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
-        Jatalog jatalog = generateGraphJatalog(graph);
-        graphTest(jatalog, graph);
+        TuProlog prolog = generateGraphProlog(graph);
+        graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph4() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
-        Jatalog jatalog = generateGraphJatalog(graph);
-        graphTest(jatalog, graph);
+        TuProlog prolog = generateGraphProlog(graph);
+        graphTest(prolog, graph);
     }
 
+    @Test
+    public void TestMST1() throws Exception {
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
+        MSTTest(graph);
+    }
+
+    @Test
+    public void TestMST2() throws Exception {
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        MSTTest(graph);
+    }
+
+    @Test
+    public void TestMST3() throws Exception {
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
+        MSTTest(graph);
+    }
+
+    @Test
+    public void TestMST4() throws Exception {
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
+        MSTTest(graph);
+    }
+
+    @Test
+    public void TestMST5() throws Exception {
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        MSTTest(graph);
+    }
+
+
+    private void MSTTest(Graph graph) throws Exception {
+        Kruskal kruskal = new Kruskal();
+        kruskal.init(graph);
+        kruskal.compute();
+        int length = 0;
+        for (Edge ignored : kruskal.getTreeEdges()) {
+            length++;
+        }
+        TuProlog prolog = generateGraphProlog(graph);
+        List<Map<String, Term>> a = prolog.solve(struct("inmst", var("ID")));
+        assertEquals(length, a.size());
+    }
 }

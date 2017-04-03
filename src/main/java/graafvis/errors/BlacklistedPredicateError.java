@@ -1,8 +1,5 @@
 package graafvis.errors;
 
-/**
- *
- */
 public class BlacklistedPredicateError extends VisError {
 
     private final String predicate;

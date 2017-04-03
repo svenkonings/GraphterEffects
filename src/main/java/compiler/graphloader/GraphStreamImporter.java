@@ -23,6 +23,7 @@ final class GraphStreamImporter {
 
     /**
      * Returns whether an extension is accepted by this importer.
+     *
      * @param ext File extension to verify.
      * @return <tt>true</tt> if the file extension is accepted.
      */
@@ -32,6 +33,7 @@ final class GraphStreamImporter {
 
     /**
      * Reads a file in some graph format into a GraphStream graph Object.
+     *
      * @param file File to read into a GraphsStream Graph Object.
      * @return A GraphStream Graph Object containing the graph represented in the file.
      * @throws IOException Thrown when the file could not be read.
@@ -47,6 +49,7 @@ final class GraphStreamImporter {
 
     /**
      * Returns an iterator iterating over all accepted extensions.
+     *
      * @return An iterator iterating over all accepted extensions.
      */
     public static Iterator<String> accepted() {
