@@ -24,6 +24,7 @@ label: STRING (RENAME_TOKEN ID)?;
 /** Implicative clauses */
 clause: (antecedent=aTerm ARROW)? consequence=cTerm EOL;
 
+// TODO ()
 /** Antecedent */
 aTerm: aTerm andOp aTerm                                                                    #andAntecedent
      | aTerm orOp aTerm                                                                     #orAntecedent
@@ -31,11 +32,11 @@ aTerm: aTerm andOp aTerm                                                        
      | predicate=ID (PAR_OPEN aTermSeries? PAR_CLOSE)?                                      #atomAntecedent
      | predicate=ID BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE     #multiAndAtomAntecedent
      | predicate=ID BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE      #multiOrAtomAntecedent
-     | BRACKET_OPEN (aTermSeries (VBAR aTermSeries)?)? BRACKET_CLOSE                        #listAntecedent
-     | variable=HID                                                                         #variableAntecedent
-     | wildcard=UNDERSCORE                                                                  #wildcardAntecedent
-     | STRING                                                                               #stringAntecedent
-     | NUMBER                                                                               #numberAntecedent
+     | BRACKET_OPEN (aTermSeries (VBAR aTermSeries)?)? BRACKET_CLOSE                        #listAntecedent // TODO There can be only one | in a list, and no commas after it.
+//     | variable=HID                                                                         #variableAntecedent
+//     | wildcard=UNDERSCORE                                                                  #wildcardAntecedent
+//     | STRING                                                                               #stringAntecedent
+//     | NUMBER                                                                               #numberAntecedent
      ;
 
 aTermSeries: terms+=aTerm (COMMA terms+=aTerm)*;
