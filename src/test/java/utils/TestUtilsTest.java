@@ -21,6 +21,6 @@ public final class TestUtilsTest {
 
     @Test
     public void testViewSvg() throws IOException {
-        TestUtils.showSVG(FileUtils.fromResources("kiwi.svg"), 500);
+        TestUtils.showSVG(FileUtils.fromResources("kiwi.svg"), 1000);
     }
 }

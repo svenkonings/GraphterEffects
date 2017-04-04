@@ -2,7 +2,10 @@ package compiler;
 
 import compiler.solver.VisElem;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Intermediate representation of Visualization elements before they are delivered to an SVG generator.
@@ -17,6 +20,7 @@ public class RuleSet implements Iterable<VisElem> {
 
     /**
      * Adds a Visualization Element to this set.
+     *
      * @param vis Visualization Element to be added.
      * @return <tt>true</tt> if this set did not already contain the Visualization Element
      */
@@ -26,6 +30,7 @@ public class RuleSet implements Iterable<VisElem> {
 
     /**
      * Add all Visualization Elements from a Collection to this set.
+     *
      * @param c Element to be added.
      * @return <tt>true</tt> if this set changed as a result of the call.
      */
@@ -35,6 +40,7 @@ public class RuleSet implements Iterable<VisElem> {
 
     /**
      * Returns the number of Visualization Elements in this set.
+     *
      * @return The number of Visualization Elements in this set.
      */
     public int getVisElemCount() {
@@ -43,6 +49,7 @@ public class RuleSet implements Iterable<VisElem> {
 
     /**
      * Returns a Set of all Visualization elements contained.
+     *
      * @return a Set of all Visualization elements contained.
      */
     public Set<VisElem> getElements() {
@@ -51,6 +58,7 @@ public class RuleSet implements Iterable<VisElem> {
 
     /**
      * Returns an iterator that iterates over the Visualization elements .
+     *
      * @return An iterator that iterates over the Visualization elements .
      */
     @Override

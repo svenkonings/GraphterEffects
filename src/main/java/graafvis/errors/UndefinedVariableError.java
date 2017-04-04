@@ -1,8 +1,5 @@
 package graafvis.errors;
 
-/**
- *
- */
 public class UndefinedVariableError extends VisError {
 
     private final String variable;
@@ -16,6 +13,5 @@ public class UndefinedVariableError extends VisError {
     public String getVariable() {
         return variable;
     }
-
 
 }

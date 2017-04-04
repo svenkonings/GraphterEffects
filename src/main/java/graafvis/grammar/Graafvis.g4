@@ -9,8 +9,10 @@ program: importVis*
          clause*
          EOF;
 
+// TODO? java predicates import
+
 /** Import another vis file. The .vis is implied. */
-importVis: IMPORT_TOKEN STRING EOL;
+importVis: IMPORT_TOKEN STRING EOL;            // TODO
 
 /* Specify which labels should have generated identifiers for predicates and constants */
 nodeLabelGen: NODE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
@@ -57,4 +59,3 @@ cMultiTerm: cTerm | PAR_OPEN cTermSeries? PAR_CLOSE;
 /* Operators */
 andOp: COMMA | AND;
 orOp: SEMICOLON | OR;
-

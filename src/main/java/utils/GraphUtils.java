@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public final class GraphUtils {
 
-    private static final String ILLEGAL_PREFIX = "#";
+    public static final String ILLEGAL_PREFIX = "#";
 
     /**
      * Changes a Graph such that all objects in the Graph have a new ID that is the old one prefixed by the illegal

@@ -2,24 +2,24 @@ package compiler.asrc;
 
 import alice.tuprolog.Term;
 import exceptions.UnknownGraphTypeException;
+import org.graphstream.algorithm.ConnectedComponents;
 import org.graphstream.algorithm.Kruskal;
+import org.graphstream.algorithm.coloring.WelshPowell;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.GraphUtils;
 import utils.StringUtils;
-import za.co.wstoop.jatalog.DatalogException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static compiler.prolog.TuProlog.intVal;
-import static compiler.prolog.TuProlog.struct;
-import static compiler.prolog.TuProlog.term;
+import static compiler.prolog.TuProlog.*;
 
 public final class AbstractSyntaxRuleConverter {
 
@@ -61,8 +61,14 @@ public final class AbstractSyntaxRuleConverter {
             termList.add(struct("mixed", term(graph.getId())));
         }
 
+        ConnectedComponents a = new ConnectedComponents();
+        a.init(graph);
+        int ccount = a.getConnectedComponentsCount();
+        termList.add(struct("componentcount", term(graph.getId()), intVal(ccount)));
+        if (ccount == 1) {
+            termList.add(struct("isconnected", term(graph.getId())));
+        }
         termList.addAll(generateGraphRules(graph));
-
         return termList;
     }
 
@@ -89,11 +95,18 @@ public final class AbstractSyntaxRuleConverter {
             it.next();
         }
         termList.add(struct("neighbourcount", term(node.getId()), intVal((neighbourcount))));
-
         termList.add(struct("attributecount", term(node.getId()), intVal(node.getAttributeCount())));
         for (String attributeKey : node.getAttributeKeySet()) {
-            String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
+            String attributeString = '"' + StringUtils.ObjectToString(node.getAttribute(attributeKey)) + '"';
             termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
+            if (attributeKey.equals("label")) {
+                termList.add(struct("label", term(node.getId()), term(attributeString)));
+                if (attributeString.startsWith("type:")) {
+                    termList.add(struct("type", term(node.getId()), term(attributeString)));
+                } else if (attributeString.startsWith("flag:")) {
+                    termList.add(struct("flag", term(node.getId()), term(attributeString)));
+                }
+            }
         }
         return termList;
     }
@@ -111,7 +124,10 @@ public final class AbstractSyntaxRuleConverter {
         //TODO: Willen we iets doen met loop? (Does the source and target of this edge identify the same node ?)
         List<Term> termList = new ArrayList<>();
 
-        termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId()), term(edge.getId())));
+        // TODO Reverse target and source
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId()), term(edge.getId())));
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId())));
+        termList.add(struct("edge", term(edge.getId())));
 
         if (edge.isDirected()) {
             termList.add(struct("directed", term(edge.getId())));
@@ -121,8 +137,16 @@ public final class AbstractSyntaxRuleConverter {
 
         termList.add(struct("attributecount", term(edge.getId()), intVal(edge.getAttributeCount())));
         for (String attributeKey : edge.getAttributeKeySet()) {
-            String attributeString = StringUtils.ObjectToString(edge.getAttribute(attributeKey));
+            String attributeString = '"' + StringUtils.ObjectToString(edge.getAttribute(attributeKey)) + '"';
             termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
+            if (attributeKey.equals("label")) {
+                termList.add(struct(attributeKey, term(edge.getId()), term(attributeString)));
+            }
+            if (attributeString.startsWith("type:")) {
+                termList.add(struct("type", term(edge.getId()), term(attributeString)));
+            } else if (attributeString.startsWith("flag:")) {
+                termList.add(struct("flag", term(edge.getId()), term(attributeString)));
+            }
         }
         return termList;
     }
@@ -154,6 +178,12 @@ public final class AbstractSyntaxRuleConverter {
         kruskal.getTreeEdges().forEach(edge ->
                 termList.add(struct("inmst", term(edge.getId())))
         );
+
+        WelshPowell a = new WelshPowell();
+        a.init(Graphs.clone(graph));
+        a.compute();
+        termList.add(struct("chromaticnumber", term(graph.getId()), intVal(a.getChromaticNumber())));
+
         return termList;
     }
 
@@ -177,6 +207,4 @@ public final class AbstractSyntaxRuleConverter {
         }
         return termList;
     }
-
-
 }

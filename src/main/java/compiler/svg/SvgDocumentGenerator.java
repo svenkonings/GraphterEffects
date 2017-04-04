@@ -15,7 +15,9 @@ import java.util.List;
 /**
  * A generator for converting visualization elements to a SVG docuemtn
  */
+// TODO: Extendability
 public class SvgDocumentGenerator {
+
     /**
      * Generates a SVG document based on the given visualization elements.
      *
@@ -23,12 +25,23 @@ public class SvgDocumentGenerator {
      * @return a SVG document.
      */
     public static Document generate(List<VisElem> visElems) {
+        return generate(new SvgElementGenerator(), visElems);
+    }
+
+    /**
+     * Generates a SVG document based on the given visualization elements with the given element generator.
+     *
+     * @param generator The given element generator
+     * @param visElems  The given visualization elements.
+     * @return a SVG document.
+     */
+    public static Document generate(SvgElementGenerator generator, List<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         setViewBox(root, visElems);
         visElems.stream()
                 .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
-                .forEachOrdered(visElem -> SvgElementGenerator.addElement(visElem, root));
+                .forEachOrdered(visElem -> generator.addElement(visElem, root));
         return document;
     }
 
@@ -39,13 +52,12 @@ public class SvgDocumentGenerator {
      * @param element  The given element.
      * @param visElems The given list of visualization elements.
      */
-    // TODO: Improve calculation
     private static void setViewBox(Element element, List<VisElem> visElems) {
-//        int minX = min(visElems, "x1");
-//        int minY = min(visElems, "y1");
-        int maxX = max(visElems, "x2");
-        int maxY = max(visElems, "y2");
-        element.addAttribute("viewBox", String.format("0 0 %d %d", maxX, maxY));
+        int minX = min(visElems, "minX");
+        int minY = min(visElems, "minY");
+        int width = max(visElems, "maxX") - minX;
+        int height = max(visElems, "maxY") - minY;
+        element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
     }
 
     /**

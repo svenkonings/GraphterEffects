@@ -2,10 +2,13 @@ package compiler.graphloader;
 
 import net.sourceforge.gxl.*;
 import org.graphstream.graph.Edge;
+import org.graphstream.graph.EdgeRejectedException;
+import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.xml.sax.SAXException;
-import utils.Printer;
+import utils.GraphUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,6 +38,7 @@ final class GXLImporter {
 
     /**
      * Returns whether an extension is accepted by this importer.
+     *
      * @param ext File extension to verify.
      * @return <tt>true</tt> if the file extension is accepted.
      */
@@ -43,42 +47,50 @@ final class GXLImporter {
     }
 
 
+    static Graph read(File file, boolean addUnderscores) throws IOException, SAXException {
+        try{
+            return read(file.getAbsolutePath(), addUnderscores, false);
+        } catch (EdgeRejectedException e) {
+            return read(file.getAbsolutePath(), addUnderscores, true);
+        }
+    }
+
+    static Graph read(String path, boolean addUnderscores) throws IOException, SAXException {
+        try{
+            return read(path, addUnderscores, false);
+        } catch (EdgeRejectedException e) {
+            return read(path, addUnderscores, true);
+        }
+    }
+
+
     /**
      * Reads a file in GXL format into a GraphStream graph Object.
+     *
      * @param file File to read into a GraphsStream Graph Object.
      * @return A GraphStream Graph Object containing the graph represented in the file.
-     * @throws IOException Thrown when the file could not be read.
+     * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static MultiGraph read(File file) throws IOException, SAXException {
-        return read(file.getAbsolutePath());
+    static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addUnderscores, multigraph);
     }
 
-    /**
+     /**
      * Reads a file in GXL format into a GraphStream graph Object.
-     * @param path Path to the file to read into a GraphsStream Graph Object.
-     * @return A GraphStream Graph Object containing the graph represented in the file.
-     * @throws IOException Thrown when the file could not be read.
-     * @throws SAXException Thrown when the file contains incorrect syntax.
-     */
-    static MultiGraph read(String path) throws IOException, SAXException {
-        return read(path, false);
-    }
-
-    /**
-     * Reads a file in GXL format into a GraphStream graph Object.
-     * @param path Path to the file to read into a GraphsStream Graph Object.
+     *
+     * @param path           Path to the file to read into a GraphsStream Graph Object.
      * @param addUnderscores <tt>true</tt> if underscores are to be added to the IDs of the read graph.
      * @return A GraphStream Graph Object containing the graph represented in the file.
-     * @throws IOException Thrown when the file could not be read.
+     * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static MultiGraph read(String path, boolean addUnderscores) throws IOException, SAXException {
+    static Graph read(String path, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
         String underscore = "";
         if (addUnderscores) {
-            underscore = "_";
+            underscore = GraphUtils.ILLEGAL_PREFIX;
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         String gxml = new String(encoded, "UTF-8");
@@ -90,7 +102,13 @@ final class GXLImporter {
         GXLGXL a = doc.getDocumentElement();
         GXLGraph graph = a.getGraphAt(0);
 
-        MultiGraph tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
+        Graph tograph;
+        if (multigraph) {
+            tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
+        } else {
+            tograph = new SingleGraph(underscore + graph.getAttribute("id"), true, false);
+        }
+
         for (int p = 0; p < graph.getAttrCount(); p++) {
             GXLValue content = (graph.getAttrAt(p)).getValue();
             tograph.setAttribute(graph.getAttrAt(p).getName(), getFromGXLValue(content, true));
@@ -131,6 +149,7 @@ final class GXLImporter {
 
     /**
      * If a gxl file contains the version attribute two times, removes one of the two times.
+     *
      * @param gxml String containing the gxl file.
      * @return A String with no duplicate version attributes.
      */
@@ -146,17 +165,18 @@ final class GXLImporter {
 
     /**
      * Returns a String or List read from a GXLValue.
+     *
      * @param in GXLValue to be read from.
      * @return String or List Object, depending on whether it's an atomic or composite GXLValue.
      */
     private static Object getFromGXLValue(GXLValue in, boolean addQuotes) {
-        String quotes = addQuotes? "\"" : "";
+        String quotes = addQuotes ? "\"" : "";
         if (in instanceof GXLAtomicValue) {
             return quotes + ((GXLAtomicValue) in).getValue() + quotes;
         } else if (in instanceof GXLCompositeValue) {
             List<Object> res = new LinkedList<>();
             GXLCompositeValue a = (GXLCompositeValue) in;
-            for (int i = 0; i<a.getValueCount(); i++) {
+            for (int i = 0; i < a.getValueCount(); i++) {
                 res.add(getFromGXLValue(a.getValueAt(i), addQuotes));
             }
             return res;
@@ -166,14 +186,15 @@ final class GXLImporter {
 
     /**
      * Given a graph element, return its ID as specified in GXL or a generated one if not specified.
-     * @param in  Graph element of which to return an ID.
+     *
+     * @param in            Graph element of which to return an ID.
      * @param addUnderscore <tt>true</tt> if underscores should be added to IDs.
      * @return A unique String to be used as identifier.
      */
     private static String getID(GXLGraphElement in, boolean addUnderscore) {
         String underscore = "";
         if (addUnderscore) {
-            underscore = "_";
+            underscore = GraphUtils.ILLEGAL_PREFIX;
         }
         String idgotten = in.getAttribute("id");
         if (idgotten != null && !ids.contains(underscore + idgotten)) {
@@ -183,7 +204,7 @@ final class GXLImporter {
         String prefix = "UNKNOWN";
         if (in instanceof GXLNode) {
             prefix = "n";
-        } else if (in instanceof GXLEdge){
+        } else if (in instanceof GXLEdge) {
             prefix = "e";
         }
         while (ids.contains(underscore + prefix + "ID?" + idcounter)) {

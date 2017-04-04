@@ -6,88 +6,131 @@ import org.dom4j.Element;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: Extendibility
+/**
+ * Generates SVG elements from visualization elements.
+ */
 public class SvgElementGenerator {
 
-    private static SvgElementGenerator generator;
+    /** The mapping from visualization element type to {@link SvgAttributeGenerator} */
+    private final Map<String, SvgAttributeGenerator> generators;
 
-    private final Map<String, AttributeMapping> elementMapping;
-
-    public static SvgElementGenerator getInstance() {
-        if (generator == null) {
-            generator = new SvgElementGenerator();
-        }
-        return generator;
+    /**
+     * Creates a new generator with the default mapping.
+     */
+    public SvgElementGenerator() {
+        generators = new HashMap<>();
+        setDefaults();
     }
 
-    public static void addElement(VisElem visElem, Element parent) {
-        SvgElementGenerator generator = getInstance();
+    /**
+     * Creates a generator with the given mapping.
+     *
+     * @param generators The given mapping.
+     */
+    public SvgElementGenerator(Map<String, SvgAttributeGenerator> generators) {
+        this.generators = generators;
+    }
+
+    /**
+     * Set the default mapping.
+     */
+    private void setDefaults() {
+        generators.put("rectangle", rectangle());
+        generators.put("ellipse", ellipse());
+        generators.put("line", line());
+        generators.put("image", image());
+    }
+
+    /**
+     * Add the SVG element generated from the given visualization element to the given parent SVG element.
+     *
+     * @param visElem The given visualization element.
+     * @param parent  The given parent SVG element.
+     */
+    public void addElement(VisElem visElem, Element parent) {
         String type = visElem.getValue("type");
         if (type == null) {
             return;
         }
-        AttributeMapping mapping = generator.getMapping(type);
+        SvgAttributeGenerator mapping = getGenerator(type);
         if (mapping != null) {
             mapping.addElement(visElem, parent);
         }
     }
 
-    public SvgElementGenerator() {
-        elementMapping = new HashMap<>();
-        elementMapping.put("rectangle", rectangle());
-        elementMapping.put("ellipse", ellipse());
-        elementMapping.put("line", line());
-        elementMapping.put("image", image());
+    /**
+     * Set the given type with the given {@link SvgAttributeGenerator}.
+     *
+     * @param type    The given type.
+     * @param mapping The given {@link SvgAttributeGenerator}.
+     * @return The previous {@link SvgAttributeGenerator} associated with the given type, or {@code null} if it didn't
+     * exist.
+     */
+    public SvgAttributeGenerator setGenerator(String type, SvgAttributeGenerator mapping) {
+        return generators.put(type, mapping);
     }
 
-    public AttributeMapping getMapping(String type) {
-        return elementMapping.get(type);
+    /**
+     * Get the {@link SvgAttributeGenerator} associated with the given type.
+     *
+     * @param type The given type.
+     * @return The {@link SvgAttributeGenerator}, or {@code null} if it doesn't exist.
+     */
+    public SvgAttributeGenerator getGenerator(String type) {
+        return generators.get(type);
     }
 
-    private static AttributeMapping shape(String name) {
-        AttributeMapping mapping = new AttributeMapping(name);
-        mapping.putMapping("colour", "fill");
-        mapping.putMapping("border-colour", "stroke");
-        // TODO: Move to VisElem?
-        mapping.putDefault("fill", "white");
-        mapping.putDefault("stroke", "black");
+    /**
+     * Remove the given type.
+     *
+     * @param type The given type.
+     * @return The associated {@link SvgAttributeGenerator}, or {@code null} if it doesn't exist.
+     */
+    public SvgAttributeGenerator removeGenerator(String type) {
+        return generators.remove(type);
+    }
+
+    private static SvgAttributeGenerator shape(String name) {
+        SvgAttributeGenerator mapping = new SvgAttributeGenerator(name);
+        mapping.setMapping("colour", "fill");
+        mapping.setMapping("border-colour", "stroke");
         return mapping;
     }
 
-    private static AttributeMapping rectangle() {
-        AttributeMapping mapping = shape("rect");
-        mapping.putMapping("x1", "x");
-        mapping.putMapping("y1", "y");
-        mapping.putMapping("width", "width");
-        mapping.putMapping("height", "height");
+    private static SvgAttributeGenerator rectangle() {
+        SvgAttributeGenerator mapping = shape("rect");
+        mapping.setMapping("x1", "x");
+        mapping.setMapping("y1", "y");
+        mapping.setMapping("width", "width");
+        mapping.setMapping("height", "height");
         return mapping;
     }
 
-    private static AttributeMapping ellipse() {
-        AttributeMapping mapping = shape("ellipse");
-        mapping.putMapping("centerX", "cx");
-        mapping.putMapping("centerY", "cy");
-        mapping.putMapping("radiusX", "rx");
-        mapping.putMapping("radiusY", "ry");
+    private static SvgAttributeGenerator ellipse() {
+        SvgAttributeGenerator mapping = shape("ellipse");
+        mapping.setMapping("centerX", "cx");
+        mapping.setMapping("centerY", "cy");
+        mapping.setMapping("radiusX", "rx");
+        mapping.setMapping("radiusY", "ry");
         return mapping;
     }
 
-    private static AttributeMapping line() {
-        AttributeMapping mapping = shape("line");
-        mapping.putMapping("x1", "x1");
-        mapping.putMapping("x2", "x2");
-        mapping.putMapping("y1", "y1");
-        mapping.putMapping("y2", "y2");
+    private static SvgAttributeGenerator line() {
+        SvgAttributeGenerator mapping = shape("line");
+        mapping.setMapping("x1", "x1");
+        mapping.setMapping("x2", "x2");
+        mapping.setMapping("y1", "y1");
+        mapping.setMapping("y2", "y2");
         return mapping;
     }
 
-    private static AttributeMapping image() {
-        AttributeMapping mapping = new AttributeMapping("image");
-        mapping.putMapping("x1", "x");
-        mapping.putMapping("y1", "y");
-        mapping.putMapping("width", "width");
-        mapping.putMapping("height", "height");
-        mapping.putMapping("image", "href");
+    private static SvgAttributeGenerator image() {
+        SvgAttributeGenerator mapping = new SvgAttributeGenerator("image");
+        mapping.setMapping("x1", "x");
+        mapping.setMapping("y1", "y");
+        mapping.setMapping("width", "width");
+        mapping.setMapping("height", "height");
+        mapping.setMapping("image", "href");
         return mapping;
     }
 }

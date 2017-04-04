@@ -1,0 +1,96 @@
+edge labels:
+    "wolf",
+    "type:Goat" as goat,
+    "type:Cabbage" as cabbage,
+    "type:Boat" as boat,
+    "type:Bank" as bank,
+    "on",
+    "in",
+    "likes",
+    "moored",
+    "go",
+    "flag:left" as leftBank,
+    "flag:right" as rightBank.
+
+wolf(X, X); goat(X, X); cabbage(X, X) -> passenger(X).
+
+passenger(X), passenger(Y) -> noOverlapX(X, Y).
+
+wolf(X, X) ->
+    image(X, "src\test\resources\demo\images\wolf.png"),
+    dimensions(X, 128, 128).
+
+goat(X, X) ->
+    image(X, "src\test\resources\demo\images\sheep.png"),
+    dimensions(X, 128, 128).
+
+cabbage(X, X) ->
+    image(X, "src\test\resources\demo\images\cabbage.png"),
+    dimensions(X, 128, 128).
+
+on(X, Y) ->
+    above(X, Y, -20),
+    insideX(X, Y),
+    after(X, Y).
+
+in(X, Y) ->
+    above(X, Y, -70),
+    insideX(X, Y),
+    alignCenterX(X, Y),
+    after(X, Y).
+
+boat(X, X) ->
+    image(X, "src\test\resources\demo\images\boat.png"),
+    dimensions(X, 450, 190),
+    insideX(X, water),
+    above(X, water, -50),
+    after(X, water).
+
+moored(X, Y); go(X, Y) -> distanceX(X, Y, 0).
+
+bank(X, X) ->
+    shape(X, rectangle),
+    colour(X, green).
+
+bank(X, X), bank(Y, Y) ->
+    sameWidth(X, Y),
+    alignMaxY(X, Y).
+
+boat(X, X), bank(Y, Y) -> alignMinY(X, Y).
+
+shape(water, rectangle).
+colour(water, blue).
+dimensions(water, 1000, 200).
+
+leftBank(X, X) ->
+    left(X, water, 0),
+    alignMaxY(X, water).
+
+rightBank(X, X) ->
+    right(X, water, 0),
+    alignMaxY(X, water).
+
+// --- Legend ---
+// passenger(X) -> mini(X, [X,1]).
+// passenger(X), image(X, Path), mini(X, Vis) -> image(Vis, Path), dimensions(Vis, 32, 32).
+
+shape(legend, rectangle).
+colour(legend, lightpink).
+posZ(legend, -1).
+alignMinX(legend, water).
+above(legend, water, 400).
+
+containedIn(X,Y) -> insideX(X, Y), insideY(X, Y).
+
+passenger(X), image(X, Path) -> image([X,1], Path), dimensions([X,1], 64, 64).
+
+likes(X, Y, Z) ->
+    image(Z, "src\test\resources\demo\images\heart.png"),
+    dimensions(Z, 64, 64),
+    left([X,1], Z),
+    left(Z, [Y,1]),
+    alignMinY([X,1], [Y,1]),
+    alignMinY([Y,1], Z),
+    containedIn([X,1], legend),
+    containedIn([Y,1], legend),
+    containedIn(Z, legend).

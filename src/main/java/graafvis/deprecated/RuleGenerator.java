@@ -1,4 +1,4 @@
-package graafvis.deprecated;
+package graafvis;
 
 import alice.tuprolog.*;
 import alice.tuprolog.Number;
@@ -11,16 +11,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.Expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static compiler.prolog.TuProlog.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Lindsay on 28-Mar-17.
@@ -29,12 +24,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_WILD_CARD = "_";
     public static final String TUP_AND = ",";
     public static final String TUP_OR = ";";
-    public static final String TUP_HORN = ":-";
+    public static final String TUP_NOT = "not";
     private List<Term> result = new ArrayList<>();
-    private ParseTreeProperty<Expr> exprPTP = new ParseTreeProperty<>();
-    private ParseTreeProperty<List<Expr>> exprsPTP = new ParseTreeProperty<>();
-    private ParseTreeProperty<String> stringPTP = new ParseTreeProperty<>();
-    private ParseTreeProperty<Integer> cntPTP = new ParseTreeProperty<>();
 
 
     /**********************
@@ -43,27 +34,35 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- Testing TU Prolog ---
 
-    public static void tupTest() throws NoMoreSolutionException, InvalidTheoryException, DatalogException, NoSolutionException {
-        Struct[] clauses = new Struct[]{
-                new Struct("node", new Struct("a")),
-                new Struct("node", new Struct("b")),
-                new Struct("edge", new Struct("a"), new Struct("b")),
-                new Struct("edge", new Struct("b"), new Struct("a")),
-                new Struct("label", new Struct("a"), new Struct("\"wolf\""))
-        };
-        Struct prog = new Struct(clauses);
-        query(prog, new Struct("node", new Var("X")));
-        query(prog, new Struct("edge", new Var("X"), new Var("Y")));
-        query(prog, new Struct("label", new Var("Y"), new Struct("\"wolf\"")));
-        Struct q = new Struct(
-                ",",
-                new Struct("edge", new Var("X"), new Var("Y")),
-                new Struct("label", new Var("X"), new Struct("\"wolf\""))
-        );
-        query(prog, q);
+//    public static void tupTest() throws NoMoreSolutionException, InvalidTheoryException, NoSolutionException {
+//        Struct[] clauses = new Struct[]{
+//                new Struct("node", new Struct("a")),
+//                new Struct("node", new Struct("b")),
+//                new Struct("edge", new Struct("a"), new Struct("b")),
+//                new Struct("edge", new Struct("b"), new Struct("a")),
+//                new Struct("label", new Struct("a"), new Struct("\"wolf\""))
+//        };
+//        Struct prog = new Struct(clauses);
+//        query(prog, new Struct("node", new Var("X")));
+//        query(prog, new Struct("edge", new Var("X"), new Var("Y")));
+//        query(prog, new Struct("label", new Var("Y"), new Struct("\"wolf\"")));
+//        Struct q = new Struct(
+//                ",",
+//                new Struct("edge", new Var("X"), new Var("Y")),
+//                new Struct("label", new Var("X"), new Struct("\"wolf\""))
+//        );
+//        query(prog, q);
+//    }
+
+    // TODO Hier een test van maken, of niet?
+    public static void main(String[] args) throws NoMoreSolutionException, NoSolutionException, InvalidTheoryException {
+        query("p(aap).", struct("p", var("X")));
+        query("p(X), q(X) -> r(X). p(hond), q(hond), p(kat), q(konijn), r(muis).", struct("r", var("X")));
     }
 
-    public static void query(Struct prog, Struct query) throws DatalogException, InvalidTheoryException, NoSolutionException, NoMoreSolutionException {
+    public static void query(String script, Struct query) throws InvalidTheoryException, NoSolutionException, NoMoreSolutionException {
+        List<Term> clauses = generate(script);
+        Struct prog = list(clauses.toArray(new Term[clauses.size()]));
         System.out.println("\n> ?- " + query + "\n");
         Prolog engine = new Prolog();
         Theory t = new Theory(prog);
@@ -81,44 +80,54 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- Rule generation ---
 
-    public static void main(String[] args) throws NoMoreSolutionException, InvalidTheoryException, DatalogException, NoSolutionException {
-//        tupTest();
-//        generate("node(a), label(a, \"wolf\").");
-//        generate("node(X), label(X, \"wolf\") -> wolf(X).");
-//        generate("node(X), label(X, \"wolf\") -> check(X), colour(X, red).");
-//        generate("node(X), label(X, _) -> shape(X, square).");
-//        generate("parent(X,Z), parent(Y,Z), edge(X, Y) -> family(X, Y, Z), child(Z), left(X, Y).");
-//        // Error: generate("node(X), label(X, _) -> check(X), colour(X, blue)");
-//        generate("shape((X,id1), square).");
-    }
-
     public static List<Term> generate(String script) {
-        System.out.println("\nParsing: " + script);
+//        System.out.println("\nParsing: " + script);
         RuleGenerator rg = new RuleGenerator();
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
         ParseTree tree = parser.program();
         tree.accept(rg);
-        System.out.println(rg.getResult());
-//        System.out.println("\tFacts: " + rg.getCs().getFacts());
-//        System.out.println("\tRules: " + rg.getCs().getRules());
+//        System.out.println(rg.getResult());
         return rg.getResult();
     }
-
-    // --- Testing ---
 
     /*************************
         --- Tree walker ---
      *************************/
 
-//    @Override public Term visitProgram(ProgramContext ctx) {
-//        // TODO imports, labels
-//        return null;
-//    }
+    @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
+        for (LabelContext label : ctx.label()) {
+            String asName = label.STRING().getText();
+            String dslName = label.ID() == null ? asName.substring(1, asName.length() - 1) : label.ID().getText();
+            addClause(clause(
+                    struct(dslName, var("X")),
+                    and(struct("node", var("X")), struct("label", var("X"), struct(asName)))
+            ));
+        }
+        return null;
+    }
 
-    // TODO Node label gen
-    // TODO Edge label gen
+    @Override public Term visitEdgeLabelGen(EdgeLabelGenContext ctx) {
+        for (LabelContext label : ctx.label()) {
+            String asName = label.STRING().getText();
+            String dslName = label.ID() == null ? asName.substring(1, asName.length() - 1) : label.ID().getText();
+            addClause(clause(
+                    struct(dslName, var("X")),
+                    and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
+            ));
+            addClause(clause(
+                    struct(dslName, var("X"), var("Y")),
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
+            ));
+            addClause(clause(
+                    struct(dslName, var("X"), var("Y"), var("Z")),
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
+            ));
+        }
+        return null;
+    }
+
 
     @Override public Term visitClause(ClauseContext ctx) {
         if (ctx.antecedent() == null) {
@@ -130,15 +139,18 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
             Term antecedent = visit(ctx.antecedent());
             // Rule
             for (LiteralContext conseqLit : ctx.consequence().literal()) {
-                addClause(new Struct(TUP_HORN, visit(conseqLit), antecedent));
+                addClause(clause(visit(conseqLit), antecedent));
             }
         }
         return null;
     }
 
-    // TODO Out of scope: pfNot, pfOr, pfNest
-    @Override public Term visitPfLit(PfLitContext ctx) {
-        return visitChildren(ctx); // TODO is dit ok? want dat an deze eig weg
+    @Override public Term visitPfNest(PfNestContext ctx) {
+        return visit(ctx.propositionalFormula()); // TODO is dit ok? want dat an deze eig weg
+    }
+
+    @Override public Term visitPfNot(PfNotContext ctx) {
+        return struct(TUP_NOT, visit(ctx.propositionalFormula()));
     }
 
     @Override public Term visitPfAnd(PfAndContext ctx) {
@@ -147,12 +159,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     @Override public Term visitPfOr(PfOrContext ctx) {
         return new Struct(TUP_OR, visit(ctx.propositionalFormula(0)), visit(ctx.propositionalFormula(1)));
-    }
-
-    // TODO OR
-
-    @Override public Term visitAtomLiteral(AtomLiteralContext ctx) {
-        return visitChildren(ctx); // TODO Mogelijk visit(ctx.atom()) ofzo
     }
 
     // --- ATOMS ---
@@ -169,17 +175,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiAnd(MultiAndContext ctx) {
-        // TODO werken met node{X,Y,X} ipv node{(X),(Y),(Z)}
         return and(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.multiTerm()));
     }
 
     @Override public Term visitMultiOr(MultiOrContext ctx) {
         return or(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.multiTerm()));
     }
-
-//    @Override public Term visitMultiTerm(MultiTermContext ctx) {
-//
-//    }
 
     // --- TERMS ----
 
@@ -210,8 +211,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // ---------
 
 
-
-
     /*****************************
         --- Helper methods ---
      *****************************/
@@ -233,14 +232,19 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public Term[] aggregateVisitMultiTerms(String predicate, List<? extends ParseTree> ctxs) {
         // TODO check for null: [] en p()
         if (ctxs == null) {
+            // No subtrees available
             return new Term[0];
         }
         int n = ctxs.size();
         Term[] terms = new Term[n];
         for (int i = 0; i < n; i++) {
-            if (ctxs.get(i) instanceof TermTupleContext) {
-                terms[i] = new Struct(predicate, aggregateVisit(((TermTupleContext) ctxs.get(i)).term()));
+            if (ctxs.get(i).getChild(0) instanceof TermTupleContext) {
+                // TermTuple
+                System.out.println("AVMT Termtuple: " + ctxs.get(i).getText());
+                terms[i] = new Struct(predicate, aggregateVisit(((TermTupleContext) ctxs.get(i).getChild(0)).term()));
             } else {
+                // Term
+                System.out.println("AVMT Term: " + ctxs.get(i).getText());
                 terms[i] = new Struct(predicate, visit(ctxs.get(i)));
             }
         }
