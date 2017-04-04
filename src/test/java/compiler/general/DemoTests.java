@@ -33,8 +33,8 @@ public final class DemoTests {
 
                 //If that isn't possible, display edges as lines
                 clause(struct("line", var("N1"), var("N2")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("after", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("after", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("behind", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("behind", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display node id as a label of the shape.
                 //Display the weight of the edges as label of the lines
@@ -63,8 +63,8 @@ public final class DemoTests {
 
                 //If that isn't possible, display edges as lines
                 clause(struct("line", var("N1"), var("N2")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("after", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("after", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("behind", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("behind", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display node id as a label of the shape.
                 //Display the weight of the edges as label of the lines
@@ -106,8 +106,8 @@ public final class DemoTests {
 
                 //If that isn't possible, display edges as lines
                 clause(struct("line", var("N1"), var("N2")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("after", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("after", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("behind", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("behind", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display all the nodes with a red border
                 clause(struct("stroke", var("N"), term("red")), struct("node", var("N"))),

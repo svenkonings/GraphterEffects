@@ -98,7 +98,7 @@ public class Solver {
         setQuery("right (Elem1, Elem2)", relPosQuery("minX", "maxX", true));
         setQuery("left  (Elem1, Elem2)", relPosQuery("maxX", "minX", false));
         setQuery("before(Elem1, Elem2)", relPosQuery("z", "z", true));
-        setQuery("after (Elem1, Elem2)", relPosQuery("z", "z", false));
+        setQuery("behind(Elem1, Elem2)", relPosQuery("z", "z", false));
 
         // Absolute relative positioning
         setQuery("below (Elem1, Elem2, Value)", absPosQuery("minY", "maxY", true));
@@ -106,13 +106,13 @@ public class Solver {
         setQuery("right (Elem1, Elem2, Value)", absPosQuery("minX", "maxX", true));
         setQuery("left  (Elem1, Elem2, Value)", absPosQuery("maxX", "minX", false));
         setQuery("before(Elem1, Elem2, Value)", absPosQuery("z", "z", true));
-        setQuery("after (Elem1, Elem2, Value)", absPosQuery("z", "z", false));
+        setQuery("behind(Elem1, Elem2, Value)", absPosQuery("z", "z", false));
         setQuery("below (Elem1, Elem2, Operator, Value)", absPosQuery("minY", "maxY", true));
         setQuery("above (Elem1, Elem2, Operator, Value)", absPosQuery("maxY", "minY", false));
         setQuery("right (Elem1, Elem2, Operator, Value)", absPosQuery("minX", "maxX", true));
         setQuery("left  (Elem1, Elem2, Operator, Value)", absPosQuery("maxX", "minX", false));
         setQuery("before(Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", true));
-        setQuery("after (Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", false));
+        setQuery("behind(Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", false));
 
         // Overlapping
         setQuery("noOverlap          (Elem1, Elem2)", noOverlapQuery(true, true));
@@ -127,7 +127,7 @@ public class Solver {
         setQuery("horizontalDistance(Elem1, Elem2, Operator, Value)", distanceQuery(true, false));
         setQuery("verticalDistance  (Elem1, Elem2, Operator, Value)", distanceQuery(false, true));
 
-        // Enclosed
+        // Enclosing
         setQuery("enclosed          (Elem1, Elem2)", enclosedQuery(true, true));
         setQuery("enclosedHorizontal(Elem1, Elem2)", enclosedQuery(true, false));
         setQuery("enclosedVertical  (Elem1, Elem2)", enclosedQuery(false, true));
@@ -152,7 +152,7 @@ public class Solver {
             lineConstraints(visMap, key, fromKey, toKey);
         }));
 
-        setQuery("image(Elem, Image)", imageQuery());
+        setQuery("image(Elem, Path)", imageQuery());
     }
 
     /**
@@ -304,7 +304,7 @@ public class Solver {
 
     public static QueryConsumer imageQuery() {
         return elementQuery((elem, values) -> {
-            String imagePath = termToString(values.get("Image"));
+            String imagePath = termToString(values.get("Path"));
             String image;
             try {
                 image = FileUtils.getImageSVG(new File(imagePath));
