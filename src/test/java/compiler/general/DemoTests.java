@@ -33,8 +33,8 @@ public final class DemoTests {
 
                 //If that isn't possible, display edges as lines
                 clause(struct("line", var("N1"), var("N2")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("before", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("before", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("after", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("after", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display node id as a label of the shape.
                 //Display the weight of the edges as label of the lines
@@ -63,8 +63,8 @@ public final class DemoTests {
 
                 //If that isn't possible, display edges as lines
                 clause(struct("line", var("N1"), var("N2")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("before", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("before", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("after", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("after", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display node id as a label of the shape.
                 //Display the weight of the edges as label of the lines
@@ -106,14 +106,14 @@ public final class DemoTests {
 
                 //If that isn't possible, display edges as lines
                 clause(struct("line", var("N1"), var("N2")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("before", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
-                clause(struct("before", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("after", list(var("N1"), var("N2")), var("N1")), struct("edge", var("N1"), var("N2"), var())),
+                clause(struct("after", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display all the nodes with a red border
-                clause(struct("borderColour", var("N"), term("red")), struct("node", var("N"))),
+                clause(struct("stroke", var("N"), term("red")), struct("node", var("N"))),
 
                 //colour all the edges which are in the mst in red
-                clause(struct("borderColour", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
+                clause(struct("stroke", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
         );
         Solver solver = new Solver(prolog);
         List<VisElem> visElemList = solver.solve();

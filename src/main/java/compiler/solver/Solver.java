@@ -4,6 +4,7 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
 import utils.TriConsumer;
@@ -22,6 +23,7 @@ import static compiler.prolog.TuProlog.list;
  * The constraint solver.
  */
 public class Solver {
+
     /** The {@link TuProlog} engine. */
     private final TuProlog prolog;
 
@@ -61,78 +63,96 @@ public class Solver {
      * Set the default queries and their associated {@link QueryConsumer}.
      */
     private void setDefaults() {
-        setQuery("pos(Key, X, Y, Z)", attrQuery("Key", "x1", "X", "y1", "Y", "z", "Z"));
-        setQuery("pos(Key, X, Y)", attrQuery("Key", "x1", "X", "y1", "Y"));
-        setQuery("posX(Key, X)", attrQuery("Key", "x1", "X"));
-        setQuery("posY(Key, Y)", attrQuery("Key", "y1", "Y"));
-        setQuery("posZ(Key, Z)", attrQuery("Key", "z", "Z"));
-        setQuery("dimensions(Key, Width, Height)", attrQuery("Key", "width", "Width", "height", "Height"));
-        setQuery("width(Key, Width)", attrQuery("Key", "width", "Width"));
-        setQuery("height(Key, Height)", attrQuery("Key", "height", "Height"));
-        setQuery("colour(Key, Colour)", attrQuery("Key", "colour", "Colour"));
-        setQuery("borderColour(Key, Colour)", attrQuery("Key", "border-colour", "Colour"));
 
-        setQuery("shape(Key, Shape)", elementQuery("Key", (elem, values) -> {
+        // Markup
+        setQuery("colour(Elem, Colour)", attrQuery("colour", "Colour"));
+        setQuery("stroke(Elem, Colour)", attrQuery("stroke", "Colour"));
+
+        // Absolute positioning
+        setQuery("pos(Elem, X, Y, Z)", attrQuery("x1", "X", "y1", "Y", "z", "Z"));
+        setQuery("pos(Elem, X, Y)", attrQuery("x1", "X", "y1", "Y"));
+        setQuery("xPos(Elem, X)", attrQuery("x1", "X"));
+        setQuery("yPos(Elem, Y)", attrQuery("y1", "Y"));
+        setQuery("zPos(Elem, Z)", attrQuery("z", "Z"));
+
+        // Absolute dimensions
+        setQuery("dimensions(Elem, Width, Height)", attrQuery("width", "Width", "height", "Height"));
+        setQuery("width (Elem, Width) ", attrQuery("width", "Width"));
+        setQuery("height(Elem, Height)", attrQuery("height", "Height"));
+
+        // Alignment
+        setQuery("alignLeft      (Elem1, Elem2)", equalsQuery("minX"));
+        setQuery("alignHorizontal(Elem1, Elem2)", equalsQuery("centerX"));
+        setQuery("alignRight     (Elem1, Elem2)", equalsQuery("maxX"));
+        setQuery("alignTop       (Elem1, Elem2)", equalsQuery("minY"));
+        setQuery("alignVertical  (Elem1, Elem2)", equalsQuery("centerY"));
+        setQuery("alignBottom    (Elem1, Elem2)", equalsQuery("maxY"));
+
+        // Relative dimensions
+        setQuery("sameWidth (Elem1, Elem2)", equalsQuery("width"));
+        setQuery("sameHeight(Elem1, Elem2)", equalsQuery("height"));
+
+        // Relative positioning
+        setQuery("below (Elem1, Elem2)", relPosQuery("minY", "maxY", true));
+        setQuery("above (Elem1, Elem2)", relPosQuery("maxY", "minY", false));
+        setQuery("right (Elem1, Elem2)", relPosQuery("minX", "maxX", true));
+        setQuery("left  (Elem1, Elem2)", relPosQuery("maxX", "minX", false));
+        setQuery("before(Elem1, Elem2)", relPosQuery("z", "z", true));
+        setQuery("after (Elem1, Elem2)", relPosQuery("z", "z", false));
+
+        // Absolute relative positioning
+        setQuery("below (Elem1, Elem2, Value)", absPosQuery("minY", "maxY", true));
+        setQuery("above (Elem1, Elem2, Value)", absPosQuery("maxY", "minY", false));
+        setQuery("right (Elem1, Elem2, Value)", absPosQuery("minX", "maxX", true));
+        setQuery("left  (Elem1, Elem2, Value)", absPosQuery("maxX", "minX", false));
+        setQuery("before(Elem1, Elem2, Value)", absPosQuery("z", "z", true));
+        setQuery("after (Elem1, Elem2, Value)", absPosQuery("z", "z", false));
+        setQuery("below (Elem1, Elem2, Operator, Value)", absPosQuery("minY", "maxY", true));
+        setQuery("above (Elem1, Elem2, Operator, Value)", absPosQuery("maxY", "minY", false));
+        setQuery("right (Elem1, Elem2, Operator, Value)", absPosQuery("minX", "maxX", true));
+        setQuery("left  (Elem1, Elem2, Operator, Value)", absPosQuery("maxX", "minX", false));
+        setQuery("before(Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", true));
+        setQuery("after (Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", false));
+
+        // Overlapping
+        setQuery("noOverlap          (Elem1, Elem2)", noOverlapQuery(true, true));
+        setQuery("noHorizontalOverlap(Elem1, Elem2)", noOverlapQuery(true, false));
+        setQuery("noVerticalOverlap  (Elem1, Elem2)", noOverlapQuery(false, true));
+
+        // Distance
+        setQuery("distance          (Elem1, Elem2, Value)", distanceQuery(true, true));
+        setQuery("horizontalDistance(Elem1, Elem2, Value)", distanceQuery(true, false));
+        setQuery("verticalDistance  (Elem1, Elem2, Value)", distanceQuery(false, true));
+        setQuery("distance          (Elem1, Elem2, Operator, Value)", distanceQuery(true, true));
+        setQuery("horizontalDistance(Elem1, Elem2, Operator, Value)", distanceQuery(true, false));
+        setQuery("verticalDistance  (Elem1, Elem2, Operator, Value)", distanceQuery(false, true));
+
+        // Enclosed
+        setQuery("enclosed          (Elem1, Elem2)", enclosedQuery(true, true));
+        setQuery("enclosedHorizontal(Elem1, Elem2)", enclosedQuery(true, false));
+        setQuery("enclosedVertical  (Elem1, Elem2)", enclosedQuery(false, true));
+
+        // Visualizations
+        setQuery("shape(Elem, Shape)", elementQuery((elem, values) -> {
             elem.setValue("type", values.get("Shape").toString());
             defaultConstraints(elem);
         }));
 
-        setQuery("line(From, To)", forEach((visMap, values) -> {
-            Term fromKey = values.get("From");
-            Term toKey = values.get("To");
+        setQuery("line(Elem, FromElem, ToElem)", forEach((visMap, values) -> {
+            Term key = values.get("Elem");
+            Term fromKey = values.get("FromElem");
+            Term toKey = values.get("ToElem");
+            lineConstraints(visMap, key, fromKey, toKey);
+        }));
+
+        setQuery("line(FromElem, ToElem)", forEach((visMap, values) -> {
+            Term fromKey = values.get("FromElem");
+            Term toKey = values.get("ToElem");
             Term key = list(fromKey, toKey);
             lineConstraints(visMap, key, fromKey, toKey);
         }));
 
-        setQuery("line(Key, From, To)", forEach((visMap, values) -> {
-            Term key = values.get("Key");
-            Term fromKey = values.get("From");
-            Term toKey = values.get("To");
-            lineConstraints(visMap, key, fromKey, toKey);
-        }));
-
-        setQuery("image(Key, Image)", imageQuery("Key", "Image"));
-
-        setQuery("alignMinX(Key1, Key2)", equalQuery("Key1", "Key2", "minX"));
-        setQuery("alignMinY(Key1, Key2)", equalQuery("Key1", "Key2", "minY"));
-        setQuery("alignCenterX(Key1, Key2)", equalQuery("Key1", "Key2", "centerX"));
-        setQuery("alignCenterY(Key1, Key2)", equalQuery("Key1", "Key2", "centerY"));
-        setQuery("alignMaxX(Key1, Key2)", equalQuery("Key1", "Key2", "maxX"));
-        setQuery("alignMaxY(Key1, Key2)", equalQuery("Key1", "Key2", "maxY"));
-        setQuery("sameWidth(Key1, Key2)", equalQuery("Key1", "Key2", "width"));
-        setQuery("sameHeight(Key1, Key2)", equalQuery("Key1", "Key2", "height"));
-
-        setQuery("below(Key1, Key2)", relPosQuery("Key1", "Key2", "minY", "maxY", true));
-        setQuery("above(Key1, Key2)", relPosQuery("Key1", "Key2", "maxY", "minY", false));
-        setQuery("right(Key1, Key2)", relPosQuery("Key1", "Key2", "minX", "maxX", true));
-        setQuery("left(Key1, Key2)", relPosQuery("Key1", "Key2", "maxX", "minX", false));
-        setQuery("after(Key1, Key2)", relPosQuery("Key1", "Key2", "z", "z", true));
-        setQuery("before(Key1, Key2)", relPosQuery("Key1", "Key2", "z", "z", false));
-
-        setQuery("below(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "minY", "maxY", true));
-        setQuery("above(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "maxY", "minY", false));
-        setQuery("right(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "minX", "maxX", true));
-        setQuery("left(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "maxX", "minX", false));
-        setQuery("after(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "z", "z", true));
-        setQuery("before(Key1, Key2, Value)", absPosQuery("Key1", "Key2", "Value", "z", "z", false));
-
-        // For the demo
-        setQuery("noOverlap(Key1, Key2)", noOverlapQuery("Key1", "Key2", true, true));
-        setQuery("noOverlapX(Key1, Key2)", noOverlapQuery("Key1", "Key2", true, false));
-        setQuery("noOverlapY(Key1, Key2)", noOverlapQuery("Key1", "Key2", false, true));
-
-        setQuery("distance(Key1, Key2, Value)", distanceQuery("Key1", "Key2", "Value", true, true));
-        setQuery("distanceX(Key1, Key2, Value)", distanceQuery("Key1", "Key2", "Value", true, false));
-        setQuery("distanceY(Key1, Key2, Value)", distanceQuery("Key1", "Key2", "Value", false, true));
-
-        setQuery("insideX(Key1, Key2)", elementPairQuery("Key1", "Key2", (elem1, elem2, values) -> {
-            elem1.getVar("minX").ge(elem2.getVar("minX")).post();
-            elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
-        }));
-        setQuery("insideY(Key1, Key2)", elementPairQuery("Key1", "Key2", (elem1, elem2, values) -> {
-            elem1.getVar("minY").ge(elem2.getVar("minY")).post();
-            elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
-        }));
+        setQuery("image(Elem, Image)", imageQuery());
     }
 
     /**
@@ -194,34 +214,31 @@ public class Solver {
 
     /**
      * Creates a {@link QueryConsumer} that calls the given {@link BiConsumer} for every result of the solved query. The
-     * {@link BiConsumer} receives the visualization element that belongs to the given key and a {@link Map} of the
-     * results.
+     * {@link BiConsumer} receives the visualization element that belongs to the "Elem" variable and a {@link Map} of
+     * the results.
      *
-     * @param key      The given key.
      * @param consumer The given consumer.
      * @return The {@link QueryConsumer}.
      */
-    public static QueryConsumer elementQuery(String key, BiConsumer<VisElem, Map<String, Term>> consumer) {
+    public static QueryConsumer elementQuery(BiConsumer<VisElem, Map<String, Term>> consumer) {
         return forEach((visMap, values) -> {
-            VisElem elem = visMap.get(values.get(key));
+            VisElem elem = visMap.get(values.get("Elem"));
             consumer.accept(elem, values);
         });
     }
 
     /**
      * Creates a {@link QueryConsumer} that calls the given {@link TriConsumer} for every result of the solved query.
-     * The {@link TriConsumer} receives the two visualization elements that belongs to the given keys and a {@link Map}
-     * of the results.
+     * The {@link TriConsumer} receives the visualization elements that belongs to "Elem1" and "Elem2" variables and a
+     * {@link Map} of the results.
      *
-     * @param key1     The first key.
-     * @param key2     The second key.
      * @param consumer The given consumer.
      * @return The {@link QueryConsumer}.
      */
-    public static QueryConsumer elementPairQuery(String key1, String key2, TriConsumer<VisElem, VisElem, Map<String, Term>> consumer) {
+    public static QueryConsumer elementPairQuery(TriConsumer<VisElem, VisElem, Map<String, Term>> consumer) {
         return forEach((visMap, values) -> {
-            VisElem elem1 = visMap.get(values.get(key1));
-            VisElem elem2 = visMap.get(values.get(key2));
+            VisElem elem1 = visMap.get(values.get("Elem1"));
+            VisElem elem2 = visMap.get(values.get("Elem2"));
             if (elem1 == elem2) {
                 return;
             }
@@ -231,16 +248,15 @@ public class Solver {
 
     /**
      * Creates a {@link QueryConsumer} that sets the given attribute-value pairs on the visualization element that
-     * belongs to the given key. The values should be the original names of the variables specified in the query. The
-     * values that will be set are the resulting terms associated with the variables.
+     * belongs to the "Elem" variable. The values should be the original names of the variables specified in the query.
+     * The values that will be set are the resulting terms associated with the variables.
      *
-     * @param key   The given key.
      * @param pairs The given pairs.
      * @return The {@link QueryConsumer}.
      */
-    public static QueryConsumer attrQuery(String key, String... pairs) {
+    public static QueryConsumer attrQuery(String... pairs) {
         assert pairs.length % 2 == 0;
-        return elementQuery(key, (elem, values) -> {
+        return elementQuery((elem, values) -> {
             for (int i = 0; i < pairs.length; i += 2) {
                 String attribute = pairs[i];
                 String value = values.get(pairs[i + 1]).toString();
@@ -249,8 +265,8 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer equalQuery(String key1, String key2, String varName) {
-        return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
+    public static QueryConsumer equalsQuery(String varName) {
+        return elementPairQuery((elem1, elem2, values) -> {
             if (elem1.hasVar(varName)) {
                 elem2.setVar(varName, elem1.getVar(varName));
             } else {
@@ -259,11 +275,11 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer relPosQuery(String key1, String key2, String varName1, String varName2, boolean greater) {
-        return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
+    public static QueryConsumer relPosQuery(String varName1, String varName2, boolean swap) {
+        return elementPairQuery((elem1, elem2, values) -> {
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
-            if (greater) {
+            if (swap) {
                 var1.gt(var2).post();
             } else {
                 var2.gt(var1).post();
@@ -271,22 +287,24 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer absPosQuery(String key1, String key2, String val, String varName1, String varName2, boolean greater) {
-        return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
+    public static QueryConsumer absPosQuery(String varName1, String varName2, boolean swap) {
+        return elementPairQuery((elem1, elem2, values) -> {
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
-            int value = Integer.parseInt(values.get(val).toString());
-            if (greater) {
-                var1.sub(var2).eq(value).post();
+            String op = getOp(values);
+            int value = Integer.parseInt(values.get("Value").toString());
+            Model model = var1.getModel();
+            if (swap) {
+                model.arithm(var1.sub(var2).intVar(), op, value).post();
             } else {
-                var2.sub(var1).eq(value).post();
+                model.arithm(var2.sub(var1).intVar(), op, value).post();
             }
         });
     }
 
-    public static QueryConsumer imageQuery(String key, String imageValue) {
-        return elementQuery(key, (elem, values) -> {
-            String imagePath = values.get(imageValue).toString().replaceAll("['\"]", "");
+    public static QueryConsumer imageQuery() {
+        return elementQuery((elem, values) -> {
+            String imagePath = termToString(values.get("Image"));
             String image;
             try {
                 image = FileUtils.getImageSVG(new File(imagePath));
@@ -300,32 +318,51 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer noOverlapQuery(String key1, String key2, boolean x, boolean y) {
-        return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
+    public static QueryConsumer noOverlapQuery(boolean x, boolean y) {
+        assert x || y;
+        return elementPairQuery((elem1, elem2, values) -> {
+            List<Constraint> constraints = new ArrayList<>();
+            if (x) {
+                constraints.add(elem1.getVar("minX").gt(elem2.getVar("maxX")).decompose());
+                constraints.add(elem1.getVar("maxX").lt(elem2.getVar("minX")).decompose());
+            }
+            if (y) {
+                constraints.add(elem1.getVar("minY").gt(elem2.getVar("maxY")).decompose());
+                constraints.add(elem1.getVar("maxY").lt(elem2.getVar("minY")).decompose());
+            }
+            Model model = elem1.getVar("minX").getModel();
+            model.or(constraints.toArray(new Constraint[0])).post();
+        });
+    }
+
+    public static QueryConsumer distanceQuery(boolean x, boolean y) {
+        assert x || y;
+        return elementPairQuery((elem1, elem2, values) -> {
+            String op = getOp(values);
+            int value = Integer.parseInt(values.get("Value").toString());
             Model model = elem1.getVar("minX").getModel();
             if (x) model.or(
-                    elem1.getVar("minX").gt(elem2.getVar("maxX")).decompose(),
-                    elem1.getVar("maxX").lt(elem2.getVar("minX")).decompose()
+                    model.arithm(elem1.getVar("minX").dist(elem2.getVar("maxX")).intVar(), op, value),
+                    model.arithm(elem1.getVar("maxX").dist(elem2.getVar("minX")).intVar(), op, value)
             ).post();
             if (y) model.or(
-                    elem1.getVar("minY").gt(elem2.getVar("maxY")).decompose(),
-                    elem1.getVar("maxY").lt(elem2.getVar("minY")).decompose()
+                    model.arithm(elem1.getVar("minY").dist(elem2.getVar("maxY")).intVar(), op, value),
+                    model.arithm(elem1.getVar("maxY").dist(elem2.getVar("minY")).intVar(), op, value)
             ).post();
         });
     }
 
-    public static QueryConsumer distanceQuery(String key1, String key2, String distanceValue, boolean x, boolean y) {
-        return elementPairQuery(key1, key2, (elem1, elem2, values) -> {
-            int value = Integer.parseInt(values.get(distanceValue).toString());
-            Model model = elem1.getVar("minX").getModel();
-            if (x) model.or(
-                    elem1.getVar("minX").dist(elem2.getVar("maxX")).eq(value).decompose(),
-                    elem1.getVar("maxX").dist(elem2.getVar("minX")).eq(value).decompose()
-            ).post();
-            if (y) model.or(
-                    elem1.getVar("minY").dist(elem2.getVar("maxY")).eq(value).decompose(),
-                    elem1.getVar("maxY").dist(elem2.getVar("minY")).eq(value).decompose()
-            ).post();
+    public static QueryConsumer enclosedQuery(boolean x, boolean y) {
+        assert x || y;
+        return elementPairQuery((elem1, elem2, values) -> {
+            if (x) {
+                elem1.getVar("minX").ge(elem2.getVar("minX")).post();
+                elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
+            }
+            if (y) {
+                elem1.getVar("minY").ge(elem2.getVar("minY")).post();
+                elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
+            }
         });
     }
 
@@ -351,8 +388,12 @@ public class Solver {
             defaultConstraints(elem);
         }
 
-        if (!elem.hasValue("colour")) elem.setValue("colour", "white");
-        if (!elem.hasValue("border-colour")) elem.setValue("border-colour", "black");
+        if (!elem.hasValue("colour")) {
+            elem.setValue("colour", "white");
+            if (!elem.hasValue("stroke")) {
+                elem.setValue("stroke", "black");
+            }
+        }
     }
 
     /**
@@ -411,5 +452,18 @@ public class Solver {
         line.setVar("minY", line.getVar("y1").min(line.getVar("y2")).intVar());
         line.setVar("centerY", line.getVar("minY").add(line.getVar("radiusY")).intVar());
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
+    }
+
+    public static String getOp(Map<String, Term> values) {
+        Term operator = values.get("Operator");
+        if (operator != null) {
+            return termToString(operator);
+        } else {
+            return "=";
+        }
+    }
+
+    public static String termToString(Term term) {
+        return term.toString().replaceAll("[\"']", "");
     }
 }

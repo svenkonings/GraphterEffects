@@ -93,7 +93,7 @@ public class SvgElementGenerator {
     private static SvgAttributeGenerator shape(String name) {
         SvgAttributeGenerator mapping = new SvgAttributeGenerator(name);
         mapping.setMapping("colour", "fill");
-        mapping.setMapping("border-colour", "stroke");
+        mapping.setMapping("stroke", "stroke");
         return mapping;
     }
 
