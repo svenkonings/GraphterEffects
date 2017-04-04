@@ -1,5 +1,3 @@
-package main;
-
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.asrc.AbstractSyntaxRuleConverter;

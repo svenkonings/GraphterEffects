@@ -17,15 +17,15 @@ wolf(X, X); goat(X, X); cabbage(X, X) -> passenger(X).
 passenger(X), passenger(Y) -> noOverlapX(X, Y).
 
 wolf(X, X) ->
-    image(X, "src\test\resources\demo\images\wolf.png"),
+    image(X, "wolf.png"),
     dimensions(X, 128, 128).
 
 goat(X, X) ->
-    image(X, "src\test\resources\demo\images\sheep.png"),
+    image(X, "sheep.png"),
     dimensions(X, 128, 128).
 
 cabbage(X, X) ->
-    image(X, "src\test\resources\demo\images\cabbage.png"),
+    image(X, "cabbage.png"),
     dimensions(X, 128, 128).
 
 on(X, Y) ->
@@ -40,7 +40,7 @@ in(X, Y) ->
     after(X, Y).
 
 boat(X, X) ->
-    image(X, "src\test\resources\demo\images\boat.png"),
+    image(X, "boat.png"),
     dimensions(X, 450, 190),
     insideX(X, water),
     above(X, water, -50),
@@ -85,7 +85,7 @@ containedIn(X,Y) -> insideX(X, Y), insideY(X, Y).
 passenger(X), image(X, Path) -> image([X,1], Path), dimensions([X,1], 64, 64).
 
 likes(X, Y, Z) ->
-    image(Z, "src\test\resources\demo\images\heart.png"),
+    image(Z, "heart.png"),
     dimensions(Z, 64, 64),
     left([X,1], Z),
     left(Z, [Y,1]),
