@@ -382,17 +382,15 @@ public class Solver {
         if (!elem.hasVar("z")) elem.setVar("z", 0);
         if (!elem.hasVar("width")) elem.setVar("width", 10);
         if (!elem.hasVar("height")) elem.setVar("height", 10);
-
-        if (!elem.hasValue("type")) {
-            elem.setValue("type", "ellipse");
-            defaultConstraints(elem);
-        }
-
         if (!elem.hasValue("colour")) {
             elem.setValue("colour", "white");
             if (!elem.hasValue("stroke")) {
                 elem.setValue("stroke", "black");
             }
+        }
+        if (!elem.hasValue("type")) {
+            elem.setValue("type", "ellipse");
+            defaultConstraints(elem);
         }
     }
 
