@@ -56,7 +56,7 @@ public final class TestUtils {
         element.getAttributeKeySet().forEach(
                 attributeKey -> {
                     try {
-                        Collection<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", term(attributeKey), term(element.getId()), var("Value"))));
+                        Collection<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", term(element.getId()), term(attributeKey), var("Value"))));
                         String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
                         assert answerContains(answers, "Value", expectedValue);
                     } catch (Exception e) {

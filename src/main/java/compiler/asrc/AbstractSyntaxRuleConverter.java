@@ -34,11 +34,11 @@ public final class AbstractSyntaxRuleConverter {
      * @return the image at the specified URL
      */
 
-    public static List<Term> convertToRules(Graph graph) throws UnknownGraphTypeException {
+    public static List<Term> convertToRules(Graph graph, boolean GROOVEMode) throws UnknownGraphTypeException {
         List<Term> termList = new ArrayList<>();
 
         for (Node node : graph.getNodeSet()) {
-            termList.addAll(generateNodeRules(node));
+            termList.addAll(generateNodeRules(node, GROOVEMode));
         }
 
         boolean fullydirected = true;
@@ -47,7 +47,7 @@ public final class AbstractSyntaxRuleConverter {
         for (Edge edge : graph.getEdgeSet()) {
             fullydirected = fullydirected && edge.isDirected();
             fullyundirected = fullyundirected && !edge.isDirected();
-            termList.addAll(generateEdgeRules(edge));
+            termList.addAll(generateEdgeRules(edge, GROOVEMode));
         }
 
         if (fullydirected && fullyundirected) {
@@ -79,7 +79,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param node the node for which to generate the rules
      * @return the generated rules
      */
-    private static List<Term> generateNodeRules(Node node) {
+    private static List<Term> generateNodeRules(Node node, boolean GROOVEMode) {
         List<Term> termList = new ArrayList<>();
 
         termList.add(struct("node", term(node.getId())));
@@ -99,13 +99,14 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("attributecount", term(node.getId()), intVal(node.getAttributeCount())));
         for (String attributeKey : node.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
+            termList.add(struct("attribute", term(node.getId()), term(attributeKey), term(attributeString)));
             if (attributeKey.equals("label")) {
-                termList.add(struct("label", term(node.getId()), term(attributeString)));
-                if (attributeString.startsWith("type:")) {
+                if (GROOVEMode && attributeString.startsWith("type:")) {
                     termList.add(struct("type", term(node.getId()), term(attributeString)));
-                } else if (attributeString.startsWith("flag:")) {
+                } else if (GROOVEMode && attributeString.startsWith("flag:")) {
                     termList.add(struct("flag", term(node.getId()), term(attributeString)));
+                } else {
+                    termList.add(struct("label", term(node.getId()), term(attributeString)));
                 }
             }
         }
@@ -121,12 +122,12 @@ public final class AbstractSyntaxRuleConverter {
      * @param edge the edge for which to generate the rules
      * @return the generated rules
      */
-    private static List<Term> generateEdgeRules(Edge edge) {
+    private static List<Term> generateEdgeRules(Edge edge, boolean GROOVEMode) {
         //TODO: Willen we iets doen met loop? (Does the source and target of this edge identify the same node ?)
         List<Term> termList = new ArrayList<>();
 
         // TODO Reverse target and source
-        termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId()), term(edge.getId())));
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId()), term(edge.getId())));
         // TODO edge/2 termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId())));
         // TODO edge/1 termList.add(struct("edge", term(edge.getId())));
 
@@ -139,14 +140,13 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("attributecount", term(edge.getId()), intVal(edge.getAttributeCount())));
         for (String attributeKey : edge.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(edge.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
-            if (attributeKey.equals("label")) {
-                termList.add(struct(attributeKey, term(edge.getId()), term(attributeString)));
-            }
-            if (attributeString.startsWith("type:")) {
+            termList.add(struct("attribute", term(edge.getId()), term(attributeKey), term(attributeString)));
+            if (GROOVEMode && attributeString.startsWith("type:")) {
                 termList.add(struct("type", term(edge.getId()), term(attributeString)));
-            } else if (attributeString.startsWith("flag:")) {
+            } else if (GROOVEMode && attributeString.startsWith("flag:")) {
                 termList.add(struct("flag", term(edge.getId()), term(attributeString)));
+            } else {
+                termList.add(struct("label", term(edge.getId()), term(attributeString)));
             }
         }
         return termList;
@@ -158,7 +158,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param graph the graph for which to generate the rules
      * @return the generated rules
      */
-    public static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
+    private static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
         List<Term> termList = new ArrayList<>();
         termList.add(struct("graph", term(graph.getId())));
 
@@ -169,7 +169,7 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("attributecount", term(graph.getId()), intVal(graph.getAttributeCount())));
         for (String attributeKey : graph.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(graph.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(attributeKey), term(graph.getId()), term(attributeString)));
+            termList.add(struct("attribute", term(graph.getId()), term(attributeKey), term(attributeString)));
         }
 
         //For the minimum spanning tree:

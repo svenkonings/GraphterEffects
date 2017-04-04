@@ -1,14 +1,14 @@
 package compiler.graphloader;
 
 import net.sourceforge.gxl.*;
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.EdgeRejectedException;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.DefaultGraph;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.xml.sax.SAXException;
 import utils.GraphUtils;
+import utils.Printer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -47,19 +47,15 @@ final class GXLImporter {
     }
 
 
-    static Graph read(File file, boolean addUnderscores) throws IOException, SAXException {
-        try{
-            return read(file.getAbsolutePath(), addUnderscores, false);
-        } catch (EdgeRejectedException e) {
-            return read(file.getAbsolutePath(), addUnderscores, true);
-        }
+    static Graph read(File file, boolean addUnderscores, boolean GROOVEMode) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addUnderscores, GROOVEMode);
     }
 
-    static Graph read(String path, boolean addUnderscores) throws IOException, SAXException {
+    static Graph read(String path, boolean addUnderscores, boolean GROOVEMode) throws IOException, SAXException {
         try{
-            return read(path, addUnderscores, false);
+            return read(path, addUnderscores, false, GROOVEMode);
         } catch (EdgeRejectedException e) {
-            return read(path, addUnderscores, true);
+            return read(path, addUnderscores, true, GROOVEMode);
         }
     }
 
@@ -72,8 +68,8 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
-        return read(file.getAbsolutePath(), addUnderscores, multigraph);
+    static Graph read(File file, boolean addUnderscores, boolean multigraph, boolean GROOVEMode) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addUnderscores, multigraph, GROOVEMode);
     }
 
      /**
@@ -85,12 +81,12 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static Graph read(String path, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
+    static Graph read(String path, boolean addUnderscores, boolean multigraph, boolean GROOVEMode) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
-        String underscore = "";
+        String prefix = "";
         if (addUnderscores) {
-            underscore = GraphUtils.ILLEGAL_PREFIX;
+            prefix = GraphUtils.ILLEGAL_PREFIX;
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         String gxml = new String(encoded, "UTF-8");
@@ -104,9 +100,9 @@ final class GXLImporter {
 
         Graph tograph;
         if (multigraph) {
-            tograph = new MultiGraph(underscore + graph.getAttribute("id"), true, false);
+            tograph = new MultiGraph(prefix + graph.getAttribute("id"), true, false);
         } else {
-            tograph = new SingleGraph(underscore + graph.getAttribute("id"), true, false);
+            tograph = new SingleGraph(prefix + graph.getAttribute("id"), true, false);
         }
 
         for (int p = 0; p < graph.getAttrCount(); p++) {
@@ -138,11 +134,14 @@ final class GXLImporter {
         }
         for (GXLGraphElement elem : edges) {
             String id = getID(elem, addUnderscores);
-            Edge e = tograph.addEdge(id, underscore + elem.getAttribute("from"), underscore + elem.getAttribute("to"), directed);
+            Edge e = tograph.addEdge(id, prefix + elem.getAttribute("from"), prefix + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
                 e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content, true));
             }
+        }
+        if (GROOVEMode) {
+            tograph = Grooveify(tograph);
         }
         return tograph;
     }
@@ -215,5 +214,66 @@ final class GXLImporter {
         return idgotten;
     }
 
+    private static Graph Grooveify(Graph in) {
+        in = fixGrooveEdges(in);
+        in = fixTypeFlagLabels(in);
+        return in;
+    }
 
+    private static Graph fixTypeFlagLabels(Graph in) {
+        Set<Element> elemset = new HashSet<>();
+        elemset.addAll(in.getEdgeSet());
+        elemset.addAll(in.getNodeSet());
+        for (Element element : elemset) {
+            if (!element.hasAttribute("label")) {
+                continue;
+            }
+            String label = element.getAttribute("label");
+            label = label.substring(1, label.length()-1);
+            if (label.startsWith("type:")) {
+                element.removeAttribute("label");
+                element.setAttribute("type", "\"" + label.substring(5) + "\"");
+            } else if (label.startsWith("flag:")) {
+                element.removeAttribute("label");
+                element.setAttribute("flag", "\"" + label.substring(5) + "\"");
+            }
+        }
+        return in;
+    }
+
+    private static Graph fixGrooveEdges(Graph input) {
+        Graph res;
+        if (input instanceof DefaultGraph) {
+            res = new DefaultGraph(input.getId());
+        } else if (input instanceof SingleGraph) {
+            res = new SingleGraph(input.getId());
+        } else if (input instanceof MultiGraph) {
+            res = new MultiGraph(input.getId());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        for (String key : input.getAttributeKeySet()) {
+            Object[] arr = {input.getAttribute(key)};
+            res.setAttribute(key, arr);
+        }
+        for (Node node : input.getEachNode()) {
+            Node added = res.addNode(node.getId());
+            for (String key : node.getAttributeKeySet()) {
+                Object[] arr = {node.getAttribute(key)};
+                added.setAttribute(key, arr);
+            }
+        }
+        for (Edge edge : input.getEachEdge()) {
+            if (edge.getSourceNode().equals(edge.getTargetNode()) && edge.hasAttribute("label") && !edge.getSourceNode().hasAttribute("label")) {
+                res.getNode(edge.getSourceNode().getId()).setAttribute("label", edge.getAttribute("label"));
+            } else {
+                Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
+                for (String key : edge.getAttributeKeySet()) {
+                    Object[] arr = {edge.getAttribute(key)};
+                    added.setAttribute(key, arr);
+                }
+            }
+        }
+        return res;
+    }
 }

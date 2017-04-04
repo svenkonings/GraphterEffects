@@ -16,6 +16,15 @@ import java.io.IOException;
  */
 public final class Importer {
 
+
+    public static Graph graphFromFile(String path) throws IOException, SAXException {
+        return graphFromFile(new File(path), false);
+    }
+
+    public static Graph graphFromFile(File file) throws IOException, SAXException {
+        return graphFromFile(file, false);
+    }
+
     /**
      * Reads a graph from a variety of formats.
      *
@@ -24,8 +33,8 @@ public final class Importer {
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
-    public static Graph graphFromFile(String path) throws IOException, SAXException {
-        return graphFromFile(new File(path));
+    public static Graph graphFromFile(String path, boolean GROOVEMode) throws IOException, SAXException {
+        return graphFromFile(new File(path), GROOVEMode);
     }
 
     /**
@@ -36,34 +45,34 @@ public final class Importer {
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
-    public static Graph graphFromFile(File file) throws IOException, SAXException {
-        return graphFromFile(file, true);
+    public static Graph graphFromFile(File file, boolean GROOVEMode) throws IOException, SAXException {
+        return graphFromFile(file, true, GROOVEMode);
     }
 
     /**
      * @param file           File from which to read the Graph
-     * @param addUnderscores <tt>true</tt> if underscores should be added to the IDs in the graph.
+     * @param addIllegalPrefix <tt>true</tt> if underscores should be added to the IDs in the graph.
      * @return A GraphStream graph read from the file.
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
-    public static Graph graphFromFile(File file, boolean addUnderscores) throws IOException, SAXException {
+    public static Graph graphFromFile(File file, boolean addIllegalPrefix, boolean GROOVEMode) throws IOException, SAXException {
         Graph g;
         String extension = FileUtils.getExtension(file.getName());
         if (GXLImporter.acceptsExtension(extension)) {
-            g = GXLImporter.read(file, false);
+            g = GXLImporter.read(file, false, GROOVEMode);
         } else if (GraphStreamImporter.acceptsExtension(extension)) {
             g = GraphStreamImporter.read(file);
         } else {
             try {
-                    g = GXLImporter.read(file, false, false);
+                    g = GXLImporter.read(file, false, GROOVEMode);
             } catch (SAXException e) {
                 g = null;
             }
         }
         if (g == null) {
             throw new UnsupportedOperationException("Unknown file extension for file: " + file.getName());
-        } else if (addUnderscores) {
+        } else if (addIllegalPrefix) {
             g = GraphUtils.changeIDs(g);
         }
         return g;

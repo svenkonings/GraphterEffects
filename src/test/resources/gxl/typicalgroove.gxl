@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">
+<!-- simple example schema 05.02.2002 -->
+<gxl>
+<graph id="graph">
+    <node id="node1">
+		<attr name="label">
+                <string>type:testtype</string>
+        </attr>
+    </node>
+	
+	<node id="node2">
+    </node>
+	
+
+    <edge id="edge1" to="node2" from="node2">
+		<attr name="label">
+                <string>flag:testflag</string>
+        </attr>
+    </edge>
+    
+  </graph>
+</gxl>

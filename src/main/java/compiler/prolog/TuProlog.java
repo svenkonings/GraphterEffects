@@ -5,6 +5,7 @@ import alice.tuprolog.Float;
 import alice.tuprolog.*;
 import alice.tuprolog.Long;
 import alice.tuprolog.Number;
+import compiler.asrc.ASRCLibrary;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -275,5 +276,13 @@ public class TuProlog {
     @Override
     public String toString() {
         return getTheory().toString();
+    }
+
+    public void loadLibrary(ASRCLibrary asrcLibrary) throws InvalidLibraryException {
+        prolog.loadLibrary(asrcLibrary);
+    }
+
+    public Prolog getProlog() {
+        return prolog;
     }
 }
