@@ -63,9 +63,7 @@ public class PropositionalFormulaTest extends GrammarTest {
                     ")p(X)(",
                     "(p(X)",
                     "p(x) p(x)",
-                    "p(p(x))",
                     "p((x",
-                    "(x)",
                     ",",
                     ", p(x)"
             );
@@ -82,7 +80,7 @@ public class PropositionalFormulaTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.propositional_formula();
+        return parser.propositionalFormula();
     }
 
     @Override

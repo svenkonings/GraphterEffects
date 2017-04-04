@@ -18,12 +18,13 @@ import static compiler.prolog.TuProlog.*;
 public final class DemoTests {
     @Test
     public void demo1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo1.dot"));
         //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = generateGraphProlog(graph, false);
         prolog.addTheory(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
 
@@ -47,12 +48,13 @@ public final class DemoTests {
 
     @Test
     public void demo2() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo2.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo2.dot"));
         //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = generateGraphProlog(graph, false);
         prolog.addTheory(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
 
@@ -89,12 +91,13 @@ public final class DemoTests {
 
     @Test
     public void demo3() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo3.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo3.dot"));
         //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = generateGraphProlog(graph, false);
         prolog.addTheory(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
 
@@ -120,9 +123,9 @@ public final class DemoTests {
 
     @Test
     public void demo4() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/start.gst"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/start.gst"));
         //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = generateGraphProlog(graph, false);
         prolog.addTheory(
                 //Shows the wolf image
                 clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/wolf.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("wolf"))),

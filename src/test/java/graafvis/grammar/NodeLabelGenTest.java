@@ -50,7 +50,7 @@ public class NodeLabelGenTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.node_label_gen();
+        return parser.nodeLabelGen();
     }
 
     @Override

@@ -43,7 +43,7 @@ public class ImportVisTest extends GrammarTest {
 
     @Override
     protected ParserRuleContext parse(GraafvisParser parser) {
-        return parser.import_vis();
+        return parser.importVis();
     }
 
     @Override

@@ -1,8 +1,6 @@
 package graafvis.grammar;
 
 import graafvis.ErrorListener;
-import graafvis.grammar.GraafvisLexer;
-import graafvis.grammar.GraafvisParser;
 import org.antlr.v4.runtime.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,7 +55,7 @@ public abstract class GrammarTest {
                     "1",
                     "0123",
                     "0",
-                    "921345156224167352"
+                    "9876543210"
             );
     protected static final List<String> VALID_ID_SAMPLES = Arrays.asList
             (
@@ -67,26 +65,27 @@ public abstract class GrammarTest {
                     "a123",
                     "a_"
             );
-    protected static final List<String> VALID_NUM_OP_SAMPLES = Arrays.asList
-            (
-                    "-",
-                    "+",
-                    "%",
-                    "*",
-                    "/",
-                    "^"
-            );
-    protected static final List<String> VALID_EQ_OP_SAMPLES = Arrays.asList
-            (
-                    "==",
-                    "<",
-                    ">="
-            );
+//    protected static final List<String> VALID_NUM_OP_SAMPLES = Arrays.asList
+//            (
+//                    "-",
+//                    "+",
+//                    "%",
+//                    "*",
+//                    "/",
+//                    "^"
+//            );
+//    protected static final List<String> VALID_EQ_OP_SAMPLES = Arrays.asList
+//            (
+//                    "==",
+//                    "<",
+//                    ">="
+//            );
     protected static final List<String> VALID_BOOL_OP_SAMPLES = Arrays.asList
             (
                     ",",
                     "and",
-                    "or"
+                    "or",
+                    ";"
             );
 
     /**

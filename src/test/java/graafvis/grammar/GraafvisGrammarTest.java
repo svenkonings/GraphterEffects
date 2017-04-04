@@ -17,9 +17,6 @@ public class GraafvisGrammarTest {
         /* Variables */
         res = core.run(VariableTest.class);
         Assert.assertEquals(0, res.getFailureCount());
-        /* Ground term */
-        res = core.run(GroundTermTest.class);
-        Assert.assertEquals(0, res.getFailureCount());
         /* Term */
         res = core.run(TermTest.class);
         Assert.assertEquals(0, res.getFailureCount());
@@ -34,9 +31,6 @@ public class GraafvisGrammarTest {
         Assert.assertEquals(0, res.getFailureCount());
         /* Literal */
         res = core.run(LiteralTest.class);
-        Assert.assertEquals(0, res.getFailureCount());
-        /* Num expr */
-        res = core.run(NumExprTest.class);
         Assert.assertEquals(0, res.getFailureCount());
         /* Propositional formula */
         res = core.run(PropositionalFormulaTest.class);

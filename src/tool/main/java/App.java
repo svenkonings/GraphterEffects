@@ -1,3 +1,4 @@
+import com.airhacks.afterburner.injection.Injector;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -17,5 +18,14 @@ public class App extends Application{
         scene.getStylesheets().add(uri);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        Injector.forgetAll();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

@@ -33,16 +33,16 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
     /** Only label generation nodes need visiting */
     @Override
     public Void visitProgram(GraafvisParser.ProgramContext ctx) {
-        if (ctx.node_label_gen() != null) {
-            visitNode_label_gen(ctx.node_label_gen());
+        if (ctx.nodeLabelGen() != null) {
+            visitNodeLabelGen(ctx.nodeLabelGen());
         }
-        if (ctx.edge_label_gen() != null) {
-            visitEdge_label_gen(ctx.edge_label_gen());
+        if (ctx.edgeLabelGen() != null) {
+            visitEdgeLabelGen(ctx.edgeLabelGen());
         }
         return null;
     }
 
-    /** Checks if a label can be  */
+    /** Checks if a label can be generated */
     @Override
     public Void visitLabel(GraafvisParser.LabelContext ctx) {
 

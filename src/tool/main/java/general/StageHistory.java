@@ -7,6 +7,7 @@ public class StageHistory {
     private static StageHistory ourInstance = new StageHistory();
 
     Deque<String> deque;
+    String currentStage;
     public static StageHistory getInstance() {
         return ourInstance;
     }
@@ -15,18 +16,22 @@ public class StageHistory {
         deque = new ArrayDeque<>(10);
     }
 
-    public void add(String pageName){
-        //String lastPage = deque.poll();
-        //String pageBeforeLastPage = deque.poll();
+    public void add(String pageName) {
+        String lastPage = deque.poll();
+        String pageBeforeLastPage = deque.poll();
 
         //If the pageBefore the Last Page isn't the same as the page you're on now, the page you're trying to add
         //isnt being added to the history. This prevents circular backs because the user often isn't interested in this.
-        //deque.push(pageBeforeLastPage);
-        //deque.push(lastPage);
+        if (pageBeforeLastPage != null) {
+            deque.push(pageBeforeLastPage);
+        }
+        if (lastPage != null) {
+            deque.push(lastPage);
+        }
 
-        //if (!pageBeforeLastPage.equals(pageName)) {
+        if ( pageBeforeLastPage != pageName) {
             deque.push(pageName);
-        //}
+        }
     }
 
     public String poll(){
@@ -35,5 +40,13 @@ public class StageHistory {
 
     public String peek(){
         return deque.peek();
+    }
+
+    public void setCurrentStage(String presenterClassName){
+        add(currentStage);
+        currentStage = presenterClassName;
+
+        System.out.println(currentStage);
+        System.out.println(deque.toString());
     }
 }

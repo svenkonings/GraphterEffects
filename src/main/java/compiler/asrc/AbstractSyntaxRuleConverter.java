@@ -2,10 +2,13 @@ package compiler.asrc;
 
 import alice.tuprolog.Term;
 import exceptions.UnknownGraphTypeException;
+import org.graphstream.algorithm.ConnectedComponents;
 import org.graphstream.algorithm.Kruskal;
+import org.graphstream.algorithm.coloring.WelshPowell;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.GraphUtils;
@@ -30,11 +33,11 @@ public final class AbstractSyntaxRuleConverter {
      * @return the image at the specified URL
      */
 
-    public static List<Term> convertToRules(Graph graph) throws UnknownGraphTypeException {
+    public static List<Term> convertToRules(Graph graph, boolean GROOVEMode) throws UnknownGraphTypeException {
         List<Term> termList = new ArrayList<>();
 
         for (Node node : graph.getNodeSet()) {
-            termList.addAll(generateNodeRules(node));
+            termList.addAll(generateNodeRules(node, GROOVEMode));
         }
 
         boolean fullydirected = true;
@@ -43,7 +46,7 @@ public final class AbstractSyntaxRuleConverter {
         for (Edge edge : graph.getEdgeSet()) {
             fullydirected = fullydirected && edge.isDirected();
             fullyundirected = fullyundirected && !edge.isDirected();
-            termList.addAll(generateEdgeRules(edge));
+            termList.addAll(generateEdgeRules(edge, GROOVEMode));
         }
 
         if (fullydirected && fullyundirected) {
@@ -58,8 +61,14 @@ public final class AbstractSyntaxRuleConverter {
             termList.add(struct("mixed", term(graph.getId())));
         }
 
+        ConnectedComponents a = new ConnectedComponents();
+        a.init(graph);
+        int ccount = a.getConnectedComponentsCount();
+        termList.add(struct("componentcount", term(graph.getId()), intVal(ccount)));
+        if (ccount==1){
+            termList.add(struct("isconnected", term(graph.getId())));
+        }
         termList.addAll(generateGraphRules(graph));
-
         return termList;
     }
 
@@ -69,7 +78,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param node the node for which to generate the rules
      * @return the generated rules
      */
-    private static List<Term> generateNodeRules(Node node) {
+    private static List<Term> generateNodeRules(Node node, boolean GROOVEMode) {
         List<Term> termList = new ArrayList<>();
 
         termList.add(struct("node", term(node.getId())));
@@ -86,11 +95,19 @@ public final class AbstractSyntaxRuleConverter {
             it.next();
         }
         termList.add(struct("neighbourcount", term(node.getId()), intVal((neighbourcount))));
-
         termList.add(struct("attributecount", term(node.getId()), intVal(node.getAttributeCount())));
         for (String attributeKey : node.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
+            termList.add(struct("attribute", term(node.getId()), term(attributeKey), term(attributeString)));
+            if (attributeKey.equals("label")) {
+                if (GROOVEMode && attributeString.startsWith("type:")) {
+                    termList.add(struct("type", term(node.getId()), term(attributeString)));
+                } else if (GROOVEMode && attributeString.startsWith("flag:")) {
+                    termList.add(struct("flag", term(node.getId()), term(attributeString)));
+                } else {
+                    termList.add(struct("label", term(node.getId()), term(attributeString)));
+                }
+            }
         }
         return termList;
     }
@@ -104,11 +121,14 @@ public final class AbstractSyntaxRuleConverter {
      * @param edge the edge for which to generate the rules
      * @return the generated rules
      */
-    private static List<Term> generateEdgeRules(Edge edge) {
+    private static List<Term> generateEdgeRules(Edge edge, boolean GROOVEMode) {
         //TODO: Willen we iets doen met loop? (Does the source and target of this edge identify the same node ?)
         List<Term> termList = new ArrayList<>();
 
-        termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId()), term(edge.getId())));
+        // TODO Reverse target and source
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId()), term(edge.getId())));
+        // TODO edge/2 termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId())));
+        // TODO edge/1 termList.add(struct("edge", term(edge.getId())));
 
         if (edge.isDirected()) {
             termList.add(struct("directed", term(edge.getId())));
@@ -119,7 +139,14 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("attributecount", term(edge.getId()), intVal(edge.getAttributeCount())));
         for (String attributeKey : edge.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(edge.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
+            termList.add(struct("attribute", term(edge.getId()), term(attributeKey), term(attributeString)));
+            if (GROOVEMode && attributeString.startsWith("type:")) {
+                termList.add(struct("type", term(edge.getId()), term(attributeString)));
+            } else if (GROOVEMode && attributeString.startsWith("flag:")) {
+                termList.add(struct("flag", term(edge.getId()), term(attributeString)));
+            } else {
+                termList.add(struct("label", term(edge.getId()), term(attributeString)));
+            }
         }
         return termList;
     }
@@ -130,7 +157,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param graph the graph for which to generate the rules
      * @return the generated rules
      */
-    public static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
+    private static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
         List<Term> termList = new ArrayList<>();
         termList.add(struct("graph", term(graph.getId())));
 
@@ -141,7 +168,7 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("attributecount", term(graph.getId()), intVal(graph.getAttributeCount())));
         for (String attributeKey : graph.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(graph.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(attributeKey), term(graph.getId()), term(attributeString)));
+            termList.add(struct("attribute", term(graph.getId()), term(attributeKey), term(attributeString)));
         }
 
         //For the minimum spanning tree:
@@ -151,6 +178,12 @@ public final class AbstractSyntaxRuleConverter {
         kruskal.getTreeEdges().forEach(edge ->
                 termList.add(struct("inmst", term(edge.getId())))
         );
+
+        WelshPowell a = new WelshPowell();
+        a.init(Graphs.clone(graph));
+        a.compute();
+        termList.add(struct("chromaticnumber", term(graph.getId()), intVal(a.getChromaticNumber())));
+
         return termList;
     }
 
@@ -174,6 +207,4 @@ public final class AbstractSyntaxRuleConverter {
         }
         return termList;
     }
-
-
 }

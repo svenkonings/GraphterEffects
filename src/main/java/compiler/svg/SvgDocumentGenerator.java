@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * A generator for converting visualization elements to a SVG docuemtn
  */
+// TODO: Extendability
 public class SvgDocumentGenerator {
 
     /**
@@ -52,10 +53,10 @@ public class SvgDocumentGenerator {
      * @param visElems The given list of visualization elements.
      */
     private static void setViewBox(Element element, List<VisElem> visElems) {
-        int minX = min(visElems, "x1");
-        int minY = min(visElems, "y1");
-        int width = max(visElems, "x2") - minX;
-        int height = max(visElems, "y2") - minY;
+        int minX = min(visElems, "minX");
+        int minY = min(visElems, "minY");
+        int width = max(visElems, "maxX") - minX;
+        int height = max(visElems, "maxY") - minY;
         element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
     }
 

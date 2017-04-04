@@ -1,7 +1,6 @@
 package compiler.solver;
 
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.expression.discrete.arithmetic.ArExpression;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.HashMap;
@@ -243,93 +242,5 @@ public class VisElem {
      */
     public Map<String, IntVar> getVars() {
         return new HashMap<>(vars);
-    }
-
-    /**
-     * Initializes the default variables. The defaults are:
-     * <table summary="Defaults" border="1">
-     * <tr><td><b>Name</b></td> <td><b>Description</b></td> <td><b>Value</b></td></tr>
-     * <tr><td>z</td>           <td>z position</td>         <td>[MIN, MAX]</td></tr>
-     * <tr><td>x1</td>          <td>x start position</td>   <td>[0, MAX]</td></tr>
-     * <tr><td>y1</td>          <td>y start position</td>   <td>[0, MAX]</td></tr>
-     * <tr><td>width</td>       <td>width</td>              <td>[0, MAX]</td></tr>
-     * <tr><td>height</td>      <td>height</td>             <td>[0, MAX]</td></tr>
-     * <tr><td>x2</td>          <td>x end position</td>     <td>x1 + width</td></tr>
-     * <tr><td>y2</td>          <td>y end position</td>     <td>y1 + height</td></tr>
-     * <tr><td>radiusX</td>     <td>x radius</td>           <td>width / 2</td></tr>
-     * <tr><td>radiusY</td>     <td>y radius</td>           <td>height / 2</td></tr>
-     * <tr><td>centerX</td>     <td>x center position</td>  <td>x1 + radiusX</td></tr>
-     * <tr><td>centerY</td>     <td>y center position</td>  <td>y1 + radiusY</td></tr>
-     * </table>
-     */
-    public void setDefaults() {
-        getVar("z");
-
-        setDefaultDimensions("width", "radiusX");
-        setDefaultDimensions("height", "radiusY");
-
-        setDefaultPositions("x1", "centerX", "x2", "width", "radiusX");
-        setDefaultPositions("y1", "centerY", "y2", "height", "radiusY");
-
-        setDefaultValues();
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private void setDefaultDimensions(String diameter, String radius) {
-        boolean hasDiameter = hasVar(diameter);
-        boolean hasRadius = hasVar(radius);
-        if (!hasDiameter && !hasRadius) {
-            setVar(radius, getVar(diameter).div(2).intVar());
-        } else if (hasDiameter) {
-            setConstraint(radius, hasRadius, getVar(diameter).div(2));
-        } else if (hasRadius) {
-            setConstraint(diameter, hasDiameter, getVar(radius).mul(2));
-        }
-    }
-
-    // Assumes dimensions are set
-    @SuppressWarnings("ConstantConditions")
-    private void setDefaultPositions(String start, String center, String end, String diameter, String radius) {
-        boolean hasStart = hasVar(start);
-        boolean hasCenter = hasVar(center);
-        boolean hasEnd = hasVar(end);
-        if (!hasStart && !hasCenter && !hasEnd) {
-            setVar(start, model.intVar(domain(0, MAX_INT_BOUND, 10)));
-            setVar(center, getVar(start).add(getVar(radius)).intVar());
-            setVar(end, getVar(start).add(getVar(diameter)).intVar());
-        } else if (hasStart) {
-            setConstraint(center, hasCenter, getVar(start).add(getVar(radius)));
-            setConstraint(end, hasEnd, getVar(start).add(getVar(diameter)));
-        } else if (hasCenter) {
-            setConstraint(start, hasStart, getVar(center).sub(getVar(radius)));
-            setConstraint(end, hasEnd, getVar(center).add(getVar(radius)));
-        } else if (hasEnd) {
-            setConstraint(start, hasStart, getVar(end).sub(getVar(diameter)));
-            setConstraint(center, hasCenter, getVar(end).sub(getVar(radius)));
-        }
-//        getVar(start).gt(getVar(end)).post(); TODO: Not guaranteed for lines
-    }
-
-    private void setDefaultValues() {
-        if (!hasValue("type")) setValue("type", "ellipse");
-        if (!hasValue("colour")) setValue("colour", "white");
-        if (!hasValue("border-colour")) setValue("border-colour", "black");
-    }
-
-    private void setConstraint(String name, boolean exists, ArExpression constraint) {
-        if (exists) {
-            constraint.eq(getVar(name)).post();
-        } else {
-            setVar(name, constraint.intVar());
-        }
-    }
-
-    private static int[] domain(int start, int end, int step) {
-        int size = (end - start) / step;
-        int[] result = new int[size];
-        for (int i = 0; i < size; i++) {
-            result[i] = start + i * step;
-        }
-        return result;
     }
 }

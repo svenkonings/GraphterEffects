@@ -25,7 +25,7 @@
       <Label fx:id="graphUrlLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Button mnemonicParsing="false" onAction="#loadScriptButtonPushed" text="Load" GridPane.columnIndex="2" />
       <Button mnemonicParsing="false" onAction="#loadGraphButtonPushed" text="Load" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-      <Button mnemonicParsing="false" text="Compile" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+      <Button mnemonicParsing="false" onAction="#compileButtonPushed" text="Compile" GridPane.columnIndex="3" GridPane.rowIndex="2" />
       <Button mnemonicParsing="false" onAction="#newScriptButtonPushed" text="New" GridPane.columnIndex="3" />
       <Button mnemonicParsing="false" onAction="#newGraphButtonPushed" text="New" GridPane.columnIndex="3" GridPane.rowIndex="1" />
    </children>
