@@ -194,7 +194,9 @@ public class Solver {
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
         visMap.values().forEach(Solver::defaultValues);
-        if (!model.getSolver().solve()) {
+        boolean succes = model.getSolver().solve();
+        model.getSolver().printStatistics();
+        if (!succes) {
             // TODO: Change exception type
             throw new RuntimeException("No solution found.");
         }

@@ -26,6 +26,7 @@ public class Main {
         terms.addAll(RuleGenerator.generate(FileUtils.readFromFile(new File(args[1]))));
         System.out.println();
         terms.forEach(System.out::println);
+        System.out.println();
         Solver solver = new Solver(terms);
         List<VisElem> visElems = solver.solve();
         Document document = SvgDocumentGenerator.generate(visElems);
