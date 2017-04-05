@@ -53,7 +53,9 @@ public class LoaderUtils {
                 DocumentModel.getInstance().setGraphFileList(graphFileList);
             }
             else {
-                DocumentModel.getInstance().getGraphFileList().addAll(graphFileList);
+                List<File> originalGraphFileList = DocumentModel.getInstance().getGraphFileList();
+                originalGraphFileList.addAll(graphFileList);
+                DocumentModel.getInstance().setGraphFileList(originalGraphFileList);
             }
         }
     }

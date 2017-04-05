@@ -1,5 +1,6 @@
 package screens.idescreen;
 
+import general.DocumentModel;
 import general.StageHistory;
 import general.ViewModel;
 import javafx.beans.value.ChangeListener;
@@ -35,7 +36,11 @@ public class IDEPresenter implements Initializable {
         borderPane.setTop(topBarView.getView());
 
         CodePaneView codePaneView = new CodePaneView();
-        tabPane.getTabs().add(new Tab("Code Name",codePaneView.getView()));
+        if (DocumentModel.getInstance().getGraafVisFile() == null){
+            tabPane.getTabs().add(new Tab("New file", codePaneView.getView()));
+        } else {
+            tabPane.getTabs().add(new Tab(DocumentModel.getInstance().getGraafVisFile().getName(), codePaneView.getView()));
+        }
 
         bind();
 

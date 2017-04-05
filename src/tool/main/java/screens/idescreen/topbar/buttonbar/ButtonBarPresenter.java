@@ -87,9 +87,11 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
 
         File graphFile = DocumentModel.getInstance().getGraphFileList().get(graphComboBox.getSelectionModel().getSelectedIndex());
+        System.out.println(graphFile);
         File scriptFile = DocumentModel.getInstance().getGraafVisFile();
         try {
             Document generatedSVG = CompilerUtils.compile(scriptFile, graphFile);
+            generatedSVG.setName(graphFile.getName().split("\\.")[0]);
             DocumentModel.getInstance().setGeneratedSVG(generatedSVG);
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,10 +107,10 @@ public class ButtonBarPresenter implements Initializable, Observer {
         List<String> svgxmltext = new ArrayList<>();
         svgxmltext.add(svgxml);
 
-
-        Path file = Paths.get("temp3.svg");
+        String graphName = DocumentModel.getInstance().getGeneratedSVG().getName();
+        Path file = Paths.get(graphName + ".svg");
         try {
-        Files.write(file, svgxmltext, Charset.forName("UTF-8"));
+            Files.write(file, svgxmltext, Charset.forName("UTF-8"));
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -119,37 +121,34 @@ public class ButtonBarPresenter implements Initializable, Observer {
         //Show the svg
         BorderPane borderPane = ((BorderPane) viewModel.getMainView());
         TabPane tabPane = (TabPane) borderPane.getCenter();
-        tabPane.getTabs().add(new Tab("Name Visualization", svgViewerView.getView()));
+        tabPane.getTabs().add(new Tab(DocumentModel.getInstance().getGeneratedSVG().getName(), svgViewerView.getView()));
 
     }
 
 
     public void menuButtonBarPushed(MouseEvent actionEvent) {
-        List<File> graphFileList = DocumentModel.getInstance().getGraphFileList();
-        if (graphFileList != null){
+        if (!choiceBoxFilled){
             LoaderUtils.showLoadGraphsPopup(false);
-        }
-        if (graphFileList != null) {
-            choiceBoxFilled = true;
-        }
-        for (File file: graphFileList){
-            graphComboBox.getItems().add(file.getName());
         }
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        switch ( (String) arg) {
+        System.out.println(((String) arg));
+        switch ( (String) arg){
             case "graphFilesLoaded":
                 List<File> graphFileList = DocumentModel.getInstance().getGraphFileList();
                 int indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
-                System.out.println("Index selected" + indexSelected);
                 FXCollections.observableArrayList();
                 if (graphFileList.size() > 0) {
                     choiceBoxFilled = true;
                 }
                 for (File file : graphFileList) {
                     graphComboBox.getItems().add(file.getName());
+                }
+                //When nothing is selected, select the first item from the list.
+                if (indexSelected == -1){
+                    indexSelected = 0;
                 }
                 graphComboBox.getSelectionModel().select(indexSelected);
                 //TODO: Make disctinction between all new files and one extra file

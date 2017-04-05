@@ -59,7 +59,6 @@ public class CodePanePresenter implements Initializable, Observer {
     public void update(Observable o, Object arg) {
         switch ((String) arg){
             case "scriptLoaded":
-                System.out.println("I WAS TRIGGERED");
                 File graafVisFile = DocumentModel.getInstance().getGraafVisFile();
                 if (graafVisFile != null) {
                     setText(graafVisFile);
