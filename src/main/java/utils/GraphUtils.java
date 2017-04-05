@@ -8,8 +8,7 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class used for methods to manipulate Graph Objects and related tasks.
@@ -72,10 +71,10 @@ public final class GraphUtils {
     }
 
 
-    public static Set<Element> elements(Graph in) {
+    public static Collection<Element> elements(Graph in) {
         Set<Element> res = new HashSet<>();
-        res.addAll(in.getEdgeSet());
         res.addAll(in.getNodeSet());
+        res.addAll(in.getEdgeSet());
         return res;
     }
 
@@ -88,5 +87,23 @@ public final class GraphUtils {
             res = in.getNode(ID);
         }
         return res;
+    }
+
+    public static boolean isFullyDirected(Graph graph) {
+        for (Edge edge : graph.getEdgeSet()) {
+           if (!edge.isDirected()) {
+               return false;
+           }
+        }
+        return true;
+    }
+
+    public static boolean isFullyUndirected(Graph graph) {
+        for (Edge edge : graph.getEdgeSet()) {
+            if (!edge.isDirected()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

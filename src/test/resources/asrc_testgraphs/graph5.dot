@@ -1,0 +1,10 @@
+//A random network
+graph {
+	a -- b[label="abc",weight="0.4"];
+	a -- c[label="bcd",weight="0.3"];
+	c -- b[label="cde",weight="0.8"];
+	c -- e[label="def",weight="0.7"];
+	e -- d[label="efg",weight="0.2"];
+	e -- b[label="fgh",weight="0.7"];
+	e -- a[weight="0.1"];
+}
