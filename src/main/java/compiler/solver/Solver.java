@@ -63,7 +63,24 @@ public class Solver {
      * Set the default queries and their associated {@link QueryConsumer}.
      */
     private void setDefaults() {
+        /*
+          First, query the bounds
+        */
+        setQuery("bounds(MinBound, MaxBound", (visMap, results) -> {
+            if (results.size() == 0) {
+                return;
+            } else if (results.size() > 1) {
+                throw new RuntimeException("Bounds can only be set once");
+            }
+            Map<String, Term> values = results.get(0);
+            int minBound = Integer.parseInt(termToString(values.get("MinBound")));
+            int maxBound = Integer.parseInt(termToString(values.get("MaxBound")));
+            visMap.setBounds(minBound, maxBound);
+        });
 
+        /*
+          Then query predicates that don't use relative positioning
+        */
         // Markup
         setQuery("colour(Elem, Colour)", attrQuery("colour", "Colour"));
         setQuery("stroke(Elem, Colour)", attrQuery("stroke", "Colour"));
@@ -80,6 +97,34 @@ public class Solver {
         setQuery("width (Elem, Width) ", attrQuery("width", "Width"));
         setQuery("height(Elem, Height)", attrQuery("height", "Height"));
 
+        // Relative dimensions
+        setQuery("sameWidth (Elem1, Elem2)", equalsQuery("width"));
+        setQuery("sameHeight(Elem1, Elem2)", equalsQuery("height"));
+
+        /*
+          Then query predicates that set the relative position constraints
+        */
+        // Visualizations
+        setQuery("shape(Elem, Shape)", elementQuery((elem, values) -> {
+            elem.setValue("type", termToString(values.get("Shape")));
+            defaultConstraints(elem);
+        }));
+        setQuery("line(Elem, FromElem, ToElem)", forEach((visMap, values) -> {
+            Term key = values.get("Elem");
+            Term fromKey = values.get("FromElem");
+            Term toKey = values.get("ToElem");
+            lineConstraints(visMap, key, fromKey, toKey);
+        }));
+        setQuery("line(FromElem, ToElem)", forEach((visMap, values) -> {
+            Term fromKey = values.get("FromElem");
+            Term toKey = values.get("ToElem");
+            Term key = list(fromKey, toKey);
+            lineConstraints(visMap, key, fromKey, toKey);
+        }));
+        setQuery("image(Elem, Path)", imageQuery());
+        /*
+          And then query predicates that use relavitve positioning
+        */
         // Alignment
         setQuery("alignLeft      (Elem1, Elem2)", equalsQuery("minX"));
         setQuery("alignHorizontal(Elem1, Elem2)", equalsQuery("centerX"));
@@ -88,17 +133,13 @@ public class Solver {
         setQuery("alignVertical  (Elem1, Elem2)", equalsQuery("centerY"));
         setQuery("alignBottom    (Elem1, Elem2)", equalsQuery("maxY"));
 
-        // Relative dimensions
-        setQuery("sameWidth (Elem1, Elem2)", equalsQuery("width"));
-        setQuery("sameHeight(Elem1, Elem2)", equalsQuery("height"));
-
         // Relative positioning
-        setQuery("below (Elem1, Elem2)", relPosQuery("minY", "maxY", true));
-        setQuery("above (Elem1, Elem2)", relPosQuery("maxY", "minY", false));
-        setQuery("right (Elem1, Elem2)", relPosQuery("minX", "maxX", true));
-        setQuery("left  (Elem1, Elem2)", relPosQuery("maxX", "minX", false));
-        setQuery("before(Elem1, Elem2)", relPosQuery("z", "z", true));
-        setQuery("behind(Elem1, Elem2)", relPosQuery("z", "z", false));
+        setQuery("below (Elem1, Elem2)", relPosQuery("minY", "maxY", ">="));
+        setQuery("above (Elem1, Elem2)", relPosQuery("maxY", "minY", "<="));
+        setQuery("right (Elem1, Elem2)", relPosQuery("minX", "maxX", ">="));
+        setQuery("left  (Elem1, Elem2)", relPosQuery("maxX", "minX", "<="));
+        setQuery("before(Elem1, Elem2)", relPosQuery("z", "z", ">"));
+        setQuery("behind(Elem1, Elem2)", relPosQuery("z", "z", "<"));
 
         // Absolute relative positioning
         setQuery("below (Elem1, Elem2, Value)", absPosQuery("minY", "maxY", true));
@@ -131,28 +172,6 @@ public class Solver {
         setQuery("enclosed          (Elem1, Elem2)", enclosedQuery(true, true));
         setQuery("enclosedHorizontal(Elem1, Elem2)", enclosedQuery(true, false));
         setQuery("enclosedVertical  (Elem1, Elem2)", enclosedQuery(false, true));
-
-        // Visualizations
-        setQuery("shape(Elem, Shape)", elementQuery((elem, values) -> {
-            elem.setValue("type", values.get("Shape").toString());
-            defaultConstraints(elem);
-        }));
-
-        setQuery("line(Elem, FromElem, ToElem)", forEach((visMap, values) -> {
-            Term key = values.get("Elem");
-            Term fromKey = values.get("FromElem");
-            Term toKey = values.get("ToElem");
-            lineConstraints(visMap, key, fromKey, toKey);
-        }));
-
-        setQuery("line(FromElem, ToElem)", forEach((visMap, values) -> {
-            Term fromKey = values.get("FromElem");
-            Term toKey = values.get("ToElem");
-            Term key = list(fromKey, toKey);
-            lineConstraints(visMap, key, fromKey, toKey);
-        }));
-
-        setQuery("image(Elem, Path)", imageQuery());
     }
 
     /**
@@ -261,7 +280,7 @@ public class Solver {
         return elementQuery((elem, values) -> {
             for (int i = 0; i < pairs.length; i += 2) {
                 String attribute = pairs[i];
-                String value = values.get(pairs[i + 1]).toString();
+                String value = termToString(values.get(pairs[i + 1]));
                 elem.set(attribute, value);
             }
         });
@@ -277,15 +296,12 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer relPosQuery(String varName1, String varName2, boolean swap) {
+    public static QueryConsumer relPosQuery(String varName1, String varName2, String op) {
         return elementPairQuery((elem1, elem2, values) -> {
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
-            if (swap) {
-                var1.gt(var2).post();
-            } else {
-                var2.gt(var1).post();
-            }
+            Model model = var1.getModel();
+            model.arithm(var1, op, var2).post();
         });
     }
 
@@ -294,7 +310,7 @@ public class Solver {
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
             String op = getOp(values);
-            int value = Integer.parseInt(values.get("Value").toString());
+            int value = Integer.parseInt(termToString(values.get("Value")));
             Model model = var1.getModel();
             if (swap) {
                 model.arithm(var1.sub(var2).intVar(), op, value).post();
@@ -325,12 +341,12 @@ public class Solver {
         return elementPairQuery((elem1, elem2, values) -> {
             List<Constraint> constraints = new ArrayList<>();
             if (x) {
-                constraints.add(elem1.getVar("minX").gt(elem2.getVar("maxX")).decompose());
-                constraints.add(elem1.getVar("maxX").lt(elem2.getVar("minX")).decompose());
+                constraints.add(elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose());
+                constraints.add(elem1.getVar("maxX").le(elem2.getVar("minX")).decompose());
             }
             if (y) {
-                constraints.add(elem1.getVar("minY").gt(elem2.getVar("maxY")).decompose());
-                constraints.add(elem1.getVar("maxY").lt(elem2.getVar("minY")).decompose());
+                constraints.add(elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose());
+                constraints.add(elem1.getVar("maxY").le(elem2.getVar("minY")).decompose());
             }
             Model model = elem1.getVar("minX").getModel();
             model.or(constraints.toArray(new Constraint[0])).post();
@@ -341,7 +357,7 @@ public class Solver {
         assert x || y;
         return elementPairQuery((elem1, elem2, values) -> {
             String op = getOp(values);
-            int value = Integer.parseInt(values.get("Value").toString());
+            int value = Integer.parseInt(termToString(values.get("Value")));
             Model model = elem1.getVar("minX").getModel();
             if (x) model.or(
                     model.arithm(elem1.getVar("minX").dist(elem2.getVar("maxX")).intVar(), op, value),
@@ -402,6 +418,9 @@ public class Solver {
      * @param elem The given visualization element.
      */
     public static void defaultConstraints(VisElem elem) {
+        elem.getVar("width").ge(0).post();
+        elem.getVar("height").ge(0).post();
+
         elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
         elem.setVar("radiusY", elem.getVar("height").div(2).intVar());
 
@@ -439,18 +458,12 @@ public class Solver {
         line.setVar("x2", toElem.getVar("centerX"));
         line.setVar("y2", toElem.getVar("centerY"));
 
-        line.setVar("width", line.getVar("x1").dist(line.getVar("x2")).intVar());
-        line.setVar("radiusX", line.getVar("width").div(2).intVar());
-
-        line.setVar("height", line.getVar("y1").dist(line.getVar("y2")).intVar());
-        line.setVar("radiusY", line.getVar("height").div(2).intVar());
-
         line.setVar("minX", line.getVar("x1").min(line.getVar("x2")).intVar());
-        line.setVar("centerX", line.getVar("minX").add(line.getVar("radiusX")).intVar());
+        line.setVar("centerX", line.getVar("x1").add(line.getVar("x2")).div(2).intVar());
         line.setVar("maxX", line.getVar("x1").max(line.getVar("x2")).intVar());
 
         line.setVar("minY", line.getVar("y1").min(line.getVar("y2")).intVar());
-        line.setVar("centerY", line.getVar("minY").add(line.getVar("radiusY")).intVar());
+        line.setVar("centerY", line.getVar("y1").add(line.getVar("y2")).div(2).intVar());
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
     }
 

@@ -13,6 +13,8 @@ public class VisMap {
 
     /** The model that is used for the visualization elements. */
     private final Model model;
+    private int minBound;
+    private int maxBound;
 
     /** The internal mapping. */
     private final HashMap<String, VisElem> mapping;
@@ -24,7 +26,14 @@ public class VisMap {
      */
     public VisMap(Model model) {
         this.model = model;
+        this.minBound = 0;
+        this.maxBound = 2000;
         this.mapping = new HashMap<>();
+    }
+
+    public void setBounds(int minBound, int maxBound) {
+        this.minBound = minBound;
+        this.maxBound = maxBound;
     }
 
     /**
@@ -44,7 +53,7 @@ public class VisMap {
      * @return The visualization element.
      */
     public VisElem get(String key) {
-        return mapping.computeIfAbsent(key, k -> new VisElem(model));
+        return mapping.computeIfAbsent(key, k -> new VisElem(model, minBound, maxBound));
     }
 
     /**
