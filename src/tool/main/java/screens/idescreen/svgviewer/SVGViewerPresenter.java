@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -45,14 +46,16 @@ public class SVGViewerPresenter implements Initializable {
 
 
         stackPane.setStyle("-fx-background-color: #7dff43;");
+        stackPane.setAlignment(Pos.CENTER);
         editPane.setStyle("-fx-background-color: #ff4bf3;");
+        imageView.setStyle("-fx-background-color: #341b5d");
 
         editPane.prefWidthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue,
                                 Number newValue) {
-                adjustTransform();
-                System.out.println("W");
+                //adjustTransform();
+                //System.out.println("W");
             }
         });
 
@@ -60,8 +63,8 @@ public class SVGViewerPresenter implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue,
                                 Number newValue) {
-                adjustTransform();
-                System.out.println("H");
+                //adjustTransform();
+                //System.out.println("H");
             }
         });
 
@@ -70,7 +73,10 @@ public class SVGViewerPresenter implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 System.out.println("Test" + newValue);
+                stackPane.setPrefWidth(newValue.doubleValue());
                 editPane.setPrefWidth(newValue.doubleValue());
+                imageView.prefWidth(newValue.doubleValue());
+                //content.getBoundsInParent()
                 //editPane.setMinWidth(newValue.doubleValue());
             }
 
@@ -80,7 +86,9 @@ public class SVGViewerPresenter implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 System.out.println("Test" + newValue);
-                editPane.setPrefHeight(newValue.doubleValue());
+                //stackPane.setPrefWidth(newValue.doubleValue());
+                //editPane.setPrefHeight(newValue.doubleValue());
+                //imageView.prefWidth(newValue.doubleValue());
                 //editPane.setMinHeight(newValue.doubleValue());
                 //graphics.setPrefHeight(newValue.doubleValue() - 300);
 
