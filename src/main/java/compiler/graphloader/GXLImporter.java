@@ -11,7 +11,6 @@ import org.xml.sax.SAXException;
 import utils.GraphUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -46,37 +45,15 @@ final class GXLImporter {
         return acceptslist.contains(ext.toLowerCase());
     }
 
-
-    static Graph read(File file, boolean addUnderscores) throws IOException, SAXException {
-        try{
-            return read(file.getAbsolutePath(), addUnderscores, false);
-        } catch (EdgeRejectedException e) {
-            return read(file.getAbsolutePath(), addUnderscores, true);
-        }
-    }
-
     static Graph read(String path, boolean addUnderscores) throws IOException, SAXException {
-        try{
+        try {
             return read(path, addUnderscores, false);
         } catch (EdgeRejectedException e) {
             return read(path, addUnderscores, true);
         }
     }
 
-
     /**
-     * Reads a file in GXL format into a GraphStream graph Object.
-     *
-     * @param file File to read into a GraphsStream Graph Object.
-     * @return A GraphStream Graph Object containing the graph represented in the file.
-     * @throws IOException  Thrown when the file could not be read.
-     * @throws SAXException Thrown when the file contains incorrect syntax.
-     */
-    static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
-        return read(file.getAbsolutePath(), addUnderscores, multigraph);
-    }
-
-     /**
      * Reads a file in GXL format into a GraphStream graph Object.
      *
      * @param path           Path to the file to read into a GraphsStream Graph Object.
@@ -214,6 +191,4 @@ final class GXLImporter {
         ids.add(idgotten);
         return idgotten;
     }
-
-
 }

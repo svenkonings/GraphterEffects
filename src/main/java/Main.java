@@ -5,7 +5,7 @@ import compiler.graphloader.Importer;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
 import compiler.svg.SvgDocumentGenerator;
-import exceptions.UnknownGraphTypeException;
+import compiler.asrc.UnknownGraphTypeException;
 import graafvis.RuleGenerator;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
@@ -23,7 +23,7 @@ public class Main {
         Graph graph = Importer.graphFromFile(args[0]);
         Printer.pprint(graph);
         List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
-        terms.addAll(RuleGenerator.generate(FileUtils.readFromFile(new File(args[1]))));
+        terms.addAll(RuleGenerator.generate(FileUtils.readLines(args[1])));
         System.out.println();
         terms.forEach(System.out::println);
         System.out.println();

@@ -325,7 +325,7 @@ public class Solver {
             String imagePath = termToString(values.get("Path"));
             String image;
             try {
-                image = FileUtils.getImageSVG(new File(imagePath));
+                image = FileUtils.getImageSVG(imagePath);
             } catch (IOException e) {
                 e.printStackTrace();
                 return;

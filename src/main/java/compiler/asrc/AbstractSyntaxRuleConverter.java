@@ -1,7 +1,6 @@
 package compiler.asrc;
 
 import alice.tuprolog.Term;
-import exceptions.UnknownGraphTypeException;
 import org.graphstream.algorithm.ConnectedComponents;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.algorithm.coloring.WelshPowell;

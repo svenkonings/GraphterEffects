@@ -3,7 +3,6 @@ package utils;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,27 +24,26 @@ public final class Printer {
         builder.append("\t{");
 
 
-        String attrstring = "";
+        StringBuilder attrstring = new StringBuilder();
         for (String key : g.getAttributeKeySet()) {
-            attrstring += "\"" + key + "\":\"" + g.getAttribute(key) + "\",";
+            attrstring.append("\"").append(key).append("\":\"").append(g.getAttribute(key).toString()).append("\",");
         }
-        if (attrstring.endsWith(",")) {
-            attrstring = attrstring.substring(0, attrstring.length() - 1);
+        if (attrstring.toString().endsWith(",")) {
+            attrstring = new StringBuilder(attrstring.substring(0, attrstring.length() - 1));
         }
-        attrstring = attrstring + "}";
+        attrstring.append("}");
         builder.append(attrstring).append("\n");
 
         List<Element> nodeset = new LinkedList<>(g.getNodeSet());
-        Collections.sort(nodeset, (o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+        nodeset.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
         builder.append("NODES\n");
         addfromlist(builder, nodeset, false, false);
         List<Element> edgeset = new LinkedList<>(g.getEdgeSet());
-        Collections.sort(edgeset, (o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+        edgeset.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
         builder.append("EDGES\n");
         addfromlist(builder, edgeset, false, false);
         System.out.println(builder.toString());
     }
-
 
     /**
      * Adds a String representation of elements of a graph to a Stringbuilder.
@@ -67,17 +65,15 @@ public final class Printer {
         for (Element e : list) {
             builder.append("\t").append(e);
             builder.append("\t{");
-            String attrstring = "";
+            StringBuilder attrstring = new StringBuilder();
             for (String key : e.getAttributeKeySet()) {
-                attrstring += keyq + key + keyq + ":" + valq + StringUtils.ObjectToString(e.getAttribute(key)) + valq + ",";
+                attrstring.append(keyq).append(key).append(keyq).append(":").append(valq).append(StringUtils.ObjectToString(e.getAttribute(key))).append(valq).append(",");
             }
-            if (attrstring.endsWith(",")) {
-                attrstring = attrstring.substring(0, attrstring.length() - 1);
+            if (attrstring.toString().endsWith(",")) {
+                attrstring = new StringBuilder(attrstring.substring(0, attrstring.length() - 1));
             }
-            attrstring = attrstring + "}";
+            attrstring.append("}");
             builder.append(attrstring).append("\n");
         }
-
     }
-
 }

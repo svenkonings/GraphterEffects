@@ -7,7 +7,6 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -33,31 +32,31 @@ final class GraphStreamImporter {
         return acceptslist.contains(ext.toLowerCase());
     }
 
-    static Graph read(File file) throws IOException {
+    static Graph read(String path) throws IOException {
         try {
-            return read(file, false);
+            return read(path, false);
         } catch (IdAlreadyInUseException e) {
-            return read(file, true);
+            return read(path, true);
         }
     }
 
     /**
      * Reads a file in some graph format into a GraphStream graph Object.
      *
-     * @param file File to read into a GraphsStream Graph Object.
+     * @param path File to read into a GraphsStream Graph Object.
      * @return A GraphStream Graph Object containing the graph represented in the file.
      * @throws IOException Thrown when the file could not be read.
      */
-    static Graph read(File file, boolean multigraph) throws IOException {
+    static Graph read(String path, boolean multigraph) throws IOException {
         Graph g;
         if (multigraph) {
-            g = new MultiGraph(file.getName());
+            g = new MultiGraph(path);
         } else {
-            g = new SingleGraph(file.getName());
+            g = new SingleGraph(path);
         }
-        FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
+        FileSource fs = FileSourceFactory.sourceFor(path);
         fs.addSink(g);
-        fs.readAll(file.getAbsolutePath());
+        fs.readAll(path);
         fs.removeSink(g);
         return g;
     }

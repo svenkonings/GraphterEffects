@@ -4,8 +4,9 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public final class GXLImporterTest {
 
@@ -21,16 +22,16 @@ public final class GXLImporterTest {
 
 
     private void testFromFolder(String folder) throws IOException, SAXException {
-        for (File f : FileUtils.recursiveInDirectory(FileUtils.fromResources(folder))) {
+        Files.walk(Paths.get(folder)).forEach(path -> {
             try {
-                if (GXLImporter.acceptsExtension(FileUtils.getExtension(f.getName()))) {
-                    Importer.graphFromFile(f);
+                if (GXLImporter.acceptsExtension(FileUtils.getExtension(path.toString()))) {
+                    Importer.graphFromFile(path.toString());
                 }
-            } catch (Exception e) {
-                System.err.println("Error reading file " + f.getPath());
-                throw e;
+            } catch (SAXException | IOException e) {
+                System.err.println("Error reading file " + path);
+                throw new RuntimeException(e);
             }
-        }
+        });
     }
 }
 

@@ -1,10 +1,8 @@
 package compiler.asrc;
 
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
-import exceptions.UnknownGraphTypeException;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -17,7 +15,6 @@ import java.util.Map;
 import static compiler.asrc.GraphRuleTests.generateGraphProlog;
 import static compiler.asrc.GraphRuleTests.graphTest;
 import static compiler.prolog.TuProlog.struct;
-import static compiler.prolog.TuProlog.term;
 import static compiler.prolog.TuProlog.var;
 import static org.junit.Assert.assertEquals;
 
@@ -25,21 +22,21 @@ public final class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot").toString());
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot").toString());
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot").toString());
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
@@ -53,38 +50,38 @@ public final class AbstractSyntaxRuleConverterTest {
 
     @Test
     public void convertToRulesGraph5() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl").toString());
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 
     @Test
     public void TestMST1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot").toString());
         MSTTest(graph);
     }
 
     @Test
     public void TestMST2() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot").toString());
         MSTTest(graph);
     }
 
     @Test
     public void TestMST3() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot").toString());
         MSTTest(graph);
     }
 
     @Test
     public void TestMST4() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot").toString());
         MSTTest(graph);
     }
 
     @Test
     public void TestMST5() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl").toString());
         MSTTest(graph);
     }
 

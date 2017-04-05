@@ -1,5 +1,7 @@
 package utils;
 
+import javafx.util.Pair;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,10 +35,10 @@ public final class StringUtils {
     public static int compareStrings(String id1, String id2) {
         Pair<String, Integer> stripped1 = stripTrailingNumbers(id1);
         Pair<String, Integer> stripped2 = stripTrailingNumbers(id2);
-        if (!stripped1.getFirst().equals(stripped2.getFirst())) {
-            return id1.compareTo(id1);
+        if (!stripped1.getKey().equals(stripped2.getKey())) {
+            return id1.compareTo(id2);
         } else {
-            return Integer.compare(stripped1.getSecond(), stripped2.getSecond());
+            return Integer.compare(stripped1.getValue(), stripped2.getValue());
         }
     }
 
@@ -47,13 +49,13 @@ public final class StringUtils {
      * @return A Pair containing the two parts of the split.
      */
     public static Pair<String, Integer> stripTrailingNumbers(String input) {
-        String digs = "";
+        StringBuilder digs = new StringBuilder();
         while (input.length() > 0 && (Character.isDigit(input.charAt(input.length() - 1)))) {
-            digs = input.charAt(input.length() - 1) + digs;
+            digs.insert(0, input.charAt(input.length() - 1));
             input = input.substring(0, input.length() - 1);
         }
         try {
-            return new Pair<>(input, Integer.parseInt(digs));
+            return new Pair<>(input, Integer.parseInt(digs.toString()));
         } catch (NumberFormatException e) {
             return new Pair<>(input, -1);
         }
