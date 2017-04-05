@@ -11,7 +11,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -91,7 +90,7 @@ public class ButtonBarPresenter implements Initializable {
         SVGViewerPresenter.SVGViewerView svgViewerView = new SVGViewerPresenter.SVGViewerView();
 
         //Show the svg
-        ((BorderPane) viewModel.getMainView()).setCenter(svgViewerView.getView());
+        //((BorderPane) viewModel.getMainView()).getCenter((BsvgViewerView.getView());
 }
 
 

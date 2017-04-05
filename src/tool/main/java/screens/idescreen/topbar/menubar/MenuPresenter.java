@@ -1,13 +1,12 @@
 package screens.idescreen.topbar.menubar;
 
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import screens.compileerrorscreen.CompileErrorView;
 import general.StageHistory;
 import general.ViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.Pane;
 import loader.LoaderView;
+import screens.compileerrorscreen.CompileErrorView;
 import start.StartView;
 
 import javax.inject.Inject;
@@ -16,7 +15,7 @@ import java.util.ResourceBundle;
 
 public class MenuPresenter implements Initializable {
 
-    public BorderPane borderPane;
+    public Pane borderPane;
     @Inject
     private ViewModel viewModel;
 

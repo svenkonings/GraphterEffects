@@ -1,34 +1,20 @@
 package screens.compilescreen;
 
-import alice.tuprolog.InvalidTheoryException;
-import alice.tuprolog.Term;
 import com.airhacks.afterburner.injection.Injector;
-import compiler.asrc.AbstractSyntaxRuleConverter;
-import compiler.graphloader.Importer;
-import compiler.prolog.TuProlog;
-import compiler.solver.Solver;
-import compiler.solver.VisElem;
-import compiler.svg.SvgDocumentGenerator;
-import exceptions.UnknownGraphTypeException;
-import general.Model;
 import general.StageHistory;
 import general.ViewModel;
-import graafvis.RuleGenerator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import org.dom4j.Document;
-import org.graphstream.graph.Graph;
-import org.xml.sax.SAXException;
 import screens.compileerrorscreen.CompileErrorView;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class CompilePresenter implements Initializable{
 
@@ -53,6 +39,7 @@ public class CompilePresenter implements Initializable{
             @Override
             public void run() {
 
+                /*
                 String code = Model.getInstance().getCodePaneTextArea().getText();
                 List<Term> visRules = RuleGenerator.generate(code);
 
@@ -67,7 +54,7 @@ public class CompilePresenter implements Initializable{
                 }
                 List<Term> graphRules = new ArrayList<>();
                 try {
-                     graphRules = AbstractSyntaxRuleConverter.convertToRules(graph, GROOVEMode);
+                     //graphRules = AbstractSyntaxRuleConverter.convertToRules(graph);
                 } catch (UnknownGraphTypeException e) {
                     e.printStackTrace();
                 }
@@ -92,6 +79,7 @@ public class CompilePresenter implements Initializable{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                */
             }
             /*
             @Override
