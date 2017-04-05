@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static compiler.prolog.TuProlog.list;
+import static utils.GraphUtils.ILLEGAL_PREFIX;
 
 /**
  * The constraint solver.
@@ -84,6 +85,7 @@ public class Solver {
         // Markup
         setQuery("colour(Elem, Colour)", attrQuery("colour", "Colour"));
         setQuery("stroke(Elem, Colour)", attrQuery("stroke", "Colour"));
+        setQuery("fontSize(Elem, Size)", attrQuery("fontSize", "Size"));
 
         // Absolute positioning
         setQuery("pos(Elem, X, Y, Z)", attrQuery("x1", "X", "y1", "Y", "z", "Z"));
@@ -122,6 +124,23 @@ public class Solver {
             lineConstraints(visMap, key, fromKey, toKey);
         }));
         setQuery("image(Elem, Path)", imageQuery());
+        setQuery("text(Elem, Text)", elementQuery((elem, values) -> {
+            elem.setValue("type", "text");
+            elem.setValue("text", termToString(values.get("Text")));
+
+            elem.setVar("minX", elem.getVar("x1"));
+            elem.setVar("centerX", elem.getVar("x1"));
+            elem.setVar("maxX", elem.getVar("x1"));
+
+            elem.setVar("minY", elem.getVar("y1"));
+            elem.setVar("centerY", elem.getVar("y1"));
+            elem.setVar("maxY", elem.getVar("y1"));
+        }));
+        setQuery("backgroundImage(Path)", forEach((visMap, values) -> {
+            VisElem elem = visMap.get(ILLEGAL_PREFIX + "background");
+            setImage(elem, values);
+            elem.setValue("type", "backgroundImage");
+        }));
 
         /*
           And then query predicates that use relavitve positioning
@@ -323,18 +342,21 @@ public class Solver {
 
     public static QueryConsumer imageQuery() {
         return elementQuery((elem, values) -> {
-            String imagePath = termToString(values.get("Path"));
-            String image;
-            try {
-                image = FileUtils.getImageSVG(new File(imagePath));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            setImage(elem, values);
             elem.set("type", "image");
-            elem.set("image", image);
             defaultConstraints(elem);
         });
+    }
+
+    public static void setImage(VisElem elem, Map<String, Term> values) {
+        String imagePath = termToString(values.get("Path"));
+        String image;
+        try {
+            image = FileUtils.getImageSVG(new File(imagePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        elem.set("image", image);
     }
 
     public static QueryConsumer noOverlapQuery(boolean x, boolean y) {
@@ -399,9 +421,8 @@ public class Solver {
      */
     public static void defaultValues(VisElem elem) {
         if (!elem.hasVar("z")) elem.setVar("z", 0);
-        if (!elem.hasVar("width")) elem.setVar("width", 10);
-        if (!elem.hasVar("height")) elem.setVar("height", 10);
-        if (!elem.hasValue("colour")) {
+        // FIXME
+        if (!elem.hasValue("colour") && !"text".equals(elem.getValue("type"))) {
             elem.setValue("colour", "white");
             if (!elem.hasValue("stroke")) {
                 elem.setValue("stroke", "black");
@@ -409,6 +430,8 @@ public class Solver {
         }
         if (!elem.hasValue("type")) {
             elem.setValue("type", "ellipse");
+            if (!elem.hasVar("width")) elem.setVar("width", 10);
+            if (!elem.hasVar("height")) elem.setVar("height", 10);
             defaultConstraints(elem);
         }
     }

@@ -48,7 +48,7 @@ public class SvgDocumentGenerator {
 
         int z = min(visElems, "z") - 1;
         visElems.stream()
-                .filter(visElem -> visElem.getValue("type").equals("background"))
+                .filter(visElem -> visElem.getValue("type").equals("backgroundImage"))
                 .findAny()
                 .ifPresent(visElem -> {
                     visElem.setVar("z", z);
@@ -56,7 +56,9 @@ public class SvgDocumentGenerator {
                     visElem.setVar("y1", minY);
                     visElem.setVar("width", width);
                     visElem.setVar("height", height);
-                    SvgElementGenerator.image().addElement(visElem, root);
+                    SvgAttributeGenerator mapping = SvgElementGenerator.image();
+                    mapping.addDefault("preserveAspectRatio", "none");
+                    mapping.addElement(visElem, root);
                 });
 
         visElems.stream()
