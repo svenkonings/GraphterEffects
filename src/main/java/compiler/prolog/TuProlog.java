@@ -278,7 +278,7 @@ public class TuProlog {
         return getTheory().toString();
     }
 
-    public void loadLibrary(ASRCLibrary asrcLibrary) throws InvalidLibraryException {
+    public void loadLibrary(Library asrcLibrary) throws InvalidLibraryException {
         prolog.loadLibrary(asrcLibrary);
     }
 
