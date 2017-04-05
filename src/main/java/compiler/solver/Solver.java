@@ -66,7 +66,7 @@ public class Solver {
         /*
           First, query the bounds
         */
-        setQuery("bounds(MinBound, MaxBound", (visMap, results) -> {
+        setQuery("bounds(MinBound, MaxBound)", (visMap, results) -> {
             if (results.size() == 0) {
                 return;
             } else if (results.size() > 1) {
@@ -122,6 +122,7 @@ public class Solver {
             lineConstraints(visMap, key, fromKey, toKey);
         }));
         setQuery("image(Elem, Path)", imageQuery());
+
         /*
           And then query predicates that use relavitve positioning
         */
