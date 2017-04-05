@@ -3,9 +3,11 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class used for methods to read from- save to- or manipulate File Objects and related tasks.
@@ -75,11 +77,11 @@ public final class FileUtils {
      * @throws IOException Thrown when the file could not be read.
      */
     public static String ImageToBase64(File file) throws IOException {
-        return Base64.getEncoder().encodeToString(org.apache.commons.io.FileUtils.readFileToByteArray(file));
+        return Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
     }
 
     public static String readFromFile(File file) throws IOException {
-        return org.apache.commons.io.FileUtils.readFileToString(file, "UTF-8");
+        return Files.readAllLines(file.toPath()).stream().collect(Collectors.joining());
     }
 
 
