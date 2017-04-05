@@ -55,11 +55,11 @@ public final class AbstractSyntaxRuleConverterTest {
         graphTest(prolog, graph);
     }
 
-    @Test
-    public void TestMST1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
-        MSTTest(graph, false);
-    }
+//    @Test
+//    public void TestMST1() throws Exception {
+//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
+//        MSTTest(graph, false);
+//    }
 
     @Test
     public void TestMST2() throws Exception {

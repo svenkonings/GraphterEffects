@@ -1,6 +1,7 @@
 package utils;
 
 import org.graphstream.graph.Edge;
+import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
@@ -68,5 +69,24 @@ public final class GraphUtils {
 
     public static int neighbourCount(Node node) {
         return neighbours(node).size();
+    }
+
+
+    public static Set<Element> elements(Graph in) {
+        Set<Element> res = new HashSet<>();
+        res.addAll(in.getEdgeSet());
+        res.addAll(in.getNodeSet());
+        return res;
+    }
+
+    public static Element getByID(Graph in, String ID) {
+        if (in.getId().equals(ID)) {
+            return in;
+        }
+        Element res = in.getEdge(ID);
+        if (res==null) {
+            res = in.getNode(ID);
+        }
+        return res;
     }
 }

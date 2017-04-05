@@ -32,12 +32,18 @@ import java.util.*;
 
 public class CompilePresenter implements Initializable{
 
+    private final boolean GROOVEMode;
     @Inject
     private ViewModel viewModel;
 
     public ProgressBar progressBar;
     public Label progressBarLabel;
     public Thread compilerThread;
+
+
+    public CompilePresenter(boolean GROOVEMode) {
+        this.GROOVEMode = GROOVEMode;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -61,7 +67,7 @@ public class CompilePresenter implements Initializable{
                 }
                 List<Term> graphRules = new ArrayList<>();
                 try {
-                     graphRules = AbstractSyntaxRuleConverter.convertToRules(graph);
+                     graphRules = AbstractSyntaxRuleConverter.convertToRules(graph, GROOVEMode);
                 } catch (UnknownGraphTypeException e) {
                     e.printStackTrace();
                 }
