@@ -421,18 +421,26 @@ public class Solver {
      */
     public static void defaultValues(VisElem elem) {
         if (!elem.hasVar("z")) elem.setVar("z", 0);
-        // FIXME
-        if (!elem.hasValue("colour") && !"text".equals(elem.getValue("type"))) {
-            elem.setValue("colour", "white");
-            if (!elem.hasValue("stroke")) {
-                elem.setValue("stroke", "black");
-            }
-        }
-        if (!elem.hasValue("type")) {
+        String type = elem.getValue("type");
+        if (type == null) {
+            type = "ellipse";
             elem.setValue("type", "ellipse");
             if (!elem.hasVar("width")) elem.setVar("width", 10);
             if (!elem.hasVar("height")) elem.setVar("height", 10);
             defaultConstraints(elem);
+        }
+        // TODO: Extendibility
+        switch (type) {
+            case "text":
+                break;
+            default:
+                if (!elem.hasValue("colour")) {
+                    elem.setValue("colour", "white");
+                    if (!elem.hasValue("stroke")) {
+                        elem.setValue("stroke", "black");
+                    }
+                }
+                break;
         }
     }
 

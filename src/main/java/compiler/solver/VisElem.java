@@ -12,7 +12,6 @@ import java.util.Objects;
  * with the values being {@link String} constants, and name-variable pairs, with the variables being {@link IntVar}
  * variables. The values of instantiated variables can also be retreiverd as {@link String} constants.
  */
-// TODO: Improve exception handling (or return bool?)
 public class VisElem {
 
     /** The model associated with this element. */
