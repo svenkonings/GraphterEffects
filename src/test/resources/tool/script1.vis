@@ -1,0 +1,2 @@
+node(X) -> shape(X,square).
+edge(S,T) -> line(S,T).

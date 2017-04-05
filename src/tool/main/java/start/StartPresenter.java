@@ -1,5 +1,6 @@
 package start;
 
+import general.DocumentModel;
 import general.StageHistory;
 import general.ViewModel;
 import javafx.event.ActionEvent;
@@ -26,6 +27,7 @@ public class StartPresenter implements Initializable {
 
     public void createNewGraafVisButtonPressed(ActionEvent actionEvent) {
         StageHistory.getInstance().setCurrentStage(this.getClass().getSimpleName());
+        DocumentModel.getInstance().newGraafVisFile();
         IDEView IDEView = new IDEView();
         viewModel.setMainView(IDEView.getView());
     }

@@ -11,14 +11,12 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem fx:id="closeButton" mnemonicParsing="false" onAction="#closeButtonPressed" text="Close" />
-            </items>
-            <items>
-               <MenuItem mnemonicParsing="false" text="Open ..." />
-               <MenuItem mnemonicParsing="false" text="New ..." />
-               <MenuItem mnemonicParsing="false" text="Save" />
-               <MenuItem mnemonicParsing="false" text="Properties" />
-              <MenuItem fx:id="exitButton" mnemonicParsing="false" onAction="#exitButtonPressed" text="Exit" />
+               <MenuItem mnemonicParsing="false" onAction="#loadScriptButtonPressed" text="Load Script" />
+                <MenuItem mnemonicParsing="false" onAction="#loadGraphButtonPressed" text="Load Graph" />
+               <MenuItem mnemonicParsing="false" onAction="#newScriptButtonPressed" text="New Script" />
+               <MenuItem mnemonicParsing="false" onAction="#saveButtonPressed" text="Save" />
+               <MenuItem mnemonicParsing="false" onAction="#saveButtonPressed" text="Save as" />
+                <MenuItem mnemonicParsing="false" onAction="#propertiesButtonPressed" text="Preferences" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">

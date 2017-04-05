@@ -6,6 +6,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import screens.idescreen.codepane.CodePaneView;
@@ -19,6 +21,7 @@ public class IDEPresenter implements Initializable {
 
     @FXML public BorderPane borderPane;
     public Pane centerPane;
+    public TabPane tabPane;
 
     @Inject private ViewModel viewModel;
 
@@ -32,7 +35,7 @@ public class IDEPresenter implements Initializable {
         borderPane.setTop(topBarView.getView());
 
         CodePaneView codePaneView = new CodePaneView();
-        borderPane.setCenter(codePaneView.getView());
+        tabPane.getTabs().add(new Tab("Code Name",codePaneView.getView()));
 
         bind();
 

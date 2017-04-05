@@ -18,7 +18,10 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class SVGViewerPresenter implements Initializable {
@@ -48,7 +51,6 @@ public class SVGViewerPresenter implements Initializable {
         stackPane.setStyle("-fx-background-color: #7dff43;");
         stackPane.setAlignment(Pos.CENTER);
         editPane.setStyle("-fx-background-color: #ff4bf3;");
-        imageView.setStyle("-fx-background-color: #341b5d");
 
         editPane.prefWidthProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -113,7 +115,12 @@ public class SVGViewerPresenter implements Initializable {
     }
 
     private Node loadContent() {
-        MyTranscoder transcoder = new MyTranscoder(getClass().getResourceAsStream("demo1.svg"));
+        MyTranscoder transcoder = null;
+        try {
+            transcoder = new MyTranscoder(Files.newInputStream(Paths.get("temp3.svg")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Image javafxCompatibleImage = transcoder.getJavafxCompatibleImage(700, 500);
 
         imageView = new ImageView(javafxCompatibleImage);

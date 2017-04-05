@@ -1,13 +1,12 @@
 package screens.idescreen.topbar.menubar;
 
-import general.StageHistory;
+import general.DocumentModel;
+import general.LoaderUtils;
+import general.Model;
 import general.ViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
-import loader.LoaderView;
-import screens.compileerrorscreen.CompileErrorView;
-import start.StartView;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -28,30 +27,26 @@ public class MenuPresenter implements Initializable {
         borderPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
     }
 
-
-    public void closeButtonPressed(ActionEvent actionEvent) {
-
-
-        switch (StageHistory.getInstance().peek()){
-            case "StartPresenter":
-                StartView startView = new StartView();
-                viewModel.setMainView(startView.getView());
-                break;
-            case "LoaderPresenter":
-                LoaderView loaderView = new LoaderView();
-                viewModel.setMainView(loaderView.getView());
-                break;
-            case "CompileErrorPresenter":
-                CompileErrorView compileErrorView = new CompileErrorView();
-                viewModel.setMainView(compileErrorView.getView());
-                break;
-            default:
-                throw new IllegalStateException();
-        }
-
-    }
-
     public void exitButtonPressed(ActionEvent actionEvent) {
         System.exit(0);
+    }
+
+    public void loadScriptButtonPressed(ActionEvent actionEvent) {
+        LoaderUtils.showLoadScriptPopup();
+    }
+
+    public void newScriptButtonPressed(ActionEvent actionEvent) {
+        DocumentModel.getInstance().newGraafVisFile();
+    }
+
+    public void saveButtonPressed(ActionEvent actionEvent) {
+        LoaderUtils.showSaveScriptPopup(Model.getInstance().getCodePaneTextArea().getText());
+    }
+
+    public void propertiesButtonPressed(ActionEvent actionEvent) {
+    }
+
+    public void loadGraphButtonPressed(ActionEvent actionEvent) {
+        LoaderUtils.showLoadGraphsPopup(false);
     }
 }
