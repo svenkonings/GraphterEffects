@@ -32,7 +32,7 @@ aTerm: aTerm andOp aTerm                                                        
      | predicate=ID (PAR_OPEN aTermSeries? PAR_CLOSE)?                                      #atomAntecedent
      | predicate=ID BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE     #multiAndAtomAntecedent
      | predicate=ID BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE      #multiOrAtomAntecedent
-     | BRACKET_OPEN (aTermSeries (VBAR aTermSeries)?)? BRACKET_CLOSE                        #listAntecedent // TODO There can be only one | in a list, and no commas after it.
+     | BRACKET_OPEN (aTermSeries (VBAR aTerm)?)? BRACKET_CLOSE                              #listAntecedent // TODO There can be only one | in a list, and no commas after it. @Ron check my update'. [|tail] kan niet toch?
 //     | variable=HID                                                                         #variableAntecedent
 //     | wildcard=UNDERSCORE                                                                  #wildcardAntecedent
 //     | STRING                                                                               #stringAntecedent

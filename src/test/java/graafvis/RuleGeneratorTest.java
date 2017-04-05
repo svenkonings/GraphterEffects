@@ -32,6 +32,7 @@ public class RuleGeneratorTest {
         singleAssert("shape([X,[3, \"wolf\"]], square).",
                 struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square"))
         );
+        // TODO head & tail lists
         // TODO Find way to test wildcards
     }
 

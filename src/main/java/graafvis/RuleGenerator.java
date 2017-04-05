@@ -21,10 +21,10 @@ import static compiler.prolog.TuProlog.*;
  * Created by Lindsay on 28-Mar-17.
  */
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
-    public static final String TUP_WILD_CARD = "_";
     public static final String TUP_AND = ",";
     public static final String TUP_OR = ";";
     public static final String TUP_NOT = "not";
+    public static final String TUP_LIST = ".";
     private List<Term> result = new ArrayList<>();
 
 
@@ -182,17 +182,20 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return or(aggregateVisitMultiTerms(ctx.predicate.getText(), ctx.terms));
     }
 
-//    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
-//        // HEAD & TAIL
-//        /*
-//        [a] = '.'(a,[])
-//        [a,b] = '.'(a,'.'(b,[]))
-//        [a,b|c] = '.'(a,'.'(b,c))
-//        There can be only one | in a list, and no commas after it.
-//         */
-//        return new list(aggregateVisit(ctx.aTermSeries(0)));
-//    }
-//
+    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
+        // HEAD & TAIL
+        /*
+        [a] = '.'(a,[])
+        [a,b] = '.'(a,'.'(b,[]))
+        [a,b|c] = '.'(a,'.'(b,c))
+        There can be only one | in a list, and no commas after it.
+         */
+        // Struct
+        // TODO null checks
+        // TODO meerdere heads
+        return struct(TUP_LIST, list(aggregateVisit(ctx.aTermSeries().aTerm())), visit(ctx.aTerm()));
+    }
+
 //    @Override public Term visitTermVar(TermVarContext ctx) {
 //        return new Var(ctx.getText());
 //    }
