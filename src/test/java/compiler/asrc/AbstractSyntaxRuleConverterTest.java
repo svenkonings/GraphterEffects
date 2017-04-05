@@ -23,21 +23,21 @@ public final class AbstractSyntaxRuleConverterTest {
     @Test
     public void convertToRulesGraph1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
-        TuProlog prolog = generateGraphProlog(graph, false);
+        TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
-        TuProlog prolog = generateGraphProlog(graph, false);
+        TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
-        TuProlog prolog = generateGraphProlog(graph, false);
+        TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 //TODO
@@ -51,7 +51,7 @@ public final class AbstractSyntaxRuleConverterTest {
     @Test
     public void convertToRulesGraph5() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
-        TuProlog prolog = generateGraphProlog(graph, false);
+        TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
 
@@ -64,25 +64,25 @@ public final class AbstractSyntaxRuleConverterTest {
     @Test
     public void TestMST2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
-        MSTTest(graph, false);
+        MSTTest(graph);
     }
 
     @Test
     public void TestMST3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
-        MSTTest(graph, false);
+        MSTTest(graph);
     }
 
     @Test
     public void TestMST4() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
-        MSTTest(graph, false);
+        MSTTest(graph);
     }
 
     @Test
     public void TestMST5() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
-        MSTTest(graph, false);
+        MSTTest(graph);
     }
 
     //TODO
@@ -93,7 +93,7 @@ public final class AbstractSyntaxRuleConverterTest {
 //    }
 
 
-    private void MSTTest(Graph graph, boolean GROOVEMode) throws Exception {
+    private void MSTTest(Graph graph) throws Exception {
         Kruskal kruskal = new Kruskal();
         kruskal.init(graph);
         kruskal.compute();
@@ -101,7 +101,7 @@ public final class AbstractSyntaxRuleConverterTest {
         for (Edge ignored : kruskal.getTreeEdges()) {
             length++;
         }
-        TuProlog prolog = generateGraphProlog(graph, GROOVEMode);
+        TuProlog prolog = generateGraphProlog(graph);
         List<Map<String, Term>> a = prolog.solve(struct("inmst", var("ID")));
         assertEquals(length, a.size());
     }

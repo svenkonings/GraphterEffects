@@ -21,8 +21,8 @@ import static utils.TestUtils.*;
 
 public class GraphRuleTests {
 
-    public static TuProlog generateGraphProlog(Graph graph, boolean GROOVEMode) throws UnknownGraphTypeException {
-        List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph, GROOVEMode);
+    public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException {
+        List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
         try {
             return new TuProlog(terms);
         } catch (InvalidTheoryException e) {
