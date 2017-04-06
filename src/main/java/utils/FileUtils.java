@@ -62,7 +62,7 @@ public final class FileUtils {
     }
 
     public static String readFromFile(File file) throws IOException {
-        return Files.readAllLines(file.toPath()).stream().collect(Collectors.joining());
+        return new String(Files.readAllBytes(file.toPath()));
     }
 
     /**
