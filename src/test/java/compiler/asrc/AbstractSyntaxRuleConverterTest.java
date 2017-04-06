@@ -1,10 +1,8 @@
 package compiler.asrc;
 
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
-import exceptions.UnknownGraphTypeException;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -17,7 +15,6 @@ import java.util.Map;
 import static compiler.asrc.GraphRuleTests.generateGraphProlog;
 import static compiler.asrc.GraphRuleTests.graphTest;
 import static compiler.prolog.TuProlog.struct;
-import static compiler.prolog.TuProlog.term;
 import static compiler.prolog.TuProlog.var;
 import static org.junit.Assert.assertEquals;
 
@@ -58,11 +55,11 @@ public final class AbstractSyntaxRuleConverterTest {
         graphTest(prolog, graph);
     }
 
-    @Test
-    public void TestMST1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
-        MSTTest(graph);
-    }
+//    @Test
+//    public void TestMST1() throws Exception {
+//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
+//        MSTTest(graph, false);
+//    }
 
     @Test
     public void TestMST2() throws Exception {

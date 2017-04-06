@@ -101,11 +101,6 @@ public final class AbstractSyntaxRuleConverter {
             termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
             if (attributeKey.equals("label")) {
                 termList.add(struct("label", term(node.getId()), term(attributeString)));
-                if (attributeString.startsWith("type:")) {
-                    termList.add(struct("type", term(node.getId()), term(attributeString)));
-                } else if (attributeString.startsWith("flag:")) {
-                    termList.add(struct("flag", term(node.getId()), term(attributeString)));
-                }
             }
         }
         return termList;
@@ -140,12 +135,7 @@ public final class AbstractSyntaxRuleConverter {
             String attributeString = '"' + StringUtils.ObjectToString(edge.getAttribute(attributeKey)) + '"';
             termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
             if (attributeKey.equals("label")) {
-                termList.add(struct(attributeKey, term(edge.getId()), term(attributeString)));
-            }
-            if (attributeString.startsWith("type:")) {
-                termList.add(struct("type", term(edge.getId()), term(attributeString)));
-            } else if (attributeString.startsWith("flag:")) {
-                termList.add(struct("flag", term(edge.getId()), term(attributeString)));
+                termList.add(struct("label", term(edge.getId()), term(attributeString)));
             }
         }
         return termList;
@@ -157,7 +147,7 @@ public final class AbstractSyntaxRuleConverter {
      * @param graph the graph for which to generate the rules
      * @return the generated rules
      */
-    public static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
+    private static List<Term> generateGraphRules(Graph graph) throws UnknownGraphTypeException {
         List<Term> termList = new ArrayList<>();
         termList.add(struct("graph", term(graph.getId())));
 

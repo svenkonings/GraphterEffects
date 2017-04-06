@@ -61,5 +61,15 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/gxl.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.airhacks</groupId>
+            <artifactId>afterburner.fx</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-transcoder</artifactId>
+            <version>1.7</version>
+        </dependency>
     </dependencies>
 </project>

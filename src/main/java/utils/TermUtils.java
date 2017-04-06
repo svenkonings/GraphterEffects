@@ -11,7 +11,7 @@ import static compiler.prolog.TuProlog.term;
 /**
  * Class used for methods to generate {@link Term} Objects and related tasks.
  */
-public final class TermUtils {
+final class TermUtils {
 
 
     /**
@@ -23,12 +23,12 @@ public final class TermUtils {
      * @param element {@link Element} to be converted to an {@link Term}
      * @return the generated {@link Term}
      */
-    public static Term elementTerm(Element element) {
+    static Term elementTerm(Element element) {
         if (element instanceof Graph) {
             return struct("graph", term(element.getId()));
         } else if (element instanceof Edge) {
             Edge edge = (Edge) element;
-            return struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId()), term(element.getId()));
+            return struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId()), term(element.getId()));
         } else {
             return struct("node", term(element.getId()));
         }

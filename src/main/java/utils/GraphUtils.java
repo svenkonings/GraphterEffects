@@ -1,14 +1,15 @@
 package utils;
 
+import org.graphstream.algorithm.ConnectedComponents;
 import org.graphstream.graph.Edge;
+import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class used for methods to manipulate Graph Objects and related tasks.
@@ -68,5 +69,55 @@ public final class GraphUtils {
 
     public static int neighbourCount(Node node) {
         return neighbours(node).size();
+    }
+
+
+    public static Collection<Element> elements(Graph in, boolean nodes, boolean edges, boolean graph) {
+        Set<Element> res = new HashSet<>();
+        if (nodes) {
+            res.addAll(in.getNodeSet());
+        }
+        if (edges) {
+            res.addAll(in.getEdgeSet());
+        }
+        if (graph) {
+            res.add(in);
+        }
+        return res;
+    }
+
+    public static Element getByID(Graph in, String ID) {
+        if (in.getId().equals(ID)) {
+            return in;
+        }
+        Element res = in.getEdge(ID);
+        if (res==null) {
+            res = in.getNode(ID);
+        }
+        return res;
+    }
+
+    public static boolean isFullyDirected(Graph graph) {
+        for (Edge edge : graph.getEdgeSet()) {
+           if (!edge.isDirected()) {
+               return false;
+           }
+        }
+        return true;
+    }
+
+    public static int ConnectedComponentsCount(Graph graph) {
+        ConnectedComponents a = new ConnectedComponents();
+        a.init(graph);
+        return a.getConnectedComponentsCount();
+    }
+
+    public static boolean isFullyUndirected(Graph graph) {
+        for (Edge edge : graph.getEdgeSet()) {
+            if (!edge.isDirected()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

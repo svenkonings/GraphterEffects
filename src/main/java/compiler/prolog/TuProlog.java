@@ -276,4 +276,12 @@ public class TuProlog {
     public String toString() {
         return getTheory().toString();
     }
+
+    public void loadLibrary(Library asrcLibrary) throws InvalidLibraryException {
+        prolog.loadLibrary(asrcLibrary);
+    }
+
+    public Prolog getProlog() {
+        return prolog;
+    }
 }

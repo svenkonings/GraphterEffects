@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.compilescreen.CompilePresenter">
+   <children>
+      <ProgressBar fx:id="progressBar" layoutX="54.0" layoutY="284.0" prefHeight="43.0" prefWidth="493.0" progress="0.0" />
+      <Label layoutX="257.0" layoutY="154.0" text="Compile spinner" />
+      <Label fx:id="progressBarLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="68.0" layoutY="297.0" prefHeight="17.0" prefWidth="465.0" text="Label" textAlignment="CENTER" />
+      <Button layoutX="260.0" layoutY="188.0" mnemonicParsing="false" onAction="#errorButtonPushed" text="Error Button" />
+   </children>
+</Pane>

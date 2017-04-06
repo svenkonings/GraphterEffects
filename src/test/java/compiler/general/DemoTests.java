@@ -18,7 +18,7 @@ import static compiler.prolog.TuProlog.*;
 public final class DemoTests {
     @Test
     public void demo1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo1.dot"));
         //Printer.pprint(graph);
         TuProlog prolog = generateGraphProlog(graph);
         prolog.addTheory(
@@ -48,7 +48,7 @@ public final class DemoTests {
 
     @Test
     public void demo2() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo2.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo2.dot"));
         //Printer.pprint(graph);
         TuProlog prolog = generateGraphProlog(graph);
         prolog.addTheory(
@@ -91,7 +91,7 @@ public final class DemoTests {
 
     @Test
     public void demo3() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo3.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo3.dot"));
         //Printer.pprint(graph);
         TuProlog prolog = generateGraphProlog(graph);
         prolog.addTheory(
@@ -123,7 +123,7 @@ public final class DemoTests {
 
     @Test
     public void demo4() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/start.gst"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/start.gst"));
         //Printer.pprint(graph);
         TuProlog prolog = generateGraphProlog(graph);
         prolog.addTheory(
