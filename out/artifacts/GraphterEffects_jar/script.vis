@@ -34,17 +34,22 @@ on(X, Y) ->
     after(X, Y).
 
 in(X, Y) ->
-    above(X, Y, -70),
-    insideX(X, Y),
-    alignCenterX(X, Y),
-    after(X, Y).
+    above(X, [Y, front], -110),
+    insideX(X, [Y, front]), // niet nodig toch?
+    alignCenterX(X, [Y, front]),
+    before(X, [Y, front]),
+    after(X, [Y, back]).
 
 boat(X, X) ->
-    image(X, "src\test\resources\demo\images\boat.png"),
-    dimensions(X, 450, 190),
-    insideX(X, water),
-    above(X, water, -50),
-    after(X, water).
+    image([X, front], "src\test\resources\demo\images\boat front.png"),
+    image([X, back], "src\test\resources\demo\images\boat back.png"),
+    dimensions([X, front], 450, 190),
+    dimensions([X, back], 450, 190),
+    insideX([X, front], water),
+    alignMinX([X, front], [X, back]),
+    above([X, front], water, -50),
+    alignMinY([X, front], [X, back]),
+    after([X, front], water).
 
 moored(X, Y); go(X, Y) -> distanceX(X, Y, 0).
 
@@ -56,7 +61,7 @@ bank(X, X), bank(Y, Y) ->
     sameWidth(X, Y),
     alignMaxY(X, Y).
 
-boat(X, X), bank(Y, Y) -> alignMinY(X, Y).
+boat(X, X), bank(Y, Y) -> alignMinY([X, front], Y).
 
 shape(water, rectangle).
 colour(water, blue).
