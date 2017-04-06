@@ -81,14 +81,14 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // --- Rule generation ---
 
     public static List<Term> generate(String script) {
-        System.out.println("\nParsing: " + script);
+//        System.out.println("\nParsing: " + script);
         RuleGenerator rg = new RuleGenerator();
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
         ParseTree tree = parser.program();
         tree.accept(rg);
-        System.out.println(rg.getResult());
+//        System.out.println(rg.getResult());
         return rg.getResult();
     }
 

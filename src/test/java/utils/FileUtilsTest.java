@@ -16,8 +16,11 @@ public final class FileUtilsTest {
 
     @Test
     public void testReadStringFromFile() throws IOException {
-        assertEquals(FileUtils.readFromFile(FileUtils.fromResources("graph1.dot")), "//A simple undirected graph\r\ngraph graphname {\r\n    a -- b -- c;\r\n    b -- d;\r\n}");
+        assertEquals(FileUtils.readFromFile(FileUtils.fromResources("graph1.dot")),
+                "//A simple undirected graph\n" +
+                "graph graphname {\n" +
+                "    a -- b -- c;\n" +
+                "    b -- d;\n" +
+                "}");
     }
-
-
 }

@@ -65,7 +65,7 @@ public final class AbstractSyntaxRuleConverter {
         a.init(graph);
         int ccount = a.getConnectedComponentsCount();
         termList.add(struct("componentcount", term(graph.getId()), intVal(ccount)));
-        if (ccount==1){
+        if (ccount == 1) {
             termList.add(struct("isconnected", term(graph.getId())));
         }
         termList.addAll(generateGraphRules(graph));
@@ -97,8 +97,8 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("neighbourcount", term(node.getId()), intVal((neighbourcount))));
         termList.add(struct("attributecount", term(node.getId()), intVal(node.getAttributeCount())));
         for (String attributeKey : node.getAttributeKeySet()) {
-            String attributeString = StringUtils.ObjectToString(node.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(node.getId()), term(attributeKey), term(attributeString)));
+            String attributeString = '"' + StringUtils.ObjectToString(node.getAttribute(attributeKey)) + '"';
+            termList.add(struct("attribute", term(attributeKey), term(node.getId()), term(attributeString)));
             if (attributeKey.equals("label")) {
                 termList.add(struct("label", term(node.getId()), term(attributeString)));
             }
@@ -121,8 +121,8 @@ public final class AbstractSyntaxRuleConverter {
 
         // TODO Reverse target and source
         termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId()), term(edge.getId())));
-        // TODO edge/2 termList.add(struct("edge", term(edge.getTargetNode().getId()), term(edge.getSourceNode().getId())));
-        // TODO edge/1 termList.add(struct("edge", term(edge.getId())));
+        termList.add(struct("edge", term(edge.getSourceNode().getId()), term(edge.getTargetNode().getId())));
+        termList.add(struct("edge", term(edge.getId())));
 
         if (edge.isDirected()) {
             termList.add(struct("directed", term(edge.getId())));
@@ -132,8 +132,8 @@ public final class AbstractSyntaxRuleConverter {
 
         termList.add(struct("attributecount", term(edge.getId()), intVal(edge.getAttributeCount())));
         for (String attributeKey : edge.getAttributeKeySet()) {
-            String attributeString = StringUtils.ObjectToString(edge.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(edge.getId()), term(attributeKey), term(attributeString)));
+            String attributeString = '"' + StringUtils.ObjectToString(edge.getAttribute(attributeKey)) + '"';
+            termList.add(struct("attribute", term(attributeKey), term(edge.getId()), term(attributeString)));
             if (attributeKey.equals("label")) {
                 termList.add(struct("label", term(edge.getId()), term(attributeString)));
             }
@@ -158,7 +158,7 @@ public final class AbstractSyntaxRuleConverter {
         termList.add(struct("attributecount", term(graph.getId()), intVal(graph.getAttributeCount())));
         for (String attributeKey : graph.getAttributeKeySet()) {
             String attributeString = StringUtils.ObjectToString(graph.getAttribute(attributeKey));
-            termList.add(struct("attribute", term(graph.getId()), term(attributeKey), term(attributeString)));
+            termList.add(struct("attribute", term(attributeKey), term(graph.getId()), term(attributeString)));
         }
 
         //For the minimum spanning tree:

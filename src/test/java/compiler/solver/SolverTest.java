@@ -50,7 +50,7 @@ public class SolverTest {
         )));
         result.add(clause(struct("shape", var("X"), term("ellipse")), struct("male", var("X"))));
         result.add(clause(struct("colour", var("X"), term("red")), struct("male", var("X"))));
-        result.add(clause(struct("pos", var("X"), intVal(60), intVal(30), intVal(1)), struct("male", var("X"))));
+        result.add(clause(struct("pos", var("X"), intVal(120), intVal(30), intVal(1)), struct("male", var("X"))));
         result.add(clause(struct("dimensions", var("X"), intVal(60), intVal(30)), struct("male", var("X"))));
         return result;
     }
