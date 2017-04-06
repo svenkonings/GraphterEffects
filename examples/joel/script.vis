@@ -25,4 +25,4 @@ line(a, b).
 
 node(X) -> shape(X, ellipse), dimensions(X, 10, 10).
 
-node(X), node(Y) -> distance(X, Y, ">", 50), line(X, Y), noOverlap(X, Y).
+node(X), node(Y) -> distance(X, Y, ">", 0), line(X, Y).

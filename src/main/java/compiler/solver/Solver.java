@@ -122,7 +122,11 @@ public class Solver {
             Term key = list(fromKey, toKey);
             lineConstraints(visMap, key, fromKey, toKey);
         }));
-        setQuery("image(Elem, Path)", imageQuery());
+        setQuery("image(Elem, Path)", elementQuery((elem, values) -> {
+            setImage(elem, values);
+            elem.set("type", "image");
+            defaultConstraints(elem);
+        }));
         setQuery("text(Elem, Text)", elementQuery((elem, values) -> {
             elem.setValue("type", "text");
             elem.setValue("text", termToString(values.get("Text")));
@@ -336,23 +340,18 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer imageQuery() {
-        return elementQuery((elem, values) -> {
-            setImage(elem, values);
-            elem.set("type", "image");
-            defaultConstraints(elem);
+    public static QueryConsumer enclosedQuery(boolean x, boolean y) {
+        assert x || y;
+        return elementPairQuery((elem1, elem2, values) -> {
+            if (x) {
+                elem1.getVar("minX").ge(elem2.getVar("minX")).post();
+                elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
+            }
+            if (y) {
+                elem1.getVar("minY").ge(elem2.getVar("minY")).post();
+                elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
+            }
         });
-    }
-
-    public static void setImage(VisElem elem, Map<String, Term> values) {
-        String imagePath = termToString(values.get("Path"));
-        String image;
-        try {
-            image = FileUtils.getImageSVG(new File(imagePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        elem.set("image", image);
     }
 
     public static QueryConsumer noOverlapQuery(boolean x, boolean y) {
@@ -379,28 +378,25 @@ public class Solver {
             int value = Integer.parseInt(termToString(values.get("Value")));
             Model model = elem1.getVar("minX").getModel();
             if (x) model.or(
-                    model.arithm(elem1.getVar("minX").dist(elem2.getVar("maxX")).intVar(), op, value),
-                    model.arithm(elem1.getVar("maxX").dist(elem2.getVar("minX")).intVar(), op, value)
+                    model.arithm(elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(), op, value),
+                    model.arithm(elem2.getVar("minX").sub(elem1.getVar("maxX")).intVar(), op, value)
             ).post();
             if (y) model.or(
-                    model.arithm(elem1.getVar("minY").dist(elem2.getVar("maxY")).intVar(), op, value),
-                    model.arithm(elem1.getVar("maxY").dist(elem2.getVar("minY")).intVar(), op, value)
+                    model.arithm(elem1.getVar("minY").sub(elem2.getVar("maxY")).intVar(), op, value),
+                    model.arithm(elem2.getVar("minY").sub(elem1.getVar("maxY")).intVar(), op, value)
             ).post();
         });
     }
 
-    public static QueryConsumer enclosedQuery(boolean x, boolean y) {
-        assert x || y;
-        return elementPairQuery((elem1, elem2, values) -> {
-            if (x) {
-                elem1.getVar("minX").ge(elem2.getVar("minX")).post();
-                elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
-            }
-            if (y) {
-                elem1.getVar("minY").ge(elem2.getVar("minY")).post();
-                elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
-            }
-        });
+    public static void setImage(VisElem elem, Map<String, Term> values) {
+        String imagePath = termToString(values.get("Path"));
+        String image;
+        try {
+            image = FileUtils.getImageSVG(new File(imagePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        elem.set("image", image);
     }
 
     /**
@@ -434,13 +430,12 @@ public class Solver {
      * @param toKey   The key of the visualization element at the end of this line.
      */
     public static void lineConstraints(VisMap visMap, Term key, Term fromKey, Term toKey) {
-        VisElem line = visMap.get(key);
         VisElem fromElem = visMap.get(fromKey);
         VisElem toElem = visMap.get(toKey);
-
         if (fromElem == toElem) {
             return;
         }
+        VisElem line = visMap.get(key);
 
         line.set("type", "line");
         if (!line.hasVar("z")) line.setVar("z", -1);
@@ -485,17 +480,19 @@ public class Solver {
             elem.forceVar("z", 0);
         }
         if (replaceVar(elem, "width", 0, 10)) {
-            forceVar(elem, "radiusY", 5);
+            forceVar(elem, "radiusX", 5);
+            addVar(elem, "centerX", 5);
             addVar(elem, "maxX", 10);
         }
         if (replaceVar(elem, "height", 0, 10)) {
             forceVar(elem, "radiusY", 5);
+            addVar(elem, "centerY", 5);
             addVar(elem, "maxY", 10);
         }
     }
 
     private static boolean replaceVar(VisElem elem, String var, int oldVal, int newVal) {
-        if (elem.getVar(var).getValue() == oldVal) {
+        if (elem.hasVar(var) && elem.getVar(var).getValue() == oldVal) {
             elem.forceVar(var, newVal);
             return true;
         }
