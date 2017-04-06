@@ -15,11 +15,6 @@ edge labels:
 bounds(0, 32).
 backgroundImage("images/river.png").
 
-text(test, "test").
-pos(test, 4, 2).
-colour(test, "black").
-fontSize(test, 2).
-
 shape(water, rectangle).
 colour(water, blue).
 dimensions(water, 20, 4).

@@ -149,6 +149,19 @@ public class VisElem {
     }
 
     /**
+     * Forces the varaible associated to the given name to the given constant.
+     *
+     * @param name     The given name.
+     * @param constant The given value.
+     * @return The variable.
+     */
+    public IntVar forceVar(String name, int constant) {
+        IntVar var = model.intVar(constant);
+        vars.put(name, var);
+        return var;
+    }
+
+    /**
      * Converts the value of an {@link IntVar} variable to a {@link String} value.
      *
      * @param var The variable to convert.

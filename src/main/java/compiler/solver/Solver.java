@@ -85,7 +85,6 @@ public class Solver {
         // Markup
         setQuery("colour(Elem, Colour)", attrQuery("colour", "Colour"));
         setQuery("stroke(Elem, Colour)", attrQuery("stroke", "Colour"));
-        setQuery("fontSize(Elem, Size)", attrQuery("fontSize", "Size"));
 
         // Absolute positioning
         setQuery("pos(Elem, X, Y, Z)", attrQuery("x1", "X", "y1", "Y", "z", "Z"));
@@ -127,19 +126,13 @@ public class Solver {
         setQuery("text(Elem, Text)", elementQuery((elem, values) -> {
             elem.setValue("type", "text");
             elem.setValue("text", termToString(values.get("Text")));
-
-            elem.setVar("minX", elem.getVar("x1"));
-            elem.setVar("centerX", elem.getVar("x1"));
-            elem.setVar("maxX", elem.getVar("x1"));
-
-            elem.setVar("minY", elem.getVar("y1"));
-            elem.setVar("centerY", elem.getVar("y1"));
-            elem.setVar("maxY", elem.getVar("y1"));
+            defaultConstraints(elem);
         }));
         setQuery("backgroundImage(Path)", forEach((visMap, values) -> {
             VisElem elem = visMap.get(ILLEGAL_PREFIX + "background");
             setImage(elem, values);
-            elem.setValue("type", "backgroundImage");
+            elem.setValue("type", "image");
+            elem.setValue("global", "true");
         }));
 
         /*
@@ -232,13 +225,15 @@ public class Solver {
      */
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
-        visMap.values().forEach(Solver::defaultValues);
+        visMap.values().forEach(Solver::preSolve);
+
         boolean succes = model.getSolver().solve();
         model.getSolver().printStatistics();
         if (!succes) {
-            // TODO: Change exception type
             throw new RuntimeException("No solution found.");
         }
+
+        visMap.values().forEach(Solver::postSolve);
         return new ArrayList<>(visMap.values());
     }
 
@@ -408,43 +403,6 @@ public class Solver {
     }
 
     /**
-     * Sets the default values of the given visualization element. The defaults are:
-     * <table summary="Defaults" border="1">
-     * <tr><td><b>Name</b></td>     <td><b>Value</b></td></tr>
-     * <tr><td>z</td>               <td>0</td></tr>
-     * <tr><td>type</td>            <td>ellipse</td></tr>
-     * <tr><td>colour</td>          <td>white</td></tr>
-     * <tr><td>border-colour</td>   <td>black</td></tr>
-     * </table>
-     *
-     * @param elem The given visualization element.
-     */
-    public static void defaultValues(VisElem elem) {
-        if (!elem.hasVar("z")) elem.setVar("z", 0);
-        String type = elem.getValue("type");
-        if (type == null) {
-            type = "ellipse";
-            elem.setValue("type", "ellipse");
-            if (!elem.hasVar("width")) elem.setVar("width", 10);
-            if (!elem.hasVar("height")) elem.setVar("height", 10);
-            defaultConstraints(elem);
-        }
-        // TODO: Extendibility
-        switch (type) {
-            case "text":
-                break;
-            default:
-                if (!elem.hasValue("colour")) {
-                    elem.setValue("colour", "white");
-                    if (!elem.hasValue("stroke")) {
-                        elem.setValue("stroke", "black");
-                    }
-                }
-                break;
-        }
-    }
-
-    /**
      * Sets the default constraints of the given visualization element.
      *
      * @param elem The given visualization element.
@@ -497,6 +455,59 @@ public class Solver {
         line.setVar("minY", line.getVar("y1").min(line.getVar("y2")).intVar());
         line.setVar("centerY", line.getVar("y1").add(line.getVar("y2")).div(2).intVar());
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
+    }
+
+    /**
+     * Should be called before {@link org.chocosolver.solver.Solver#solve}. Sets the default visualization element type
+     * (including the associated constraints), provided it doesn't already exist.
+     *
+     * @param elem The given visualization element.
+     */
+    public static void preSolve(VisElem elem) {
+        if (!elem.hasValue("type")) {
+            elem.setValue("type", "ellipse");
+            defaultConstraints(elem);
+        }
+    }
+
+    /**
+     * Should be called after {@link org.chocosolver.solver.Solver#solve}. Sets the default dimensions and the default z
+     * value of the given visualization element, provided they don't already exist.
+     *
+     * @param elem The given visualization element.
+     */
+    public static void postSolve(VisElem elem) {
+        if (elem.hasValue("global")) {
+            return;
+        }
+        if (!elem.hasVar("z")) {
+            elem.forceVar("z", 0);
+        }
+        if (replaceVar(elem, "width", 0, 10)) {
+            forceVar(elem, "radiusY", 5);
+            addVar(elem, "maxX", 10);
+        }
+        if (replaceVar(elem, "height", 0, 10)) {
+            forceVar(elem, "radiusY", 5);
+            addVar(elem, "maxY", 10);
+        }
+    }
+
+    private static boolean replaceVar(VisElem elem, String var, int oldVal, int newVal) {
+        if (elem.getVar(var).getValue() == oldVal) {
+            elem.forceVar(var, newVal);
+            return true;
+        }
+        return false;
+    }
+
+    private static void addVar(VisElem elem, String var, int addVal) {
+        int val = elem.getVar(var).getValue() + addVal;
+        elem.forceVar(var, val);
+    }
+
+    private static void forceVar(VisElem elem, String var, int val) {
+        elem.forceVar(var, val);
     }
 
     public static String getOp(Map<String, Term> values) {

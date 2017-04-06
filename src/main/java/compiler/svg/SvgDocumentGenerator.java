@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * A generator for converting visualization elements to a SVG docuemtn
  */
-// TODO: Extendability
+// TODO: Extendibility
 public class SvgDocumentGenerator {
 
     /**
@@ -39,31 +39,28 @@ public class SvgDocumentGenerator {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
 
-        // TODO: Extendibility
         int minX = min(visElems, "minX");
         int minY = min(visElems, "minY");
-        int width = max(visElems, "maxX") - minX;
-        int height = max(visElems, "maxY") - minY;
+        int maxX = max(visElems, "maxX");
+        int maxY = max(visElems, "maxY");
+        int width = maxX - minY;
+        int height = maxY - minY;
         root.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
 
-        int z = min(visElems, "z") - 1;
-        visElems.stream()
-                .filter(visElem -> visElem.getValue("type").equals("backgroundImage"))
-                .findAny()
-                .ifPresent(visElem -> {
-                    visElem.setVar("z", z);
-                    visElem.setVar("x1", minX);
-                    visElem.setVar("y1", minY);
-                    visElem.setVar("width", width);
-                    visElem.setVar("height", height);
-                    SvgAttributeGenerator mapping = SvgElementGenerator.image();
-                    mapping.addDefault("preserveAspectRatio", "none");
-                    mapping.addElement(visElem, root);
-                });
+        int minZ = min(visElems, "z") - 1;
+        visElems.stream().filter(elem -> elem.hasValue("global")).forEach(elem -> {
+            elem.forceVar("z", minZ);
+            elem.forceVar("x1", minX);
+            elem.forceVar("y1", minY);
+            elem.forceVar("x2", maxX);
+            elem.forceVar("y2", maxY);
+            elem.forceVar("width", width);
+            elem.forceVar("height", height);
+        });
 
         visElems.stream()
                 .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
-                .forEachOrdered(visElem -> generator.addElement(visElem, root));
+                .forEachOrdered(visElem -> generator.generate(visElem, root));
         return document;
     }
 

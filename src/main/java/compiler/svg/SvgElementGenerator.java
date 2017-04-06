@@ -48,27 +48,27 @@ public class SvgElementGenerator {
      * @param visElem The given visualization element.
      * @param parent  The given parent SVG element.
      */
-    public void addElement(VisElem visElem, Element parent) {
+    public void generate(VisElem visElem, Element parent) {
         String type = visElem.getValue("type");
         if (type == null) {
             return;
         }
-        SvgAttributeGenerator mapping = getGenerator(type);
-        if (mapping != null) {
-            mapping.addElement(visElem, parent);
+        SvgAttributeGenerator attr = getGenerator(type);
+        if (attr != null) {
+            attr.generate(visElem, parent);
         }
     }
 
     /**
      * Set the given type with the given {@link SvgAttributeGenerator}.
      *
-     * @param type    The given type.
-     * @param mapping The given {@link SvgAttributeGenerator}.
+     * @param type The given type.
+     * @param attr The given {@link SvgAttributeGenerator}.
      * @return The previous {@link SvgAttributeGenerator} associated with the given type, or {@code null} if it didn't
      * exist.
      */
-    public SvgAttributeGenerator setGenerator(String type, SvgAttributeGenerator mapping) {
-        return generators.put(type, mapping);
+    public SvgAttributeGenerator setGenerator(String type, SvgAttributeGenerator attr) {
+        return generators.put(type, attr);
     }
 
     /**
@@ -91,56 +91,74 @@ public class SvgElementGenerator {
         return generators.remove(type);
     }
 
+    public static SvgAttributeGenerator element(String name) {
+        SvgAttributeGenerator attr = new SvgAttributeGenerator(name);
+        attr.setMapping("colour", "fill");
+        attr.setMapping("stroke", "stroke");
+        return attr;
+    }
+
     public static SvgAttributeGenerator shape(String name) {
-        SvgAttributeGenerator mapping = new SvgAttributeGenerator(name);
-        mapping.setMapping("colour", "fill");
-        mapping.setMapping("stroke", "stroke");
-        return mapping;
+        SvgAttributeGenerator attr = element(name);
+        attr.addDefault(elem -> {
+            if (elem.attribute("fill") == null) {
+                elem.addAttribute("fill", "white");
+                if (elem.attribute("stroke") == null) {
+                    elem.addAttribute("stroke", "black");
+                }
+            }
+        });
+        return attr;
     }
 
     public static SvgAttributeGenerator rectangle() {
-        SvgAttributeGenerator mapping = shape("rect");
-        mapping.setMapping("x1", "x");
-        mapping.setMapping("y1", "y");
-        mapping.setMapping("width", "width");
-        mapping.setMapping("height", "height");
-        return mapping;
+        SvgAttributeGenerator attr = shape("rect");
+        attr.setMapping("x1", "x");
+        attr.setMapping("y1", "y");
+        attr.setMapping("width", "width");
+        attr.setMapping("height", "height");
+        return attr;
     }
 
     public static SvgAttributeGenerator ellipse() {
-        SvgAttributeGenerator mapping = shape("ellipse");
-        mapping.setMapping("centerX", "cx");
-        mapping.setMapping("centerY", "cy");
-        mapping.setMapping("radiusX", "rx");
-        mapping.setMapping("radiusY", "ry");
-        return mapping;
+        SvgAttributeGenerator attr = shape("ellipse");
+        attr.setMapping("centerX", "cx");
+        attr.setMapping("centerY", "cy");
+        attr.setMapping("radiusX", "rx");
+        attr.setMapping("radiusY", "ry");
+        return attr;
     }
 
     public static SvgAttributeGenerator line() {
-        SvgAttributeGenerator mapping = shape("line");
-        mapping.setMapping("x1", "x1");
-        mapping.setMapping("x2", "x2");
-        mapping.setMapping("y1", "y1");
-        mapping.setMapping("y2", "y2");
-        return mapping;
+        SvgAttributeGenerator attr = shape("line");
+        attr.setMapping("x1", "x1");
+        attr.setMapping("x2", "x2");
+        attr.setMapping("y1", "y1");
+        attr.setMapping("y2", "y2");
+        return attr;
     }
 
     public static SvgAttributeGenerator image() {
-        SvgAttributeGenerator mapping = new SvgAttributeGenerator("image");
-        mapping.setMapping("x1", "x");
-        mapping.setMapping("y1", "y");
-        mapping.setMapping("width", "width");
-        mapping.setMapping("height", "height");
-        mapping.setMapping("image", "href");
-        return mapping;
+        SvgAttributeGenerator attr = element("image");
+        attr.setMapping("x1", "x");
+        attr.setMapping("y1", "y");
+        attr.setMapping("width", "width");
+        attr.setMapping("height", "height");
+        attr.setMapping("image", "href");
+        // TODO: Add predicate for this
+        attr.addDefault("preserveAspectRatio", "none");
+        return attr;
     }
 
     public static SvgAttributeGenerator text() {
-        SvgAttributeGenerator mapping = shape("text");
-        mapping.setMapping("x1", "x");
-        mapping.setMapping("y1", "y");
-        mapping.setMapping("fontSize", "font-size");
-        mapping.setMapping("text", Element::addText);
-        return mapping;
+        SvgAttributeGenerator attr = element("text");
+        attr.setMapping("x1", "x");
+        attr.setMapping("y1", "y");
+        attr.setMapping("width", "textLength");
+        attr.setMapping("height", "font-size");
+        attr.setMapping("text", Element::addText);
+        attr.addDefault("alignment-baseline", "hanging");
+        attr.addDefault("lengthAdjust", "spacingAndGlyphs");
+        return attr;
     }
 }

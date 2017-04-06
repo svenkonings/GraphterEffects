@@ -3,10 +3,10 @@ package compiler.svg;
 import compiler.solver.VisElem;
 import org.dom4j.Element;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -24,7 +24,7 @@ public class SvgAttributeGenerator {
     private final Map<String, BiConsumer<Element, String>> mappings;
 
     /** The mapping of SVG attributes to element consumers. */
-    private final Set<Consumer<Element>> defaults;
+    private final List<Consumer<Element>> defaults;
 
     /**
      * Creates a generator with the given name.
@@ -34,7 +34,7 @@ public class SvgAttributeGenerator {
     public SvgAttributeGenerator(String name) {
         this.name = name;
         mappings = new HashMap<>();
-        defaults = new HashSet<>();
+        defaults = new ArrayList<>();
     }
 
     /**
@@ -92,8 +92,8 @@ public class SvgAttributeGenerator {
         return defaults.add(consumer);
     }
 
-    public boolean removeDefault(Consumer<Element> consumer) {
-        return defaults.remove(consumer);
+    public Consumer<Element> removeDefault(int index) {
+        return defaults.remove(index);
     }
 
     /**
@@ -102,7 +102,7 @@ public class SvgAttributeGenerator {
      * @param visElem The given visualization element.
      * @param parent  The given parent SVG element.
      */
-    public void addElement(VisElem visElem, Element parent) {
+    public void generate(VisElem visElem, Element parent) {
         Element element = parent.addElement(name);
         visElem.getValues().forEach((key, value) -> {
             if (mappings.containsKey(key)) {
