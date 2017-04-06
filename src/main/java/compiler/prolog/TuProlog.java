@@ -142,6 +142,9 @@ public class TuProlog {
      * @return The resulting {@link Struct}.
      */
     public static Struct and(Term... terms) {
+        if (terms.length==1 && terms[0] instanceof Struct) {
+            return (Struct) terms[0];
+        }
         return concatTerms(",", terms);
     }
 

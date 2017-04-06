@@ -34,7 +34,7 @@ public final class StringUtils {
         Pair<String, Integer> stripped1 = stripTrailingNumbers(id1);
         Pair<String, Integer> stripped2 = stripTrailingNumbers(id2);
         if (!stripped1.getFirst().equals(stripped2.getFirst())) {
-            return id1.compareTo(id1);
+            return id1.compareTo(id2);
         } else {
             return Integer.compare(stripped1.getSecond(), stripped2.getSecond());
         }
@@ -82,5 +82,15 @@ public final class StringUtils {
         } else {
             return in.toString();
         }
+    }
+
+    public static String removeQuotation(String in) {
+        while (in.startsWith("'")|| in.startsWith("\"")) {
+            in = in.substring(1);
+        }
+        while (in.endsWith("'")|| in.endsWith("\"")) {
+            in = in.substring(0, in.length()-1);
+        }
+        return in;
     }
 }
