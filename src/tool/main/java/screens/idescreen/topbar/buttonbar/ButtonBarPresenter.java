@@ -1,32 +1,29 @@
 package screens.idescreen.topbar.buttonbar;
 
-import alice.tuprolog.InvalidTheoryException;
-import exceptions.UnknownGraphTypeException;
 import general.CompilerUtils;
-import general.DocumentModel;
-import general.LoaderUtils;
 import general.ViewModel;
+import general.files.DocumentModel;
+import general.files.DocumentModelChange;
+import general.files.LoaderUtils;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import org.dom4j.Document;
-import screens.idescreen.svgviewer.SVGViewerPresenter;
+import utils.Pair;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ResourceBundle;
 
 public class ButtonBarPresenter implements Initializable, Observer {
 
@@ -38,13 +35,13 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        File graafvisScript = DocumentModel.getInstance().getGraafVisFile();
-        List<File> graafVisFileList = DocumentModel.getInstance().getGraphFileList();
+        Path graafvisScriptPath = DocumentModel.getInstance().getGraafVisFilePath();
+        Map<String,Path> graphPathMap = DocumentModel.getInstance().getGraphPathMap();
 
-        if (graafvisScript == null) {
+        if (graafvisScriptPath == null) {
             graafVisScriptNameLabel.setText("New Script");
         } else {
-            graafVisScriptNameLabel.setText(graafvisScript.getName());
+            graafVisScriptNameLabel.setText(graafvisScriptPath.getFileName().toString());
         }
 
         //graphComboBox.setTe
@@ -52,12 +49,12 @@ public class ButtonBarPresenter implements Initializable, Observer {
             graphComboBox.getItems().remove(i);
             choiceBoxFilled = false;
         }
-        for (File file: graafVisFileList){
+        for (String name: graphPathMap.keySet()){
             choiceBoxFilled = true;
-            graphComboBox.getItems().add(file);
+            graphComboBox.getItems().add(name);
         }
-        if (graafVisFileList.size() > 0) {
-            //TODO: Show the first option by default
+        if (graphPathMap.keySet().size() > 0) {
+            graphComboBox.getSelectionModel().select(0);
         } else {
             graphComboBox.setItems(FXCollections.observableArrayList());
         }
@@ -86,42 +83,16 @@ public class ButtonBarPresenter implements Initializable, Observer {
     public void compileButtonPressed(ActionEvent actionEvent) {
 
 
-        File graphFile = DocumentModel.getInstance().getGraphFileList().get(graphComboBox.getSelectionModel().getSelectedIndex());
-        System.out.println(graphFile);
-        File scriptFile = DocumentModel.getInstance().getGraafVisFile();
+        Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
+        Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
+
+
         try {
-            Document generatedSVG = CompilerUtils.compile(scriptFile, graphFile);
-            generatedSVG.setName(graphFile.getName().split("\\.")[0]);
-            DocumentModel.getInstance().setGeneratedSVG(generatedSVG);
-        } catch (IOException e) {
+            CompilerUtils.compile(scriptFilePath, graphFilePath);
+        } catch (Exception e){
             e.printStackTrace();
-        } catch (UnknownGraphTypeException e) {
-            e.printStackTrace();
-        } catch (InvalidTheoryException e) {
-            e.printStackTrace();
-        } catch (org.xml.sax.SAXException e) {
-            e.printStackTrace();
+            //TODO: Handle exceptions by showing them in an error box
         }
-
-        String svgxml = DocumentModel.getInstance().getGeneratedSVG().asXML();
-        List<String> svgxmltext = new ArrayList<>();
-        svgxmltext.add(svgxml);
-
-        String graphName = DocumentModel.getInstance().getGeneratedSVG().getName();
-        Path file = Paths.get(graphName + ".svg");
-        try {
-            Files.write(file, svgxmltext, Charset.forName("UTF-8"));
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-
-        SVGViewerPresenter.SVGViewerView svgViewerView = new SVGViewerPresenter.SVGViewerView();
-
-        //Show the svg
-        BorderPane borderPane = ((BorderPane) viewModel.getMainView());
-        TabPane tabPane = (TabPane) borderPane.getCenter();
-        tabPane.getTabs().add(new Tab(DocumentModel.getInstance().getGeneratedSVG().getName(), svgViewerView.getView()));
 
     }
 
@@ -134,17 +105,18 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        System.out.println(((String) arg));
-        switch ( (String) arg){
-            case "graphFilesLoaded":
-                List<File> graphFileList = DocumentModel.getInstance().getGraphFileList();
+        Pair<DocumentModelChange, Object> arguments = (Pair) arg;
+        DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
+        switch (documentModelChange) {
+            case GRAPHFILELOADED:
+                Map<String,Path> graphFileList = DocumentModel.getInstance().getGraphPathMap();
                 int indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
-                FXCollections.observableArrayList();
+                graphComboBox.setItems(FXCollections.observableArrayList());
                 if (graphFileList.size() > 0) {
                     choiceBoxFilled = true;
                 }
-                for (File file : graphFileList) {
-                    graphComboBox.getItems().add(file.getName());
+                for (String name : graphFileList.keySet()) {
+                        graphComboBox.getItems().add(name);
                 }
                 //When nothing is selected, select the first item from the list.
                 if (indexSelected == -1){
@@ -153,9 +125,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 graphComboBox.getSelectionModel().select(indexSelected);
                 //TODO: Make disctinction between all new files and one extra file
                 break;
-            case "scriptLoaded":
-                File script = DocumentModel.getInstance().getGraafVisFile();
-                graafVisScriptNameLabel.setText(script.getName());
+            case GRAAFVISFILELOADED:
+                Path script = DocumentModel.getInstance().getGraafVisFilePath();
+                graafVisScriptNameLabel.setText(script.getFileName().toString());
                 break;
             default:
                 break;

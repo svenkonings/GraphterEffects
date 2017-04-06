@@ -1,9 +1,9 @@
 package loader;
 
-import general.DocumentModel;
-import general.LoaderUtils;
 import general.StageHistory;
 import general.ViewModel;
+import general.files.DocumentModel;
+import general.files.LoaderUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -11,9 +11,9 @@ import screens.compilescreen.CompileView;
 import screens.idescreen.IDEView;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.net.URL;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class LoaderPresenter implements Initializable{
@@ -34,21 +34,23 @@ public class LoaderPresenter implements Initializable{
     public void loadScriptButtonPushed(ActionEvent actionEvent) {
         LoaderUtils.showLoadScriptPopup();
 
-        File script = DocumentModel.getInstance().getGraafVisFile();
+        Path script = DocumentModel.getInstance().getGraafVisFilePath();
         if (script != null) {
-            scriptURLLabel.setText(script.getName());
+            scriptURLLabel.setText(script.getFileName().toString());
         }
     }
 
     public void loadGraphButtonPushed(ActionEvent actionEvent) {
         LoaderUtils.showLoadGraphsPopup(true);
 
-        List<File> graphFileList = DocumentModel.getInstance().getGraphFileList();
-        if (graphFileList != null) {
-            if (graphFileList.size() == 1) {
-                graphUrlLabel.setText(graphFileList.get(0).getName());
+        Map<String,Path> graphPathMap = DocumentModel.getInstance().getGraphPathMap();
+        if (graphPathMap != null) {
+            if (graphPathMap.size() == 1) {
+                for (String key: graphPathMap.keySet()) {
+                    graphUrlLabel.setText(graphPathMap.get(key).getFileName().toString());
+                }
             } else {
-                graphUrlLabel.setText(graphFileList.size() + " graphs selected");
+                graphUrlLabel.setText(graphPathMap.size() + " graphs selected");
             }
         }
     }

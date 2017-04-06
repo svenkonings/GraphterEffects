@@ -1,6 +1,6 @@
 package start;
 
-import general.DocumentModel;
+import general.files.DocumentModel;
 import general.StageHistory;
 import general.ViewModel;
 import javafx.event.ActionEvent;

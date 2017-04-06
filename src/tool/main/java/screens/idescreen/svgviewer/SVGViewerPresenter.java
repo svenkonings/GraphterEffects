@@ -1,7 +1,7 @@
 package screens.idescreen.svgviewer;
 
-import com.airhacks.afterburner.views.FXMLView;
 import general.ViewModel;
+import general.files.DocumentModel;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class SVGViewerPresenter implements Initializable {
@@ -43,9 +42,6 @@ public class SVGViewerPresenter implements Initializable {
 
         //stackPane = new StackPane();
         stackPane.getChildren().add(editPane);
-
-        content = loadContent();
-        graphics.getChildren().add(content);
 
 
         stackPane.setStyle("-fx-background-color: #7dff43;");
@@ -114,10 +110,11 @@ public class SVGViewerPresenter implements Initializable {
         //stackPane.prefHeightProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).heightProperty() );
     }
 
-    private Node loadContent() {
+    public void loadContent(String key) {
+
         MyTranscoder transcoder = null;
         try {
-            transcoder = new MyTranscoder(Files.newInputStream(Paths.get("temp3.svg")));
+            transcoder = new MyTranscoder(Files.newInputStream(DocumentModel.getInstance().getGeneratedSVG(key)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -127,7 +124,8 @@ public class SVGViewerPresenter implements Initializable {
         imageView.setImage(javafxCompatibleImage);
         Group content = new Group();
         content.getChildren().add(imageView);
-        return content;
+        this.content = content;
+        graphics.getChildren().add(content);
     }
 
     private void adjustTransform() {
@@ -156,8 +154,5 @@ public class SVGViewerPresenter implements Initializable {
             graphics.getTransforms().add(new Translate(-cx, -cy));
             graphics.getTransforms().add(new Scale(scale, scale, cx, cy));
         }
-    }
-
-    public static class SVGViewerView extends FXMLView {
     }
 }

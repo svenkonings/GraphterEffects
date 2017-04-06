@@ -1,34 +1,35 @@
 package screens.idescreen.codepane;
 
-import general.DocumentModel;
 import general.Model;
 import general.ViewModel;
+import general.files.DocumentModel;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Observable;
-import java.util.Observer;
+import java.nio.file.Path;
 import java.util.ResourceBundle;
 
-public class CodePanePresenter implements Initializable, Observer {
+public class CodePanePresenter implements Initializable {
 
    @Inject ViewModel viewModel;
     public TextArea codeTextArea;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        File graafVisFile = DocumentModel.getInstance().getGraafVisFile();
+        Path graafVisFilePath = DocumentModel.getInstance().getGraafVisFilePath();
         Model.getInstance().setCodePaneTextArea(codeTextArea);
-        if (graafVisFile != null) {
-            setText(graafVisFile);
+        if (graafVisFilePath != null) {
+            setText(graafVisFilePath);
         }
 
         bind();
-        DocumentModel.getInstance().addObserver(this);
     }
 
     public void bind(){
@@ -36,8 +37,8 @@ public class CodePanePresenter implements Initializable, Observer {
         codeTextArea.prefHeightProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).heightProperty() );
     }
 
-    public void setText(File file) {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+    public void setText(Path path) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
@@ -52,21 +53,6 @@ public class CodePanePresenter implements Initializable, Observer {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        switch ((String) arg){
-            case "scriptLoaded":
-                File graafVisFile = DocumentModel.getInstance().getGraafVisFile();
-                if (graafVisFile != null) {
-                    setText(graafVisFile);
-                }
-                break;
-            default:
-                break;
-
         }
     }
 }

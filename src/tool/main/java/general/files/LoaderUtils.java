@@ -1,4 +1,4 @@
-package general;
+package general.files;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -32,7 +32,7 @@ public class LoaderUtils {
 
         File script = fileChooser.showOpenDialog(new Stage());
         if (script != null) {
-            DocumentModel.getInstance().setGraafVisFile(script);
+            DocumentModel.getInstance().loadGraafVisFile(script.toPath());
         }
     }
 
@@ -48,19 +48,24 @@ public class LoaderUtils {
         fileChooser.getExtensionFilters().add(allFilesFilter);
 
         List<File> graphFileList = fileChooser.showOpenMultipleDialog(new Stage());
+        List<Path> graphPathList = new ArrayList<>();
+
+        for (File file: graphFileList){
+            graphPathList.add(file.toPath());
+        }
+
         if (graphFileList != null){
             if (replaceExistingFiles) {
-                DocumentModel.getInstance().setGraphFileList(graphFileList);
+                DocumentModel.getInstance().removeAllGraphs();
+                DocumentModel.getInstance().loadAllGraph(graphPathList);
             }
             else {
-                List<File> originalGraphFileList = DocumentModel.getInstance().getGraphFileList();
-                originalGraphFileList.addAll(graphFileList);
-                DocumentModel.getInstance().setGraphFileList(originalGraphFileList);
+                DocumentModel.getInstance().loadAllGraph(graphPathList);
             }
         }
     }
 
-    public static Path showSaveScriptPopup(String code) {
+    public static void showSaveScriptPopup(String code) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save GraafVis Script");
         File fileLocation = fileChooser.showSaveDialog(new Stage());
@@ -70,10 +75,9 @@ public class LoaderUtils {
         Path path = fileLocation.toPath();
         try {
             Files.write(path, codeList, Charset.forName("UTF-8"));
-            return path;
+            DocumentModel.getInstance().loadGraafVisFile(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

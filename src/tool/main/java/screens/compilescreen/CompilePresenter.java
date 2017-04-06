@@ -43,7 +43,7 @@ public class CompilePresenter implements Initializable{
                 String code = Model.getInstance().getCodePaneTextArea().getText();
                 List<Term> visRules = RuleGenerator.generate(code);
 
-                File graphFile = Model.getInstance().getGraphFileList().get(0);
+                File graphFile = Model.getInstance().getGraphPathMap().get(0);
                 Graph graph = null;
                 try {
                     graph = Importer.graphFromFile(graphFile);

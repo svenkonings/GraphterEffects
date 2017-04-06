@@ -1,7 +1,7 @@
 package screens.idescreen.topbar.menubar;
 
-import general.DocumentModel;
-import general.LoaderUtils;
+import general.files.DocumentModel;
+import general.files.LoaderUtils;
 import general.Model;
 import general.ViewModel;
 import javafx.event.ActionEvent;

@@ -1,8 +1,9 @@
 package screens.idescreen;
 
-import general.DocumentModel;
 import general.StageHistory;
 import general.ViewModel;
+import general.files.DocumentModel;
+import general.files.DocumentModelChange;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -12,13 +13,18 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import screens.idescreen.codepane.CodePaneView;
+import screens.idescreen.svgviewer.SVGViewerPresenter;
+import screens.idescreen.svgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
+import utils.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.ResourceBundle;
 
-public class IDEPresenter implements Initializable {
+public class IDEPresenter implements Initializable, Observer {
 
     @FXML public BorderPane borderPane;
     public Pane centerPane;
@@ -36,12 +42,13 @@ public class IDEPresenter implements Initializable {
         borderPane.setTop(topBarView.getView());
 
         CodePaneView codePaneView = new CodePaneView();
-        if (DocumentModel.getInstance().getGraafVisFile() == null){
+        if (DocumentModel.getInstance().getGraafVisFilePath() == null){
             tabPane.getTabs().add(new Tab("New file", codePaneView.getView()));
         } else {
-            tabPane.getTabs().add(new Tab(DocumentModel.getInstance().getGraafVisFile().getName(), codePaneView.getView()));
+            tabPane.getTabs().add(new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView()));
         }
 
+        DocumentModel.getInstance().addObserver(this);
         bind();
 
 
@@ -61,5 +68,26 @@ public class IDEPresenter implements Initializable {
     }
 
 
+    @Override
+    public void update(Observable o, Object arg) {
+        Pair<DocumentModelChange, Object> arguments = (Pair) arg;
+        DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
+        switch (documentModelChange) {
+            case GRAAFVISFILELOADED:
+                CodePaneView codePaneView = new CodePaneView();
+                tabPane.getTabs().set(0, new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView()));
+                break;
+            case SVGGENERATED:
+                SVGViewerView svgViewerView = new SVGViewerView();
+                SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
+                String svgName = (String) arguments.get(1);
+                svgViewerPresenter.loadContent(svgName);
 
+                //Show the svg
+                BorderPane borderPane = ((BorderPane) viewModel.getMainView());
+                TabPane tabPane = (TabPane) borderPane.getCenter();
+                tabPane.getTabs().add(new Tab(svgName, svgViewerView.getView()));
+                break;
+        }
+    }
 }
