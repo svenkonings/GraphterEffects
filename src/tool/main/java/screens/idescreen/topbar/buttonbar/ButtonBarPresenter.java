@@ -1,5 +1,6 @@
 package screens.idescreen.topbar.buttonbar;
 
+import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import general.CompilerUtils;
 import general.ViewModel;
 import general.files.DocumentModel;
@@ -10,11 +11,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import utils.Pair;
 
 import javax.inject.Inject;
@@ -71,6 +72,63 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
+        graphComboBox.setCellFactory(lv ->
+                new ListCell<String>() {
+                    // This is the node that will display the text and the cross.
+                    // I chose a hyperlink, but you can change to button, image, etc.
+                    private HBox graphic;
+
+                    // this is the constructor for the anonymous class.
+                    {
+                        Label label = new Label();
+                        // Bind the label text to the item property. If your ComboBox items are not Strings you should use a converter.
+                        label.textProperty().bind(itemProperty());
+                        // Set max width to infinity so the cross is all the way to the right.
+                        label.setMaxWidth(Double.POSITIVE_INFINITY);
+                        // We have to modify the hiding behavior of the ComboBox to allow clicking on the hyperlink,
+                        // so we need to hide the ComboBox when the label is clicked (item selected).
+                        label.setOnMouseClicked(event -> graphComboBox.hide());
+
+                        Hyperlink cross = new Hyperlink(" X ");
+                        cross.setVisited(true); // So it is black, and not blue.
+
+                        cross.setOnMouseClicked(event ->
+                                {
+                                    // Since the ListView reuses cells, we need to get the item first, before making changes.
+                                    String item = getItem();
+
+                                    System.out.println("Clicked cross on " + item);
+                                    DocumentModel.getInstance().removeGraph(item);
+                                    //if (isSelected()) {
+                                        //graphComboBox.getSelectionModel().select(null);
+                                    //}
+                                }
+                        );
+                        // Arrange controls in a HBox, and set display to graphic only (the text is included in the graphic in this implementation).
+                        graphic = new HBox(label, cross);
+                        graphic.setHgrow(label, Priority.ALWAYS);
+                        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                    }
+
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(graphic);
+                        }
+                    }
+                });
+
+        // We have to set a custom skin, otherwise the ComboBox disappears before the click on the Hyperlink is registered.
+        graphComboBox.setSkin(new ComboBoxListViewSkin<String>(graphComboBox) {
+            @Override
+            protected boolean isHideOnClickEnabled() {
+                return false;
+            }
+        });
+
         DocumentModel.getInstance().addObserver(this);
         bind();
     }
@@ -107,17 +165,15 @@ public class ButtonBarPresenter implements Initializable, Observer {
     public void update(Observable o, Object arg) {
         Pair<DocumentModelChange, Object> arguments = (Pair) arg;
         DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
+        int indexSelected;
         switch (documentModelChange) {
             case GRAPHFILELOADED:
-                Map<String,Path> graphFileList = DocumentModel.getInstance().getGraphPathMap();
-                int indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
-                graphComboBox.setItems(FXCollections.observableArrayList());
-                if (graphFileList.size() > 0) {
-                    choiceBoxFilled = true;
-                }
-                for (String name : graphFileList.keySet()) {
-                        graphComboBox.getItems().add(name);
-                }
+                indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
+                String graphFileNameNew = (String) arguments.get(1);
+                //graphComboBox.setItems(FXCollections.observableArrayList());
+                choiceBoxFilled = true;
+
+                graphComboBox.getItems().add(graphFileNameNew);
                 //When nothing is selected, select the first item from the list.
                 if (indexSelected == -1){
                     indexSelected = 0;
@@ -125,6 +181,25 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 graphComboBox.getSelectionModel().select(indexSelected);
                 //TODO: Make disctinction between all new files and one extra file
                 break;
+            case GRAPHFILEREMOVED:
+                indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
+                String graphFileNameRemoved = (String) arguments.get(1);
+                int indexGraphFileRemoved = graphComboBox.getItems().indexOf(graphFileNameRemoved);
+                graphComboBox.getItems().remove(graphFileNameRemoved);
+
+                if (indexSelected > indexGraphFileRemoved){
+                    indexSelected--;
+                } else if (indexSelected == indexGraphFileRemoved){
+                    indexSelected = -1;
+                }
+
+                graphComboBox.getSelectionModel().select(indexSelected);
+
+                if(graphComboBox.getItems().size() == 0){
+                    choiceBoxFilled = false;
+                }
+                break;
+
             case GRAAFVISFILELOADED:
                 Path script = DocumentModel.getInstance().getGraafVisFilePath();
                 graafVisScriptNameLabel.setText(script.getFileName().toString());

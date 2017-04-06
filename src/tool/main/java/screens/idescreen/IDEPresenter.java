@@ -6,6 +6,8 @@ import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
@@ -42,13 +44,18 @@ public class IDEPresenter implements Initializable, Observer {
         borderPane.setTop(topBarView.getView());
 
         CodePaneView codePaneView = new CodePaneView();
+        Tab codeTab;
         if (DocumentModel.getInstance().getGraafVisFilePath() == null){
-            tabPane.getTabs().add(new Tab("New file", codePaneView.getView()));
+            codeTab = new Tab("New file", codePaneView.getView());
         } else {
-            tabPane.getTabs().add(new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView()));
+            codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView());
         }
+        codeTab.setClosable(false);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+        tabPane.getTabs().add(codeTab);
 
         DocumentModel.getInstance().addObserver(this);
+
         bind();
 
 
@@ -75,19 +82,34 @@ public class IDEPresenter implements Initializable, Observer {
         switch (documentModelChange) {
             case GRAAFVISFILELOADED:
                 CodePaneView codePaneView = new CodePaneView();
-                tabPane.getTabs().set(0, new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView()));
+                Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView());
+                codeTab.setClosable(false);
+                tabPane.getTabs().set(0, codeTab);
                 break;
             case SVGGENERATED:
+                //Generate and load the content in the SVGViewerView
                 SVGViewerView svgViewerView = new SVGViewerView();
                 SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
                 String svgName = (String) arguments.get(1);
                 svgViewerPresenter.loadContent(svgName);
 
-                //Show the svg
                 BorderPane borderPane = ((BorderPane) viewModel.getMainView());
                 TabPane tabPane = (TabPane) borderPane.getCenter();
-                tabPane.getTabs().add(new Tab(svgName, svgViewerView.getView()));
+
+                //Create the tabPane
+                Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
+                svgViewerTab.setClosable(true);
+                svgViewerTab.setOnClosed(new EventHandler<Event>() {
+                    @Override
+                    public void handle(Event event) {
+                        DocumentModel.getInstance().removeGeneratedSVG(svgName);
+                    }
+                });
+
+                tabPane.getTabs().add(svgViewerTab);
                 break;
         }
     }
+
+
 }

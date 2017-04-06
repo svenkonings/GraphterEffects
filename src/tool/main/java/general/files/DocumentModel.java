@@ -4,16 +4,14 @@ import utils.Pair;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
+import java.util.*;
 
 public class DocumentModel extends Observable{
 
 
     private Path graafVisFilePath;
     private Map<String, Path> graphFileMap = new HashMap<>();
+    private LinkedList<Pair<String,Path>> graphFileList = new LinkedList(); //Serves as a FIFO Queue;
     private Map<String, Path> generatedSVGMap = new HashMap<>();
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
 
@@ -55,6 +53,12 @@ public class DocumentModel extends Observable{
 
     public void loadGraph(Path graphPath) {
         graphFileMap.put(graphPath.getFileName().toString(), graphPath);
+        graphFileList.addFirst(new Pair<>(graphPath.getFileName().toString(), graphPath));
+        if(graphFileList.size() == 11){
+            Pair<String,Path> removedGraph = graphFileList.removeLast();
+            setChanged();
+            notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILEREMOVED, removedGraph.getFirst()));
+        }
         setChanged();
         notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILELOADED, graphPath.getFileName().toString() ));
     }
