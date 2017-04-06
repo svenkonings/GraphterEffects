@@ -3,14 +3,12 @@ package screens.idescreen.codepane;
 import general.Model;
 import general.ViewModel;
 import general.files.DocumentModel;
+import general.files.LoaderUtils;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -38,19 +36,8 @@ public class CodePanePresenter implements Initializable {
     }
 
     public void setText(Path path) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
-            }
-            String code = sb.toString();
-            codeTextArea.setText(code);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        try {
+            codeTextArea.setText(LoaderUtils.readFile(path));
         } catch (IOException e) {
             e.printStackTrace();
         }

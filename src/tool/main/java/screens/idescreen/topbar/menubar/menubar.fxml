@@ -15,7 +15,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#loadGraphButtonPressed" text="Load Graph" />
                <MenuItem mnemonicParsing="false" onAction="#newScriptButtonPressed" text="New Script" />
                <MenuItem mnemonicParsing="false" onAction="#saveButtonPressed" text="Save" />
-               <MenuItem mnemonicParsing="false" onAction="#saveButtonPressed" text="Save as" />
+               <MenuItem mnemonicParsing="false" onAction="#saveAsButtonPressed" text="Save as" />
                 <MenuItem mnemonicParsing="false" onAction="#propertiesButtonPressed" text="Preferences" />
             </items>
           </Menu>

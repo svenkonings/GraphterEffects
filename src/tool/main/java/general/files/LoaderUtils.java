@@ -4,7 +4,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.swing.filechooser.FileSystemView;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ public class LoaderUtils {
     private static FileChooser.ExtensionFilter visFilesFilter = new FileChooser.ExtensionFilter("VIS files (*.vis)", "*.VIS", "*.vis");;
     private static FileChooser.ExtensionFilter graphFilesFilter = new FileChooser.ExtensionFilter("Graph files (*.dot, ... )", "*.DOT", "*.dot");;
     private static FileChooser.ExtensionFilter dotFilesFilter = new FileChooser.ExtensionFilter("DOT files (*.dot)", "*.DOT", "*.dot");
+    private static FileChooser.ExtensionFilter svgFilesFilter = new FileChooser.ExtensionFilter("SVG files (*.svg)", "*.svg");
 
     public static void showLoadScriptPopup() {
         FileChooser fileChooser = new FileChooser();
@@ -65,19 +68,68 @@ public class LoaderUtils {
         }
     }
 
-    public static void showSaveScriptPopup(String code) {
+    public static void showSaveScriptPopup(Path path, String codefile) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save GraafVis Script");
+        fileChooser.getExtensionFilters().add(visFilesFilter);
+        fileChooser.setInitialFileName(path.getFileName().toString());
         File fileLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
-        codeList.add(code);
+        codeList.add(codefile);
 
-        Path path = fileLocation.toPath();
         try {
-            Files.write(path, codeList, Charset.forName("UTF-8"));
+            Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
             DocumentModel.getInstance().loadGraafVisFile(path);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void saveSVG(Path path, String xml) throws IOException {
+        List<String> codeList = new ArrayList<>();
+        codeList.add(xml);
+        Files.write(path, codeList, Charset.forName("UTF-8"));
+    }
+
+    public static void saveVIS(Path path, String code) throws IOException {
+        List<String> codeList = new ArrayList<>();
+        codeList.add(code);
+        Files.write(path, codeList, Charset.forName("UTF-8"));
+    }
+
+    public static void showSaveSVGPopup(Path svgPath) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Generated Visualization");
+        fileChooser.getExtensionFilters().add(svgFilesFilter);
+        fileChooser.setInitialFileName(svgPath.getFileName().toString());
+        File saveLocation = fileChooser.showSaveDialog(new Stage());
+        List<String> codeList = new ArrayList<>();
+
+
+        try {
+            codeList.add(readFile(svgPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Files.write(saveLocation.toPath(), codeList, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String readFile(Path path) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append(System.lineSeparator());
+                line = br.readLine();
+            }
+            return sb.toString();
         }
     }
 }

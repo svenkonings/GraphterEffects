@@ -13,14 +13,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import utils.Pair;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -139,14 +143,22 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void compileButtonPressed(ActionEvent actionEvent) {
-
-
         Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
+        TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
+        Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
+        String currentlySavedCode = ((TextArea) viewerTab.getContent()).getText();
 
+        new File("/temp/compiler").mkdirs();
+        Path tempFilePath = Paths.get("/temp/compiler",scriptFilePath.getFileName().toString());
         try {
-            CompilerUtils.compile(scriptFilePath, graphFilePath);
+            LoaderUtils.saveVIS(tempFilePath,currentlySavedCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            CompilerUtils.compile(tempFilePath, graphFilePath);
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box

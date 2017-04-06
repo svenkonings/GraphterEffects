@@ -1,15 +1,24 @@
 package screens.idescreen.topbar.menubar;
 
+import general.ViewModel;
 import general.files.DocumentModel;
 import general.files.LoaderUtils;
-import general.Model;
-import general.ViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MenuPresenter implements Initializable {
@@ -40,7 +49,24 @@ public class MenuPresenter implements Initializable {
     }
 
     public void saveButtonPressed(ActionEvent actionEvent) {
-        LoaderUtils.showSaveScriptPopup(Model.getInstance().getCodePaneTextArea().getText());
+        //LoaderUtils.showSaveScriptPopup(Model.getInstance().getCodePaneTextArea().getText());
+        TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
+        Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
+        String viewerTabID = viewerTab.getText();
+
+        if (viewerTabID.split("\\.")[1].equals("vis")){
+            Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
+            String code = ((TextArea) viewerTab.getContent()).getText();
+            List<String> codeList = new ArrayList<>();
+            codeList.add(code);
+            try {
+                Files.write(codePath, codeList, Charset.forName("UTF-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            LoaderUtils.showSaveSVGPopup(DocumentModel.getInstance().getGeneratedSVG(viewerTabID));
+        }
     }
 
     public void propertiesButtonPressed(ActionEvent actionEvent) {
@@ -48,5 +74,19 @@ public class MenuPresenter implements Initializable {
 
     public void loadGraphButtonPressed(ActionEvent actionEvent) {
         LoaderUtils.showLoadGraphsPopup(false);
+    }
+
+    public void saveAsButtonPressed(ActionEvent actionEvent) {
+        TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
+        Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
+        String viewerTabID = viewerTab.getText();
+
+        if (viewerTabID.split("\\.")[1].equals("vis")){
+            Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
+            String code = ((TextArea) viewerTab.getContent()).getText();
+            LoaderUtils.showSaveScriptPopup(codePath, code);
+        } else {
+            LoaderUtils.showSaveSVGPopup(DocumentModel.getInstance().getGeneratedSVG(viewerTabID));
+        }
     }
 }
