@@ -1,5 +1,6 @@
 package utils;
 
+import org.graphstream.algorithm.ConnectedComponents;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
@@ -71,10 +72,17 @@ public final class GraphUtils {
     }
 
 
-    public static Collection<Element> elements(Graph in) {
+    public static Collection<Element> elements(Graph in, boolean nodes, boolean edges, boolean graph) {
         Set<Element> res = new HashSet<>();
-        res.addAll(in.getNodeSet());
-        res.addAll(in.getEdgeSet());
+        if (nodes) {
+            res.addAll(in.getNodeSet());
+        }
+        if (edges) {
+            res.addAll(in.getEdgeSet());
+        }
+        if (graph) {
+            res.add(in);
+        }
         return res;
     }
 
@@ -96,6 +104,12 @@ public final class GraphUtils {
            }
         }
         return true;
+    }
+
+    public static int ConnectedComponentsCount(Graph graph) {
+        ConnectedComponents a = new ConnectedComponents();
+        a.init(graph);
+        return a.getConnectedComponentsCount();
     }
 
     public static boolean isFullyUndirected(Graph graph) {

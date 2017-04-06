@@ -67,4 +67,46 @@ public class LibraryTest {
         testFail(struct("directed", var("X")), undigraph);
         testSuccess(struct("directed", var("X")), empty);
     }
+
+    @Test
+    public void Mixed() throws Exception {
+        testFail(struct("mixed", struct("#empty.dot")), empty);
+        testFail(struct("mixed", var("X")), empty);
+    }
+
+    @Test
+    public void ComponentCount() throws Exception {
+        testSuccess(struct("isconnected", var("X")), digraph);
+        testSuccess(struct("isconnected", struct("#graph4.dot")), digraph);
+        testSuccess(struct("isconnected", var("X")), empty);
+        testSuccess(struct("isconnected", struct("#empty.dot")), empty);
+    }
+
+    @Test
+    public void AttributeCount() throws Exception {
+        testSuccess(struct("attributecount", struct("#graph5.dot"), intVal(0)), undigraph);
+        testSuccess(struct("attributecount", struct("#(e;a)"), intVal(1)), undigraph);
+        testSuccess(struct("attributecount", struct("#(e;d)"), intVal(2)), undigraph);
+        testSuccess(struct("attributecount", struct("#(e;b)"), intVal(3)), undigraph);
+        testSuccess(struct("attributecount", var("X"), intVal(3)), undigraph);
+        testFail(struct("attributecount", var("X"), intVal(4)), undigraph);
+        testSuccess(struct("attributecount", struct("#(e;b)"), var("X")), undigraph);
+    }
+
+    @Test
+    public void scaryTest() throws Exception {
+        engine = new TuProlog();
+        lib = new ASRCLibrary(digraph);
+        //engine.addTheory(clause(struct("yes", var("X")), struct("scary", var("X"))));
+        engine.addTheory(clause(struct("yes", var("X")), and(struct("scary", var("X")), struct("scarysecond", var("X")))));
+        engine.loadLibrary(lib);
+
+
+        SolveInfo res = engine.getProlog().solve(struct("yes", var("X")));
+        System.out.println(res);
+        res = engine.getProlog().solve(and(struct("yes", var("X"))));
+        System.out.println(res);
+    }
+
+
 }
