@@ -8,7 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
@@ -87,7 +86,7 @@ public class MenuPresenter implements Initializable {
 
         if (viewerTabID.split("\\.").length == 2 && viewerTabID.split("\\.")[1].equals("vis")){
             Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
-            String code = ((TextArea) viewerTab.getContent()).getText();
+            String code = DocumentModel.getInstance().graafVisCode;
             LoaderUtils.showSaveScriptPopup(codePath, code);
         } else {
             LoaderUtils.showSaveSVGPopup(DocumentModel.getInstance().getGeneratedSVG(viewerTabID));

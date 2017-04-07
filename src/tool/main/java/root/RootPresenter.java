@@ -25,7 +25,6 @@ public class RootPresenter implements Initializable {
         //rootPane.widthProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
         StartView view = new StartView();
         viewModel.setMainView(view.getView());
-        rootPane.setStyle("-fx-background-color: #ff231a;");
 
         //rootPane.widthProperty().isEqualTo(rootPane.getScene().getWindow().getWidth(), 0);
 }
