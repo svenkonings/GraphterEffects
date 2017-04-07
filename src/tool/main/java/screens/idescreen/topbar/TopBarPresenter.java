@@ -40,7 +40,6 @@ public class TopBarPresenter implements Initializable{
     }
 
     public void bind() {
-        splitPane.setStyle("-fx-background-color: #fff52c;");
         splitPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
     }
 }

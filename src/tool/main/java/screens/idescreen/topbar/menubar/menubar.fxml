@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 
 <Pane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.idescreen.topbar.menubar.MenuPresenter">
-  <MenuBar BorderPane.alignment="CENTER">
+  <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>

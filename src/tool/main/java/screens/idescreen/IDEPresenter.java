@@ -6,6 +6,7 @@ import general.compiler.CompilationModel;
 import general.compiler.CompilationProgress;
 import general.files.DocumentModel;
 import general.files.DocumentModelChange;
+import general.files.LoaderUtils;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,13 +19,15 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import screens.idescreen.bottombar.BottomBarView;
-import screens.idescreen.codepane.CodePaneView;
+import screens.idescreen.graafviseditor.GraafVisEditorView;
 import screens.idescreen.newsvgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
 import utils.Pair;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -41,14 +44,13 @@ public class IDEPresenter implements Initializable, Observer {
     public void initialize(URL location, ResourceBundle resources) {
         StageHistory.getInstance().setCurrentStage(this.getClass().getSimpleName());
 
-        borderPane.setStyle("-fx-background-color: #a1fff3;");
-
         TopBarView topBarView = new TopBarView();
         borderPane.setTop(topBarView.getView());
 
         BottomBarView bottomBarView = new BottomBarView();
         borderPane.setBottom(bottomBarView.getView());
 
+        /*
         CodePaneView codePaneView = new CodePaneView();
         Tab codeTab;
         if (DocumentModel.getInstance().getGraafVisFilePath() == null){
@@ -56,6 +58,21 @@ public class IDEPresenter implements Initializable, Observer {
         } else {
             codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView());
         }
+        */
+        GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
+        Tab codeTab;
+        if (DocumentModel.getInstance().getGraafVisFilePath() == null){
+            try {
+                LoaderUtils.saveVIS(Paths.get("/temp/newfile.vis"),"");
+                DocumentModel.getInstance().loadGraafVisFile(Paths.get("/temp/newfile.vis"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            };
+            codeTab = new Tab("New file", graafVisEditorView.getView());
+        } else {
+            codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
+        }
+
         codeTab.setClosable(false);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         tabPane.getTabs().add(codeTab);
@@ -91,8 +108,8 @@ public class IDEPresenter implements Initializable, Observer {
                 DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
                 switch (documentModelChange) {
                     case GRAAFVISFILELOADED:
-                        CodePaneView codePaneView = new CodePaneView();
-                        Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView());
+                        GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
+                        Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
                         codeTab.setClosable(false);
                         tabPane.getTabs().set(0, codeTab);
                         break;
@@ -102,7 +119,7 @@ public class IDEPresenter implements Initializable, Observer {
                             public void run() {
 
                                 //Generate and load the content in the SVGViewerView2
-                                SVGViewerView svgViewerView2 = new SVGViewerView();
+                                SVGViewerView svgViewerView = new SVGViewerView();
 
                                 String svgName = (String) arguments.get(1);
                                 System.out.println("TEST:" + svgName);
@@ -112,7 +129,7 @@ public class IDEPresenter implements Initializable, Observer {
                                 TabPane tabPane = (TabPane) borderPane.getCenter();
 
                                 //Create the tabPane
-                                Tab svgViewerTab = new Tab(svgName, svgViewerView2.getView());
+                                Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
                                 svgViewerTab.setClosable(true);
                                 svgViewerTab.setOnClosed(new EventHandler<Event>() {
                                     @Override

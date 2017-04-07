@@ -138,7 +138,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void bind(){
-        splitPane.setStyle("-fx-background-color: #ff231a;");
         splitPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
     }
 
@@ -147,13 +146,12 @@ public class ButtonBarPresenter implements Initializable, Observer {
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
         TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
-        Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
-        String currentlySavedCode = ((TextArea) viewerTab.getContent()).getText();
+        String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
 
         new File("/temp/compiler").mkdirs();
         Path tempFilePath = Paths.get("/temp/compiler",scriptFilePath.getFileName().toString());
         try {
-            LoaderUtils.saveVIS(tempFilePath,currentlySavedCode);
+            LoaderUtils.saveVIS(tempFilePath,codeOnScreen);
         } catch (IOException e) {
             e.printStackTrace();
         }

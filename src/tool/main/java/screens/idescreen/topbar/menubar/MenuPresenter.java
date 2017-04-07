@@ -5,6 +5,7 @@ import general.files.DocumentModel;
 import general.files.LoaderUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -24,6 +25,7 @@ import java.util.ResourceBundle;
 public class MenuPresenter implements Initializable {
 
     public Pane borderPane;
+    public MenuBar menuBar;
     @Inject
     private ViewModel viewModel;
 
@@ -34,6 +36,7 @@ public class MenuPresenter implements Initializable {
 
     public void bind(){
         borderPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
+        menuBar.prefWidthProperty().bind(borderPane.prefWidthProperty());
     }
 
     public void exitButtonPressed(ActionEvent actionEvent) {
@@ -56,7 +59,8 @@ public class MenuPresenter implements Initializable {
 
         if (viewerTabID.split("\\.")[1].equals("vis")){
             Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
-            String code = ((TextArea) viewerTab.getContent()).getText();
+
+            String code = DocumentModel.getInstance().graafVisCode;
             List<String> codeList = new ArrayList<>();
             codeList.add(code);
             try {
@@ -81,7 +85,7 @@ public class MenuPresenter implements Initializable {
         Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
         String viewerTabID = viewerTab.getText();
 
-        if (viewerTabID.split("\\.")[1].equals("vis")){
+        if (viewerTabID.split("\\.").length == 2 && viewerTabID.split("\\.")[1].equals("vis")){
             Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
             String code = ((TextArea) viewerTab.getContent()).getText();
             LoaderUtils.showSaveScriptPopup(codePath, code);
