@@ -1,0 +1,28 @@
+Solver en prolog opsplitsen
+Pre en post solve uitbreidbaar maken
+SVG document generator uitbreidbaar maken
+Logging
+
+Meer predicaten:
+    Pijltjes
+    Elementen labels geven
+    Stippelingtjes (stroke-dasharray)
+    Vierkant en cirkel (dus gelijke breedte/hoogte)
+    Driehoek
+    Lijnen zonder van-naar
+    Beziercurves (eigen kromming meegeven) (kromming default, of als er een node tussenzit)
+    Polylines (eigen path)
+    Polygon (again eigen path)
+    vijfhoeken, zeshoeken, etc.
+    Mouseover (Of alleen titel of inline javascript)
+    Path en textPath (ws weer eigen path)
+    Transformaties (draaing, flip, scale, etc.)
+    onHover (bijv. achtergrond veranderen, of layout, Geanimeerde edges die zichtbaar worden (incl snelheid))
+    Layouts (elliptical, gridded, linear, stepped)
+    Hoeklijnen (mogelijk maximum aantal hoeken aangeven, of op grid)
+    Afstand buren op layout
+    Ports (Arend)
+
+Taal:
+Vararg left predicaat
+Meer imports dan alleen labels

@@ -162,6 +162,13 @@ public class VisElem {
     }
 
     /**
+     * @return The model associated to this element.
+     */
+    public Model getModel() {
+        return model;
+    }
+
+    /**
      * Converts the value of an {@link IntVar} variable to a {@link String} value.
      *
      * @param var The variable to convert.
