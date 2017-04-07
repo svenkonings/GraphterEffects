@@ -1,31 +1,8 @@
-package general;
-
-import alice.tuprolog.InvalidTheoryException;
-import alice.tuprolog.Term;
-import compiler.asrc.AbstractSyntaxRuleConverter;
-import compiler.graphloader.Importer;
-import compiler.solver.Solver;
-import compiler.solver.VisElem;
-import compiler.svg.SvgDocumentGenerator;
-import exceptions.UnknownGraphTypeException;
-import general.files.DocumentModel;
-import graafvis.RuleGenerator;
-import org.dom4j.Document;
-import org.graphstream.graph.Graph;
-import org.xml.sax.SAXException;
-import utils.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+package general.compiler;
 
 public class CompilerUtils {
 
+    /*
     public static void compile(Path scriptFile, Path graphFile) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException {
         //Compiles the scriptFile and graphFile to an SVG
         Graph graph = Importer.graphFromFile(graphFile.toFile());
@@ -60,4 +37,5 @@ public class CompilerUtils {
             e.printStackTrace();
         }
     }
+    */
 }

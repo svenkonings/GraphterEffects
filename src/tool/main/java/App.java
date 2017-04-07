@@ -12,8 +12,9 @@ public class App extends Application{
 
         RootView rootView = new RootView();
         Scene scene = new Scene(rootView.getView());
-        primaryStage.setTitle("Test Tool Interface");
+        primaryStage.setTitle("Graphter Effects");
         final String uri = getClass().getResource("app.css").toExternalForm();
+
 
         scene.getStylesheets().add(uri);
         primaryStage.setScene(scene);

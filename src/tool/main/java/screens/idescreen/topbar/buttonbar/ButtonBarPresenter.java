@@ -1,8 +1,8 @@
 package screens.idescreen.topbar.buttonbar;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
-import general.CompilerUtils;
 import general.ViewModel;
+import general.compiler.CompilerRunnable;
 import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.LoaderUtils;
@@ -158,7 +158,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
             e.printStackTrace();
         }
         try {
-            CompilerUtils.compile(tempFilePath, graphFilePath);
+            new Thread(new CompilerRunnable(scriptFilePath,graphFilePath)).start();
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box

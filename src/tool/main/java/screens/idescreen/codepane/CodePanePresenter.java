@@ -7,6 +7,7 @@ import general.files.LoaderUtils;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -18,9 +19,12 @@ public class CodePanePresenter implements Initializable {
 
    @Inject ViewModel viewModel;
     public TextArea codeTextArea;
+    public RSyntaxTextArea codeTextArea2;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
         Path graafVisFilePath = DocumentModel.getInstance().getGraafVisFilePath();
         Model.getInstance().setCodePaneTextArea(codeTextArea);
         if (graafVisFilePath != null) {

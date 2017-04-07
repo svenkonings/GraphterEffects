@@ -2,7 +2,6 @@ package screens.idescreen.svgviewer;
 
 import general.ViewModel;
 import general.files.DocumentModel;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -93,13 +92,6 @@ public class SVGViewerPresenter implements Initializable {
             }
         });
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                adjustTransform();
-            }
-        });
-
         //bind();
 
     }
@@ -126,6 +118,7 @@ public class SVGViewerPresenter implements Initializable {
         content.getChildren().add(imageView);
         this.content = content;
         graphics.getChildren().add(content);
+        adjustTransform();
     }
 
     private void adjustTransform() {
