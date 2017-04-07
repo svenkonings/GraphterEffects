@@ -19,8 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.codepane.CodePaneView;
-import screens.idescreen.svgviewer.SVGViewerPresenter;
-import screens.idescreen.svgviewer.SVGViewerView;
+import screens.idescreen.newsvgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
 import utils.Pair;
 
@@ -98,21 +97,22 @@ public class IDEPresenter implements Initializable, Observer {
                         tabPane.getTabs().set(0, codeTab);
                         break;
                     case SVGGENERATED:
-                        //Generate and load the content in the SVGViewerView
-                        SVGViewerView svgViewerView = new SVGViewerView();
-                        SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
-                        String svgName = (String) arguments.get(1);
-                        System.out.println(svgName);
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                svgViewerPresenter.loadContent(svgName);
+
+                                //Generate and load the content in the SVGViewerView2
+                                SVGViewerView svgViewerView2 = new SVGViewerView();
+
+                                String svgName = (String) arguments.get(1);
+                                System.out.println("TEST:" + svgName);
+                                //svgViewerPresenter2.loadContent(svgName);
 
                                 BorderPane borderPane = ((BorderPane) viewModel.getMainView());
                                 TabPane tabPane = (TabPane) borderPane.getCenter();
 
                                 //Create the tabPane
-                                Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
+                                Tab svgViewerTab = new Tab(svgName, svgViewerView2.getView());
                                 svgViewerTab.setClosable(true);
                                 svgViewerTab.setOnClosed(new EventHandler<Event>() {
                                     @Override

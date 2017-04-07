@@ -1,4 +1,4 @@
-package screens.idescreen.svgviewer;
+package screens.idescreen.newsvgviewer;
 
 import com.airhacks.afterburner.views.FXMLView;
 
