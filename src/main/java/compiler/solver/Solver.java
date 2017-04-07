@@ -12,11 +12,9 @@ import utils.TriConsumer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import static compiler.prolog.TuProlog.list;
 import static utils.GraphUtils.ILLEGAL_PREFIX;
@@ -96,11 +94,11 @@ public class Solver {
 
         // Absolute dimensions
         setQuery("dimensions(Elem, Width, Height)", attrQuery("width", "Width", "height", "Height"));
-        setQuery("width (Elem, Width) ", attrQuery("width", "Width"));
+        setQuery("width(Elem, Width) ", attrQuery("width", "Width"));
         setQuery("height(Elem, Height)", attrQuery("height", "Height"));
 
         // Relative dimensions
-        setQuery("sameWidth (Elem1, Elem2)", equalsQuery("width"));
+        setQuery("sameWidth(Elem1, Elem2)", equalsQuery("width"));
         setQuery("sameHeight(Elem1, Elem2)", equalsQuery("height"));
 
         /*
@@ -144,53 +142,89 @@ public class Solver {
           And then query predicates that use relavitve positioning
         */
         // Alignment
-        setQuery("alignCenter    (Elem1, Elem2)", equalsQuery("centerX").andThen(equalsQuery("centerY")));
-        setQuery("alignLeft      (Elem1, Elem2)", equalsQuery("minX"));
-        setQuery("alignHorizontal(Elem1, Elem2)", equalsQuery("centerX"));
-        setQuery("alignRight     (Elem1, Elem2)", equalsQuery("maxX"));
-        setQuery("alignTop       (Elem1, Elem2)", equalsQuery("minY"));
-        setQuery("alignVertical  (Elem1, Elem2)", equalsQuery("centerY"));
-        setQuery("alignBottom    (Elem1, Elem2)", equalsQuery("maxY"));
+        setQuery("alignCenter(Elem1, Elem2)", equalsQuery("centerX").andThen(equalsQuery("centerY")));
+        setQuery("alignLeft(Elem1, Elem2)", equalsQuery("minX"));
+        setQuery("alignVertical(Elem1, Elem2)", equalsQuery("centerX"));
+        setQuery("alignRight(Elem1, Elem2)", equalsQuery("maxX"));
+        setQuery("alignTop(Elem1, Elem2)", equalsQuery("minY"));
+        setQuery("alignHorizontal(Elem1, Elem2)", equalsQuery("centerY"));
+        setQuery("alignBottom(Elem1, Elem2)", equalsQuery("maxY"));
 
         // Relative positioning
-        setQuery("below (Elem1, Elem2)", relPosQuery("minY", "maxY", ">="));
-        setQuery("above (Elem1, Elem2)", relPosQuery("maxY", "minY", "<="));
-        setQuery("right (Elem1, Elem2)", relPosQuery("minX", "maxX", ">="));
-        setQuery("left  (Elem1, Elem2)", relPosQuery("maxX", "minX", "<="));
+        setQuery("below(Elem1, Elem2)", relPosQuery("minY", "maxY", ">="));
+        setQuery("above(Elem1, Elem2)", relPosQuery("maxY", "minY", "<="));
+        setQuery("right(Elem1, Elem2)", relPosQuery("minX", "maxX", ">="));
+        setQuery("left(Elem1, Elem2)", relPosQuery("maxX", "minX", "<="));
         setQuery("before(Elem1, Elem2)", relPosQuery("z", "z", ">"));
         setQuery("behind(Elem1, Elem2)", relPosQuery("z", "z", "<"));
 
         // Absolute relative positioning
-        setQuery("below (Elem1, Elem2, Value)", absPosQuery("minY", "maxY", true));
-        setQuery("above (Elem1, Elem2, Value)", absPosQuery("maxY", "minY", false));
-        setQuery("right (Elem1, Elem2, Value)", absPosQuery("minX", "maxX", true));
-        setQuery("left  (Elem1, Elem2, Value)", absPosQuery("maxX", "minX", false));
+        setQuery("below(Elem1, Elem2, Value)", absPosQuery("minY", "maxY", true));
+        setQuery("above(Elem1, Elem2, Value)", absPosQuery("maxY", "minY", false));
+        setQuery("right(Elem1, Elem2, Value)", absPosQuery("minX", "maxX", true));
+        setQuery("left(Elem1, Elem2, Value)", absPosQuery("maxX", "minX", false));
         setQuery("before(Elem1, Elem2, Value)", absPosQuery("z", "z", true));
         setQuery("behind(Elem1, Elem2, Value)", absPosQuery("z", "z", false));
-        setQuery("below (Elem1, Elem2, Operator, Value)", absPosQuery("minY", "maxY", true));
-        setQuery("above (Elem1, Elem2, Operator, Value)", absPosQuery("maxY", "minY", false));
-        setQuery("right (Elem1, Elem2, Operator, Value)", absPosQuery("minX", "maxX", true));
-        setQuery("left  (Elem1, Elem2, Operator, Value)", absPosQuery("maxX", "minX", false));
+        setQuery("below(Elem1, Elem2, Operator, Value)", absPosQuery("minY", "maxY", true));
+        setQuery("above(Elem1, Elem2, Operator, Value)", absPosQuery("maxY", "minY", false));
+        setQuery("right(Elem1, Elem2, Operator, Value)", absPosQuery("minX", "maxX", true));
+        setQuery("left(Elem1, Elem2, Operator, Value)", absPosQuery("maxX", "minX", false));
         setQuery("before(Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", true));
         setQuery("behind(Elem1, Elem2, Operator, Value)", absPosQuery("z", "z", false));
 
         // Overlapping
-        setQuery("noOverlap          (Elem1, Elem2)", noOverlapQuery(true, true));
-        setQuery("noHorizontalOverlap(Elem1, Elem2)", noOverlapQuery(true, false));
-        setQuery("noVerticalOverlap  (Elem1, Elem2)", noOverlapQuery(false, true));
+        setQuery("noOverlap(Elem1, Elem2)", orQuery((elem1, elem2) -> new Constraint[]{
+                elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose(),
+                elem1.getVar("maxX").le(elem2.getVar("minX")).decompose(),
+                elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose(),
+                elem1.getVar("maxY").le(elem2.getVar("minY")).decompose()
+        }));
+        setQuery("noHorizontalOverlap(Elem1, Elem2)", orQuery((elem1, elem2) -> new Constraint[]{
+                elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose(),
+                elem1.getVar("maxX").le(elem2.getVar("minX")).decompose()
+        }));
+        setQuery("noVerticalOverlap(Elem1, Elem2)", orQuery((elem1, elem2) -> new Constraint[]{
+                elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose(),
+                elem1.getVar("maxY").le(elem2.getVar("minY")).decompose()
+        }));
 
         // Distance
-        setQuery("distance          (Elem1, Elem2, Value)", distanceQuery(true, true));
-        setQuery("horizontalDistance(Elem1, Elem2, Value)", distanceQuery(true, false));
-        setQuery("verticalDistance  (Elem1, Elem2, Value)", distanceQuery(false, true));
-        setQuery("distance          (Elem1, Elem2, Operator, Value)", distanceQuery(true, true));
-        setQuery("horizontalDistance(Elem1, Elem2, Operator, Value)", distanceQuery(true, false));
-        setQuery("verticalDistance  (Elem1, Elem2, Operator, Value)", distanceQuery(false, true));
+        QueryConsumer distance = arithmOrQuery((elem1, elem2) -> new IntVar[]{
+                elem1.getVar("minX").sub(elem2.getVar("maxX").add(elem1.getVar("minY").sub(elem2.getVar("maxY")))).intVar(),
+                elem1.getVar("minX").sub(elem2.getVar("maxX").add(elem2.getVar("minY").sub(elem1.getVar("maxY")))).intVar(),
+                elem2.getVar("minX").sub(elem1.getVar("maxX").add(elem1.getVar("minY").sub(elem2.getVar("maxY")))).intVar(),
+                elem2.getVar("minX").sub(elem1.getVar("maxX").add(elem2.getVar("minY").sub(elem1.getVar("maxY")))).intVar(),
+        });
+        QueryConsumer horizontalDistance = arithmOrQuery((elem1, elem2) -> new IntVar[]{
+                elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(),
+                elem2.getVar("minX").sub(elem1.getVar("maxX")).intVar()
+        });
+        QueryConsumer verticalDistance = arithmOrQuery((elem1, elem2) -> new IntVar[]{
+                elem1.getVar("minY").sub(elem2.getVar("maxY")).intVar(),
+                elem2.getVar("minY").sub(elem1.getVar("maxY")).intVar()
+        });
+        setQuery("distance(Elem1, Elem2, Value)", distance);
+        setQuery("horizontalDistance(Elem1, Elem2, Value)", horizontalDistance);
+        setQuery("verticalDistance(Elem1, Elem2, Value)", verticalDistance);
+        setQuery("distance(Elem1, Elem2, Operator, Value)", distance);
+        setQuery("horizontalDistance(Elem1, Elem2, Operator, Value)", horizontalDistance);
+        setQuery("verticalDistance(Elem1, Elem2, Operator, Value)", verticalDistance);
 
         // Enclosing
-        setQuery("enclosed          (Elem1, Elem2)", enclosedQuery(true, true));
-        setQuery("enclosedHorizontal(Elem1, Elem2)", enclosedQuery(true, false));
-        setQuery("enclosedVertical  (Elem1, Elem2)", enclosedQuery(false, true));
+        setQuery("enclosed(Elem1, Elem2)", andQuery((elem1, elem2) -> new Constraint[]{
+                elem1.getVar("minX").ge(elem2.getVar("minX")).decompose(),
+                elem1.getVar("maxX").le(elem2.getVar("maxX")).decompose(),
+                elem1.getVar("minY").ge(elem2.getVar("minY")).decompose(),
+                elem1.getVar("maxY").le(elem2.getVar("maxY")).decompose()
+        }));
+        setQuery("enclosedHorizontal(Elem1, Elem2)", andQuery((elem1, elem2) -> new Constraint[]{
+                elem1.getVar("minX").ge(elem2.getVar("minX")).decompose(),
+                elem1.getVar("maxX").le(elem2.getVar("maxX")).decompose()
+        }));
+        setQuery("enclosedVertical(Elem1, Elem2)", andQuery((elem1, elem2) -> new Constraint[]{
+                elem1.getVar("minY").ge(elem2.getVar("minY")).decompose(),
+                elem1.getVar("maxY").le(elem2.getVar("maxY")).decompose()
+        }));
     }
 
     /**
@@ -201,7 +235,7 @@ public class Solver {
      * @return The previous {@link QueryConsumer} associated with the query, or {@code null} if it didn't exist.
      */
     public QueryConsumer setQuery(String query, QueryConsumer queryConsumer) {
-        return queries.put(query.replaceAll("\\s+", ""), queryConsumer);
+        return queries.put(StringUtils.stripSpaces(query), queryConsumer);
     }
 
     /**
@@ -211,7 +245,7 @@ public class Solver {
      * @return The {@link QueryConsumer}, or {@code null} if it doesn't exist.
      */
     public QueryConsumer getQuery(String query) {
-        return queries.get(query.replaceAll("\\s+", ""));
+        return queries.get(StringUtils.stripSpaces(query));
     }
 
     /**
@@ -221,7 +255,7 @@ public class Solver {
      * @return The {@link QueryConsumer} associated to this query, or {@code null} if it doesn't exist.
      */
     public QueryConsumer removeQuery(String query) {
-        return queries.remove(query.replaceAll("\\s+", ""));
+        return queries.remove(StringUtils.stripSpaces(query));
     }
 
     /**
@@ -341,51 +375,28 @@ public class Solver {
         });
     }
 
-    public static QueryConsumer enclosedQuery(boolean x, boolean y) {
-        assert x || y;
+    public static QueryConsumer andQuery(BiFunction<VisElem, VisElem, Constraint[]> function) {
+        return elementPairQuery((elem1, elem2, values) ->
+                Arrays.stream(function.apply(elem1, elem2)).forEach(Constraint::post)
+        );
+    }
+
+    public static QueryConsumer orQuery(BiFunction<VisElem, VisElem, Constraint[]> function) {
         return elementPairQuery((elem1, elem2, values) -> {
-            if (x) {
-                elem1.getVar("minX").ge(elem2.getVar("minX")).post();
-                elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
-            }
-            if (y) {
-                elem1.getVar("minY").ge(elem2.getVar("minY")).post();
-                elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
-            }
+            Constraint[] constraints = function.apply(elem1, elem2);
+            elem1.getModel().or(constraints).post();
         });
     }
 
-    public static QueryConsumer noOverlapQuery(boolean x, boolean y) {
-        assert x || y;
+    public static QueryConsumer arithmOrQuery(BiFunction<VisElem, VisElem, IntVar[]> function) {
         return elementPairQuery((elem1, elem2, values) -> {
-            List<Constraint> constraints = new ArrayList<>();
-            if (x) {
-                constraints.add(elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose());
-                constraints.add(elem1.getVar("maxX").le(elem2.getVar("minX")).decompose());
-            }
-            if (y) {
-                constraints.add(elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose());
-                constraints.add(elem1.getVar("maxY").le(elem2.getVar("minY")).decompose());
-            }
-            Model model = elem1.getVar("minX").getModel();
-            model.or(constraints.toArray(new Constraint[0])).post();
-        });
-    }
-
-    public static QueryConsumer distanceQuery(boolean x, boolean y) {
-        assert x || y;
-        return elementPairQuery((elem1, elem2, values) -> {
+            Model model = elem1.getModel();
             String op = getOp(values);
             int value = Integer.parseInt(termToString(values.get("Value")));
-            Model model = elem1.getVar("minX").getModel();
-            if (x) model.or(
-                    model.arithm(elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(), op, value),
-                    model.arithm(elem2.getVar("minX").sub(elem1.getVar("maxX")).intVar(), op, value)
-            ).post();
-            if (y) model.or(
-                    model.arithm(elem1.getVar("minY").sub(elem2.getVar("maxY")).intVar(), op, value),
-                    model.arithm(elem2.getVar("minY").sub(elem1.getVar("maxY")).intVar(), op, value)
-            ).post();
+            Constraint[] constraints = Arrays.stream(function.apply(elem1, elem2))
+                    .map(var -> model.arithm(var, op, value))
+                    .toArray(Constraint[]::new);
+            model.or(constraints).post();
         });
     }
 
@@ -483,6 +494,7 @@ public class Solver {
                 elem.forceVar("z", 0);
             }
         }
+        // TODO: fix these by looking at the min and max X constraints
         if (replaceVar(elem, "width", 0, 10)) {
             forceVar(elem, "radiusX", 5);
             addVar(elem, "centerX", 5);
