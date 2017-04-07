@@ -7,6 +7,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
+import utils.StringUtils;
 import utils.TriConsumer;
 
 import java.io.File;
@@ -438,7 +439,6 @@ public class Solver {
         VisElem line = visMap.get(key);
 
         line.set("type", "line");
-        if (!line.hasVar("z")) line.setVar("z", -1);
         line.setVar("x1", fromElem.getVar("centerX"));
         line.setVar("y1", fromElem.getVar("centerY"));
         line.setVar("x2", toElem.getVar("centerX"));
@@ -477,7 +477,11 @@ public class Solver {
             return;
         }
         if (!elem.hasVar("z")) {
-            elem.forceVar("z", 0);
+            if ("line".equals(elem.getValue("type"))) {
+                elem.forceVar("z", -1);
+            } else {
+                elem.forceVar("z", 0);
+            }
         }
         if (replaceVar(elem, "width", 0, 10)) {
             forceVar(elem, "radiusX", 5);
@@ -518,6 +522,6 @@ public class Solver {
     }
 
     public static String termToString(Term term) {
-        return term.toString().replaceAll("[\"']", "");
+        return StringUtils.removeQuotation(term.toString());
     }
 }

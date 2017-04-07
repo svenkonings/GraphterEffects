@@ -92,6 +92,10 @@ public class SvgAttributeGenerator {
         return defaults.add(consumer);
     }
 
+    public Consumer<Element> getDefault(int index) {
+        return defaults.get(index);
+    }
+
     public Consumer<Element> removeDefault(int index) {
         return defaults.remove(index);
     }

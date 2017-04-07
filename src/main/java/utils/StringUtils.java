@@ -85,11 +85,8 @@ public final class StringUtils {
     }
 
     public static String removeQuotation(String in) {
-        while (in.startsWith("'")|| in.startsWith("\"")) {
-            in = in.substring(1);
-        }
-        while (in.endsWith("'")|| in.endsWith("\"")) {
-            in = in.substring(0, in.length()-1);
+        while (in.startsWith("'") && in.endsWith("'") || in.startsWith("\"") && in.endsWith("\"")) {
+            in = in.substring(1, in.length() - 1);
         }
         return in;
     }
