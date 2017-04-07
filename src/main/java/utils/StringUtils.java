@@ -41,6 +41,15 @@ public final class StringUtils {
     }
 
     /**
+     * Strip all spaces of the input string.
+     * @param input The input string.
+     * @return The stripped string.
+     */
+    public static String stripSpaces(String input) {
+        return input.replaceAll("\\s+", "");
+    }
+
+    /**
      * Splits a String into a String part at the beginning and an Integer part at the end.
      *
      * @param input Input to be splitted.

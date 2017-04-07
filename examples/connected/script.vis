@@ -1,0 +1,21 @@
+bounds(0, 500).
+
+node(N) ->
+    shape(N, ellipse),
+    dimensions(N, 10, 10).
+
+node(N1), node(N2) ->
+    distance(N1, N2, ">", 10).
+
+edge(N1, N2, E) ->
+    line(N1, N2),
+    distance(N1, N2, "<", 15),
+//    shape(E, ellipse),
+//    enclosed(N1, E),
+//    enclosed(N2, E),
+    behind([N1, N2], N1),
+    behind([N1, N2], N2).
+//    before([N1, N2], E).
+
+//edge(E1), edge(E2) ->
+//    distance(E1, E2, ">", 10).
