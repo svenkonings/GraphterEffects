@@ -17,10 +17,10 @@ public final class FileUtilsTest {
     @Test
     public void testReadStringFromFile() throws IOException {
         assertEquals(FileUtils.readFromFile(FileUtils.fromResources("graph1.dot")),
-                "//A simple undirected graph\n" +
-                "graph graphname {\n" +
-                "    a -- b -- c;\n" +
-                "    b -- d;\n" +
+                "//A simple undirected graph\r\n" +
+                "graph graphname {\r\n" +
+                "    a -- b -- c;\r\n" +
+                "    b -- d;\r\n" +
                 "}");
     }
 }

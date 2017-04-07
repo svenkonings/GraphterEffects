@@ -8,9 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 import static compiler.prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
@@ -47,21 +46,25 @@ public final class TestUtils {
         assert answers.size() == 1;
         try {
             assert answerContains(answers, "Value", expectedValue);
-        } catch (Exception e) {
+        } catch (Exception | AssertionError e) {
             e.printStackTrace();
+            throw new AssertionError();
         }
     }
 
     public static void testAttributesCorrect(TuProlog prolog, Element element) {
         element.getAttributeKeySet().forEach(
                 attributeKey -> {
-                    try {
-                        Collection<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", term(element.getId()), term(attributeKey), var("Value"))));
-                        String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
-                        assert answerContains(answers, "Value", expectedValue);
-                    } catch (Exception e) {
 
-                        e.printStackTrace();
+                        List<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", struct(element.getId()), struct(attributeKey), var("Value"))));
+                        String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
+                        if (StringUtils.isFloat(StringUtils.removeQuotation(expectedValue))) {
+                            return;
+                        }
+                    try {
+                        assert answerContains(answers, "Value", expectedValue);
+                    } catch (Exception | AssertionError e) {
+                        assert false;
                     }
                 }
         );

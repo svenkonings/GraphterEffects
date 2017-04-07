@@ -1,8 +1,9 @@
 package general;
 
+import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
-import compiler.asrc.AbstractSyntaxRuleConverter;
+import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
@@ -26,15 +27,15 @@ import java.util.List;
 
 public class CompilerUtils {
 
-    public static void compile(Path scriptFile, Path graphFile) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException {
+    public static void compile(Path scriptFile, Path graphFile) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException {
         //Compiles the scriptFile and graphFile to an SVG
         Graph graph = Importer.graphFromFile(graphFile.toFile());
-        List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
-        terms.addAll(RuleGenerator.generate(FileUtils.readFromFile(scriptFile.toFile())));
+        List<Term> terms = RuleGenerator.generate(FileUtils.readFromFile(scriptFile.toFile()));
         System.out.println();
         terms.forEach(System.out::println);
         System.out.println();
         Solver solver = new Solver(terms);
+        solver.addLibrary(new ASRCLibrary(graph));
         List<VisElem> visElems = solver.solve();
         Document document = SvgDocumentGenerator.generate(visElems);
 

@@ -1,6 +1,7 @@
+import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
-import compiler.asrc.AbstractSyntaxRuleConverter;
+import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
@@ -18,16 +19,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException {
+    public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException {
         assert args.length == 3;
         Graph graph = Importer.graphFromFile(args[0]);
         Printer.pprint(graph);
-        List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
-        terms.addAll(RuleGenerator.generate(FileUtils.readFromFile(new File(args[1]))));
+        List<Term> terms = RuleGenerator.generate(FileUtils.readFromFile(new File(args[1])));
         System.out.println();
         terms.forEach(System.out::println);
         System.out.println();
         Solver solver = new Solver(terms);
+        solver.addLibrary(new ASRCLibrary(graph));
         List<VisElem> visElems = solver.solve();
         Document document = SvgDocumentGenerator.generate(visElems);
         SvgDocumentGenerator.writeDocument(document, args[2]);

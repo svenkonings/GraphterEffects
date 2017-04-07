@@ -75,6 +75,7 @@ public final class Importer {
         } else if (addIllegalPrefix) {
             g = GraphUtils.changeIDs(g);
         }
+        g = GraphUtils.enforceQuotes(g);
         return g;
 
     }
