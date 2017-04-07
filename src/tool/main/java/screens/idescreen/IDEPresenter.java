@@ -17,6 +17,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.codepane.CodePaneView;
 import screens.idescreen.svgviewer.SVGViewerPresenter;
 import screens.idescreen.svgviewer.SVGViewerView;
@@ -45,6 +46,9 @@ public class IDEPresenter implements Initializable, Observer {
 
         TopBarView topBarView = new TopBarView();
         borderPane.setTop(topBarView.getView());
+
+        BottomBarView bottomBarView = new BottomBarView();
+        borderPane.setBottom(bottomBarView.getView());
 
         CodePaneView codePaneView = new CodePaneView();
         Tab codeTab;

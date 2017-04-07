@@ -158,7 +158,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
             e.printStackTrace();
         }
         try {
-            new Thread(new CompilerRunnable(scriptFilePath,graphFilePath)).start();
+            new Thread(new CompilerRunnable(tempFilePath,graphFilePath)).start();
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box
