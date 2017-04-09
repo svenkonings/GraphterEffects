@@ -235,17 +235,15 @@ public class Solver {
      *
      * @return The {@link List} of visualization elements.
      */
+    // TODO: TuProlog should be argument
     public List<VisElem> solve() {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
-        visMap.values().forEach(Solver::preSolve);
-
+        visMap.values().forEach(Solver::setDefaults);
         boolean succes = model.getSolver().solve();
         model.getSolver().printStatistics();
         if (!succes) {
             throw new RuntimeException("No solution found.");
         }
-
-        visMap.values().forEach(Solver::postSolve);
         return new ArrayList<>(visMap.values());
     }
 
@@ -465,57 +463,31 @@ public class Solver {
      *
      * @param elem The given visualization element.
      */
-    public static void preSolve(VisElem elem) {
+    // TODO: Extendibility
+    public static void setDefaults(VisElem elem) {
         if (!elem.hasValue("type")) {
             elem.setValue("type", "ellipse");
             defaultConstraints(elem);
         }
-    }
-
-    /**
-     * Should be called after {@link org.chocosolver.solver.Solver#solve}. Sets the default dimensions and the default z
-     * value of the given visualization element, provided they don't already exist.
-     *
-     * @param elem The given visualization element.
-     */
-    public static void postSolve(VisElem elem) {
-        if (elem.hasValue("global")) {
-            return;
-        }
         if (!elem.hasVar("z")) {
             if ("line".equals(elem.getValue("type"))) {
-                elem.forceVar("z", -1);
+                elem.setVar("z", -1);
             } else {
-                elem.forceVar("z", 0);
+                elem.setVar("z", 0);
             }
         }
-        if (replaceVar(elem, "width", 0, 10)) {
-            forceVar(elem, "radiusX", 5);
-            addVar(elem, "centerX", 5);
-            addVar(elem, "maxX", 10);
+        if (elem.hasVar("width") && unPropagated(elem, "minX", "centerX", "maxX")) {
+            elem.setVar("width", 10);
         }
-        if (replaceVar(elem, "height", 0, 10)) {
-            forceVar(elem, "radiusY", 5);
-            addVar(elem, "centerY", 5);
-            addVar(elem, "maxY", 10);
+        if (elem.hasVar("height") && unPropagated(elem, "minY", "centerY", "maxY")) {
+            elem.setVar("height", 10);
         }
     }
 
-    private static boolean replaceVar(VisElem elem, String var, int oldVal, int newVal) {
-        if (elem.hasVar(var) && elem.getVar(var).getValue() == oldVal) {
-            elem.forceVar(var, newVal);
-            return true;
-        }
-        return false;
-    }
-
-    private static void addVar(VisElem elem, String var, int addVal) {
-        int val = elem.getVar(var).getValue() + addVal;
-        elem.forceVar(var, val);
-    }
-
-    private static void forceVar(VisElem elem, String var, int val) {
-        elem.forceVar(var, val);
+    public static boolean unPropagated(VisElem elem, String min, String center, String max) {
+        return elem.getVar(min).getNbProps() == 2 &&
+                elem.getVar(center).getNbProps() == 1 &&
+                elem.getVar(max).getNbProps() == 1;
     }
 
     public static String getOp(Map<String, Term> values) {

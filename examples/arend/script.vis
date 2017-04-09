@@ -1,6 +1,7 @@
 bounds(0, 200).
 shape(a, rectangle).
-dimensions(a, 10, 10).
+//dimensions(a, 10, 10).
 shape(b, ellipse).
-dimensions(b, 10, 10).
-distance(a, b, "<", 10).
+//dimensions(b, 10, 10).
+//distance(a, b, 10).
+//line(a, b).

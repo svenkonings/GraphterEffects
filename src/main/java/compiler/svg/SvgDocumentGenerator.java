@@ -49,13 +49,13 @@ public class SvgDocumentGenerator {
 
         int minZ = min(visElems, "z") - 1;
         visElems.stream().filter(elem -> elem.hasValue("global")).forEach(elem -> {
-            elem.forceVar("z", minZ);
-            elem.forceVar("x1", minX);
-            elem.forceVar("y1", minY);
-            elem.forceVar("x2", maxX);
-            elem.forceVar("y2", maxY);
-            elem.forceVar("width", width);
-            elem.forceVar("height", height);
+            elem.replaceVar("z", minZ);
+            elem.replaceVar("x1", minX);
+            elem.replaceVar("y1", minY);
+            elem.replaceVar("x2", maxX);
+            elem.replaceVar("y2", maxY);
+            elem.replaceVar("width", width);
+            elem.replaceVar("height", height);
         });
 
         visElems.stream()
