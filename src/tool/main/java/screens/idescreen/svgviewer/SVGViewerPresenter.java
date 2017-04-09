@@ -2,7 +2,6 @@ package screens.idescreen.svgviewer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -24,7 +23,6 @@ import java.util.regex.Pattern;
 public class SVGViewerPresenter implements Initializable {
 
     public WebView webView;
-    public TextArea textArea;
     @FXML public AnchorPane svgViewerPane;
     private String svgName;
     private Path svgPath;
@@ -47,10 +45,8 @@ public class SVGViewerPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         webView = new WebView();
-
         webView.prefWidthProperty().bind(svgViewerPane.widthProperty());
         webView.prefHeightProperty().bind(svgViewerPane.heightProperty());
-        textArea = new TextArea();
     }
 
     public void loadContent(String svgName, Path content){
@@ -63,7 +59,7 @@ public class SVGViewerPresenter implements Initializable {
         }
     }
 
-    public void showSVGasImage() {
+    public void showSVGAsImage() {
         if (svgViewerPane.getChildren().size() == 1){
             svgViewerPane.getChildren().remove(0);
         }
@@ -74,7 +70,7 @@ public class SVGViewerPresenter implements Initializable {
         webView.setContextMenuEnabled(false);
     }
 
-    public void showSVGasText() {
+    public void showSVGAsText() {
         if (svgViewerPane.getChildren().size() == 1){
             svgViewerPane.getChildren().remove(0);
         }

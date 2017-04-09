@@ -12,11 +12,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
+import screens.idescreen.simpleviewer.SimpleViewerPresenter;
+import screens.idescreen.simpleviewer.SimpleViewerView;
+import utils.FileUtils;
 import utils.Pair;
 
 import javax.inject.Inject;
@@ -65,16 +66,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
         }
 
         graphComboBox.setPromptText("Select graphs");
-
-
-        graphComboBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (!choiceBoxFilled) {
-                    menuButtonBarPushed(event);
-                }
-            }
-        });
 
         graphComboBox.setCellFactory(lv ->
                 new ListCell<String>() {
@@ -133,6 +124,60 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem showAsImage = new MenuItem("Show as Image");
+        MenuItem showAsText = new MenuItem("Show as Text");
+        contextMenu.getItems().addAll(showAsImage, showAsText);
+        showAsImage.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
+                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+                CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
+                new Thread(compilerRunnable).start();
+            }
+        });
+        showAsText.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
+                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+                String graphAsString = "";
+                try {
+                    graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                TabPane centralTabPane = (TabPane) ((BorderPane) (((AnchorPane) splitPane.getParent()).getParent().getParent()).getParent()).getCenter();
+                SimpleViewerView simpleViewerView = new SimpleViewerView();
+                SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
+                simpleViewerPresenter.loadContent(selectedGraphName, graphAsString);
+                centralTabPane.getTabs().add(new Tab(selectedGraphName, simpleViewerView.getView()));
+            }
+        });
+
+        graphComboBox.setContextMenu(contextMenu);
+        graphComboBox.setOnMouseClicked(
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (event.getButton() == MouseButton.PRIMARY) {
+                            if (!choiceBoxFilled) {
+                                LoaderUtils.showLoadGraphsPopup(false);
+                            }
+                        }
+                    }
+                }
+        );
+        graphComboBox.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    event.consume();
+                }
+            }
+        });
+
         DocumentModel.getInstance().addObserver(this);
         bind();
     }
@@ -165,11 +210,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
 
-    public void menuButtonBarPushed(MouseEvent actionEvent) {
-        if (!choiceBoxFilled){
-            LoaderUtils.showLoadGraphsPopup(false);
-        }
-    }
 
     @Override
     public void update(Observable o, Object arg) {

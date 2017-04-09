@@ -121,7 +121,7 @@ public class IDEPresenter implements Initializable, Observer {
 
                                 String svgName = (String) arguments.get(1);
                                 svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
-                                svgViewerPresenter.showSVGasImage();
+                                svgViewerPresenter.showSVGAsImage();
 
                                 BorderPane borderPane = ((BorderPane) viewModel.getMainView());
                                 TabPane tabPane = (TabPane) borderPane.getCenter();
@@ -143,13 +143,13 @@ public class IDEPresenter implements Initializable, Observer {
                                 showAsImage.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
                                     public void handle(ActionEvent event) {
-                                        svgViewerPresenter.showSVGasImage();
+                                        svgViewerPresenter.showSVGAsImage();
                                     }
                                 });
                                 showAsText.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
                                     public void handle(ActionEvent event) {
-                                        svgViewerPresenter.showSVGasText();
+                                        svgViewerPresenter.showSVGAsText();
                                     }
                                 });
 

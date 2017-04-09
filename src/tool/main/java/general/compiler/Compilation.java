@@ -1,8 +1,9 @@
 package general.compiler;
 
+import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
-import compiler.asrc.AbstractSyntaxRuleConverter;
+import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
@@ -28,6 +29,7 @@ public class Compilation extends Observable{
     private List<Term> abstractSyntaxRules;
     private List<Term> scriptRules;
     private List<VisElem> generatedVisElems;
+    private ASRCLibrary asrcLibrary;
     private Document generatedSVG;
     private Exception exception;
 
@@ -36,9 +38,10 @@ public class Compilation extends Observable{
         this.graphFile = graphFile;
     }
 
-    public void convertGraph() throws IOException, SAXException, UnknownGraphTypeException {
+    public void addGraphRules() throws IOException, SAXException, UnknownGraphTypeException {
         Graph graph = Importer.graphFromFile(graphFile.toFile());
-        abstractSyntaxRules = AbstractSyntaxRuleConverter.convertToRules(graph);
+        //abstractSyntaxRules = AbstractSyntaxRuleConverter.convertToRules(graph);
+        asrcLibrary = new ASRCLibrary(graph);
         setChanged();
         notifyObservers(CompilationProgress.GRAPHCONVERTED);
     }
@@ -51,9 +54,15 @@ public class Compilation extends Observable{
 
     public void solve() throws InvalidTheoryException {
         List<Term> rules = new LinkedList<>();
-        rules.addAll(abstractSyntaxRules);
+        //rules.addAll(abstractSyntaxRules);
         rules.addAll(scriptRules);
-        generatedVisElems = new Solver(rules).solve();
+        Solver solver = new Solver(rules);
+        try {
+            solver.addLibrary(asrcLibrary);
+        } catch (InvalidLibraryException e) {
+            e.printStackTrace();
+        }
+        generatedVisElems = solver.solve();
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);
     }

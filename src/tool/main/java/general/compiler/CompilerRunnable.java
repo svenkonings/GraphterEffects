@@ -39,7 +39,7 @@ public class CompilerRunnable implements Runnable {
         }
         //TODO: error resolving
         try {
-            compilation.convertGraph();
+            compilation.addGraphRules();
             compilation.compileGraafVis();
             compilation.solve();
             compilation.generateSVG();
