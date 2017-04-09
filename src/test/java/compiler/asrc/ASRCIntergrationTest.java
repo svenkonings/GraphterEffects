@@ -5,6 +5,7 @@ import compiler.prolog.TuProlog;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 import utils.FileUtils;
+import utils.Printer;
 
 import static compiler.asrc.GraphRuleTests.generateGraphProlog;
 import static compiler.asrc.GraphRuleTests.graphTest;
@@ -42,6 +43,7 @@ public final class ASRCIntergrationTest {
     public void intergrationTestDGS() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("dgs/graph1.dgs"));
         TuProlog prolog = generateGraphProlog(graph);
+        Printer.pprint(graph);
         graphTest(prolog, graph);
     }
 }

@@ -3,9 +3,11 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class used for methods to read from- save to- or manipulate File Objects and related tasks.
@@ -20,10 +22,7 @@ public final class FileUtils {
      * @return The extension of the file.
      */
     public static String getExtension(String filename) {
-        if (!filename.contains(".")) {
-            return filename;
-        }
-        return getExtension(filename.substring(filename.indexOf(".") + 1));
+        return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
     }
 
     /**
@@ -48,23 +47,7 @@ public final class FileUtils {
      * @return All files within this directory.
      */
     public static List<File> recursiveInDirectory(File dir) throws IOException {
-        List<File> res = new LinkedList<>();
-        if (dir.isFile()) {
-            res.add(dir);
-            return res;
-        }
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing == null) {
-            throw new IOException();
-        }
-        for (File child : directoryListing) {
-            if (child.isDirectory()) {
-                res.addAll(recursiveInDirectory(child));
-            } else {
-                res.add(child);
-            }
-        }
-        return res;
+        return Files.walk(dir.toPath()).map(Path::toFile).filter(File::isFile).collect(Collectors.toList());
     }
 
     /**
@@ -75,13 +58,12 @@ public final class FileUtils {
      * @throws IOException Thrown when the file could not be read.
      */
     public static String ImageToBase64(File file) throws IOException {
-        return Base64.getEncoder().encodeToString(org.apache.commons.io.FileUtils.readFileToByteArray(file));
+        return Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
     }
 
     public static String readFromFile(File file) throws IOException {
-        return org.apache.commons.io.FileUtils.readFileToString(file, "UTF-8");
+        return new String(Files.readAllBytes(file.toPath()));
     }
-
 
     /**
      * Reads a file and returns a String containing its Base64 String representation that can be used in an SVG image.
@@ -90,24 +72,9 @@ public final class FileUtils {
      * @return The String representation that can be used in SVG generation.
      * @throws IOException Thrown when the File could not be read.
      */
-    //TODO: Refactor to somewhere else
     public static String getImageSVG(File file) throws IOException {
-        String extension = FileUtils.getExtension(file.getName()).toLowerCase();
-        switch (extension) {
-            case "jpg":
-            case "jpeg":
-            case "jpe":
-            case "jif":
-            case "jfif":
-            case "jfi":
-                return "data:image/jpg;base64," + ImageToBase64(file);
-            case "png":
-                return "data:image/png;base64," + ImageToBase64(file);
-            default:
-                System.err.println("WARNING: Unknown image format: ." + extension);
-                return "data:image/false;base64," + ImageToBase64(file);
-        }
+        String extension = FileUtils.getExtension(file.getName());
+        String base64 = ImageToBase64(file);
+        return "data:image/" + extension + ";base64," + base64;
     }
-
-
 }

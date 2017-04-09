@@ -1,16 +1,15 @@
 package compiler.asrc;
 
 
-import alice.tuprolog.Int;
-import alice.tuprolog.Struct;
-import alice.tuprolog.Term;
-import alice.tuprolog.Var;
+import alice.tuprolog.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import utils.GraphUtils;
+import utils.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,115 +28,93 @@ public class ASRCLibrary extends GraphLibrary {
         super(g);
     }
 
-    public boolean graph_1(Term ID) {
-        if (ID instanceof Struct) {
-            return ((Struct) ID).getName().equals(graph.getId());
-        } else if (ID instanceof Var) {
-            return ID.unify(getEngine(), struct(graph.getId()));
+    @Override
+    public String getTheory() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("graph(\"").append(graph.getId()).append("\").\n");
+        for (Node n : graph.getEachNode()) {
+            sb.append("node(\"").append(n.getId()).append("\").\n");
         }
-        return false;
+        for (Edge n : graph.getEachEdge()) {
+            sb.append("edge(\"").append(n.getId()).append("\").\n");
+            sb.append("edge(\"").append(n.getSourceNode().getId()).append("\", \"").append(n.getTargetNode().getId()).append("\").\n");
+            sb.append("edge(\"").append(n.getSourceNode().getId()).append("\", \"").append(n.getTargetNode().getId()).append("\", \"").append(n.getId()).append("\").\n");
+        }
+        return sb.toString();
     }
 
-    public boolean directed_1(Term ID) {
-        if (ID instanceof Struct) {
-            Element elem = GraphUtils.getByID(graph, ((Struct) ID).getName());
-            if (elem instanceof Graph) {
-                return GraphUtils.isFullyDirected(graph);
-            } else if (elem instanceof Edge) {
-                return ((Edge) elem).isDirected();
-            }
-        } else if (ID instanceof Var) {
-            for (Edge e : graph.getEdgeSet()) {
-                if (e.isDirected()) {
-                    return ID.unify(getEngine(), struct(e.getId()));
-                }
-            }
-            if (GraphUtils.isFullyDirected(graph)) {
-                return ID.unify(getEngine(), struct(graph.getId()));
-            }
-        }
-        return false;
+    public boolean directed_1(Struct ID) {
+        return bool(ID, GraphUtils::isDirectedGeneral, false, true, true);
     }
 
-    public boolean mixed_1(Term ID) {
-        boolean isMixed = !GraphUtils.isFullyDirected(graph) && !GraphUtils.isFullyUndirected(graph);
-        if (ID instanceof Var && isMixed) {
-            return ID.unify(getEngine(), struct(graph.getId()));
-        }
-        return  (ID instanceof Struct && ((Struct) ID).getName().equals(graph.getId()) && isMixed);
+    public boolean undirected_1(Struct ID) {
+        return bool(ID, GraphUtils::isUnDirectedGeneral, false, true, true);
     }
 
-    public boolean edgecount_2(Term ID, Term count) {
+    public boolean mixed_1(Struct ID) {
+        return !directed_1(ID) && !undirected_1(ID);
+    }
+
+    public boolean edgecount_2(Struct ID, Term count) {
         return numeric(ID, count, n -> ((Graph)n).getEdgeCount(), false, false, true);
     }
 
     public boolean singlegraph_1(Term ID) {
-        return ID instanceof Struct && ((Struct) ID).getName().equals(graph.getId()) && graph instanceof SingleGraph;
+        return bool((Struct) ID.getTerm(), n -> n instanceof SingleGraph, false, false, true);
     }
 
     public boolean multigraph_1(Term ID) {
-        return ID instanceof Struct && ((Struct) ID).getName().equals(graph.getId()) && graph instanceof SingleGraph;
+        return bool((Struct) ID.getTerm(), n -> n instanceof MultiGraph, false, false, true);
     }
 
-    public boolean nodecount_2(Term ID, Term count) {
+    public boolean nodecount_2(Struct ID, Term count) {
         return numeric(ID, count, n -> ((Graph)n).getNodeCount(), false, false, true);
     }
 
-    public boolean componentcount_2(Term ID, Term count) {
+    public boolean componentcount_2(Struct ID, Term count) {
         return numeric(ID, count, n -> GraphUtils.ConnectedComponentsCount(((Graph) n)), false, false, true);
     }
 
-    public boolean attributecount_2(Term ID, Term count) {
+    public boolean attributecount_2(Struct ID, Term count) {
         return numeric(ID, count, Element::getAttributeCount, true, true, true);
     }
 
-    public boolean isconnected_1(Term ID) {
+    public boolean isconnected_1(Struct ID) {
         return componentcount_2(ID, intVal(1)) || componentcount_2(ID, intVal(0));
     }
 
-    public boolean scary_1(Term maybe) {
-        maybe = maybe.getTerm();
-        if (maybe.unify(getEngine(), struct("notthisone"))) {
-            return true;
-        } else if (maybe.unify(getEngine(), struct("alsonotthisone"))) {
-            return true;
-        } else if (maybe.unify(getEngine(), struct("thisone"))) {
-            return true;
-        }
-        System.out.println(":(");
-        return false;
+    public boolean degree_2(Struct ID, Term count) {
+        return numeric(ID, count, n -> ((Node)n).getDegree(), true, false, false);
     }
 
-    public boolean scarysecond_1(Term maybe) {
-        return maybe.unify(getEngine(), struct("thisone"));
+    public boolean indegree_2(Struct ID, Term count) {
+        return numeric(ID, count, n -> ((Node)n).getInDegree(), true, false, false);
     }
 
-
+    public boolean outdegree_2(Struct ID, Term count) {
+        return numeric(ID, count, n -> ((Node)n).getOutDegree(), true, false, false);
+    }
+    public boolean neighbourcount_2(Struct ID, Term count) {
+        return numeric(ID, count, n -> GraphUtils.neighbourCount((Node)n), true, false, false);
+    }
 
     public boolean label_2(Term ID, Term label) {
-            if (ID instanceof Struct && label instanceof Struct) {
-                return GraphUtils.getByID(graph, ((Struct) ID).getName()).getAttribute("label").toString().equals(((Struct) label).getName());
-            } else if (ID instanceof Var && label instanceof Struct) {
-                for (Element e : GraphUtils.elements(graph, true, true, false)) {
-                    if (e.hasAttribute("label") && e.getAttribute("label").toString().equals(((Struct) label).getName())) {
-                        if (ID.unify(getEngine(), struct(e.getId()))) {
-                            return true;
-                        }
-                    }
-                }
-            } else if (ID instanceof Struct && label instanceof Var) {
-                Element e = GraphUtils.getByID(graph, ((Struct) ID).getName());
-                if (e.hasAttribute("label")) {
-                    return label.unify(getEngine(), struct(e.getAttribute("label").toString()));
-                }
-            } else if (ID instanceof Var && label instanceof Var) {
-                for (Element e : GraphUtils.elements(graph, true, true, false)) {
-                    if (label_2(struct(e.getId()), label) && ID.unify(getEngine(), struct(e.getId()))) {
-                        return true;
-                    }
-                }
-            }
+        return attribute_3(ID, struct("label"), label);
+    }
+
+    public boolean incomponent_2(Term ID, Term component) {
+        GraphUtils.initComponentCount(graph);
+        return attribute_3(ID, struct("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_"), component);
+    }
+
+    public boolean inmst_1(Term ID) {
+        try {
+            return bool((Struct) ID.getTerm(), n -> GraphUtils.getMST(graph).contains(n), false, true, false);
+        } catch (Exception | AssertionError e) {
+            e.printStackTrace();
             return false;
+        }
+
     }
 
 

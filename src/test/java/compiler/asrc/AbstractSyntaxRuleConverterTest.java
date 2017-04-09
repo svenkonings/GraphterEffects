@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static compiler.asrc.GraphRuleTests.generateGraphProlog;
 import static compiler.asrc.GraphRuleTests.graphTest;
+import static compiler.prolog.TuProlog.and;
 import static compiler.prolog.TuProlog.struct;
 import static compiler.prolog.TuProlog.var;
 import static org.junit.Assert.assertEquals;
@@ -102,7 +103,7 @@ public final class AbstractSyntaxRuleConverterTest {
             length++;
         }
         TuProlog prolog = generateGraphProlog(graph);
-        List<Map<String, Term>> a = prolog.solve(struct("inmst", var("ID")));
+        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("ID")), struct("inmst", var("ID"))));
         assertEquals(length, a.size());
     }
 }

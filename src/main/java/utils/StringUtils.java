@@ -41,6 +41,15 @@ public final class StringUtils {
     }
 
     /**
+     * Strip all spaces of the input string.
+     * @param input The input string.
+     * @return The stripped string.
+     */
+    public static String stripSpaces(String input) {
+        return input.replaceAll("\\s+", "");
+    }
+
+    /**
      * Splits a String into a String part at the beginning and an Integer part at the end.
      *
      * @param input Input to be splitted.
@@ -79,18 +88,39 @@ public final class StringUtils {
                 res[i] = ObjectToString(((Object[]) in)[i]);
             }
             return Arrays.toString(res);
-        } else {
-            return in.toString();
+        } else if (in instanceof Integer || (in instanceof String && StringUtils.isInteger((String) in))) {
+              return String.valueOf(in);
+        } else if (in instanceof String && ((String) in).startsWith("\"")) {
+            return (String) in;
+        } else if (!(in instanceof String)) {
+            return "\"" + removeQuotation(in.toString()) + "\"";
         }
+        return String.valueOf(in);
+        //throw new RuntimeException("String found without quotation marks!");
     }
 
     public static String removeQuotation(String in) {
-        while (in.startsWith("'")|| in.startsWith("\"")) {
-            in = in.substring(1);
-        }
-        while (in.endsWith("'")|| in.endsWith("\"")) {
-            in = in.substring(0, in.length()-1);
+        while (in.startsWith("'") && in.endsWith("'") || in.startsWith("\"") && in.endsWith("\"")) {
+            in = in.substring(1, in.length() - 1);
         }
         return in;
+    }
+
+    public static boolean isInteger(String expectedValue) {
+        try{
+            Integer.parseInt(expectedValue);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isFloat(String expectedValue) {
+        try{
+            Double.parseDouble(expectedValue);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 }

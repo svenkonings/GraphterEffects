@@ -1,0 +1,28 @@
+node labels:
+    "a",
+    "b",
+    "c",
+    "d",
+    "e".
+bounds(0, 200).
+
+
+/*
+shape(a, rectangle).
+colour(a, red).
+dimensions(a, 100, 100).
+
+shape(b, ellipse).
+colour(b, yellow).
+dimensions(b, 50, 50).
+
+after(a, b).
+alignHorizontal(b, a).
+below(a, b, 50).
+
+line(a, b).
+*/
+
+node(X) -> shape(X, ellipse), dimensions(X, 10, 10).
+
+node(X), node(Y) -> distance(X, Y, ">", 0), line(X, Y).

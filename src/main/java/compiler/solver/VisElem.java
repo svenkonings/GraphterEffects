@@ -12,14 +12,12 @@ import java.util.Objects;
  * with the values being {@link String} constants, and name-variable pairs, with the variables being {@link IntVar}
  * variables. The values of instantiated variables can also be retreiverd as {@link String} constants.
  */
-// TODO: Improve exception handling (or return bool?)
 public class VisElem {
-
-    private static final int MIN_INT_BOUND = 0;
-    private static final int MAX_INT_BOUND = 1000; // TODO: Find a suitable maximum
 
     /** The model associated with this element. */
     private final Model model;
+    private final int minBound;
+    private final int maxBound;
 
     /** The values of this element. */
     private final Map<String, String> values;
@@ -32,8 +30,10 @@ public class VisElem {
      *
      * @param model The given model.
      */
-    public VisElem(Model model) {
+    public VisElem(Model model, int minBound, int maxBound) {
         this.model = model;
+        this.minBound = minBound;
+        this.maxBound = maxBound;
         this.values = new HashMap<>();
         this.vars = new HashMap<>();
     }
@@ -149,6 +149,26 @@ public class VisElem {
     }
 
     /**
+     * Forces the varaible associated to the given name to the given constant.
+     *
+     * @param name     The given name.
+     * @param constant The given value.
+     * @return The variable.
+     */
+    public IntVar forceVar(String name, int constant) {
+        IntVar var = model.intVar(constant);
+        vars.put(name, var);
+        return var;
+    }
+
+    /**
+     * @return The model associated to this element.
+     */
+    public Model getModel() {
+        return model;
+    }
+
+    /**
      * Converts the value of an {@link IntVar} variable to a {@link String} value.
      *
      * @param var The variable to convert.
@@ -214,7 +234,7 @@ public class VisElem {
         if (vars.containsKey(name)) {
             return vars.get(name);
         } else {
-            return setVar(name, MIN_INT_BOUND, MAX_INT_BOUND);
+            return setVar(name, minBound, maxBound);
         }
     }
 

@@ -5,7 +5,6 @@ import alice.tuprolog.Float;
 import alice.tuprolog.*;
 import alice.tuprolog.Long;
 import alice.tuprolog.Number;
-import compiler.asrc.ASRCLibrary;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -142,9 +141,6 @@ public class TuProlog {
      * @return The resulting {@link Struct}.
      */
     public static Struct and(Term... terms) {
-        if (terms.length==1 && terms[0] instanceof Struct) {
-            return (Struct) terms[0];
-        }
         return concatTerms(",", terms);
     }
 

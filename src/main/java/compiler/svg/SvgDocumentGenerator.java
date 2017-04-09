@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * A generator for converting visualization elements to a SVG docuemtn
  */
-// TODO: Extendability
+// TODO: Extendibility
 public class SvgDocumentGenerator {
 
     /**
@@ -38,26 +38,30 @@ public class SvgDocumentGenerator {
     public static Document generate(SvgElementGenerator generator, List<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
-        setViewBox(root, visElems);
-        visElems.stream()
-                .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
-                .forEachOrdered(visElem -> generator.addElement(visElem, root));
-        return document;
-    }
 
-    /**
-     * Calculate and set the viewBox attribute of the given SVG element. The viewBox is calculated based on the maximum
-     * x2 and y2 values of the given list of visualization elements.
-     *
-     * @param element  The given element.
-     * @param visElems The given list of visualization elements.
-     */
-    private static void setViewBox(Element element, List<VisElem> visElems) {
         int minX = min(visElems, "minX");
         int minY = min(visElems, "minY");
-        int width = max(visElems, "maxX") - minX;
-        int height = max(visElems, "maxY") - minY;
-        element.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
+        int maxX = max(visElems, "maxX");
+        int maxY = max(visElems, "maxY");
+        int width = maxX - minY;
+        int height = maxY - minY;
+        root.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
+
+        int minZ = min(visElems, "z") - 1;
+        visElems.stream().filter(elem -> elem.hasValue("global")).forEach(elem -> {
+            elem.forceVar("z", minZ);
+            elem.forceVar("x1", minX);
+            elem.forceVar("y1", minY);
+            elem.forceVar("x2", maxX);
+            elem.forceVar("y2", maxY);
+            elem.forceVar("width", width);
+            elem.forceVar("height", height);
+        });
+
+        visElems.stream()
+                .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
+                .forEachOrdered(visElem -> generator.generate(visElem, root));
+        return document;
     }
 
     /**
