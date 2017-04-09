@@ -8,8 +8,6 @@ import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.LoaderUtils;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -93,12 +91,6 @@ public class IDEPresenter implements Initializable, Observer {
         //borderPane.widthProperty().a
         borderPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
         borderPane.prefHeightProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).heightProperty() );
-        borderPane.prefWidthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("IDE BorderPane Pref Width: " + newValue);
-            }
-        });
         //borderPane.heightProperty().isEqualTo(viewModel.getMainView().getLayoutBounds().getHeight(),0);
     }
 
