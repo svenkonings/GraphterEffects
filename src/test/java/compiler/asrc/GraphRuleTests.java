@@ -1,5 +1,6 @@
 package compiler.asrc;
 
+import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
@@ -9,6 +10,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
+import utils.GraphUtils;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,8 +24,13 @@ import static utils.TestUtils.*;
 public class GraphRuleTests {
 
     public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException, InvalidTheoryException {
-        List<Term> terms = AbstractSyntaxRuleConverter.convertToRules(graph);
-        return new TuProlog(terms);
+        TuProlog prolog = new TuProlog();
+        try {
+            prolog.loadLibrary(new ASRCLibrary(graph));
+        } catch (InvalidLibraryException e) {
+            e.printStackTrace();
+        }
+        return prolog;
     }
 
     public static void graphTest(TuProlog prolog, Graph graph) {
@@ -96,14 +103,7 @@ public class GraphRuleTests {
         testPredicateValue(prolog, node, "indegree", node.getId(), String.valueOf(node.getInDegree()));
         testPredicateValue(prolog, node, "outdegree", node.getId(), String.valueOf(node.getOutDegree()));
         testPredicateValue(prolog, node, "attributecount", node.getId(), String.valueOf(node.getAttributeCount()));
-
-        int neighbourcount = 0;
-        Iterator it = node.getNeighborNodeIterator();
-        while (it.hasNext()) {
-            neighbourcount++;
-            it.next();
-        }
-        testPredicateValue(prolog, node, "neighbourcount", node.getId(), String.valueOf(neighbourcount));
+        testPredicateValue(prolog, node, "neighbourcount", node.getId(), String.valueOf(GraphUtils.neighbourCount(node)));
     }
 
     public static void edgePropertiesTest(TuProlog prolog, Edge edge) {

@@ -71,5 +71,15 @@
             <artifactId>batik-transcoder</artifactId>
             <version>1.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.fifesoft</groupId>
+            <artifactId>rsyntaxtextarea</artifactId>
+            <version>2.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.7-M5</version>
+        </dependency>
     </dependencies>
 </project>

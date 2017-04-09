@@ -47,7 +47,7 @@ public final class FileUtils {
      * @return All files within this directory.
      */
     public static List<File> recursiveInDirectory(File dir) throws IOException {
-        return Files.walk(dir.toPath()).map(Path::toFile).collect(Collectors.toList());
+        return Files.walk(dir.toPath()).map(Path::toFile).filter(File::isFile).collect(Collectors.toList());
     }
 
     /**

@@ -1,158 +1,137 @@
 package screens.idescreen.svgviewer;
 
-import general.ViewModel;
-import general.files.DocumentModel;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.web.WebView;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+import utils.FileUtils;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SVGViewerPresenter implements Initializable {
 
-    @FXML private StackPane stackPane;
-    @Inject ViewModel viewModel;
-    private Node content;
-    private Pane editPane;
-    private StackPane graphics;
-    private ImageView imageView;
+    public WebView webView;
+    @FXML public AnchorPane svgViewerPane;
+    private String svgName;
+    private Path svgPath;
+    private String svgAsString;
+
+
+    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))"
+            +"|(?<COMMENT><!--[^<>]+-->)");
+
+    private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
+
+    private static final int GROUP_OPEN_BRACKET = 2;
+    private static final int GROUP_ELEMENT_NAME = 3;
+    private static final int GROUP_ATTRIBUTES_SECTION = 4;
+    private static final int GROUP_CLOSE_BRACKET = 5;
+    private static final int GROUP_ATTRIBUTE_NAME = 1;
+    private static final int GROUP_EQUAL_SYMBOL = 2;
+    private static final int GROUP_ATTRIBUTE_VALUE = 3;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        editPane = new Pane();
-        graphics = new StackPane();
-
-        editPane.getChildren().add(graphics);
-
-        //stackPane = new StackPane();
-        stackPane.getChildren().add(editPane);
-
-
-        stackPane.setStyle("-fx-background-color: #7dff43;");
-        stackPane.setAlignment(Pos.CENTER);
-        editPane.setStyle("-fx-background-color: #ff4bf3;");
-
-        editPane.prefWidthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-                                Number newValue) {
-                //adjustTransform();
-                //System.out.println("W");
-            }
-        });
-
-        editPane.prefHeightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-                                Number newValue) {
-                //adjustTransform();
-                //System.out.println("H");
-            }
-        });
-
-        //editPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
-        ((Pane) (viewModel.getMainView()).getParent()).widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("Test" + newValue);
-                stackPane.setPrefWidth(newValue.doubleValue());
-                editPane.setPrefWidth(newValue.doubleValue());
-                imageView.prefWidth(newValue.doubleValue());
-                //content.getBoundsInParent()
-                //editPane.setMinWidth(newValue.doubleValue());
-            }
-
-        });
-
-        ((Pane) (viewModel.getMainView()).getParent()).heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("Test" + newValue);
-                //stackPane.setPrefWidth(newValue.doubleValue());
-                //editPane.setPrefHeight(newValue.doubleValue());
-                //imageView.prefWidth(newValue.doubleValue());
-                //editPane.setMinHeight(newValue.doubleValue());
-                //graphics.setPrefHeight(newValue.doubleValue() - 300);
-
-            }
-        });
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                adjustTransform();
-            }
-        });
-
-        //bind();
-
+        webView = new WebView();
+        webView.prefWidthProperty().bind(svgViewerPane.widthProperty());
+        webView.prefHeightProperty().bind(svgViewerPane.heightProperty());
     }
 
-    public void bind(){
-        //DoubleBinding prefWidth =  ((Pane) (viewModel.getMainView()).getParent()).widthProperty().subtract(65);
-        //stackPane.prefWidthProperty().bind(pr);
-        //stackPane.prefHeightProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).heightProperty() );
-    }
-
-    public void loadContent(String key) {
-
-        MyTranscoder transcoder = null;
+    public void loadContent(String svgName, Path content){
+        this.svgName = svgName;
+        this.svgPath = content;
         try {
-            transcoder = new MyTranscoder(Files.newInputStream(DocumentModel.getInstance().getGeneratedSVG(key)));
+            this.svgAsString = FileUtils.readFromFile(svgPath.toFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Image javafxCompatibleImage = transcoder.getJavafxCompatibleImage(700, 500);
-
-        imageView = new ImageView(javafxCompatibleImage);
-        imageView.setImage(javafxCompatibleImage);
-        Group content = new Group();
-        content.getChildren().add(imageView);
-        this.content = content;
-        graphics.getChildren().add(content);
     }
 
-    private void adjustTransform() {
-        graphics.getTransforms().clear();
-
-        double cx = content.getBoundsInParent().getMinX();
-        double cy = content.getBoundsInParent().getMinY();
-        double cw = content.getBoundsInParent().getWidth();
-        double ch = content.getBoundsInParent().getHeight();
-
-        System.out.println("CONTENT:" + content.getBoundsInParent().getMinX() + " " + content.getBoundsInParent().getMinY() + " " +
-                content.getBoundsInParent().getWidth() + " " +content.getBoundsInParent().getHeight());
-        double ew = editPane.getWidth();
-        double eh = editPane.getHeight();
-
-        System.out.println("EDITPANE:" + editPane.getWidth() + editPane.getHeight());
-
-        if (ew > 0.0 && eh > 0.0) {
-            double scale = Math.min(ew / cw, eh / ch);
-
-            // Offset to center content
-            double sx = 0.5 * (ew - cw * scale);
-            double sy = 0.5 * (eh - ch * scale);
-
-            graphics.getTransforms().add(new Translate(sx, sy));
-            graphics.getTransforms().add(new Translate(-cx, -cy));
-            graphics.getTransforms().add(new Scale(scale, scale, cx, cy));
+    public void showSVGAsImage() {
+        if (svgViewerPane.getChildren().size() == 1){
+            svgViewerPane.getChildren().remove(0);
         }
+        svgViewerPane.getChildren().add(webView);
+        //System.out.println(FileUtils.readFromFile(n));
+        webView.getEngine().loadContent(svgAsString);
+        //webView.getEngine().loadContent(FileUtils.readFromFile(new File("demo1.svg") ));
+        webView.setContextMenuEnabled(false);
+    }
+
+    public void showSVGAsText() {
+        if (svgViewerPane.getChildren().size() == 1){
+            svgViewerPane.getChildren().remove(0);
+        }
+
+        CodeArea codeArea = new CodeArea();
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
+        codeArea.textProperty().addListener((obs, oldText, newText) -> {
+            codeArea.setStyleSpans(0, computeHighlighting(newText));
+        });
+        codeArea.replaceText(0, 0, svgAsString);
+
+        codeArea.prefWidthProperty().bind(svgViewerPane.widthProperty());
+        codeArea.prefHeightProperty().bind(svgViewerPane.heightProperty());
+
+        svgViewerPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
+        svgViewerPane.getStylesheets().add(SVGViewerPresenter.class.getResource("xml-highlighting.css").toExternalForm());
+    }
+
+    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
+
+        Matcher matcher = XML_TAG.matcher(text);
+        int lastKwEnd = 0;
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        while(matcher.find()) {
+
+            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+            if(matcher.group("COMMENT") != null) {
+                spansBuilder.add(Collections.singleton("comment"), matcher.end() - matcher.start());
+            }
+            else {
+                if(matcher.group("ELEMENT") != null) {
+                    String attributesText = matcher.group(GROUP_ATTRIBUTES_SECTION);
+
+                    spansBuilder.add(Collections.singleton("tagmark"), matcher.end(GROUP_OPEN_BRACKET) - matcher.start(GROUP_OPEN_BRACKET));
+                    spansBuilder.add(Collections.singleton("anytag"), matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
+
+                    if(!attributesText.isEmpty()) {
+
+                        lastKwEnd = 0;
+
+                        Matcher amatcher = ATTRIBUTES.matcher(attributesText);
+                        while(amatcher.find()) {
+                            spansBuilder.add(Collections.emptyList(), amatcher.start() - lastKwEnd);
+                            spansBuilder.add(Collections.singleton("attribute"), amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
+                            spansBuilder.add(Collections.singleton("tagmark"), amatcher.end(GROUP_EQUAL_SYMBOL) - amatcher.end(GROUP_ATTRIBUTE_NAME));
+                            spansBuilder.add(Collections.singleton("avalue"), amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
+                            lastKwEnd = amatcher.end();
+                        }
+                        if(attributesText.length() > lastKwEnd)
+                            spansBuilder.add(Collections.emptyList(), attributesText.length() - lastKwEnd);
+                    }
+
+                    lastKwEnd = matcher.end(GROUP_ATTRIBUTES_SECTION);
+
+                    spansBuilder.add(Collections.singleton("tagmark"), matcher.end(GROUP_CLOSE_BRACKET) - lastKwEnd);
+                }
+            }
+            lastKwEnd = matcher.end();
+        }
+        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        return spansBuilder.create();
     }
 }

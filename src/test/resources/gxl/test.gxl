@@ -3,8 +3,8 @@
 <!-- simple example schema 05.02.2002 -->
 <gxl>
   <graph id="simpleExample-schema" edgeids=" true" edgemode=" directed" hypergraph=" false">
-  <attr name="testvalue">
-          <string>testkey</string>
+  <attr name="testkey">
+          <string>testvalue</string>
    </attr>
     <type xlink:href="http://www.gupro.de/GXL/gxl-1.0.gxl#gxl-1.0" xlink:type=" simple"/>
     <node id="simpleExampleSchema">

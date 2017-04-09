@@ -120,8 +120,10 @@ final class GXLImporter {
             GXLGraphElement elem = graph.getGraphElementAt(i);
             if (elem instanceof GXLNode) {
                 nodes.add(elem);
-            } else {
+            } else if (elem instanceof GXLEdge){
                 edges.add(elem);
+            } else {
+                throw new RuntimeException();
             }
         }
         for (GXLGraphElement elem : nodes) {
@@ -265,7 +267,7 @@ final class GXLImporter {
         }
         for (Edge edge : input.getEachEdge()) {
             if (edge.getSourceNode().equals(edge.getTargetNode()) && edge.hasAttribute("label") && !edge.getSourceNode().hasAttribute("label")) {
-                res.getNode(edge.getSourceNode().getId()).setAttribute("label", new Object[]{edge.getAttribute("label")});
+                res.getNode(edge.getSourceNode().getId()).setAttribute("label", edge.getAttribute("label"));
             } else {
                 Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
                 for (String key : edge.getAttributeKeySet()) {

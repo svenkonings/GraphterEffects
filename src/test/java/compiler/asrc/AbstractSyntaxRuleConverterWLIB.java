@@ -1,5 +1,6 @@
 package compiler.asrc;
 
+import alice.tuprolog.SolveInfo;
 import alice.tuprolog.Term;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
@@ -8,6 +9,8 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 import utils.FileUtils;
+import utils.GraphUtils;
+import utils.Printer;
 
 import java.util.List;
 import java.util.Map;
@@ -19,48 +22,40 @@ import static compiler.prolog.TuProlog.struct;
 import static compiler.prolog.TuProlog.var;
 import static org.junit.Assert.assertEquals;
 
-public final class AbstractSyntaxRuleConverterTest {
+public final class AbstractSyntaxRuleConverterWLIB {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = new TuProlog();
+        prolog.loadLibrary(new ASRCLibrary(graph));
         graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = new TuProlog();
+        prolog.loadLibrary(new ASRCLibrary(graph));
         graphTest(prolog, graph);
     }
 
     @Test
     public void convertToRulesGraph3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = new TuProlog();
+        prolog.loadLibrary(new ASRCLibrary(graph));
         graphTest(prolog, graph);
     }
-//TODO
-//    @Test
-//    public void convertToRulesGraph4() throws Exception {
-//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/multi1.dot"));
-//        TuProlog prolog = generateGraphProlog(graph);
-//        graphTest(prolog, graph);
-//    }
 
     @Test
     public void convertToRulesGraph5() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
-        TuProlog prolog = generateGraphProlog(graph);
+        TuProlog prolog = new TuProlog();
+        prolog.loadLibrary(new ASRCLibrary(graph));
+        Printer.pprint(graph);
         graphTest(prolog, graph);
     }
-
-//    @Test
-//    public void TestMST1() throws Exception {
-//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
-//        MSTTest(graph, false);
-//    }
 
     @Test
     public void TestMST2() throws Exception {
@@ -86,24 +81,11 @@ public final class AbstractSyntaxRuleConverterTest {
         MSTTest(graph);
     }
 
-    //TODO
-//    @Test
-//    public void TestMST6() throws Exception {
-//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/multi1.dot"));
-//        MSTTest(graph);
-//    }
-
-
     private void MSTTest(Graph graph) throws Exception {
-        Kruskal kruskal = new Kruskal();
-        kruskal.init(graph);
-        kruskal.compute();
-        int length = 0;
-        for (Edge ignored : kruskal.getTreeEdges()) {
-            length++;
-        }
-        TuProlog prolog = generateGraphProlog(graph);
-        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("ID")), struct("inmst", var("ID"))));
+        int length = GraphUtils.getMST(graph).size();
+        TuProlog prolog = new TuProlog();
+        prolog.loadLibrary(new ASRCLibrary(graph));
+        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("X")),struct("inmst", var("X"))));
         assertEquals(length, a.size());
     }
 }

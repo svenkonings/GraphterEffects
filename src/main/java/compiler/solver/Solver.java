@@ -1,6 +1,8 @@
 package compiler.solver;
 
+import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
+import alice.tuprolog.Library;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
 import org.chocosolver.solver.Model;
@@ -25,6 +27,10 @@ import static utils.GraphUtils.ILLEGAL_PREFIX;
  * The constraint solver.
  */
 public class Solver {
+
+    public void addLibrary(Library lib) throws InvalidLibraryException {
+        prolog.loadLibrary(lib);
+    }
 
     /** The {@link TuProlog} engine. */
     private final TuProlog prolog;

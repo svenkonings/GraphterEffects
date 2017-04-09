@@ -1,31 +1,15 @@
-package general;
+package general.compiler;
 
-import alice.tuprolog.InvalidTheoryException;
-import alice.tuprolog.Term;
-import compiler.asrc.AbstractSyntaxRuleConverter;
-import compiler.graphloader.Importer;
-import compiler.solver.Solver;
-import compiler.solver.VisElem;
-import compiler.svg.SvgDocumentGenerator;
-import exceptions.UnknownGraphTypeException;
-import general.files.DocumentModel;
-import graafvis.RuleGenerator;
-import org.dom4j.Document;
-import org.graphstream.graph.Graph;
-import org.xml.sax.SAXException;
-import utils.FileUtils;
+import general.files.LoaderUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CompilerUtils {
 
+    /*
     public static void compile(Path scriptFile, Path graphFile) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException {
         //Compiles the scriptFile and graphFile to an SVG
         Graph graph = Importer.graphFromFile(graphFile.toFile());
@@ -59,5 +43,18 @@ public class CompilerUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    */
+
+    public static Path saveAsTempScript(String filename, String code){
+        new File("/temp/compiler").mkdirs();
+        Path tempFilePath = Paths.get("/temp/compiler",filename);
+        try {
+            LoaderUtils.saveVIS(tempFilePath,code);
+            return tempFilePath;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

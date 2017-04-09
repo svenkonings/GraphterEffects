@@ -7,6 +7,7 @@ Meer predicaten:
     Pijltjes
     Elementen labels geven
     Stippelingtjes (stroke-dasharray)
+    Lijnbreedte (stroke-width)
     Vierkant en cirkel (dus gelijke breedte/hoogte)
     Driehoek
     Lijnen zonder van-naar

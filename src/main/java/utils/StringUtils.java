@@ -88,9 +88,15 @@ public final class StringUtils {
                 res[i] = ObjectToString(((Object[]) in)[i]);
             }
             return Arrays.toString(res);
-        } else {
-            return in.toString();
+        } else if (in instanceof Integer || (in instanceof String && StringUtils.isInteger((String) in))) {
+              return String.valueOf(in);
+        } else if (in instanceof String && ((String) in).startsWith("\"")) {
+            return (String) in;
+        } else if (!(in instanceof String)) {
+            return "\"" + removeQuotation(in.toString()) + "\"";
         }
+        return String.valueOf(in);
+        //throw new RuntimeException("String found without quotation marks!");
     }
 
     public static String removeQuotation(String in) {
@@ -98,5 +104,23 @@ public final class StringUtils {
             in = in.substring(1, in.length() - 1);
         }
         return in;
+    }
+
+    public static boolean isInteger(String expectedValue) {
+        try{
+            Integer.parseInt(expectedValue);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isFloat(String expectedValue) {
+        try{
+            Double.parseDouble(expectedValue);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 }

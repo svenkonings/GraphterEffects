@@ -1,6 +1,7 @@
 package utils;
 
 import org.graphstream.algorithm.ConnectedComponents;
+import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
@@ -106,18 +107,112 @@ public final class GraphUtils {
         return true;
     }
 
+
+
+    private static Map<Graph, ConnectedComponents> ccmap = new HashMap<>();
+    public static void initComponentCount(Graph graph) {
+        if (ccmap.containsKey(graph)) {return;}
+        ConnectedComponents connectedComponents = new ConnectedComponents();
+        connectedComponents.init(graph);
+        connectedComponents.setCountAttribute("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_");
+        connectedComponents.compute();
+        ccmap.put(graph, connectedComponents);
+    }
+
     public static int ConnectedComponentsCount(Graph graph) {
-        ConnectedComponents a = new ConnectedComponents();
-        a.init(graph);
-        return a.getConnectedComponentsCount();
+        initComponentCount(graph);
+        return ccmap.get(graph).getConnectedComponentsCount();
     }
 
     public static boolean isFullyUndirected(Graph graph) {
         for (Edge edge : graph.getEdgeSet()) {
-            if (!edge.isDirected()) {
+            if (edge.isDirected()) {
                 return false;
             }
         }
         return true;
+    }
+    
+    public static boolean containsDirected(Graph g) {
+        for (Edge e : g.getEachEdge()) {
+            if (e.isDirected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean containsUndirected(Graph g) {
+        for (Edge e : g.getEachEdge()) {
+            if (!e.isDirected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isDirectedGeneral(Element e) {
+        if (e instanceof Graph) {
+            return isFullyDirected((Graph) e);
+        } else if (e instanceof Edge) {
+            return ((Edge) e).isDirected();
+        }
+        return false;
+    }
+
+    public static boolean isUnDirectedGeneral(Element e) {
+        if (e instanceof Graph) {
+            return isFullyUndirected((Graph) e);
+        } else if (e instanceof Edge) {
+            return !((Edge) e).isDirected();
+        }
+        return false;
+    }
+
+    private static Map<Graph, Set<Edge>> graphmap = new HashMap<>();
+
+    public static Set<Edge> getMST(Graph g) {
+        if (graphmap.containsKey(g)) {
+            return graphmap.get(g);
+        }
+        Kruskal kruskal = new Kruskal();
+        kruskal.init(g);
+        kruskal.compute();
+        Set<Edge> res = new HashSet<>();
+        kruskal.getTreeEdges().forEach(res::add);
+        graphmap.put(g, res);
+        return res;
+    }
+
+    public static Graph enforceQuotes(Graph g) {
+        Graph res;
+        if (g instanceof DefaultGraph) {
+            res = new DefaultGraph(g.getId());
+        } else if (g instanceof SingleGraph) {
+            res = new SingleGraph(g.getId());
+        } else if (g instanceof MultiGraph) {
+            res = new MultiGraph(g.getId());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        for (String key : g.getAttributeKeySet()) {
+            Object[] arr = {g.getAttribute(key)};
+            res.setAttribute(key, arr);
+        }
+        for (Node node : g.getEachNode()) {
+            Node added = res.addNode(node.getId());
+            for (String key : node.getAttributeKeySet()) {
+                Object[] arr = {StringUtils.ObjectToString(node.getAttribute(key))};
+                added.setAttribute(key, arr);
+            }
+        }
+        for (Edge edge : g.getEachEdge()) {
+            Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
+            for (String key : edge.getAttributeKeySet()) {
+                Object[] arr = {StringUtils.ObjectToString(edge.getAttribute(key))};
+                added.setAttribute(key, arr);
+            }
+        }
+        return res;
     }
 }
