@@ -10,17 +10,21 @@ import general.files.LoaderUtils;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.graafviseditor.GraafVisEditorView;
-import screens.idescreen.newsvgviewer.SVGViewerView;
+import screens.idescreen.svgviewer.SVGViewerPresenter;
+import screens.idescreen.svgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
 import utils.Pair;
 
@@ -119,11 +123,13 @@ public class IDEPresenter implements Initializable, Observer {
                             public void run() {
 
                                 //Generate and load the content in the SVGViewerView2
+
                                 SVGViewerView svgViewerView = new SVGViewerView();
+                                SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
 
                                 String svgName = (String) arguments.get(1);
-                                System.out.println("TEST:" + svgName);
-                                //svgViewerPresenter2.loadContent(svgName);
+                                svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
+                                svgViewerPresenter.showSVGasImage();
 
                                 BorderPane borderPane = ((BorderPane) viewModel.getMainView());
                                 TabPane tabPane = (TabPane) borderPane.getCenter();
@@ -137,6 +143,25 @@ public class IDEPresenter implements Initializable, Observer {
                                         DocumentModel.getInstance().removeGeneratedSVG(svgName);
                                     }
                                 });
+
+                                final ContextMenu contextMenu = new ContextMenu();
+                                MenuItem showAsImage = new MenuItem("Show as Image");
+                                MenuItem showAsText = new MenuItem("Show as Text");
+                                contextMenu.getItems().addAll(showAsImage, showAsText);
+                                showAsImage.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent event) {
+                                        svgViewerPresenter.showSVGasImage();
+                                    }
+                                });
+                                showAsText.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent event) {
+                                        svgViewerPresenter.showSVGasText();
+                                    }
+                                });
+
+                                svgViewerTab.setContextMenu(contextMenu);
 
                                 tabPane.getTabs().add(svgViewerTab);
                             }

@@ -16,6 +16,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.fifesoft:rsyntaxtextarea:2.6.1" level="project" />
+    <orderEntry type="library" name="Maven: org.fxmisc.richtext:richtextfx:0.7-M5" level="project" />
+    <orderEntry type="library" name="Maven: org.fxmisc.wellbehaved:wellbehavedfx:0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.fxmisc.undo:undofx:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: org.reactfx:reactfx:2.0-M5" level="project" />
+    <orderEntry type="library" name="Maven: org.fxmisc.flowless:flowless:0.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.6" level="project" />
     <orderEntry type="library" name="Maven: org.choco-solver:choco-solver:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.choco-solver:choco-sat:1.0.2" level="project" />
