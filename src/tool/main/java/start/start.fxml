@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="start.StartPresenter">
+   <children>
+      <ImageView fx:id="graphterEffectLogo" fitHeight="150.0" fitWidth="200.0" layoutX="200.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
+      <Button layoutX="180.0" layoutY="299.0" mnemonicParsing="false" onAction="#createNewGraafVisButtonPressed" text="Create new GraafVis" />
+      <Button layoutX="359.0" layoutY="299.0" mnemonicParsing="false" onAction="#loadGGButtonPressed" text="Load Graph/GraafVis" />
+   </children>
+</Pane>
