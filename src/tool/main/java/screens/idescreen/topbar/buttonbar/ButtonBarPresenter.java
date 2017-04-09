@@ -218,4 +218,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 break;
         }
     }
+
+    public void debugButtonPressed(ActionEvent actionEvent) {
+    }
 }
