@@ -24,6 +24,8 @@ import screens.idescreen.graafviseditor.GraafVisEditorView;
 import screens.idescreen.svgviewer.SVGViewerPresenter;
 import screens.idescreen.svgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
+import screens.idescreen.viselemviewer.VisElemViewerPresenter;
+import screens.idescreen.viselemviewer.VisElemViewerView;
 import utils.Pair;
 
 import javax.inject.Inject;
@@ -170,6 +172,10 @@ public class IDEPresenter implements Initializable, Observer {
                     System.out.println("compilation started");
                     CompilationModel.getInstance().addObserverToCompilation(this);
                     break;
+                case DEBUGCOMPILATIONSTARTED:
+                    System.out.println("debug compilation started");
+                    CompilationModel.getInstance().addObserverToCompilation(this);
+                    break;
                 case GRAPHCONVERTED:
                     System.out.println("Graph converted");
                     break;
@@ -178,6 +184,18 @@ public class IDEPresenter implements Initializable, Observer {
                     break;
                 case SOLVED:
                     System.out.println("Logic solved");
+                    if (CompilationModel.getInstance().getCompilation().isDebug() &&
+                            CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                VisElemViewerView visElemViewerView = new VisElemViewerView();
+                                VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
+                                visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getGeneratedVisElems());
+                                tabPane.getTabs().add(new Tab("TEST",visElemViewerView.getView()));
+                            }
+                        });
+                    }
                     break;
                 case SVGGENERATED:
                     System.out.println("SVG generated");

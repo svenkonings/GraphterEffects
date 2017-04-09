@@ -23,7 +23,11 @@ public class CompilationModel extends Observable{
     protected void setCompilation(Compilation compilation){
         this.compilation = compilation;
         setChanged();
-        notifyObservers(CompilationProgress.COMPILATIONSTARTED);
+        if (!compilation.isDebug()) {
+            notifyObservers(CompilationProgress.COMPILATIONSTARTED);
+        } else {
+            notifyObservers(CompilationProgress.DEBUGCOMPILATIONSTARTED);
+        }
     }
 
     public void addObserverToCompilation(Observer observer){

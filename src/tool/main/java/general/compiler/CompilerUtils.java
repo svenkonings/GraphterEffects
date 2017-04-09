@@ -1,5 +1,12 @@
 package general.compiler;
 
+import general.files.LoaderUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class CompilerUtils {
 
     /*
@@ -38,4 +45,16 @@ public class CompilerUtils {
         }
     }
     */
+
+    public static Path saveAsTempScript(String filename, String code){
+        new File("/temp/compiler").mkdirs();
+        Path tempFilePath = Paths.get("/temp/compiler",filename);
+        try {
+            LoaderUtils.saveVIS(tempFilePath,code);
+            return tempFilePath;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

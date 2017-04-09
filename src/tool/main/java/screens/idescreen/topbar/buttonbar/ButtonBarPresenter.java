@@ -2,7 +2,9 @@ package screens.idescreen.topbar.buttonbar;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import general.ViewModel;
+import general.compiler.CompilationProgress;
 import general.compiler.CompilerRunnable;
+import general.compiler.CompilerUtils;
 import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.LoaderUtils;
@@ -21,7 +23,6 @@ import utils.FileUtils;
 import utils.Pair;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -67,55 +68,76 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
         graphComboBox.setPromptText("Select graphs");
 
-        graphComboBox.setCellFactory(lv ->
-                new ListCell<String>() {
-                    // This is the node that will display the text and the cross.
-                    // I chose a hyperlink, but you can change to button, image, etc.
-                    private HBox graphic;
+        graphComboBox.setCellFactory(lv -> {
+                    ListCell<String> listCell = new ListCell<String>() {
+                        // This is the node that will display the text and the cross.
+                        // I chose a hyperlink, but you can change to button, image, etc.
+                        private HBox graphic;
 
-                    // this is the constructor for the anonymous class.
-                    {
-                        Label label = new Label();
-                        // Bind the label text to the item property. If your ComboBox items are not Strings you should use a converter.
-                        label.textProperty().bind(itemProperty());
-                        // Set max width to infinity so the cross is all the way to the right.
-                        label.setMaxWidth(Double.POSITIVE_INFINITY);
-                        // We have to modify the hiding behavior of the ComboBox to allow clicking on the hyperlink,
-                        // so we need to hide the ComboBox when the label is clicked (item selected).
-                        label.setOnMouseClicked(event -> graphComboBox.hide());
+                        // this is the constructor for the anonymous class.
+                        {
+                            Label label = new Label();
+                            // Bind the label text to the item property. If your ComboBox items are not Strings you should use a converter.
+                            label.textProperty().bind(itemProperty());
+                            // Set max width to infinity so the cross is all the way to the right.
+                            label.setMaxWidth(Double.POSITIVE_INFINITY);
+                            // We have to modify the hiding behavior of the ComboBox to allow clicking on the hyperlink,
+                            // so we need to hide the ComboBox when the label is clicked (item selected).
+                            label.setOnMouseClicked(event -> graphComboBox.hide());
 
-                        Hyperlink cross = new Hyperlink(" X ");
-                        cross.setVisited(true); // So it is black, and not blue.
+                            Hyperlink cross = new Hyperlink(" X ");
+                            cross.setVisited(true); // So it is black, and not blue.
 
-                        cross.setOnMouseClicked(event ->
-                                {
-                                    // Since the ListView reuses cells, we need to get the item first, before making changes.
-                                    String item = getItem();
-
-                                    System.out.println("Clicked cross on " + item);
-                                    DocumentModel.getInstance().removeGraph(item);
-                                    //if (isSelected()) {
+                            cross.setOnMouseClicked(event ->
+                                    {
+                                        // Since the ListView reuses cells, we need to get the item first, before making changes.
+                                        String item = getItem();
+                                        DocumentModel.getInstance().removeGraph(item);
+                                        //if (isSelected()) {
                                         //graphComboBox.getSelectionModel().select(null);
-                                    //}
-                                }
-                        );
-                        // Arrange controls in a HBox, and set display to graphic only (the text is included in the graphic in this implementation).
-                        graphic = new HBox(label, cross);
-                        graphic.setHgrow(label, Priority.ALWAYS);
-                        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                    }
-
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(graphic);
+                                        //}
+                                    }
+                            );
+                            // Arrange controls in a HBox, and set display to graphic only (the text is included in the graphic in this implementation).
+                            graphic = new HBox(label, cross);
+                            graphic.setHgrow(label, Priority.ALWAYS);
+                            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         }
-                    }
-                });
 
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setGraphic(null);
+                            } else {
+                                setGraphic(graphic);
+                            }
+                        }
+                    };
+
+
+                    /* TODO: Test of dit gewild is (Dat je ook vanuit de menuitems een graaf kan weergeven).
+                    listCell.setContextMenu(generateGraphContextMenu());
+                    listCell.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            if (event.getButton() == MouseButton.SECONDARY) {
+                                event.consume();
+                            }
+                        }
+                    });
+                    listCell.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            if (event.getButton() == MouseButton.SECONDARY) {
+                                event.consume();
+                            }
+                        }
+                    });
+                    */
+                    return listCell;
+                }
+                );
         // We have to set a custom skin, otherwise the ComboBox disappears before the click on the Hyperlink is registered.
         graphComboBox.setSkin(new ComboBoxListViewSkin<String>(graphComboBox) {
             @Override
@@ -124,39 +146,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
-        final ContextMenu contextMenu = new ContextMenu();
-        MenuItem showAsImage = new MenuItem("Show as Image");
-        MenuItem showAsText = new MenuItem("Show as Text");
-        contextMenu.getItems().addAll(showAsImage, showAsText);
-        showAsImage.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
-                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
-                CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
-                new Thread(compilerRunnable).start();
-            }
-        });
-        showAsText.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
-                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
-                String graphAsString = "";
-                try {
-                    graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                TabPane centralTabPane = (TabPane) ((BorderPane) (((AnchorPane) splitPane.getParent()).getParent().getParent()).getParent()).getCenter();
-                SimpleViewerView simpleViewerView = new SimpleViewerView();
-                SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
-                simpleViewerPresenter.loadContent(selectedGraphName, graphAsString);
-                centralTabPane.getTabs().add(new Tab(selectedGraphName, simpleViewerView.getView()));
-            }
-        });
-
-        graphComboBox.setContextMenu(contextMenu);
+        graphComboBox.setContextMenu(generateGraphContextMenu());
         graphComboBox.setOnMouseClicked(
                 new EventHandler<MouseEvent>() {
                     @Override
@@ -190,16 +180,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
         Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
-        TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
-
-        new File("/temp/compiler").mkdirs();
-        Path tempFilePath = Paths.get("/temp/compiler",scriptFilePath.getFileName().toString());
-        try {
-            LoaderUtils.saveVIS(tempFilePath,codeOnScreen);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
             new Thread(new CompilerRunnable(tempFilePath,graphFilePath)).start();
         } catch (Exception e){
@@ -260,5 +242,56 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void debugButtonPressed(ActionEvent actionEvent) {
+
+    }
+
+    private ContextMenu generateGraphContextMenu(){
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem showAsImage = new MenuItem("Show as Image");
+        MenuItem showAsText = new MenuItem("Show as Text");
+        contextMenu.getItems().addAll(showAsImage, showAsText);
+        showAsImage.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
+                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+                CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
+                new Thread(compilerRunnable).start();
+            }
+        });
+        showAsText.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
+                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+                String graphAsString = "";
+                try {
+                    graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                TabPane centralTabPane = (TabPane) ((BorderPane) (((AnchorPane) splitPane.getParent()).getParent().getParent()).getParent()).getCenter();
+                SimpleViewerView simpleViewerView = new SimpleViewerView();
+                SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
+                simpleViewerPresenter.loadContent(selectedGraphName, graphAsString);
+                centralTabPane.getTabs().add(new Tab(selectedGraphName, simpleViewerView.getView()));
+            }
+        });
+        return contextMenu;
+    }
+
+    public void generateVisElemsButtonPressed(ActionEvent actionEvent) {
+        Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
+        System.out.println("GRAPH FILE: " + graphFilePath);
+        Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
+
+        String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
+        Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
+        try {
+            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.SOLVED)).start();
+        } catch (Exception e){
+            e.printStackTrace();
+            //TODO: Handle exceptions by showing them in an error box
+        }
     }
 }

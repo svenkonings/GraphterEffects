@@ -26,7 +26,8 @@ public class Compilation extends Observable{
 
     private Path scriptFile;
     private Path graphFile;
-    private List<Term> abstractSyntaxRules;
+
+    private CompilationProgress maxProgress;
     private List<Term> scriptRules;
     private List<VisElem> generatedVisElems;
     private ASRCLibrary asrcLibrary;
@@ -36,11 +37,18 @@ public class Compilation extends Observable{
     public Compilation(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
+        this.maxProgress = CompilationProgress.COMPILATIONFINISHED;
+    }
+
+    //To create debug compilations which stop at a certain progress
+    public Compilation(Path scriptFile, Path graphFile, CompilationProgress maxProgress){
+        this.scriptFile = scriptFile;
+        this.graphFile = graphFile;
+        this.maxProgress = maxProgress;
     }
 
     public void addGraphRules() throws IOException, SAXException, UnknownGraphTypeException {
         Graph graph = Importer.graphFromFile(graphFile.toFile());
-        //abstractSyntaxRules = AbstractSyntaxRuleConverter.convertToRules(graph);
         asrcLibrary = new ASRCLibrary(graph);
         setChanged();
         notifyObservers(CompilationProgress.GRAPHCONVERTED);
@@ -81,11 +89,23 @@ public class Compilation extends Observable{
         notifyObservers(CompilationProgress.ERROROCCURED);
     }
 
+    public boolean isDebug(){
+        return !maxProgress.equals(CompilationProgress.COMPILATIONFINISHED);
+    }
+
+    public CompilationProgress getMaxProgress(){
+        return maxProgress;
+    }
+
     public Exception getException(){
         return exception;
     }
 
     public Document getGeneratedSVG() {
         return generatedSVG;
+    }
+
+    public List<VisElem> getGeneratedVisElems(){
+        return generatedVisElems;
     }
 }

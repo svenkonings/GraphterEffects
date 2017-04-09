@@ -17,16 +17,24 @@ public class CompilerRunnable implements Runnable {
     private Path scriptFile;
     private Path graphFile;
     private Compilation compilation;
+    private CompilationProgress maxCompilationProgress;
 
     public CompilerRunnable(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
+        maxCompilationProgress = CompilationProgress.COMPILATIONFINISHED;
+    }
+
+    public CompilerRunnable(Path scriptFile, Path graphFile, CompilationProgress maxCompilationProgress){
+        this.scriptFile = scriptFile;
+        this.graphFile = graphFile;
+        this.maxCompilationProgress = maxCompilationProgress;
 
     }
 
     @Override
     public synchronized void run() {
-        compilation = new Compilation(scriptFile, graphFile);
+        compilation = new Compilation(scriptFile, graphFile, maxCompilationProgress);
         CompilationModel.getInstance().setCompilation(compilation);
         try {
             while (CompilationModel.getInstance().countObservers() != compilation.countObservers()) {
@@ -39,15 +47,31 @@ public class CompilerRunnable implements Runnable {
         }
         //TODO: error resolving
         try {
-            compilation.addGraphRules();
-            compilation.compileGraafVis();
-            compilation.solve();
-            compilation.generateSVG();
-            saveGeneratedSVG(compilation.getGeneratedSVG());
+            if (maxCompilationProgress == CompilationProgress.COMPILATIONFINISHED) {
+                compilation.compileGraafVis();
+                compilation.addGraphRules();
+                compilation.solve();
+                compilation.generateSVG();
+                saveGeneratedSVG(compilation.getGeneratedSVG());
+            } else {
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAAFVISCOMPILED.ordinal()){
+                    compilation.compileGraafVis();
+                }
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAPHCONVERTED.ordinal()){
+                    compilation.addGraphRules();
+                }
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.SOLVED.ordinal()){
+                    compilation.solve();
+                }
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.SVGGENERATED.ordinal()){
+                    compilation.generateSVG();
+                }
+            }
         } catch (Exception e){
             compilation.setException(e);
             e.printStackTrace();
         }
+
 
     }
 
