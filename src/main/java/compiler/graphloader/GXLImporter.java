@@ -240,6 +240,9 @@ final class GXLImporter {
         for (Edge edge : input.getEachEdge()) {
             if (edge.getSourceNode().equals(edge.getTargetNode())) {
                 String label = edge.getAttribute("label");
+                if (label==null) {
+                    continue;
+                }
                 label = label.substring(1, label.length()-1);
                 String[] attribute = label.split(":", 2);
                 if (attribute.length == 1) {
