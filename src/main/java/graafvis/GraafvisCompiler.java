@@ -5,7 +5,7 @@ import alice.tuprolog.Term;
 import graafvis.checkers.CheckerResult;
 import graafvis.checkers.GraafvisChecker;
 import graafvis.errors.VisError;
-import graafvis.generator.RuleGeneratorProposal;
+import graafvis.generator.RuleGenerator;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
 import graafvis.warnings.Warning;
@@ -62,7 +62,7 @@ public class GraafvisCompiler {
         }
         warnings.addAll(checkerResult.getWarnings());
         /* Passed the checking phase, generate program */
-        return new RuleGeneratorProposal(programContext).getResult();
+        return new RuleGenerator(programContext).getResult();
     }
 
     public List<VisError> getErrors() {
