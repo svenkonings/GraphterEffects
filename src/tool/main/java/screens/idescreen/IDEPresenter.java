@@ -193,7 +193,7 @@ public class IDEPresenter implements Initializable, Observer {
                             public void run() {
                                 VisElemViewerView visElemViewerView = new VisElemViewerView();
                                 VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
-                                visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getGeneratedVisElems());
+                                visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
                                 tabPane.getTabs().add(new Tab("TEST",visElemViewerView.getView()));
                             }
                         });

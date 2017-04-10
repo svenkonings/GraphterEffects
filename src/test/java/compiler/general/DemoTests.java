@@ -4,6 +4,7 @@ import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
+import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
@@ -40,9 +41,9 @@ public final class DemoTests {
                 //Display the weight of the edges as label of the lines
                 clause(struct("text", var("N"), var("L")), struct("attribute", term("label"), var("X"), var("L")))
         );
-        Solver solver = new Solver(prolog);
-        List<VisElem> visElemList = solver.solve();
-        Document svg = SvgDocumentGenerator.generate(visElemList);
+        Solver solver = new Solver();
+        VisMap visMap = solver.solve(prolog);
+        Document svg = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(svg, "demo1.svg");
     }
 
@@ -83,9 +84,9 @@ public final class DemoTests {
                 //Dark red= 4
                 clause(struct("colour", var("N"), term("red")), struct("neighbourcount", var("N"), intVal(4)))
         );
-        Solver solver = new Solver(prolog);
-        List<VisElem> visElemList = solver.solve();
-        Document svg = SvgDocumentGenerator.generate(visElemList);
+        Solver solver = new Solver();
+        VisMap visMap = solver.solve(prolog);
+        Document svg = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(svg, "demo2.svg");
     }
 
@@ -115,9 +116,9 @@ public final class DemoTests {
                 //colour all the edges which are in the mst in red
                 clause(struct("stroke", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
         );
-        Solver solver = new Solver(prolog);
-        List<VisElem> visElemList = solver.solve();
-        Document svg = SvgDocumentGenerator.generate(visElemList);
+        Solver solver = new Solver();
+        VisMap visMap = solver.solve(prolog);
+        Document svg = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(svg, "demo3.svg");
     }
 
@@ -150,9 +151,9 @@ public final class DemoTests {
                 //Shows the river image
                 struct("background-image", struct(FileUtils.fromResources("demo/images/river.png").getAbsolutePath()))
         );
-        Solver solver = new Solver(prolog);
-        List<VisElem> visElemList = solver.solve();
-        Document svg = SvgDocumentGenerator.generate(visElemList);
+        Solver solver = new Solver();
+        VisMap visMap = solver.solve(prolog);
+        Document svg = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(svg, "demo4.svg");
     }
 }

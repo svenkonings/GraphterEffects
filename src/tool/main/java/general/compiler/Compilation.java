@@ -5,8 +5,10 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
+import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
+import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
 import graafvis.RuleGenerator;
@@ -17,6 +19,7 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -29,7 +32,7 @@ public class Compilation extends Observable{
 
     private CompilationProgress maxProgress;
     private List<Term> scriptRules;
-    private List<VisElem> generatedVisElems;
+    private VisMap visMap;
     private ASRCLibrary asrcLibrary;
     private Document generatedSVG;
     private Exception exception;
@@ -64,21 +67,22 @@ public class Compilation extends Observable{
         List<Term> rules = new LinkedList<>();
         //rules.addAll(abstractSyntaxRules);
         rules.addAll(scriptRules);
-        Solver solver = new Solver(rules);
+        TuProlog prolog = new TuProlog(rules);
         try {
-            solver.addLibrary(asrcLibrary);
+            prolog.loadLibrary(asrcLibrary);
         } catch (InvalidLibraryException e) {
             e.printStackTrace();
         }
+        Solver solver = new Solver();
         System.out.println("DEBUGGING FOR PIM");
-        System.out.println(solver.getProlog().toString());
-        generatedVisElems = solver.solve();
+        System.out.println(prolog.toString());
+        visMap = solver.solve(prolog);
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);
     }
 
     public void generateSVG() {
-        generatedSVG = SvgDocumentGenerator.generate(generatedVisElems);
+        generatedSVG = SvgDocumentGenerator.generate(visMap.values());
         setChanged();
         notifyObservers(CompilationProgress.SVGGENERATED);
     }
@@ -107,7 +111,7 @@ public class Compilation extends Observable{
         return generatedSVG;
     }
 
-    public List<VisElem> getGeneratedVisElems(){
-        return generatedVisElems;
+    public VisMap getVisMap(){
+        return visMap;
     }
 }

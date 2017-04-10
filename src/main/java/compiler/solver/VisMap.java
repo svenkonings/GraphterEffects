@@ -3,8 +3,7 @@ package compiler.solver;
 import alice.tuprolog.Term;
 import org.chocosolver.solver.Model;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Represents a mapping of terms to visualization elements.
@@ -13,11 +12,11 @@ public class VisMap {
 
     /** The model that is used for the visualization elements. */
     private final Model model;
-    private int minBound;
-    private int maxBound;
 
     /** The internal mapping. */
-    private final HashMap<String, VisElem> mapping;
+    private final Map<String, VisElem> mapping;
+
+    private int minBound, maxBound;
 
     /**
      * Creates a new {@code VisMap} with the given model and an empty mapping.
@@ -25,10 +24,20 @@ public class VisMap {
      * @param model The given model.
      */
     public VisMap(Model model) {
+        this(model, new HashMap<>());
+    }
+
+    /**
+     * Creates a new {@code VisMap} with the given model and the given mapping.
+     *
+     * @param model   The given model.
+     * @param mapping The given mapping.
+     */
+    public VisMap(Model model, Map<String, VisElem> mapping) {
         this.model = model;
+        this.mapping = mapping;
         this.minBound = 0;
         this.maxBound = 2000;
-        this.mapping = new HashMap<>();
     }
 
     public void setBounds(int minBound, int maxBound) {
@@ -57,13 +66,47 @@ public class VisMap {
     }
 
     /**
-     * Returns a Collection view of the values contained in this map. The collection is backed by the map, so changes to
-     * the map are reflected in the collection, and vice-versa.
+     * Returns the model associated with this VisMap.
+     *
+     * @return The model associated with this VisMap.
+     */
+    public Model getModel() {
+        return model;
+    }
+
+    public int getMinBound() {
+        return minBound;
+    }
+
+    public int getMaxBound() {
+        return maxBound;
+    }
+
+    /**
+     * Returns a Collection view of the values contained in this map.
      *
      * @return A view of the values contained in this map.
      */
     public Collection<VisElem> values() {
-        return mapping.values();
+        return Collections.unmodifiableCollection(mapping.values());
+    }
+
+    /**
+     * Returns a Set view of the keys contained in this map.
+     *
+     * @return A view of the keys contained in this map.
+     */
+    public Set<String> keySet() {
+        return Collections.unmodifiableSet(mapping.keySet());
+    }
+
+    /**
+     * Returns a view of this map.
+     *
+     * @return A vies of this map.
+     */
+    public Map<String, VisElem> getMapping() {
+        return Collections.unmodifiableMap(mapping);
     }
 
     @Override

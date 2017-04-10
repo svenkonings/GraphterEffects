@@ -1,8 +1,5 @@
 package compiler.solver;
 
-import alice.tuprolog.InvalidLibraryException;
-import alice.tuprolog.InvalidTheoryException;
-import alice.tuprolog.Library;
 import alice.tuprolog.Term;
 import compiler.prolog.TuProlog;
 import org.chocosolver.solver.Model;
@@ -28,45 +25,13 @@ import static utils.GraphUtils.ILLEGAL_PREFIX;
  */
 public class Solver {
 
-    public void addLibrary(Library lib) throws InvalidLibraryException {
-        prolog.loadLibrary(lib);
-    }
-
-    public TuProlog getProlog() {
-        return prolog;
-    }
-
-    /** The {@link TuProlog} engine. */
-    private final TuProlog prolog;
-
-    /** The constraint solver {@link Model} */
-    private final Model model;
-
-    /** The mapping of visualization elements. */
-    private final VisMap visMap;
-
     /** Mapping from query to {@link QueryConsumer}. */
     private final Map<String, QueryConsumer> queries;
 
     /**
-     * Creates a new solver with the given terms.
-     *
-     * @param terms The given terms.
-     * @throws InvalidTheoryException If the {@link alice.tuprolog.Theory} is invalid.
+     * Creates a new solver.
      */
-    public Solver(List<Term> terms) throws InvalidTheoryException {
-        this(new TuProlog(terms));
-    }
-
-    /**
-     * Creates a new solver with the given {@link TuProlog}.
-     *
-     * @param tuProlog The given {@link TuProlog} engine.
-     */
-    public Solver(TuProlog tuProlog) {
-        prolog = tuProlog;
-        model = new Model();
-        visMap = new VisMap(model);
+    public Solver() {
         queries = new LinkedHashMap<>();
         setDefaults();
     }
@@ -239,8 +204,9 @@ public class Solver {
      *
      * @return The {@link List} of visualization elements.
      */
-    // TODO: TuProlog should be argument
-    public List<VisElem> solve() {
+    public VisMap solve(TuProlog prolog) {
+        Model model = new Model();
+        VisMap visMap = new VisMap(model);
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
         visMap.values().forEach(Solver::setDefaults);
         boolean succes = model.getSolver().solve();
@@ -248,7 +214,7 @@ public class Solver {
         if (!succes) {
             throw new RuntimeException("No solution found.");
         }
-        return new ArrayList<>(visMap.values());
+        return visMap;
     }
 
     /**
@@ -480,16 +446,18 @@ public class Solver {
                 elem.setVar("z", 0);
             }
         }
-        if (elem.hasVar("width") && unPropagated(elem, "minX", "centerX", "maxX")) {
+        if (unPropagated(elem, "width", "minX", "centerX", "maxX")) {
             elem.setVar("width", 10);
         }
-        if (elem.hasVar("height") && unPropagated(elem, "minY", "centerY", "maxY")) {
+        if (unPropagated(elem, "height", "minY", "centerY", "maxY")) {
             elem.setVar("height", 10);
         }
     }
 
-    public static boolean unPropagated(VisElem elem, String min, String center, String max) {
-        return elem.getVar(min).getNbProps() == 2 &&
+    public static boolean unPropagated(VisElem elem, String dimension, String min, String center, String max) {
+        return elem.hasVar(dimension) &&
+                !elem.getVar(dimension).isInstantiated() &&
+                elem.getVar(min).getNbProps() == 2 &&
                 elem.getVar(center).getNbProps() == 1 &&
                 elem.getVar(max).getNbProps() == 1;
     }

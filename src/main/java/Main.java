@@ -3,8 +3,10 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
+import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
 import compiler.solver.VisElem;
+import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
 import graafvis.RuleGenerator;
@@ -16,6 +18,7 @@ import utils.Printer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 public class Main {
@@ -27,10 +30,11 @@ public class Main {
         System.out.println();
         terms.forEach(System.out::println);
         System.out.println();
-        Solver solver = new Solver(terms);
-        solver.addLibrary(new ASRCLibrary(graph));
-        List<VisElem> visElems = solver.solve();
-        Document document = SvgDocumentGenerator.generate(visElems);
+        TuProlog prolog = new TuProlog(terms);
+        Solver solver = new Solver();
+        prolog.loadLibrary(new ASRCLibrary(graph));
+        VisMap visMap = solver.solve(prolog);
+        Document document = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(document, args[2]);
     }
 }

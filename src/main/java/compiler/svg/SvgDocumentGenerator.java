@@ -9,6 +9,7 @@ import org.dom4j.io.XMLWriter;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class SvgDocumentGenerator {
      * @param visElems The given visualization elements.
      * @return a SVG document.
      */
-    public static Document generate(List<VisElem> visElems) {
+    public static Document generate(Collection<VisElem> visElems) {
         return generate(new SvgElementGenerator(), visElems);
     }
 
@@ -35,7 +36,7 @@ public class SvgDocumentGenerator {
      * @param visElems  The given visualization elements.
      * @return a SVG document.
      */
-    public static Document generate(SvgElementGenerator generator, List<VisElem> visElems) {
+    public static Document generate(SvgElementGenerator generator, Collection<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
 
@@ -71,7 +72,7 @@ public class SvgDocumentGenerator {
      * @param name     The name of the attribute.
      * @return The maximum value.
      */
-    private static int max(List<VisElem> visElems, String name) {
+    private static int max(Collection<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
                 .max().orElse(0);
@@ -84,7 +85,7 @@ public class SvgDocumentGenerator {
      * @param name     The name of the attribute.
      * @return The minimum value.
      */
-    private static int min(List<VisElem> visElems, String name) {
+    private static int min(Collection<VisElem> visElems, String name) {
         return visElems.stream()
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
                 .min().orElse(0);
