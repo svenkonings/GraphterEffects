@@ -70,6 +70,8 @@ public class Compilation extends Observable{
         } catch (InvalidLibraryException e) {
             e.printStackTrace();
         }
+        System.out.println("DEBUGGING FOR PIM");
+        System.out.println(solver.getProlog().toString());
         generatedVisElems = solver.solve();
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);
