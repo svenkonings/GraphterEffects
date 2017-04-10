@@ -171,11 +171,7 @@ public class GraafVisEditorPresenter implements Initializable {
 
         codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
-                .subscribe(change -> {
-                    if (codeArea.getText() != null) {
-                        codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
-                    }
-                });
+                .subscribe(change -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
 
         String graafVisCode;
         try {

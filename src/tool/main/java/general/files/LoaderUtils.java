@@ -26,7 +26,7 @@ public class LoaderUtils {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select GraafVis Script");
         String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-        path += "/tests";
+//        path += "/tests";
         fileChooser.setInitialDirectory(new File(path));
 
         fileChooser.getExtensionFilters().add(visFilesFilter);
@@ -43,7 +43,7 @@ public class LoaderUtils {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Graph(s)");
         String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-        path += "/tests";
+//        path += "/tests";
         fileChooser.setInitialDirectory(new File(path));
 
         fileChooser.getExtensionFilters().add(graphFilesFilter);
