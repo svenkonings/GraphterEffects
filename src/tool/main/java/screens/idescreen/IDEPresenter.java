@@ -8,9 +8,6 @@ import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.LoaderUtils;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
@@ -114,53 +111,32 @@ public class IDEPresenter implements Initializable, Observer {
                         tabPane.getTabs().set(0, codeTab);
                         break;
                     case SVGGENERATED:
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
+                        Platform.runLater(() -> {
 
-                                //Generate and load the content in the SVGViewerView2
+                            //Generate and load the content in the SVGViewerView2
 
-                                SVGViewerView svgViewerView = new SVGViewerView();
-                                SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
+                            SVGViewerView svgViewerView = new SVGViewerView();
+                            SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
 
-                                String svgName = (String) arguments.get(1);
-                                svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
-                                svgViewerPresenter.showSVGAsImage();
+                            String svgName = (String) arguments.get(1);
+                            svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
+                            svgViewerPresenter.showSVGAsImage();
 
-                                BorderPane borderPane = ((BorderPane) viewModel.getMainView());
-                                TabPane tabPane = (TabPane) borderPane.getCenter();
+                            Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
+                            svgViewerTab.setClosable(true);
+                            svgViewerTab.setOnClosed(event -> DocumentModel.getInstance().removeGeneratedSVG(svgName));
 
-                                //Create the tabPane
-                                Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
-                                svgViewerTab.setClosable(true);
-                                svgViewerTab.setOnClosed(new EventHandler<Event>() {
-                                    @Override
-                                    public void handle(Event event) {
-                                        DocumentModel.getInstance().removeGeneratedSVG(svgName);
-                                    }
-                                });
+                            final ContextMenu contextMenu = new ContextMenu();
+                            MenuItem showAsImage = new MenuItem("Show as Image");
+                            MenuItem showAsText = new MenuItem("Show as Text");
+                            contextMenu.getItems().addAll(showAsImage, showAsText);
+                            showAsImage.setOnAction(event -> svgViewerPresenter.showSVGAsImage());
+                            showAsText.setOnAction(event -> svgViewerPresenter.showSVGAsText());
 
-                                final ContextMenu contextMenu = new ContextMenu();
-                                MenuItem showAsImage = new MenuItem("Show as Image");
-                                MenuItem showAsText = new MenuItem("Show as Text");
-                                contextMenu.getItems().addAll(showAsImage, showAsText);
-                                showAsImage.setOnAction(new EventHandler<ActionEvent>() {
-                                    @Override
-                                    public void handle(ActionEvent event) {
-                                        svgViewerPresenter.showSVGAsImage();
-                                    }
-                                });
-                                showAsText.setOnAction(new EventHandler<ActionEvent>() {
-                                    @Override
-                                    public void handle(ActionEvent event) {
-                                        svgViewerPresenter.showSVGAsText();
-                                    }
-                                });
+                            svgViewerTab.setContextMenu(contextMenu);
 
-                                svgViewerTab.setContextMenu(contextMenu);
+                            tabPane.getTabs().add(svgViewerTab);
 
-                                tabPane.getTabs().add(svgViewerTab);
-                            }
                         });
                         break;
                 }
@@ -194,7 +170,9 @@ public class IDEPresenter implements Initializable, Observer {
                                 VisElemViewerView visElemViewerView = new VisElemViewerView();
                                 VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
                                 visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
-                                tabPane.getTabs().add(new Tab("TEST",visElemViewerView.getView()));
+
+                                String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+                                tabPane.getTabs().add(new Tab("Vis Elems " + graphName,visElemViewerView.getView()));
                             }
                         });
                     }

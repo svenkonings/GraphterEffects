@@ -181,6 +181,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
+        System.out.println("CODE ON SCREEN:" + codeOnScreen);
         Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
             new Thread(new CompilerRunnable(tempFilePath,graphFilePath)).start();
@@ -282,7 +283,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     public void generateVisElemsButtonPressed(ActionEvent actionEvent) {
         Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
-        System.out.println("GRAPH FILE: " + graphFilePath);
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first

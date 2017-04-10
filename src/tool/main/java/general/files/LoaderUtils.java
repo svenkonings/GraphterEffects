@@ -53,11 +53,12 @@ public class LoaderUtils {
         List<File> graphFileList = fileChooser.showOpenMultipleDialog(new Stage());
         List<Path> graphPathList = new ArrayList<>();
 
-        for (File file: graphFileList){
-            graphPathList.add(file.toPath());
-        }
-
         if (graphFileList != null){
+
+            for (File file: graphFileList){
+                graphPathList.add(file.toPath());
+            }
+
             if (replaceExistingFiles) {
                 DocumentModel.getInstance().removeAllGraphs();
                 DocumentModel.getInstance().loadAllGraph(graphPathList);

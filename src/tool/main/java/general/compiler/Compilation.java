@@ -7,7 +7,6 @@ import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
-import compiler.solver.VisElem;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
@@ -19,7 +18,6 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -113,5 +111,13 @@ public class Compilation extends Observable{
 
     public VisMap getVisMap(){
         return visMap;
+    }
+
+    public Path getScriptFile(){
+        return scriptFile;
+    }
+
+    public Path getGraphFile(){
+        return graphFile;
     }
 }

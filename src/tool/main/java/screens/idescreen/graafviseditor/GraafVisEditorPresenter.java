@@ -1,8 +1,6 @@
 package screens.idescreen.graafviseditor;
 
 import general.files.DocumentModel;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
@@ -48,7 +46,7 @@ public class GraafVisEditorPresenter implements Initializable {
     //
 
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    private static final String PREDICATE_PATTERN = "[^\\s]*(?=[(])";
+    private static final String PREDICATE_PATTERN = "[^\\W]*(?=[(])";
 
 
     private static final Pattern PATTERN = Pattern.compile(
@@ -64,106 +62,6 @@ public class GraafVisEditorPresenter implements Initializable {
                     + "|(?<PREDICATE>" + PREDICATE_PATTERN + ")"
     );
 
-    private static final String sampleCode = String.join("\n", new String[] {
-            "edge labels:\n" +
-                    "    \"wolf\",\n" +
-                    "    \"type:Goat\" as goat,\n" +
-                    "    \"type:Cabbage\" as cabbage,\n" +
-                    "    \"type:Boat\" as boat,\n" +
-                    "    \"type:Bank\" as bank,\n" +
-                    "    \"on\",\n" +
-                    "    \"in\",\n" +
-                    "    \"likes\",\n" +
-                    "    \"moored\",\n" +
-                    "    \"go\",\n" +
-                    "    \"flag:left\" as leftBank,\n" +
-                    "    \"flag:right\" as rightBank.\n" +
-                    "\n" +
-                    "bounds(0, 32).\n" +
-                    "backgroundImage(\"images/river.png\").\n" +
-                    "\n" +
-                    "shape(water, rectangle).\n" +
-                    "colour(water, blue).\n" +
-                    "dimensions(water, 20, 4).\n" +
-                    "\n" +
-                    "wolf(X, X); goat(X, X); cabbage(X, X) ->\n" +
-                    "    passenger(X).\n" +
-                    "\n" +
-                    "passenger(X), passenger(Y) ->\n" +
-                    "    noOverlap(X, Y).\n" +
-                    "\n" +
-                    "wolf(X, X) ->\n" +
-                    "    image(X, \"images/wolf.png\"),\n" +
-                    "    dimensions(X, 2, 2).\n" +
-                    "\n" +
-                    "goat(X, X) ->\n" +
-                    "    image(X, \"images/sheep.png\"),\n" +
-                    "    dimensions(X, 2, 2).\n" +
-                    "\n" +
-                    "cabbage(X, X) ->\n" +
-                    "    image(X, \"images/cabbage.png\"),\n" +
-                    "    dimensions(X, 2, 2).\n" +
-                    "\n" +
-                    "boat(X, X) ->\n" +
-                    "    image(X, \"images/boat.png\"),\n" +
-                    "    dimensions(X, 8, 3),\n" +
-                    "    enclosedHorizontal(X, water),\n" +
-                    "    above(X, water, -1),\n" +
-                    "    before(X, water).\n" +
-                    "\n" +
-                    "bank(X, X) ->\n" +
-                    "    shape(X, rectangle),\n" +
-                    "    colour(X, green),\n" +
-                    "    alignBottom(X, water).\n" +
-                    "\n" +
-                    "bank(X, X), bank(Y, Y) ->\n" +
-                    "    sameWidth(X, Y).\n" +
-                    "\n" +
-                    "boat(X, X), bank(Y, Y) ->\n" +
-                    "    alignTop(X, Y).\n" +
-                    "\n" +
-                    "leftBank(X, X) ->\n" +
-                    "    left(X, water, 0).\n" +
-                    "\n" +
-                    "rightBank(X, X) ->\n" +
-                    "    right(X, water, 0).\n" +
-                    "\n" +
-                    "on(Passenger, Bank) ->\n" +
-                    "    above(Passenger, Bank, -1),\n" +
-                    "    enclosedHorizontal(Passenger, Bank),\n" +
-                    "    before(Passenger, Bank).\n" +
-                    "\n" +
-                    "in(Passenger, Boat) ->\n" +
-                    "    above(Passenger, Boat, -1),\n" +
-                    "    enclosedHorizontal(Passenger, Boat),\n" +
-                    "    alignHorizontal(Passenger, Boat),\n" +
-                    "    before(Passenger, Boat).\n" +
-                    "\n" +
-                    "moored(Boat, Bank); go(Boat, Bank) ->\n" +
-                    "    horizontalDistance(Boat, Bank, 0).\n" +
-                    "\n" +
-                    "// --- Legend ---\n" +
-                    "shape(legend, rectangle).\n" +
-                    "colour(legend, lightpink).\n" +
-                    "above(legend, water, 4).\n" +
-                    "alignLeft(legend, water).\n" +
-                    "zPos(legend, -1).\n" +
-                    "\n" +
-                    "passenger(X), image(X, Path) -> image([X, mini], Path), dimensions([X, mini], 1, 1).\n" +
-                    "\n" +
-                    "likes(X, Y, Z) ->\n" +
-                    "    image(Z, \"images/heart.png\"),\n" +
-                    "    dimensions(Z, 1, 1),\n" +
-                    "    left([X, mini], Z, 0),\n" +
-                    "    left(Z, [Y, mini], 0),\n" +
-                    "    alignVertical([X, mini], Z),\n" +
-                    "    alignVertical(Z, [Y, mini]),\n" +
-                    "    enclosed([X, mini], legend),\n" +
-                    "    enclosed([Y, mini], legend),\n" +
-                    "    enclosed(Z, legend)."
-    });
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         CodeArea codeArea = new CodeArea();
@@ -171,9 +69,12 @@ public class GraafVisEditorPresenter implements Initializable {
 
         codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
-                .subscribe(change -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
+                .subscribe(change -> {
+                    codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    DocumentModel.getInstance().graafVisCode = codeArea.getText();
+                });
 
-        String graafVisCode;
+        String graafVisCode = null;
         try {
             graafVisCode = FileUtils.readFromFile(DocumentModel.getInstance().getGraafVisFilePath().toFile());
             codeArea.replaceText(0, 0, graafVisCode);
@@ -188,19 +89,13 @@ public class GraafVisEditorPresenter implements Initializable {
 
         codeArea.prefWidthProperty().bind(graafvisEditorPane.widthProperty());
         codeArea.prefHeightProperty().bind(graafvisEditorPane.heightProperty());
-        codeArea.textProperty().addListener(
-                (observable, oldValue, newValue) -> DocumentModel.getInstance().graafVisCode = newValue
-        );
-
-        graafvisEditorPane.widthProperty().addListener(
-                (observable, oldValue, newValue) -> System.out.println("GVE:" + newValue)
-        );
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        StyleSpansBuilder<Collection<String>> spansBuilder
+                = new StyleSpansBuilder<>();
         while(matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORD") != null ? "keyword" :
