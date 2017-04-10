@@ -7,12 +7,10 @@ import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
-import compiler.solver.VisElem;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
 import graafvis.ErrorListener;
-import graafvis.RuleGenerator;
 import graafvis.RuleGeneratorProposal;
 import graafvis.checkers.CheckerResult;
 import graafvis.checkers.GraafvisChecker;
@@ -31,7 +29,6 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,8 +111,6 @@ public class Compilation extends Observable{
             e.printStackTrace();
         }
         Solver solver = new Solver();
-        System.out.println("DEBUGGING FOR PIM");
-        System.out.println(prolog.toString());
         visMap = solver.solve(prolog);
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);

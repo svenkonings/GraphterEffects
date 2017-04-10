@@ -7,7 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class VisElemViewerPresenter implements Initializable {
     public TreeView visElemsView;
     public Button filterButton;
     public TextField filterarguments;
-    public AnchorPane visElemPane;
+    public StackPane visElemPane;
     public TitledPane titledPane;
     private VisMap visMap;
 

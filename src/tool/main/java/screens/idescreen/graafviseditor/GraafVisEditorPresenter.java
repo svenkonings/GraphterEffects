@@ -3,7 +3,7 @@ package screens.idescreen.graafviseditor;
 import general.files.DocumentModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class GraafVisEditorPresenter implements Initializable {
 
-    @FXML public AnchorPane graafvisEditorPane;
+    @FXML public StackPane graafvisEditorPane;
 
     private static final String[] KEYWORDS = new String[] {
             "as", "(edge|graph|node)\\s*(labels)"
