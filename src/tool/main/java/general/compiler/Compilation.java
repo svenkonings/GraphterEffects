@@ -7,10 +7,23 @@ import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
+import compiler.solver.VisElem;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
+import graafvis.ErrorListener;
 import graafvis.RuleGenerator;
+import graafvis.RuleGeneratorProposal;
+import graafvis.checkers.CheckerResult;
+import graafvis.checkers.GraafvisChecker;
+import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
+import graafvis.warnings.Warning;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.TokenStream;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -18,6 +31,8 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -34,6 +49,8 @@ public class Compilation extends Observable{
     private ASRCLibrary asrcLibrary;
     private Document generatedSVG;
     private Exception exception;
+    private List<VisError> errors;
+    private List<Warning> warnings;
 
     public Compilation(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
@@ -56,7 +73,32 @@ public class Compilation extends Observable{
     }
 
     public void compileGraafVis() throws IOException {
-        scriptRules = RuleGenerator.generate(FileUtils.readFromFile(scriptFile.toFile()));
+        String script = FileUtils.readFromFile(scriptFile.toFile());
+        Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
+        TokenStream tokens = new CommonTokenStream(lexer);
+        GraafvisParser parser = new GraafvisParser(tokens);
+
+        ErrorListener errorListener = new ErrorListener();
+        lexer.removeErrorListeners();
+        parser.removeErrorListeners();
+        lexer.addErrorListener(errorListener);
+        parser.addErrorListener(errorListener);
+
+        GraafvisParser.ProgramContext programContext = parser.program();
+
+        GraafvisChecker checker = new GraafvisChecker();
+        CheckerResult checkerResult = checker.check(programContext);
+
+        errors = new ArrayList<>();
+        warnings = new ArrayList<>();
+        errors.addAll(errorListener.getErrors());
+        errors.addAll(checkerResult.getErrors());
+        warnings.addAll(checkerResult.getWarnings());
+
+        RuleGeneratorProposal ruleGenerator = new RuleGeneratorProposal(programContext);
+
+        scriptRules = ruleGenerator.getResult();
+
         setChanged();
         notifyObservers(CompilationProgress.GRAAFVISCOMPILED);
     }
@@ -113,11 +155,16 @@ public class Compilation extends Observable{
         return visMap;
     }
 
-    public Path getScriptFile(){
-        return scriptFile;
+    public List<VisError> getErrors() {
+        return errors;
     }
 
-    public Path getGraphFile(){
+    public List<Warning> getWarnings() {
+        return warnings;
+    }
+
+    public Path getGraphFile() {
         return graphFile;
     }
+
 }
