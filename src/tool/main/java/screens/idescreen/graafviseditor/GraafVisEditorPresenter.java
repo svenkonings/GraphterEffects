@@ -172,10 +172,12 @@ public class GraafVisEditorPresenter implements Initializable {
         codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                    codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    if (codeArea.getText() != null) {
+                        codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    }
                 });
 
-        String graafVisCode = null;
+        String graafVisCode;
         try {
             graafVisCode = FileUtils.readFromFile(DocumentModel.getInstance().getGraafVisFilePath().toFile());
             codeArea.replaceText(0, 0, graafVisCode);
@@ -190,26 +192,19 @@ public class GraafVisEditorPresenter implements Initializable {
 
         codeArea.prefWidthProperty().bind(graafvisEditorPane.widthProperty());
         codeArea.prefHeightProperty().bind(graafvisEditorPane.heightProperty());
-        codeArea.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                DocumentModel.getInstance().graafVisCode = newValue;
-            }
-        });
+        codeArea.textProperty().addListener(
+                (observable, oldValue, newValue) -> DocumentModel.getInstance().graafVisCode = newValue
+        );
 
-        graafvisEditorPane.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("GVE:" + newValue);
-            }
-        });
+        graafvisEditorPane.widthProperty().addListener(
+                (observable, oldValue, newValue) -> System.out.println("GVE:" + newValue)
+        );
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         while(matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORD") != null ? "keyword" :
@@ -222,7 +217,6 @@ public class GraafVisEditorPresenter implements Initializable {
                                                                             matcher.group("PREDICATE") != null ? "predicate" :
                                                                                     matcher.group("VARIABLE") != null ? "variable" :
                                                                                             matcher.group("COMMENT") != null ? "comment" :
-
                                                                                                     null; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
