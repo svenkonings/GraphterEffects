@@ -24,7 +24,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException {
         assert args.length == 3;
-        Graph graph = Importer.graphFromFile(args[0]);
+        Graph graph = Importer.graphFromFile(args[0], true);
         Printer.pprint(graph);
         List<Term> terms = RuleGenerator.generate(FileUtils.readFromFile(new File(args[1])));
         System.out.println();
