@@ -41,7 +41,9 @@ aTerm: aTerm andOp aTerm                                                        
 
 aTermSeries: terms+=aTerm (COMMA terms+=aTerm)*;
 
-aMultiTerm: aTerm | PAR_OPEN aTermSeries? PAR_CLOSE;
+aMultiTerm: aTerm
+          | PAR_OPEN aTermSeries? PAR_CLOSE
+          ;
 
 /** Consequence */
 cTerm: cTerm andOp cTerm                                                                    #andConsequence
@@ -55,7 +57,9 @@ cTerm: cTerm andOp cTerm                                                        
 
 cTermSeries: terms+=cTerm (COMMA terms+=cTerm)*;
 
-cMultiTerm: cTerm | PAR_OPEN cTermSeries? PAR_CLOSE;
+cMultiTerm: cTerm
+          | PAR_OPEN cTermSeries? PAR_CLOSE
+          ;
 
 /* Operators */
 andOp: COMMA | AND;
