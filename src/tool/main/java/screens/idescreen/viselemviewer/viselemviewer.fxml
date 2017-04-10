@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.TreeView?>
-
-
-<TitledPane alignment="CENTER_RIGHT" collapsible="false" contentDisplay="RIGHT" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-fx:controller="screens.idescreen.viselemviewer.VisElemViewerPresenter">
-   <content>
-      <TreeView fx:id="visElemsView"/>
-   </content>
-   <graphic>
-      <ButtonBar prefHeight="22.0">
-        <buttons>
-            <TextField />
-          <Button mnemonicParsing="false" text="Button" />
-        </buttons>
-      </ButtonBar>
-   </graphic>
-</TitledPane>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.StackPane?>
+<StackPane fx:id="visElemPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.idescreen.viselemviewer.VisElemViewerPresenter">
+   <children>
+      <TitledPane fx:id="titledPane" alignment="CENTER_RIGHT" collapsible="false" contentDisplay="RIGHT">
+         <content>
+            <TreeView fx:id="visElemsView" />
+         </content>
+         <graphic>
+            <ButtonBar prefHeight="22.0">
+               <buttons>
+                  <TextField fx:id="filterarguments" promptText="predicates &amp; atoms" />
+                  <Button fx:id="filterButton" mnemonicParsing="false" text="Filter" />
+               </buttons>
+            </ButtonBar>
+         </graphic>
+      </TitledPane>
+   </children>
+</StackPane>

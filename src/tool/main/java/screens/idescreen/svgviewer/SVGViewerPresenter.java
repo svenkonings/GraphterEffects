@@ -2,7 +2,7 @@ package screens.idescreen.svgviewer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class SVGViewerPresenter implements Initializable {
 
     public WebView webView;
-    @FXML public AnchorPane svgViewerPane;
+    @FXML public StackPane svgViewerPane;
     private String svgName;
     private Path svgPath;
     private String svgAsString;

@@ -7,11 +7,21 @@ import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
-import compiler.solver.VisElem;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
-import graafvis.RuleGenerator;
+import graafvis.ErrorListener;
+import graafvis.RuleGeneratorProposal;
+import graafvis.checkers.CheckerResult;
+import graafvis.checkers.GraafvisChecker;
+import graafvis.errors.VisError;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
+import graafvis.warnings.Warning;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.TokenStream;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -19,7 +29,7 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -36,6 +46,8 @@ public class Compilation extends Observable{
     private ASRCLibrary asrcLibrary;
     private Document generatedSVG;
     private Exception exception;
+    private List<VisError> errors;
+    private List<Warning> warnings;
 
     public Compilation(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
@@ -58,7 +70,40 @@ public class Compilation extends Observable{
     }
 
     public void compileGraafVis() throws IOException {
-        scriptRules = RuleGenerator.generate(FileUtils.readFromFile(scriptFile.toFile()));
+        errors = new ArrayList<>();
+        warnings = new ArrayList<>();
+        /* Get a string representation of the script */
+        String script = FileUtils.readFromFile(scriptFile.toFile());
+        /* Create a parser */
+        Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
+        TokenStream tokens = new CommonTokenStream(lexer);
+        GraafvisParser parser = new GraafvisParser(tokens);
+        /* Add error listener so errors are captured */
+        ErrorListener errorListener = new ErrorListener();
+        lexer.removeErrorListeners();
+        parser.removeErrorListeners();
+        lexer.addErrorListener(errorListener);
+        parser.addErrorListener(errorListener);
+        /* Parse the program */
+        GraafvisParser.ProgramContext programContext = parser.program();
+        /* Check for syntax errors */
+        if (errorListener.hasErrors()) {
+            /* Can't compile -- add errors to list */
+            errors.addAll(errorListener.getErrors());
+            throw new IOException();
+        }
+        /* Parsing successful, continue to checking phase */
+        GraafvisChecker checker = new GraafvisChecker();
+        CheckerResult checkerResult = checker.check(programContext);
+        if (checkerResult.getErrors().size() > 0) {
+            /* Checker found errors */
+            errors.addAll(checkerResult.getErrors());
+            warnings.addAll(checkerResult.getWarnings());
+            throw new IOException();
+        }
+        warnings.addAll(checkerResult.getWarnings());
+        /* Passed the checking phase, generate program */
+        scriptRules = new RuleGeneratorProposal(programContext).getResult();
         setChanged();
         notifyObservers(CompilationProgress.GRAAFVISCOMPILED);
     }
@@ -74,8 +119,6 @@ public class Compilation extends Observable{
             e.printStackTrace();
         }
         Solver solver = new Solver();
-        System.out.println("DEBUGGING FOR PIM");
-        System.out.println(prolog.toString());
         visMap = solver.solve(prolog);
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);
@@ -114,4 +157,17 @@ public class Compilation extends Observable{
     public VisMap getVisMap(){
         return visMap;
     }
+
+    public List<VisError> getErrors() {
+        return errors;
+    }
+
+    public List<Warning> getWarnings() {
+        return warnings;
+    }
+
+    public Path getGraphFile() {
+        return graphFile;
+    }
+
 }

@@ -19,7 +19,7 @@ public class ErrorListener extends BaseErrorListener {
     private final List<VisError> errors;
 
     public ErrorListener() {
-        this.errors = new ArrayList<VisError>();
+        this.errors = new ArrayList<>();
     }
 
     @Override

@@ -8,17 +8,18 @@ import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.LoaderUtils;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.graafviseditor.GraafVisEditorView;
 import screens.idescreen.svgviewer.SVGViewerPresenter;
@@ -109,58 +110,55 @@ public class IDEPresenter implements Initializable, Observer {
                 switch (documentModelChange) {
                     case GRAAFVISFILELOADED:
                         GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
+                        ((StackPane) graafVisEditorView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+                        ((StackPane) graafVisEditorView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
                         Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
                         codeTab.setClosable(false);
                         tabPane.getTabs().set(0, codeTab);
                         break;
                     case SVGGENERATED:
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
+                        Platform.runLater(() -> {
 
-                                //Generate and load the content in the SVGViewerView2
+                            //Generate and load the content in the SVGViewerView2
 
-                                SVGViewerView svgViewerView = new SVGViewerView();
-                                SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
+                            SVGViewerView svgViewerView = new SVGViewerView();
+                            ((StackPane) svgViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+                            ((StackPane) svgViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
 
-                                String svgName = (String) arguments.get(1);
-                                svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
-                                svgViewerPresenter.showSVGAsImage();
+                            SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
 
-                                BorderPane borderPane = ((BorderPane) viewModel.getMainView());
-                                TabPane tabPane = (TabPane) borderPane.getCenter();
+                            String svgName = (String) arguments.get(1);
+                            svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
+                            svgViewerPresenter.showSVGAsImage();
 
-                                //Create the tabPane
-                                Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
-                                svgViewerTab.setClosable(true);
-                                svgViewerTab.setOnClosed(new EventHandler<Event>() {
-                                    @Override
-                                    public void handle(Event event) {
-                                        DocumentModel.getInstance().removeGeneratedSVG(svgName);
-                                    }
-                                });
+                            Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
+                            svgViewerTab.setClosable(true);
+                            svgViewerTab.setOnClosed(event -> DocumentModel.getInstance().removeGeneratedSVG(svgName));
 
-                                final ContextMenu contextMenu = new ContextMenu();
-                                MenuItem showAsImage = new MenuItem("Show as Image");
-                                MenuItem showAsText = new MenuItem("Show as Text");
-                                contextMenu.getItems().addAll(showAsImage, showAsText);
-                                showAsImage.setOnAction(new EventHandler<ActionEvent>() {
-                                    @Override
-                                    public void handle(ActionEvent event) {
-                                        svgViewerPresenter.showSVGAsImage();
-                                    }
-                                });
-                                showAsText.setOnAction(new EventHandler<ActionEvent>() {
-                                    @Override
-                                    public void handle(ActionEvent event) {
-                                        svgViewerPresenter.showSVGAsText();
-                                    }
-                                });
+                            final ContextMenu contextMenu = new ContextMenu();
+                            MenuItem showAsImage = new MenuItem("Show as Image");
+                            MenuItem showAsText = new MenuItem("Show as Text");
+                            contextMenu.getItems().addAll(showAsImage, showAsText);
+                            showAsImage.setOnAction(event -> svgViewerPresenter.showSVGAsImage());
+                            showAsText.setOnAction(event -> svgViewerPresenter.showSVGAsText());
 
-                                svgViewerTab.setContextMenu(contextMenu);
+                            svgViewerTab.setContextMenu(contextMenu);
 
-                                tabPane.getTabs().add(svgViewerTab);
-                            }
+                            tabPane.getTabs().add(svgViewerTab);
+
+                            tabPane.widthProperty().addListener(new ChangeListener<Number>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                                    System.out.println("TB W" + newValue);
+                                }
+                            });
+
+                            ((AnchorPane)svgViewerTab.getContent()).widthProperty().addListener(new ChangeListener<Number>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+                                }
+                            });
                         });
                         break;
                 }
@@ -194,7 +192,10 @@ public class IDEPresenter implements Initializable, Observer {
                                 VisElemViewerView visElemViewerView = new VisElemViewerView();
                                 VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
                                 visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
-                                tabPane.getTabs().add(new Tab("TEST",visElemViewerView.getView()));
+                                ((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+                                ((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+                                String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+                                tabPane.getTabs().add(new Tab("Vis Elems " + graphName,visElemViewerView.getView()));
                             }
                         });
                     }

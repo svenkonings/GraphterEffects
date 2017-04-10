@@ -17,7 +17,7 @@
          <MenuButton fx:id="debugButton" mnemonicParsing="false" onAction="#debugButtonPressed" text="Debug">
            <items>
              <MenuItem mnemonicParsing="false" text="Generate Rules" />
-             <MenuItem mnemonicParsing="false" text="Generate VisElems" onAction="#generateVisElemsButtonPressed"/>
+             <MenuItem mnemonicParsing="false" text="Generate Vis Elems" onAction="#generateVisElemsButtonPressed"/>
            </items>
          </MenuButton>
       </buttons>

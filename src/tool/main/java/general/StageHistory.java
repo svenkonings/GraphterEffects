@@ -7,8 +7,8 @@ import java.util.Objects;
 public class StageHistory {
     private static StageHistory ourInstance = new StageHistory();
 
-    Deque<String> deque;
-    String currentStage;
+    private Deque<String> deque;
+    private String currentStage;
     public static StageHistory getInstance() {
         return ourInstance;
     }
