@@ -2,6 +2,7 @@ lexer grammar GraafvisVocab;
 
 fragment LETTER_LO: [a-z];
 fragment LETTER_HI: [A-Z];
+fragment DIGIT: [0-9];
 
 ARROW: '->';
 COLON: ':';
@@ -54,10 +55,10 @@ EDGE_LABEL_TOKEN: 'edge labels';
 RENAME_TOKEN: 'as';
 
 STRING: '"' (~'"')* '"';
-NUMBER: '-'? [0-9]+;
+NUMBER: DIGIT+ | MINUS NUMBER;
 
-ID: LETTER_LO (LETTER_LO | LETTER_HI | NUMBER | UNDERSCORE)*;
-HID: LETTER_HI (LETTER_LO | LETTER_HI | NUMBER | UNDERSCORE)*;
+ID: LETTER_LO (LETTER_LO | LETTER_HI | DIGIT | UNDERSCORE)*;
+HID: LETTER_HI (LETTER_LO | LETTER_HI | DIGIT | UNDERSCORE)*;
 
 WS:             [ \t\r\n]+              -> skip;
 BLOCKCOMMENT:   '/*' .*? '*/'           -> skip;
