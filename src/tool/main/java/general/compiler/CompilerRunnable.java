@@ -1,6 +1,9 @@
 package general.compiler;
 
 import general.files.DocumentModel;
+import graafvis.GraafvisCompiler;
+import graafvis.errors.VisError;
+import graafvis.warnings.Warning;
 import org.dom4j.Document;
 
 import java.io.File;
@@ -54,24 +57,36 @@ public class CompilerRunnable implements Runnable {
                 compilation.generateSVG();
                 saveGeneratedSVG(compilation.getGeneratedSVG());
             } else {
-                if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAAFVISCOMPILED.ordinal()){
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAAFVISCOMPILED.ordinal()) {
                     compilation.compileGraafVis();
                 }
-                if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAPHCONVERTED.ordinal()){
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAPHCONVERTED.ordinal()) {
                     compilation.addGraphRules();
                 }
-                if (maxCompilationProgress.ordinal() >= CompilationProgress.SOLVED.ordinal()){
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.SOLVED.ordinal()) {
                     compilation.solve();
                 }
-                if (maxCompilationProgress.ordinal() >= CompilationProgress.SVGGENERATED.ordinal()){
+                if (maxCompilationProgress.ordinal() >= CompilationProgress.SVGGENERATED.ordinal()) {
                     compilation.generateSVG();
                 }
             }
-        } catch (Exception e){
+        } catch (GraafvisCompiler.SyntaxException e) {
+            compilation.setException(e);
+            for (VisError error : compilation.getErrors()) {
+                System.out.printf("ERROR: %s\n", error);
+            }
+        } catch (GraafvisCompiler.CheckerException e) {
+            compilation.setException(e);
+            for (VisError error : compilation.getErrors()) {
+                System.out.printf("ERROR: %s\n", error);
+            }
+            for (Warning warning : compilation.getWarnings()) {
+                System.out.printf("WARNING: %s\n", warning);
+            }
+        } catch (Exception e) {
             compilation.setException(e);
             e.printStackTrace();
         }
-
 
     }
 

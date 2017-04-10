@@ -10,18 +10,9 @@ import compiler.solver.Solver;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
-import graafvis.ErrorListener;
-import graafvis.RuleGeneratorProposal;
-import graafvis.checkers.CheckerResult;
-import graafvis.checkers.GraafvisChecker;
+import graafvis.GraafvisCompiler;
 import graafvis.errors.VisError;
-import graafvis.grammar.GraafvisLexer;
-import graafvis.grammar.GraafvisParser;
 import graafvis.warnings.Warning;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.TokenStream;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -29,7 +20,6 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -46,13 +36,13 @@ public class Compilation extends Observable{
     private ASRCLibrary asrcLibrary;
     private Document generatedSVG;
     private Exception exception;
-    private List<VisError> errors;
-    private List<Warning> warnings;
+    private GraafvisCompiler compiler;
 
     public Compilation(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
         this.maxProgress = CompilationProgress.COMPILATIONFINISHED;
+        this.compiler = new GraafvisCompiler();
     }
 
     //To create debug compilations which stop at a certain progress
@@ -60,6 +50,7 @@ public class Compilation extends Observable{
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
         this.maxProgress = maxProgress;
+        this.compiler = new GraafvisCompiler();
     }
 
     public void addGraphRules() throws IOException, SAXException, UnknownGraphTypeException {
@@ -69,41 +60,10 @@ public class Compilation extends Observable{
         notifyObservers(CompilationProgress.GRAPHCONVERTED);
     }
 
-    public void compileGraafVis() throws IOException {
-        errors = new ArrayList<>();
-        warnings = new ArrayList<>();
+    public void compileGraafVis() throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException {
         /* Get a string representation of the script */
         String script = FileUtils.readFromFile(scriptFile.toFile());
-        /* Create a parser */
-        Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
-        TokenStream tokens = new CommonTokenStream(lexer);
-        GraafvisParser parser = new GraafvisParser(tokens);
-        /* Add error listener so errors are captured */
-        ErrorListener errorListener = new ErrorListener();
-        lexer.removeErrorListeners();
-        parser.removeErrorListeners();
-        lexer.addErrorListener(errorListener);
-        parser.addErrorListener(errorListener);
-        /* Parse the program */
-        GraafvisParser.ProgramContext programContext = parser.program();
-        /* Check for syntax errors */
-        if (errorListener.hasErrors()) {
-            /* Can't compile -- add errors to list */
-            errors.addAll(errorListener.getErrors());
-            throw new IOException();
-        }
-        /* Parsing successful, continue to checking phase */
-        GraafvisChecker checker = new GraafvisChecker();
-        CheckerResult checkerResult = checker.check(programContext);
-        if (checkerResult.getErrors().size() > 0) {
-            /* Checker found errors */
-            errors.addAll(checkerResult.getErrors());
-            warnings.addAll(checkerResult.getWarnings());
-            throw new IOException();
-        }
-        warnings.addAll(checkerResult.getWarnings());
-        /* Passed the checking phase, generate program */
-        scriptRules = new RuleGeneratorProposal(programContext).getResult();
+        scriptRules = compiler.compile(script);
         setChanged();
         notifyObservers(CompilationProgress.GRAAFVISCOMPILED);
     }
@@ -159,11 +119,11 @@ public class Compilation extends Observable{
     }
 
     public List<VisError> getErrors() {
-        return errors;
+        return compiler.getErrors();
     }
 
     public List<Warning> getWarnings() {
-        return warnings;
+        return compiler.getWarnings();
     }
 
     public Path getGraphFile() {
