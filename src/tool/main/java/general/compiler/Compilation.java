@@ -78,6 +78,7 @@ public class Compilation extends Observable{
         } catch (InvalidLibraryException e) {
             e.printStackTrace(); //TODO: Throw this
         }
+
         Solver solver = new Solver();
         visMap = solver.solve(prolog);
         setChanged();
@@ -128,6 +129,14 @@ public class Compilation extends Observable{
 
     public Path getGraphFile() {
         return graphFile;
+    }
+
+    public TuProlog getProlog() throws InvalidTheoryException, InvalidLibraryException {
+        TuProlog tuProlog = new TuProlog(scriptRules);
+        tuProlog.loadLibrary(asrcLibrary);
+        return tuProlog;
+
+
     }
 
 }

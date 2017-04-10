@@ -18,9 +18,9 @@
       <buttons>
          <ComboBox fx:id="graphComboBox" prefWidth="150.0" />
           <Button fx:id="compileButton" maxWidth="60.0" minWidth="32.0" mnemonicParsing="false" onAction="#compileButtonPressed" prefHeight="25.0" prefWidth="60.0" text="Compile" />
-         <MenuButton fx:id="debugButton" mnemonicParsing="false" onAction="#debugButtonPressed" text="Debug">
+         <MenuButton fx:id="debugButton" mnemonicParsing="false"  text="Debug">
            <items>
-             <MenuItem mnemonicParsing="false" text="Generate Rules" />
+             <MenuItem mnemonicParsing="false" onAction="#generateRulesButtonPressed" text="Generate Rules" />
              <MenuItem mnemonicParsing="false" onAction="#generateVisElemsButtonPressed" text="Generate Vis Elems" />
            </items>
          </MenuButton>

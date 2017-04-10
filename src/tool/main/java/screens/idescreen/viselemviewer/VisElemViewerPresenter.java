@@ -2,8 +2,6 @@ package screens.idescreen.viselemviewer;
 
 import compiler.solver.VisElem;
 import compiler.solver.VisMap;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -29,13 +27,6 @@ public class VisElemViewerPresenter implements Initializable {
         titledPane.prefWidthProperty().bind(visElemPane.widthProperty());
         titledPane.prefHeightProperty().bind(visElemPane.heightProperty());
         titledPane.maxWidthProperty().bind(visElemPane.widthProperty());
-
-        visElemPane.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("Width property:" + newValue);
-            }
-        });
     }
 
     public void loadContent(VisMap visMap) {

@@ -69,7 +69,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 compilationResultTextArea.appendText("SVG generated\n");
                 break;
             case ERROROCCURED:
-//                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
+                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
                 Compilation compilation = CompilationModel.getInstance().getCompilation();
                 for (VisError error : compilation.getErrors()) {
                     compilationResultTextArea.appendText(error.toString() + "\n");

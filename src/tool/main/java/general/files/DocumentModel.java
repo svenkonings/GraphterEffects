@@ -101,7 +101,7 @@ public class DocumentModel extends Observable{
     public void removeGeneratedSVG(String name) {
         generatedSVGMap.remove(name);
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILEREMOVED, name));
+        notifyObservers(new Pair<>(DocumentModelChange.SVGREMOVED, name));
     }
 
     public Path getLastSaveAndLoadPathGraafVis() {

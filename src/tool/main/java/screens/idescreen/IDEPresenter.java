@@ -8,8 +8,6 @@ import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.LoaderUtils;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
@@ -21,6 +19,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.graafviseditor.GraafVisEditorView;
+import screens.idescreen.ruleviewer.RuleViewerPresenter;
+import screens.idescreen.ruleviewer.RuleViewerView;
 import screens.idescreen.svgviewer.SVGViewerPresenter;
 import screens.idescreen.svgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
@@ -144,20 +144,6 @@ public class IDEPresenter implements Initializable, Observer {
                             svgViewerTab.setContextMenu(contextMenu);
 
                             tabPane.getTabs().add(svgViewerTab);
-
-                            tabPane.widthProperty().addListener(new ChangeListener<Number>() {
-                                @Override
-                                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                                    System.out.println("TB W" + newValue);
-                                }
-                            });
-
-                            ((StackPane)svgViewerTab.getContent()).widthProperty().addListener(new ChangeListener<Number>() {
-                                @Override
-                                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-
-                                }
-                            });
                         });
                         break;
                 }
@@ -177,6 +163,22 @@ public class IDEPresenter implements Initializable, Observer {
                     break;
                 case GRAPHCONVERTED:
                     System.out.println("Graph converted");
+                    if (CompilationModel.getInstance().getCompilation().isDebug() &&
+                            CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                RuleViewerView ruleViewerView = new RuleViewerView();
+                                RuleViewerPresenter ruleViewerPresenter = (RuleViewerPresenter) ruleViewerView.getPresenter();
+                                //ruleViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
+                                ((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+                                ((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+                                String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+                                tabPane.getTabs().add(new Tab("Rules" + graphName, ruleViewerView.getView()));
+                                //tabPane.getTabs().add(new Tab("Vis Elems " + graphName,visElemViewerView.getView()));
+                            }
+                        });
+                    }
                     break;
                 case GRAAFVISCOMPILED:
                     System.out.println("Graafvis compiled");
