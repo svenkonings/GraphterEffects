@@ -70,6 +70,7 @@ public class GraafVisEditorPresenter implements Initializable {
         codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
+                    //System.out.println(change);
                     try {
                         codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
                     } catch (Exception e){
