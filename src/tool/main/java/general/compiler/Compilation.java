@@ -41,7 +41,7 @@ public class Compilation extends Observable{
     }
 
     //To create debug compilations which stop at a certain progress
-    public Compilation(Path scriptFile, Path graphFile, CompilationProgress maxProgress){
+    protected Compilation(Path scriptFile, Path graphFile, CompilationProgress maxProgress){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
         this.maxProgress = maxProgress;
