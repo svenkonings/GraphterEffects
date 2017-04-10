@@ -70,32 +70,40 @@ public class Compilation extends Observable{
     }
 
     public void compileGraafVis() throws IOException {
+        errors = new ArrayList<>();
+        warnings = new ArrayList<>();
+        /* Get a string representation of the script */
         String script = FileUtils.readFromFile(scriptFile.toFile());
+        /* Create a parser */
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
-
+        /* Add error listener so errors are captured */
         ErrorListener errorListener = new ErrorListener();
         lexer.removeErrorListeners();
         parser.removeErrorListeners();
         lexer.addErrorListener(errorListener);
         parser.addErrorListener(errorListener);
-
+        /* Parse the program */
         GraafvisParser.ProgramContext programContext = parser.program();
-
+        /* Check for syntax errors */
+        if (errorListener.hasErrors()) {
+            /* Can't compile -- add errors to list */
+            errors.addAll(errorListener.getErrors());
+            throw new IOException();
+        }
+        /* Parsing successful, continue to checking phase */
         GraafvisChecker checker = new GraafvisChecker();
         CheckerResult checkerResult = checker.check(programContext);
-
-        errors = new ArrayList<>();
-        warnings = new ArrayList<>();
-        errors.addAll(errorListener.getErrors());
-        errors.addAll(checkerResult.getErrors());
+        if (checkerResult.getErrors().size() > 0) {
+            /* Checker found errors */
+            errors.addAll(checkerResult.getErrors());
+            warnings.addAll(checkerResult.getWarnings());
+            throw new IOException();
+        }
         warnings.addAll(checkerResult.getWarnings());
-
-        RuleGeneratorProposal ruleGenerator = new RuleGeneratorProposal(programContext);
-
-        scriptRules = ruleGenerator.getResult();
-
+        /* Passed the checking phase, generate program */
+        scriptRules = new RuleGeneratorProposal(programContext).getResult();
         setChanged();
         notifyObservers(CompilationProgress.GRAAFVISCOMPILED);
     }
