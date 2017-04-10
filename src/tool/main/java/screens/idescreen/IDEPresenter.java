@@ -29,6 +29,7 @@ import screens.idescreen.viselemviewer.VisElemViewerView;
 import utils.Pair;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -67,8 +68,9 @@ public class IDEPresenter implements Initializable, Observer {
         Tab codeTab;
         if (DocumentModel.getInstance().getGraafVisFilePath() == null){
             try {
-                LoaderUtils.saveVIS(Paths.get("/temp/newfile.vis"),"");
-                DocumentModel.getInstance().loadGraafVisFile(Paths.get("/temp/newfile.vis"));
+                new File("temp/compiled").mkdirs();
+                LoaderUtils.saveVIS(Paths.get("temp/newfile.vis"),"");
+                DocumentModel.getInstance().loadGraafVisFile(Paths.get("temp/newfile.vis"));
             } catch (IOException e) {
                 e.printStackTrace();
             };

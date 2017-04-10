@@ -32,6 +32,10 @@ public class Solver {
         prolog.loadLibrary(lib);
     }
 
+    public TuProlog getProlog() {
+        return prolog;
+    }
+
     /** The {@link TuProlog} engine. */
     private final TuProlog prolog;
 
