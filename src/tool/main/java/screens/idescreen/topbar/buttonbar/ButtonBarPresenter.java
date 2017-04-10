@@ -182,18 +182,19 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void compileButtonPressed(ActionEvent actionEvent) {
-        Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
-        Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
+        if (graphComboBox.getSelectionModel().getSelectedIndex() > 0) {
+            Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
+            Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
-        String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
-        Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
-        try {
-            new Thread(new CompilerRunnable(tempFilePath,graphFilePath)).start();
-        } catch (Exception e){
-            e.printStackTrace();
-            //TODO: Handle exceptions by showing them in an error box
+            String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
+            Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(), codeOnScreen);
+            try {
+                new Thread(new CompilerRunnable(tempFilePath, graphFilePath)).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+                //TODO: Handle exceptions by showing them in an error box
+            }
         }
-
     }
 
 
