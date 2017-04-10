@@ -1,11 +1,14 @@
 package screens.idescreen.bottombar;
 
+import compiler.prolog.LogListener;
+import compiler.prolog.TuProlog;
 import general.ViewModel;
 import general.compiler.Compilation;
 import general.compiler.CompilationModel;
 import general.compiler.CompilationProgress;
 import graafvis.errors.VisError;
 import graafvis.warnings.Warning;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
@@ -18,7 +21,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
-public class BottomBarPresenter implements Initializable, Observer{
+public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
     @Inject ViewModel viewModel;
     public TitledPane compilationResultTitledPane;
@@ -46,6 +49,7 @@ public class BottomBarPresenter implements Initializable, Observer{
 
 
         CompilationModel.getInstance().addObserver(this);
+        TuProlog.addLogListener(this);
     }
 
     @Override
@@ -75,5 +79,16 @@ public class BottomBarPresenter implements Initializable, Observer{
                 }
                 break;
         }
+    }
+
+    @Override
+    public void textAdded(String added) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                compilationResultTextArea.appendText(added + "\n");
+            }
+        });
+
     }
 }

@@ -30,10 +30,11 @@ public abstract class GraphLibrary extends Library {
     }
 
     //supports backtracking but no generation
-    public boolean attribute_3(Term ID, Struct attrname, Term value) {
+    public boolean attributesecond_3(Term ID, Term attrname, Term value) {
         try {
-            String rname = StringUtils.removeQuotation(attrname.getName());
-            String rstringvalue = value instanceof Struct ? ((Struct) value).getName() : null;
+            value = value.getTerm();
+            String rname = StringUtils.removeQuotation(((Struct)attrname.getTerm()).getName());
+            String rstringvalue = value instanceof Struct ? ((Struct) value.getTerm()).getName() : null;
             int rintvalue = value instanceof Int ? ((Int) value).intValue() : 0;
             Element rID = GraphUtils.getByID(graph, ((Struct)ID.getTerm()).getName());
 
@@ -42,9 +43,13 @@ public abstract class GraphLibrary extends Library {
             }
 
             if (value instanceof Struct) {
+                Object res = rID.getAttribute(rname);
+                if (res instanceof String) {
+                    return ((String)res).substring(1,((String) res).length()-1).equals(rstringvalue);    
+                }
                 return rID.getAttribute(rname).equals(rstringvalue);
             } else if (value instanceof Var) {
-                assert value.unify(getEngine(), term(StringUtils.ObjectToString(rID.getAttribute(rname))));
+                value.unify(getEngine(), term(StringUtils.ObjectToString(rID.getAttribute(rname))));
                 return true;
 
             } else if (value instanceof Int) {

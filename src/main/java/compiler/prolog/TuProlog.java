@@ -284,4 +284,14 @@ public class TuProlog {
     public Prolog getProlog() {
         return prolog;
     }
+
+    public static List<LogListener> loglisteners = new ArrayList<>();
+    public static void addLogListener(LogListener e) {
+        loglisteners.add(e);
+    }
+    public static void log(String tolog) {
+        for (LogListener ll : loglisteners) {
+            ll.textAdded(tolog);
+        }
+    }
 }

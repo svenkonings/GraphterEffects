@@ -209,7 +209,7 @@ public final class GraphUtils {
         for (Edge edge : g.getEachEdge()) {
             Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
             for (String key : edge.getAttributeKeySet()) {
-                Object[] arr = {StringUtils.ObjectToString(edge.getAttribute(key))};
+                Object[] arr = {StringUtils.enforceQuotesIfString(edge.getAttribute(key))};
                 added.setAttribute(key, arr);
             }
         }

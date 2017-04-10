@@ -123,4 +123,31 @@ public final class StringUtils {
         }
         return true;
     }
+
+    public static Object enforceQuotesIfString(Object in) {
+
+            if (in instanceof Object[]) {
+                Object[] res = new String[((Object[]) in).length];
+                for (int i = 0; i < ((Object[]) in).length; i++) {
+                    res[i] = enforceQuotesIfString(String.valueOf(((Object[]) in)[i]));
+                }
+                return res;
+            } else if (in instanceof Collection) {
+                List<Object> to = new LinkedList<>();
+                for (Object i : ((Collection) in)) {
+                    to.add(enforceQuotesIfString(i));
+                }
+                return to;
+            } else if (in instanceof String) {
+                if (!((String) in).startsWith("\"")) {
+                    in = "\"" + in;
+                }
+                if (!((String) in).endsWith("\"")) {
+                    in = in + "\"";
+                }
+                return in;
+            }
+
+        return in;
+    }
 }

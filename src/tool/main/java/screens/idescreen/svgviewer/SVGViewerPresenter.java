@@ -53,7 +53,7 @@ public class SVGViewerPresenter implements Initializable {
         this.svgName = svgName;
         this.svgPath = content;
         try {
-            this.svgAsString = FileUtils.readFromFile(svgPath.toFile());
+            this.svgAsString = FileUtils.readFromFile(svgPath.toFile()).replaceAll(">", ">\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
