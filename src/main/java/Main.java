@@ -5,11 +5,10 @@ import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
-import compiler.solver.VisElem;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
-import graafvis.RuleGenerator;
+import graafvis.generator.RuleGenerator;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -18,7 +17,6 @@ import utils.Printer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 public class Main {

@@ -1,6 +1,13 @@
 package graafvis;
 
 import alice.tuprolog.Term;
+import graafvis.generator.RuleGenerator;
+import graafvis.grammar.GraafvisLexer;
+import graafvis.grammar.GraafvisParser;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -8,8 +15,7 @@ import java.util.List;
 
 import static compiler.prolog.TuProlog.*;
 import static compiler.prolog.TuProlog.struct;
-import static graafvis.RuleGenerator.TUP_NOT;
-import static graafvis.RuleGenerator.generate;
+import static graafvis.generator.RuleGenerator.TUP_NOT;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -183,10 +189,19 @@ public class RuleGeneratorTest {
     }
 
     public static void singleAssert(String s, Term t) {
-        assertEquals(inList(t), generate(s));
+        assertEquals(inList(t), new RuleGenerator(parseProgram(s)));
     }
 
     public static void multAssert(String s, Term... ts) {
-        assertEquals(Arrays.asList(ts), generate(s));
+        assertEquals(Arrays.asList(ts), new RuleGenerator(parseProgram(s)));
     }
+
+    private static GraafvisParser.ProgramContext parseProgram(String text) {
+        CharStream stream = new ANTLRInputStream(text);
+        GraafvisLexer lexer = new GraafvisLexer(stream);
+        TokenStream tokenStream = new CommonTokenStream(lexer);
+        GraafvisParser parser = new GraafvisParser(tokenStream);
+        return parser.program();
+    }
+
 }
