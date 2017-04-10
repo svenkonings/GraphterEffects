@@ -70,22 +70,8 @@ public class CompilerRunnable implements Runnable {
                     compilation.generateSVG();
                 }
             }
-        } catch (GraafvisCompiler.SyntaxException e) {
-            compilation.setException(e);
-            for (VisError error : compilation.getErrors()) {
-                System.out.printf("ERROR: %s\n", error);
-            }
-        } catch (GraafvisCompiler.CheckerException e) {
-            compilation.setException(e);
-            for (VisError error : compilation.getErrors()) {
-                System.out.printf("ERROR: %s\n", error);
-            }
-            for (Warning warning : compilation.getWarnings()) {
-                System.out.printf("WARNING: %s\n", warning);
-            }
         } catch (Exception e) {
             compilation.setException(e);
-            e.printStackTrace();
         }
 
     }

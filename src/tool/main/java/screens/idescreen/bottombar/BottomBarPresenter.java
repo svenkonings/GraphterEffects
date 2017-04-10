@@ -1,8 +1,11 @@
 package screens.idescreen.bottombar;
 
 import general.ViewModel;
+import general.compiler.Compilation;
 import general.compiler.CompilationModel;
 import general.compiler.CompilationProgress;
+import graafvis.errors.VisError;
+import graafvis.warnings.Warning;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
@@ -62,7 +65,14 @@ public class BottomBarPresenter implements Initializable, Observer{
                 compilationResultTextArea.appendText("SVG generated\n");
                 break;
             case ERROROCCURED:
-                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
+//                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
+                Compilation compilation = CompilationModel.getInstance().getCompilation();
+                for (VisError error : compilation.getErrors()) {
+                    compilationResultTextArea.appendText(error.toString() + "\n");
+                }
+                for (Warning warning : compilation.getWarnings()) {
+                    compilationResultTextArea.appendText(warning.toString() + "\n");
+                }
                 break;
         }
     }
