@@ -25,9 +25,9 @@ public class LoaderUtils {
     public static void showLoadScriptPopup() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select GraafVis Script");
-        String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-//        path += "/tests";
-        fileChooser.setInitialDirectory(new File(path));
+
+        fileChooser.setInitialDirectory((DocumentModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile()));
+        //System.out.println((DocumentModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile()));
 
         fileChooser.getExtensionFilters().add(visFilesFilter);
         fileChooser.getExtensionFilters().add(allFilesFilter);
@@ -36,6 +36,8 @@ public class LoaderUtils {
         File script = fileChooser.showOpenDialog(new Stage());
         if (script != null) {
             DocumentModel.getInstance().loadGraafVisFile(script.toPath());
+            //Path subpath = script.toPath().subpath(0, script.toPath().getNameCount()-1);
+            //DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(subpath);
         }
     }
 
@@ -58,6 +60,7 @@ public class LoaderUtils {
             for (File file: graphFileList){
                 graphPathList.add(file.toPath());
             }
+            //DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(graphPathList.get(0).subpath(0,graphPathList.get(0).getNameCount()-1));
 
             if (replaceExistingFiles) {
                 DocumentModel.getInstance().removeAllGraphs();
@@ -73,6 +76,7 @@ public class LoaderUtils {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save GraafVis Script");
         fileChooser.getExtensionFilters().add(visFilesFilter);
+        fileChooser.setInitialDirectory(DocumentModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile());
         fileChooser.setInitialFileName(path.getFileName().toString());
         File fileLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
@@ -80,7 +84,7 @@ public class LoaderUtils {
 
         try {
             Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
-            DocumentModel.getInstance().loadGraafVisFile(path);
+            DocumentModel.getInstance().loadGraafVisFile(path);///DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,6 +106,7 @@ public class LoaderUtils {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Generated Visualization");
         fileChooser.getExtensionFilters().add(svgFilesFilter);
+        fileChooser.setInitialDirectory(DocumentModel.getInstance().getLastSavePathVisualization().toFile());
         fileChooser.setInitialFileName(svgPath.getFileName().toString());
         File saveLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
@@ -115,6 +120,7 @@ public class LoaderUtils {
 
         try {
             Files.write(saveLocation.toPath(), codeList, Charset.forName("UTF-8"));
+            //DocumentModel.getInstance().setLastSavePathVisualization(saveLocation.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }

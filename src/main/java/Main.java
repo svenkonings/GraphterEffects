@@ -5,11 +5,10 @@ import compiler.asrc.ASRCLibrary;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
-import compiler.solver.VisElem;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
 import exceptions.UnknownGraphTypeException;
-import graafvis.RuleGenerator;
+import graafvis.GraafvisCompiler;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -18,15 +17,14 @@ import utils.Printer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException {
+    public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException {
         assert args.length == 3;
         Graph graph = Importer.graphFromFile(args[0], true);
         Printer.pprint(graph);
-        List<Term> terms = RuleGenerator.generate(FileUtils.readFromFile(new File(args[1])));
+        List<Term> terms = new GraafvisCompiler().compile(FileUtils.readFromFile(new File(args[1])));
         System.out.println();
         terms.forEach(System.out::println);
         System.out.println();

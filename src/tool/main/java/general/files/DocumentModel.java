@@ -2,8 +2,10 @@ package general.files;
 
 import utils.Pair;
 
+import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class DocumentModel extends Observable{
@@ -16,6 +18,9 @@ public class DocumentModel extends Observable{
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
     public String graafVisCode;
 
+    private Path lastSaveAndLoadPathGraafVis;
+    private Path lastSavePathVisualization;
+    private Path lastLoadPathGraph;
 
     public Path getGraafVisFilePath() {
         return graafVisFilePath;
@@ -99,6 +104,31 @@ public class DocumentModel extends Observable{
         notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILEREMOVED, name));
     }
 
+    public Path getLastSaveAndLoadPathGraafVis() {
+        return lastSaveAndLoadPathGraafVis;
+    }
+
+    public void setLastSaveAndLoadPathGraafVis(Path lastSaveAndLoadPathGraafVis) {
+        this.lastSaveAndLoadPathGraafVis = lastSaveAndLoadPathGraafVis;
+    }
+
+    public Path getLastSavePathVisualization() {
+        return lastSavePathVisualization;
+    }
+
+    public void setLastSavePathVisualization(Path lastSavePathVisualization) {
+        this.lastSavePathVisualization = lastSavePathVisualization;
+    }
+
+
+    public Path getLastLoadPathGraph() {
+        return lastLoadPathGraph;
+    }
+
+    public void setLastLoadPathGraph(Path lastLoadPathGraph) {
+        this.lastLoadPathGraph = lastLoadPathGraph;
+    }
+
     private static DocumentModel ourInstance = new DocumentModel();
 
     public static DocumentModel getInstance() {
@@ -106,5 +136,9 @@ public class DocumentModel extends Observable{
     }
 
     private DocumentModel() {
+        String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+        lastLoadPathGraph = Paths.get(path);
+        lastSaveAndLoadPathGraafVis = Paths.get(path);
+        lastSavePathVisualization = Paths.get(path);
     }
 }

@@ -1,4 +1,4 @@
-package graafvis;
+package graafvis.generator;
 
 import alice.tuprolog.*;
 import alice.tuprolog.Number;
@@ -11,11 +11,7 @@ import java.util.List;
 
 import static compiler.prolog.TuProlog.*;
 
-/**
- *
- */
-public class RuleGeneratorProposal extends GraafvisBaseVisitor<Term> {
-
+public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_WILD_CARD = "_";
     public static final String TUP_AND = ",";
     public static final String TUP_OR = ";";
@@ -23,10 +19,74 @@ public class RuleGeneratorProposal extends GraafvisBaseVisitor<Term> {
 
     private final List<Term> result;
 
-    public RuleGeneratorProposal(GraafvisParser.ProgramContext ctx) {
+    public RuleGenerator(GraafvisParser.ProgramContext ctx) {
         result = new ArrayList<>();
         ctx.accept(this);
     }
+
+
+//    /**********************
+//        --- Calling  ---
+//     **********************/
+//
+    // --- Testing TU Prolog ---
+//
+//    public static void tupTest() throws NoMoreSolutionException, InvalidTheoryException, NoSolutionException {
+//        Struct[] clauses = new Struct[]{
+//                new Struct("node", new Struct("a")),
+//                new Struct("node", new Struct("b")),
+//                new Struct("edge", new Struct("a"), new Struct("b")),
+//                new Struct("edge", new Struct("b"), new Struct("a")),
+//                new Struct("label", new Struct("a"), new Struct("\"wolf\""))
+//        };
+//        Struct prog = new Struct(clauses);
+//        query(prog, new Struct("node", new Var("X")));
+//        query(prog, new Struct("edge", new Var("X"), new Var("Y")));
+//        query(prog, new Struct("label", new Var("Y"), new Struct("\"wolf\"")));
+//        Struct q = new Struct(
+//                ",",
+//                new Struct("edge", new Var("X"), new Var("Y")),
+//                new Struct("label", new Var("X"), new Struct("\"wolf\""))
+//        );
+//        query(prog, q);
+//    }
+//
+//    public static void main(String[] args) throws NoMoreSolutionException, NoSolutionException, InvalidTheoryException {
+//        query("p(aap).", struct("p", var("X")));
+//        query("p(X), q(X) -> r(X). p(hond), q(hond), p(kat), q(konijn), r(muis).", struct("r", var("X")));
+//    }
+//
+//    public static void query(String script, Struct query) throws InvalidTheoryException, NoSolutionException, NoMoreSolutionException {
+//        List<Term> clauses = generate(script);
+//        Struct prog = list(clauses.toArray(new Term[clauses.size()]));
+//        System.out.println("\n> ?- " + query + "\n");
+//        Prolog engine = new Prolog();
+//        Theory t = new Theory(prog);
+//        engine.addTheory(t);
+//        SolveInfo info = engine.solve(query);
+//        while (info.isSuccess()) { // taken from the previous example
+//            System.out.println("Solution: " + info.getSolution() + "\nBindings: " + info);
+//            if (engine.hasOpenAlternatives()) {
+//                info = engine.solveNext();
+//            } else {
+//                break;
+//            }
+//        }
+//    }
+//
+//    // --- Rule generation ---
+//
+//    public static List<Term> generate(String script) {
+//        System.out.println("\nParsing: " + script);
+//        RuleGenerator rg = new RuleGenerator();
+//        Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
+//        TokenStream tokens = new CommonTokenStream(lexer);
+//        GraafvisParser parser = new GraafvisParser(tokens);
+//        ParseTree tree = parser.program();
+//        tree.accept(rg);
+//        System.out.println(rg.getResult());
+//        return rg.getResult();
+//    }
 
     /*************************
      --- Tree walker ---
@@ -63,7 +123,6 @@ public class RuleGeneratorProposal extends GraafvisBaseVisitor<Term> {
         }
         return null;
     }
-
 
     @Override public Term visitClause(GraafvisParser.ClauseContext ctx) {
         if (ctx.antecedent() == null) {
@@ -198,5 +257,4 @@ public class RuleGeneratorProposal extends GraafvisBaseVisitor<Term> {
     public List<Term> getResult() {
         return result;
     }
-
 }
