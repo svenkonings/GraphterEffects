@@ -1,9 +1,10 @@
-Solver en prolog opsplitsen
-Pre en post solve uitbreidbaar maken
+Constraint defaults uitbreidbaar maken
 SVG document generator uitbreidbaar maken
 Logging
 
 Meer predicaten:
+    Predicaat voor default grootes (ipv huidige defaults)
+    Images moeten default de dimensions van het plaatje krijgen
     Pijltjes
     Elementen labels geven
     Stippelingtjes (stroke-dasharray)
@@ -27,3 +28,6 @@ Meer predicaten:
 Taal:
 Vararg left predicaat
 Meer imports dan alleen labels
+
+Library:
+FIXME: Node required

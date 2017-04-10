@@ -46,8 +46,5 @@ public class StageHistory {
     public void setCurrentStage(String presenterClassName){
         add(currentStage);
         currentStage = presenterClassName;
-
-        System.out.println(currentStage);
-        System.out.println(deque.toString());
     }
 }

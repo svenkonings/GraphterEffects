@@ -1,64 +1,63 @@
-edge labels:
+node labels:
     "wolf",
-    "type:Goat" as goat,
-    "type:Cabbage" as cabbage,
-    "type:Boat" as boat,
-    "type:Bank" as bank,
+    "Goat" as goat,
+    "Cabbage" as cabbage,
+    "Boat" as boat,
+    "Bank" as bank.
+
+edge labels:
     "on",
     "in",
     "likes",
     "moored",
-    "go",
-    "flag:left" as leftBank,
-    "flag:right" as rightBank.
+    "go".
 
-bounds(0, 32).
 backgroundImage("images/river.png").
 
 shape(water, rectangle).
 colour(water, blue).
 dimensions(water, 20, 4).
 
-wolf(X, X); goat(X, X); cabbage(X, X) ->
+wolf(X); goat(X); cabbage(X) ->
     passenger(X).
 
 passenger(X), passenger(Y) ->
     noOverlap(X, Y).
 
-wolf(X, X) ->
+wolf(X) ->
     image(X, "images/wolf.png"),
     dimensions(X, 2, 2).
 
-goat(X, X) ->
+goat(X) ->
     image(X, "images/sheep.png"),
     dimensions(X, 2, 2).
 
-cabbage(X, X) ->
+cabbage(X) ->
     image(X, "images/cabbage.png"),
     dimensions(X, 2, 2).
 
-boat(X, X) ->
+boat(X) ->
     image(X, "images/boat.png"),
     dimensions(X, 8, 3),
     enclosedHorizontal(X, water),
     above(X, water, -1),
     before(X, water).
 
-bank(X, X) ->
+bank(X) ->
     shape(X, rectangle),
     colour(X, green),
     alignBottom(X, water).
 
-bank(X, X), bank(Y, Y) ->
+bank(X), bank(Y) ->
     sameWidth(X, Y).
 
-boat(X, X), bank(Y, Y) ->
+boat(X), bank(Y) ->
     alignTop(X, Y).
 
-leftBank(X, X) ->
+bank(X), attribute(X, "flag", "left") ->
     left(X, water, 0).
 
-rightBank(X, X) ->
+bank(X), attribute(X, "flag", "right") ->
     right(X, water, 0).
 
 on(Passenger, Bank) ->

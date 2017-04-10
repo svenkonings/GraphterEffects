@@ -119,7 +119,7 @@ public class Solver {
           And then query predicates that use relavitve positioning
         */
         // Alignment
-        setQuery("alignCenter    (Elem1, Elem2)", equalsQuery("centerX").andThen(equalsQuery("centerY")));
+        setQuery("align          (Elem1, Elem2)", equalsQuery("centerX").andThen(equalsQuery("centerY")));
         setQuery("alignLeft      (Elem1, Elem2)", equalsQuery("minX"));
         setQuery("alignHorizontal(Elem1, Elem2)", equalsQuery("centerX"));
         setQuery("alignRight     (Elem1, Elem2)", equalsQuery("maxX"));

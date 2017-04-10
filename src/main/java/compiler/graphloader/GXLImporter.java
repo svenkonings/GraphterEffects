@@ -1,14 +1,15 @@
 package compiler.graphloader;
 
 import net.sourceforge.gxl.*;
-import org.graphstream.graph.*;
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.EdgeRejectedException;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
-import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.xml.sax.SAXException;
 import utils.GraphUtils;
-import utils.Printer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -52,7 +53,7 @@ final class GXLImporter {
     }
 
     static Graph read(String path, boolean addUnderscores, boolean GROOVEMode) throws IOException, SAXException {
-        try{
+        try {
             return read(path, addUnderscores, false, GROOVEMode);
         } catch (EdgeRejectedException e) {
             return read(path, addUnderscores, true, GROOVEMode);
@@ -72,7 +73,7 @@ final class GXLImporter {
         return read(file.getAbsolutePath(), addUnderscores, multigraph, GROOVEMode);
     }
 
-     /**
+    /**
      * Reads a file in GXL format into a GraphStream graph Object.
      *
      * @param path           Path to the file to read into a GraphsStream Graph Object.
@@ -120,7 +121,7 @@ final class GXLImporter {
             GXLGraphElement elem = graph.getGraphElementAt(i);
             if (elem instanceof GXLNode) {
                 nodes.add(elem);
-            } else if (elem instanceof GXLEdge){
+            } else if (elem instanceof GXLEdge) {
                 edges.add(elem);
             } else {
                 throw new RuntimeException();
@@ -216,34 +217,7 @@ final class GXLImporter {
         return idgotten;
     }
 
-    private static Graph Grooveify(Graph in) {
-        in = fixGrooveEdges(in);
-        in = fixTypeFlagLabels(in);
-        return in;
-    }
-
-    private static Graph fixTypeFlagLabels(Graph in) {
-        Set<Element> elemset = new HashSet<>();
-        elemset.addAll(in.getEdgeSet());
-        elemset.addAll(in.getNodeSet());
-        for (Element element : elemset) {
-            if (!element.hasAttribute("label")) {
-                continue;
-            }
-            String label = element.getAttribute("label");
-            label = label.substring(1, label.length()-1);
-            if (label.startsWith("type:")) {
-                element.removeAttribute("label");
-                element.setAttribute("type", "\"" + label.substring(5) + "\"");
-            } else if (label.startsWith("flag:")) {
-                element.removeAttribute("label");
-                element.setAttribute("flag", "\"" + label.substring(5) + "\"");
-            }
-        }
-        return in;
-    }
-
-    private static Graph fixGrooveEdges(Graph input) {
+    private static Graph Grooveify(Graph input) {
         Graph res;
         if (input instanceof DefaultGraph) {
             res = new DefaultGraph(input.getId());
@@ -255,24 +229,32 @@ final class GXLImporter {
             throw new UnsupportedOperationException();
         }
         for (String key : input.getAttributeKeySet()) {
-            Object[] arr = {input.getAttribute(key)};
-            res.setAttribute(key, arr);
+            res.setAttribute(key, (Object) input.getAttribute(key));
         }
         for (Node node : input.getEachNode()) {
             Node added = res.addNode(node.getId());
             for (String key : node.getAttributeKeySet()) {
-                Object[] arr = {node.getAttribute(key)};
-                added.setAttribute(key, arr);
+                added.setAttribute(key, (Object) node.getAttribute(key));
             }
         }
         for (Edge edge : input.getEachEdge()) {
-            if (edge.getSourceNode().equals(edge.getTargetNode()) && edge.hasAttribute("label") && !edge.getSourceNode().hasAttribute("label")) {
-                res.getNode(edge.getSourceNode().getId()).setAttribute("label", new Object[]{edge.getAttribute("label")});
+            if (edge.getSourceNode().equals(edge.getTargetNode())) {
+                String label = edge.getAttribute("label");
+                label = label.substring(1, label.length()-1);
+                String[] attribute = label.split(":", 2);
+                if (attribute.length == 1) {
+                    res.getNode(edge.getSourceNode().getId()).setAttribute("label", "\"" + attribute[0] + "\"");
+                } else if (attribute.length == 2) {
+                    // FIXME: Should support type imports instead
+                    if ("type".equals(attribute[0])) {
+                        attribute[0] = "label";
+                    }
+                    res.getNode(edge.getSourceNode().getId()).setAttribute(attribute[0], "\"" + attribute[1] + "\"");
+                }
             } else {
                 Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
                 for (String key : edge.getAttributeKeySet()) {
-                    Object[] arr = {edge.getAttribute(key)};
-                    added.setAttribute(key, arr);
+                    added.setAttribute(key, (Object) edge.getAttribute(key));
                 }
             }
         }

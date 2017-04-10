@@ -35,8 +35,11 @@ cabbage(X, X) ->
     dimensions(X, 128, 128).
 
 boat(X, X) ->
-    image(X, "images/boat.png"),
+    image(X, "images/boat front.png"),
+    image([X, back], "images/boat back.png"),
     dimensions(X, 450, 190),
+    dimensions([X, back], 450, 190),
+    align(X, [X, back]),
     enclosedHorizontal(X, water),
     above(X, water, -50),
     before(X, water).
@@ -64,10 +67,11 @@ on(Passenger, Bank) ->
     before(Passenger, Bank).
 
 in(Passenger, Boat) ->
-    above(Passenger, Boat, -70),
+    above(Passenger, Boat, -110),
     enclosedHorizontal(Passenger, Boat),
     alignHorizontal(Passenger, Boat),
-    before(Passenger, Boat).
+    behind(Passenger, Boat),
+    before(Passenger, [Boat, back]).
 
 moored(Boat, Bank); go(Boat, Bank) ->
     horizontalDistance(Boat, Bank, 0).
