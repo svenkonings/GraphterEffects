@@ -2,6 +2,7 @@ package general;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Objects;
 
 public class StageHistory {
     private static StageHistory ourInstance = new StageHistory();
@@ -29,7 +30,7 @@ public class StageHistory {
             deque.push(lastPage);
         }
 
-        if ( pageBeforeLastPage != pageName) {
+        if (!Objects.equals(pageBeforeLastPage, pageName)) {
             deque.push(pageName);
         }
     }
