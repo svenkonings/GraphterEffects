@@ -40,6 +40,24 @@
     <orderEntry type="library" name="Maven: bouncycastle:bcprov-jdk14:138" level="project" />
     <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: alice:tuprolog:1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/tuprolog.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.sourceforge:gxl:1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/gxl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.airhacks:afterburner.fx:1.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-transcoder:1.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:fop:0.94" level="project" />
@@ -70,27 +88,5 @@
     <orderEntry type="library" name="Maven: org.fxmisc.undo:undofx:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.reactfx:reactfx:2.0-M5" level="project" />
     <orderEntry type="library" name="Maven: org.fxmisc.flowless:flowless:0.5.2" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: alice:tuprolog:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/tuprolog.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/tuprolog-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: net.sourceforge:gxl:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/gxl.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/gxl-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
   </component>
 </module>
