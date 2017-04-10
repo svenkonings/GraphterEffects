@@ -1,6 +1,7 @@
 import com.airhacks.afterburner.injection.Injector;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import root.RootView;
 
@@ -14,6 +15,7 @@ public class App extends Application{
         Scene scene = new Scene(rootView.getView());
         primaryStage.setTitle("Graphter Effects");
         final String uri = getClass().getResource("app.css").toExternalForm();
+        primaryStage.getIcons().add(new Image(getClass().getResource("graphter_effects_logo.png").toExternalForm()));
 
 
         scene.getStylesheets().add(uri);

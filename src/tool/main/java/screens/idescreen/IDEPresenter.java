@@ -16,7 +16,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -153,7 +152,7 @@ public class IDEPresenter implements Initializable, Observer {
                                 }
                             });
 
-                            ((AnchorPane)svgViewerTab.getContent()).widthProperty().addListener(new ChangeListener<Number>() {
+                            ((StackPane)svgViewerTab.getContent()).widthProperty().addListener(new ChangeListener<Number>() {
                                 @Override
                                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 

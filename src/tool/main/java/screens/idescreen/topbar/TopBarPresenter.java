@@ -26,10 +26,13 @@ public class TopBarPresenter implements Initializable{
 
         //TODO: DO this with bind and properties
         splitPane.setDividerPosition(1,splitPane.getHeight() - splitPane.getInsets().getBottom());
+        SplitPane.setResizableWithParent(topAnchorPane, Boolean.FALSE);
+        SplitPane.setResizableWithParent(bottomAnchorPane, Boolean.FALSE);
 
         splitPane.setPrefHeight(65);
         splitPane.setMinHeight(65);
-        topAnchorPane.setPrefHeight(30);
+        topAnchorPane.setPrefHeight(25);
+        topAnchorPane.setMinHeight(25);
         bottomAnchorPane.setPrefHeight(35);
         bottomAnchorPane.setMinHeight(35);
 

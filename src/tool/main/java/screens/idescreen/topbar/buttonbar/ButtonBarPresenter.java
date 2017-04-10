@@ -35,6 +35,8 @@ import java.util.ResourceBundle;
 public class ButtonBarPresenter implements Initializable, Observer {
 
     public SplitPane splitPane;
+    public Button compileButton;
+    public MenuButton debugButton;
     @FXML private Label graafVisScriptNameLabel;
     @FXML private ComboBox graphComboBox;
     @Inject ViewModel viewModel;
@@ -168,6 +170,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
+        compileButton.setDisable(!choiceBoxFilled);
+        debugButton.setDisable(!choiceBoxFilled);
+
         DocumentModel.getInstance().addObserver(this);
         bind();
     }
@@ -181,7 +186,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
-        System.out.println("CODE ON SCREEN:" + codeOnScreen);
         Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
             new Thread(new CompilerRunnable(tempFilePath,graphFilePath)).start();
@@ -205,6 +209,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 String graphFileNameNew = (String) arguments.get(1);
                 //graphComboBox.setItems(FXCollections.observableArrayList());
                 choiceBoxFilled = true;
+                compileButton.setDisable(false);
+                debugButton.setDisable(false);
 
                 graphComboBox.getItems().add(graphFileNameNew);
                 //When nothing is selected, select the first item from the list.
@@ -231,6 +237,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 if(graphComboBox.getItems().size() == 0){
                     choiceBoxFilled = false;
                 }
+                compileButton.setDisable(!choiceBoxFilled);
+                debugButton.setDisable(!choiceBoxFilled);
                 break;
 
             case GRAAFVISFILELOADED:
@@ -294,4 +302,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
             //TODO: Handle exceptions by showing them in an error box
         }
     }
+
+
 }

@@ -76,7 +76,7 @@ public class Compilation extends Observable{
         try {
             prolog.loadLibrary(asrcLibrary);
         } catch (InvalidLibraryException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //TODO: Throw this
         }
         Solver solver = new Solver();
         visMap = solver.solve(prolog);
