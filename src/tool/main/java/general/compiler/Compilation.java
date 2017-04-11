@@ -54,7 +54,7 @@ public class Compilation extends Observable{
     }
 
     public void addGraphRules() throws IOException, SAXException, UnknownGraphTypeException {
-        Graph graph = Importer.graphFromFile(graphFile.toFile());
+        Graph graph = Importer.graphFromFile(graphFile.toFile(), true);
         asrcLibrary = new ASRCLibrary(graph);
         setChanged();
         notifyObservers(CompilationProgress.GRAPHCONVERTED);
