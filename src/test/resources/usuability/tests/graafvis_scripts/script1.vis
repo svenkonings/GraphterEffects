@@ -1,0 +1,4 @@
+node(X) -> shape(X,rectangle), width(X,10), height(X,80).
+
+
+
