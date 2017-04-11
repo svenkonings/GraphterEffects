@@ -3,6 +3,7 @@ package compiler.solver;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -49,7 +50,7 @@ public class VisElem {
      */
     public void set(String name, String value) {
         try {
-            int constant = Integer.parseInt(value);
+            int constant = new BigDecimal(value).intValue();
             setVar(name, constant);
         } catch (NumberFormatException e) {
             setValue(name, value);
