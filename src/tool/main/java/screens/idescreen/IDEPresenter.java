@@ -174,7 +174,7 @@ public class IDEPresenter implements Initializable, Observer {
                                 ((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
                                 ((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
                                 String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
-                                tabPane.getTabs().add(new Tab("Rules" + graphName, ruleViewerView.getView()));
+                                tabPane.getTabs().add(new Tab("Rules " + graphName, ruleViewerView.getView()));
                                 //tabPane.getTabs().add(new Tab("Vis Elems " + graphName,visElemViewerView.getView()));
                             }
                         });
