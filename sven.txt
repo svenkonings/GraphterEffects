@@ -11,6 +11,7 @@ Meer predicaten:
     Lijnbreedte (stroke-width)
     Vierkant en cirkel (dus gelijke breedte/hoogte)
     Driehoek
+    Shape checken op valide shape
     Lijnen zonder van-naar
     Beziercurves (eigen kromming meegeven) (kromming default, of als er een node tussenzit)
     Polylines (eigen path)
