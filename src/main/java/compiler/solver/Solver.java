@@ -82,6 +82,7 @@ public class Solver {
           Then query predicates that set the relative position constraints
         */
         // Visualizations
+        setQuery("vis(Elem)", attrQuery());
         setQuery("shape(Elem, Shape)", elementQuery((elem, values) -> {
             elem.setValue("type", termToString(values.get("Shape")));
             defaultConstraints(elem);
