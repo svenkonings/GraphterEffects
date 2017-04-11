@@ -11,6 +11,7 @@ import utils.TriConsumer;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -305,7 +306,7 @@ public class Solver {
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
             String op = getOp(values);
-            int value = Integer.parseInt(termToString(values.get("Value")));
+            int value = new BigDecimal(termToString(values.get("Value"))).intValue();
             Model model = var1.getModel();
             if (swap) {
                 model.arithm(var1.sub(var2).intVar(), op, value).post();
@@ -350,7 +351,7 @@ public class Solver {
         assert x || y;
         return elementPairQuery((elem1, elem2, values) -> {
             String op = getOp(values);
-            int value = Integer.parseInt(termToString(values.get("Value")));
+            int value = new BigDecimal(termToString(values.get("Value"))).intValue();
             Model model = elem1.getVar("minX").getModel();
             if (x) model.or(
                     model.arithm(elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(), op, value),
