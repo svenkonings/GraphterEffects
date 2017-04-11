@@ -45,7 +45,7 @@ public abstract class GraphLibrary extends Library {
             if (value instanceof Struct) {
                 Object res = rID.getAttribute(rname);
                 if (res instanceof String) {
-                    return ((String)res).substring(1,((String) res).length()-1).equals(rstringvalue);    
+                    return ((String)res).substring(1,((String) res).length()-1).equals(rstringvalue.substring(1,rstringvalue.length()-1));    
                 }
                 return rID.getAttribute(rname).equals(rstringvalue);
             } else if (value instanceof Var) {
