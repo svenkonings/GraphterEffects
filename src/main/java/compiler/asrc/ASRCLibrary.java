@@ -64,6 +64,7 @@ public class ASRCLibrary extends GraphLibrary {
         sb.append("type(X, Y) :- edge(X), attribute(X, \"type\", Y).\n");
         sb.append("incomponent(X, Y) :- node(X), incomponentsecond(X, Y).\n");
         sb.append("inmst(X) :- edge(X), inmstsecond(X).\n");
+        sb.append("inshortestpath(X,Y,Z) :- edge(X), node(Y), node(Z), inshortestpathsecond(X,Y,Z).\n");
         return sb.toString();
     }
 
@@ -128,13 +129,18 @@ public class ASRCLibrary extends GraphLibrary {
         return attributesecond_3(ID, struct("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_"), component);
     }
 
-    public boolean inshortestpath_3(Term ID, Term from, Term to) {
-        Dijkstra dijkstra = new Dijkstra(null, "_ATTRIBUTE_FOR_SHORTEST_PATH_", null);
-        dijkstra.init(graph);
-        dijkstra.compute();
-        dijkstra.setSource(graph.getNode(((Struct)from.getTerm()).getName()));
-        Path a = dijkstra.getPath(graph.getNode(((Struct)to.getTerm()).getName()));
-        return a.contains((Edge)graph.getEdge(((Struct)ID.getTerm()).getName()));
+    public boolean inshortestpathsecond_3(Term ID, Term from, Term to) {
+        try {
+            Dijkstra dijkstra = new Dijkstra(null, "_ATTRIBUTE_FOR_SHORTEST_PATH_", null);
+            dijkstra.init(graph);
+            dijkstra.setSource(graph.getNode(((Struct) from.getTerm()).getName()));
+            dijkstra.compute();
+            Path a = dijkstra.getPath(graph.getNode(((Struct) to.getTerm()).getName()));
+            return a.contains((Edge) graph.getEdge(((Struct) ID.getTerm()).getName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean inmstsecond_1(Term ID) {
@@ -144,7 +150,6 @@ public class ASRCLibrary extends GraphLibrary {
             e.printStackTrace();
             return false;
         }
-
     }
 
 
