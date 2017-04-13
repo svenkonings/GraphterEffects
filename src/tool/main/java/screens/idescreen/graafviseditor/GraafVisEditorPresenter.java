@@ -46,7 +46,7 @@ public class GraafVisEditorPresenter implements Initializable {
     //
 
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    private static final String PREDICATE_PATTERN = "[^\\W]*(?=[(])";
+    private static final String PREDICATE_PATTERN = "[^\\W]*(?=[({])";
 
 
     private static final Pattern PATTERN = Pattern.compile(
@@ -93,7 +93,7 @@ public class GraafVisEditorPresenter implements Initializable {
 
 
         graafvisEditorPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
-        graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-keywords.css").toExternalForm());
+        graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-keywords-original.css").toExternalForm());
 
         codeArea.prefWidthProperty().bind(graafvisEditorPane.widthProperty());
         codeArea.prefHeightProperty().bind(graafvisEditorPane.heightProperty());

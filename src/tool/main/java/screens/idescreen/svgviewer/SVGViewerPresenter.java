@@ -2,16 +2,14 @@ package screens.idescreen.svgviewer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.WebView;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import utils.FileUtils;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -22,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class SVGViewerPresenter implements Initializable {
 
-    public WebView webView;
+    public ImageView imageView;
     @FXML public StackPane svgViewerPane;
     private String svgName;
     private Path svgPath;
@@ -44,30 +42,34 @@ public class SVGViewerPresenter implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        webView = new WebView();
-        webView.prefWidthProperty().bind(svgViewerPane.widthProperty());
-        webView.prefHeightProperty().bind(svgViewerPane.heightProperty());
+        imageView = new ImageView("file:s0.svg");
+        imageView.fitWidthProperty().bind(svgViewerPane.widthProperty());
+        imageView.fitHeightProperty().bind(svgViewerPane.heightProperty());
     }
 
     public void loadContent(String svgName, Path content){
+        /*
         this.svgName = svgName;
         this.svgPath = content;
         try {
             this.svgAsString = FileUtils.readFromFile(svgPath.toFile()).replaceAll(">", ">\n");
+            this.svgAsString = FileUtils.readFromFile(Paths.get("s0.svg").toFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
 
     public void showSVGAsImage() {
         if (svgViewerPane.getChildren().size() == 1){
             svgViewerPane.getChildren().remove(0);
         }
-        svgViewerPane.getChildren().add(webView);
+        //svgViewerPane.getChildren().add(webView);
         //System.out.println(FileUtils.readFromFile(n));
-        webView.getEngine().loadContent(svgAsString);
+        //webView.getEngine().loadContent(svgAsString);
+        //webView.getEngine().loadContent(s);
         //webView.getEngine().loadContent(FileUtils.readFromFile(new File("demo1.svg") ));
-        webView.setContextMenuEnabled(false);
+        //webView.setContextMenuEnabled(false);
     }
 
     public void showSVGAsText() {

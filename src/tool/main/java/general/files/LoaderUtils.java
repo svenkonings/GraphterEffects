@@ -84,7 +84,7 @@ public class LoaderUtils {
 
         try {
             Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
-            DocumentModel.getInstance().loadGraafVisFile(path);///DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
+            DocumentModel.getInstance().loadGraafVisFile(fileLocation.toPath());///DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
         } catch (IOException e) {
             e.printStackTrace();
         }
