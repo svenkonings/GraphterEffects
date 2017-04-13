@@ -22,7 +22,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException {
         assert args.length == 3;
-        Graph graph = Importer.graphFromFile(args[0], true);
+        Graph graph = Importer.graphFromFile(args[0]);
         Printer.pprint(graph);
         List<Term> terms = new GraafvisCompiler().compile(FileUtils.readFromFile(new File(args[1])));
         System.out.println();

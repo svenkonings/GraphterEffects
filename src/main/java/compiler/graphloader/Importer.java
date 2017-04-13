@@ -1,9 +1,7 @@
 package compiler.graphloader;
 
 
-import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.IdAlreadyInUseException;
 import org.xml.sax.SAXException;
 import utils.FileUtils;
 import utils.GraphUtils;
@@ -16,15 +14,6 @@ import java.io.IOException;
  */
 public final class Importer {
 
-
-    public static Graph graphFromFile(String path) throws IOException, SAXException {
-        return graphFromFile(new File(path), false);
-    }
-
-    public static Graph graphFromFile(File file) throws IOException, SAXException {
-        return graphFromFile(file, false);
-    }
-
     /**
      * Reads a graph from a variety of formats.
      *
@@ -33,8 +22,8 @@ public final class Importer {
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
-    public static Graph graphFromFile(String path, boolean GROOVEMode) throws IOException, SAXException {
-        return graphFromFile(new File(path), GROOVEMode);
+    public static Graph graphFromFile(String path) throws IOException, SAXException {
+        return graphFromFile(new File(path));
     }
 
     /**
@@ -45,27 +34,27 @@ public final class Importer {
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
-    public static Graph graphFromFile(File file, boolean GROOVEMode) throws IOException, SAXException {
-        return graphFromFile(file, true, GROOVEMode);
+    public static Graph graphFromFile(File file) throws IOException, SAXException {
+        return graphFromFile(file, true);
     }
 
     /**
-     * @param file           File from which to read the Graph
+     * @param file             File from which to read the Graph
      * @param addIllegalPrefix <tt>true</tt> if underscores should be added to the IDs in the graph.
      * @return A GraphStream graph read from the file.
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
-    public static Graph graphFromFile(File file, boolean addIllegalPrefix, boolean GROOVEMode) throws IOException, SAXException {
+    public static Graph graphFromFile(File file, boolean addIllegalPrefix) throws IOException, SAXException {
         Graph g;
         String extension = FileUtils.getExtension(file.getName());
         if (GXLImporter.acceptsExtension(extension)) {
-            g = GXLImporter.read(file, false, GROOVEMode);
+            g = GXLImporter.read(file, false);
         } else if (GraphStreamImporter.acceptsExtension(extension)) {
             g = GraphStreamImporter.read(file);
         } else {
             try {
-                    g = GXLImporter.read(file, false, GROOVEMode);
+                g = GXLImporter.read(file, false);
             } catch (SAXException e) {
                 g = null;
             }

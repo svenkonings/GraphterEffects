@@ -48,15 +48,15 @@ final class GXLImporter {
     }
 
 
-    static Graph read(File file, boolean addUnderscores, boolean GROOVEMode) throws IOException, SAXException {
-        return read(file.getAbsolutePath(), addUnderscores, GROOVEMode);
+    static Graph read(File file, boolean addUnderscores) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addUnderscores);
     }
 
-    static Graph read(String path, boolean addUnderscores, boolean GROOVEMode) throws IOException, SAXException {
+    static Graph read(String path, boolean addUnderscores) throws IOException, SAXException {
         try {
-            return read(path, addUnderscores, false, GROOVEMode);
+            return read(path, addUnderscores, false);
         } catch (EdgeRejectedException e) {
-            return read(path, addUnderscores, true, GROOVEMode);
+            return read(path, addUnderscores, true);
         }
     }
 
@@ -69,8 +69,8 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static Graph read(File file, boolean addUnderscores, boolean multigraph, boolean GROOVEMode) throws IOException, SAXException {
-        return read(file.getAbsolutePath(), addUnderscores, multigraph, GROOVEMode);
+    static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addUnderscores, multigraph);
     }
 
     /**
@@ -82,7 +82,7 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static Graph read(String path, boolean addUnderscores, boolean multigraph, boolean GROOVEMode) throws IOException, SAXException {
+    static Graph read(String path, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
         String prefix = "";
@@ -143,7 +143,8 @@ final class GXLImporter {
                 e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content, true));
             }
         }
-        if (GROOVEMode) {
+        GXLAttr version = graph.getAttr("$version");
+        if (version != null && "curly".equals(getFromGXLValue(version.getValue(), false))) {
             tograph = Grooveify(tograph);
         }
         return tograph;
@@ -240,10 +241,10 @@ final class GXLImporter {
         for (Edge edge : input.getEachEdge()) {
             if (edge.getSourceNode().equals(edge.getTargetNode())) {
                 String label = edge.getAttribute("label");
-                if (label==null) {
+                if (label == null) {
                     continue;
                 }
-                label = label.substring(1, label.length()-1);
+                label = label.substring(1, label.length() - 1);
                 String[] attribute = label.split(":", 2);
                 if (attribute.length == 1) {
                     res.getNode(edge.getSourceNode().getId()).setAttribute("label", "\"" + attribute[0] + "\"");
