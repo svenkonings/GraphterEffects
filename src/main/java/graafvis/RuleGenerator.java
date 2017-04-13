@@ -130,9 +130,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return null;
     }
 
-
+//
 //    @Override public Term visitClause(ClauseContext ctx) {
-//        if (ctx.antecedent() == null) {
+//        if (ctx.consequence instanceof AndConsequenceContext)
+//        if (ctx.antecedent == null) {
 //            // Fact
 //            for (LiteralContext conseqLit : ctx.consequence().literal()) {
 //                addClause(visit(conseqLit));
@@ -199,24 +200,38 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitVariableAntecedent(VariableAntecedentContext ctx) {
-        return new Var(ctx.getText());
+        return var(ctx.getText());
     }
 
     @Override public Term visitWildcardAntecedent(WildcardAntecedentContext ctx) {
-        return new Var(ctx.getText());
+        return var(ctx.getText());
     }
-//
-//    @Override public Term visitTermString(TermStringContext ctx) {
-//        return new Struct(ctx.getText());
-//    }
-//
-//    @Override public Term visitTermNumber(TermNumberContext ctx) {
-//        return Number.createNumber(ctx.getText());
-//    }
-//
-//    @Override public Term visitTermID(TermIDContext ctx) {
-//        return new Struct(ctx.getText());
-//    }
+
+    @Override public Term visitStringAntecedent(StringAntecedentContext ctx) {
+        return struct(ctx.getText());
+    }
+
+    @Override public Term visitNumberAntecedent(NumberAntecedentContext ctx) {
+        return number(ctx.getText());
+    }
+
+    // --- CONSEQUENCE ---
+
+    @Override public Term visitAndConsequence(AndConsequenceContext ctx) {
+        return struct(TUP_AND, visit(ctx.cTerm(0)), visit(ctx.cTerm(1)));
+    }
+
+    @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {
+        return var(ctx.getText());
+    }
+
+    @Override public Term visitStringConsequence(StringConsequenceContext ctx) {
+        return struct(ctx.getText());
+    }
+
+    @Override public Term visitNumberConsequence(NumberConsequenceContext ctx) {
+        return number(ctx.getText());
+    }
 
     // ---------
 

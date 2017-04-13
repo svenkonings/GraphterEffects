@@ -45,6 +45,8 @@ aMultiTerm: aTerm
           | PAR_OPEN aTermSeries? PAR_CLOSE
           ;
 
+// TODO wordt bij listregel wel echt gebruik gemaakt van de COMMA in cTermSeries? Of wordt daar andConseq gebruikt?
+// TODO par moet weg
 /* Consequence */
 cTerm: cTerm andOp cTerm                                                                                                #andConsequence
      | predicate (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                     #atomConsequence
