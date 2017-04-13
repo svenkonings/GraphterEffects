@@ -45,11 +45,16 @@ public abstract class GraphLibrary extends Library {
             if (value instanceof Struct) {
                 Object res = rID.getAttribute(rname);
                 if (res instanceof String) {
-                    return ((String)res).substring(1,((String) res).length()-1).equals(rstringvalue);    
+                    return /*StringUtils.stripOnce(((String)res)).equals(rstringvalue) ||*/ ((String)res).equals(rstringvalue);
                 }
                 return rID.getAttribute(rname).equals(rstringvalue);
             } else if (value instanceof Var) {
-                value.unify(getEngine(), term(StringUtils.ObjectToString(rID.getAttribute(rname))));
+                Object atvalue = rID.getAttribute(rname);
+                if (atvalue instanceof Double && (Double) atvalue == Math.floor((Double) atvalue) ) {
+                    value.unify(getEngine(), intVal((int)((Double) atvalue).doubleValue()));
+                } else {
+                    value.unify(getEngine(), struct(StringUtils.ObjectToString(rID.getAttribute(rname))));
+                }
                 return true;
 
             } else if (value instanceof Int) {

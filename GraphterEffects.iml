@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" version="4">
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/tool/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/tool/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
-      <excludeFolder url="file://$MODULE_DIR$/out" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -88,27 +85,5 @@
     <orderEntry type="library" name="Maven: org.fxmisc.undo:undofx:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.reactfx:reactfx:2.0-M5" level="project" />
     <orderEntry type="library" name="Maven: org.fxmisc.flowless:flowless:0.5.2" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: alice:tuprolog:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/tuprolog.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/tuprolog-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: net.sourceforge:gxl:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/gxl.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/gxl-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
   </component>
 </module>

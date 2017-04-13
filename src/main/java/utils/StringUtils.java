@@ -76,7 +76,9 @@ public final class StringUtils {
      * @return A String representing the Object.
      */
     public static String ObjectToString(Object in) {
-        if (in instanceof Collection) {
+        if (in instanceof Double && (Double) in ==Math.floor((Double) in)) {
+            return String.valueOf(((int)((Double) in).doubleValue()));
+        } else if (in instanceof Collection) {
             List<String> to = new LinkedList<>();
             for (Object i : ((Collection) in)) {
                 to.add(ObjectToString(i));
@@ -138,6 +140,8 @@ public final class StringUtils {
                     to.add(enforceQuotesIfString(i));
                 }
                 return to;
+            } else if (in instanceof String && isInteger((String) in)) {
+                return in;
             } else if (in instanceof String) {
                 if (!((String) in).startsWith("\"")) {
                     in = "\"" + in;
@@ -149,5 +153,15 @@ public final class StringUtils {
             }
 
         return in;
+    }
+
+    public static String stripOnce(String res) {
+        if (res.startsWith("\"")) {
+            res = res.substring(0);
+        }
+        if (res.endsWith("\"")) {
+            res = res.substring(res.length()-1);
+        }
+        return res;
     }
 }
