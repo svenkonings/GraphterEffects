@@ -72,8 +72,8 @@ public class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
             } else if (((GraafvisParser.AtomConsequenceContext) termContext).PAR_OPEN() != null
                     || ((GraafvisParser.AtomConsequenceContext) termContext).PAR_CLOSE() != null
                     || ((GraafvisParser.AtomConsequenceContext) termContext).cTermSeries() != null) {
-                int line = ((GraafvisParser.AtomConsequenceContext) termContext).ID().getSymbol().getLine();
-                int column = ((GraafvisParser.AtomConsequenceContext) termContext).ID().getSymbol().getCharPositionInLine();
+                int line = ((GraafvisParser.AtomConsequenceContext) termContext).predicate().getStart().getLine();
+                int column = ((GraafvisParser.AtomConsequenceContext) termContext).predicate().getStart().getCharPositionInLine();
                 this.errors.add(new InvalidPredicateGenerationError(line, column, predicateToGenerate));
             }
         /* Check for graafvis.errors */

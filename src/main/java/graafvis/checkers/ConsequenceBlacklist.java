@@ -82,7 +82,7 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     /** Check the predicate and visit term */
     @Override
     public Void visitAtomConsequence(GraafvisParser.AtomConsequenceContext ctx) {
-        blacklistCheck(ctx.ID());
+        blacklistCheck(ctx.predicate());
         if (ctx.cTermSeries() != null) {
             return visitCTermSeries(ctx.cTermSeries());
         } else {
@@ -93,7 +93,7 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     /** Check the predicate and visit terms */
     @Override
     public Void visitMultiAtomConsequence(GraafvisParser.MultiAtomConsequenceContext ctx) {
-        blacklistCheck(ctx.ID());
+        blacklistCheck(ctx.predicate());
         for (GraafvisParser.CMultiTermContext term : ctx.terms) {
             visitCMultiTerm(term);
         }
@@ -105,12 +105,12 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
      */
 
     /** Checks if the predicate has been blacklisted. If so, it adds an error to the error list */
-    private void blacklistCheck(TerminalNode id) {
-        String predicate = id.getText();
-        if (consequenceBlackList.contains(predicate)) {
-            int line = id.getSymbol().getLine();
-            int column = id.getSymbol().getCharPositionInLine();
-            errors.add(new BlacklistedPredicateError(line, column, predicate));
+    private void blacklistCheck(GraafvisParser.PredicateContext predicate) {
+        String id = predicate.getText();
+        if (consequenceBlackList.contains(id)) {
+            int line = predicate.getStart().getLine();
+            int column = predicate.getStart().getCharPositionInLine();
+            errors.add(new BlacklistedPredicateError(line, column, id));
         }
     }
 
