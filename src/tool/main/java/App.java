@@ -1,5 +1,4 @@
 import com.airhacks.afterburner.injection.Injector;
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -11,8 +10,6 @@ public class App extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        SvgImageLoaderFactory.install();
 
         RootView rootView = new RootView();
         Scene scene = new Scene(rootView.getView());

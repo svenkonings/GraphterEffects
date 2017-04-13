@@ -93,7 +93,7 @@ public class GraafVisEditorPresenter implements Initializable {
 
 
         graafvisEditorPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
-        graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-keywords-original.css").toExternalForm());
+        graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-keywords.css").toExternalForm());
 
         codeArea.prefWidthProperty().bind(graafvisEditorPane.widthProperty());
         codeArea.prefHeightProperty().bind(graafvisEditorPane.heightProperty());
