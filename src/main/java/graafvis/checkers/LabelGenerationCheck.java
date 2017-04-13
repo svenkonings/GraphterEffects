@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.TokenStream;
 import java.util.ArrayList;
 
 /**
- *
+ * Checks whether the specified labels in label generation statements can actually be converted to predicates
  */
 public class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
 

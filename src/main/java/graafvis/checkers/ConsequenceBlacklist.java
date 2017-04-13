@@ -21,6 +21,7 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
         DEFAULT_BLACKLIST.add("edge");
         DEFAULT_BLACKLIST.add("label");
         DEFAULT_BLACKLIST.add("attribute");
+        DEFAULT_BLACKLIST.add("not"); // TODO -- update list
     }
 
     /** Set of predicates that cannot be used in consequences */
