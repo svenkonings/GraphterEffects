@@ -1,0 +1,11 @@
+Graphter Effects
+Copyright (c) 2017 Graphter Effects.
+
+This product is made by:
+    Hans van der Laan
+    Lindsay Kempen
+    Pim van Leeuwen
+    Ron van de Bree
+    Sven Konings
+
+Made at the University of Twente.
