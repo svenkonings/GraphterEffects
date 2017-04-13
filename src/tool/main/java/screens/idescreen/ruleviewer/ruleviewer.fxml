@@ -1,39 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
 <StackPane fx:id="visElemPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.idescreen.ruleviewer.RuleViewerPresenter">
    <children>
-      <TitledPane fx:id="titledPane" alignment="CENTER_RIGHT" collapsible="false" contentDisplay="RIGHT">
-         <graphic>
-            <ButtonBar prefHeight="22.0">
-               <buttons>
-                  <TextField fx:id="filterArgumentsTextField" promptText="query"/>
-                  <Button fx:id="filterButton" mnemonicParsing="false" text="Query" onAction="#queryButtonPressed"/>
-               </buttons>
-            </ButtonBar>
-         </graphic>
+      <TitledPane fx:id="titledPane" alignment="CENTER_RIGHT" collapsible="false" contentDisplay="RIGHT" nodeOrientation="LEFT_TO_RIGHT">
          <content>
-            <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+            <SplitPane dividerPositions="0.2" orientation="VERTICAL">
               <items>
                 <StackPane fx:id="queryResultPane">
                      <children>
-                        <TextField fx:id="queryResultTextField" editable="false"/>
+                        <TextArea fx:id="queryResultTextArea" editable="false" promptText="query result" />
                      </children>
                   </StackPane>
-                <StackPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <StackPane>
                      <children>
                         <TableView fx:id="rulesTable">
                           <columns>
-                            <TableColumn fx:id="headColumn" prefWidth="75.0" text="Head" />
-                            <TableColumn fx:id="tailColumn" prefWidth="75.0" text="Tail" />
+                            <TableColumn fx:id="headColumn" text="Head" />
+                            <TableColumn fx:id="tailColumn" text="Tail" />
                           </columns>
                         </TableView>
                      </children>
@@ -41,6 +34,12 @@
               </items>
             </SplitPane>
          </content>
+         <graphic>
+            <HBox fx:id="queryBar" prefHeight="22.0">
+                  <TextField fx:id="queryArgumentsTextField" promptText="query" />
+                  <Button fx:id="queryButton" mnemonicParsing="false" onAction="#queryButtonPressed" text="Query" />
+            </HBox>
+         </graphic>
       </TitledPane>
    </children>
 </StackPane>

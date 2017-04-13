@@ -22,14 +22,14 @@ public class RuleViewerPresenter implements Initializable {
 
     public StackPane visElemPane;
     public TitledPane titledPane;
-    public TextField filterArgumentsTextField;
-    public Button filterButton;
-    public TextField queryResultTextField;
+    public TextField queryArgumentsTextField;
+    public Button queryButton;
     public ListView rulesListView;
     public TableView<TableTerm> rulesTable;
     public TableColumn<TableTerm, String> tailColumn;
     public TableColumn<TableTerm, String> headColumn;
     public StackPane queryResultPane;
+    public TextArea queryResultTextArea;
 
     private TuProlog tuProlog;
 
@@ -40,9 +40,17 @@ public class RuleViewerPresenter implements Initializable {
         titledPane.prefWidthProperty().bind(visElemPane.widthProperty());
         titledPane.prefHeightProperty().bind(visElemPane.heightProperty());
         titledPane.maxWidthProperty().bind(visElemPane.widthProperty());
+
+        queryResultPane.minHeightProperty().set(30);
+        queryResultPane.prefHeightProperty().set(30);
         queryResultPane.maxHeightProperty().set(30);
 
         rulesTable.prefWidthProperty().bind(visElemPane.prefWidthProperty());
+
+        queryArgumentsTextField.prefWidthProperty().setValue(300);
+
+        //queryArgumentsTextField.set
+
         headColumn.setCellValueFactory(cellData -> cellData.getValue().head);
         headColumn.setPrefWidth(200);
         tailColumn.setCellValueFactory(cellData -> cellData.getValue().tail);
@@ -77,7 +85,25 @@ public class RuleViewerPresenter implements Initializable {
     }
 
     public void queryButtonPressed(ActionEvent actionEvent) {
-        List<Map<String, Term>> awnsers = tuProlog.solve(filterArgumentsTextField.getText());
+        queryResultTextArea.setText("");
+        if (!queryArgumentsTextField.getText().matches("\\s*")) {
+            queryResultPane.minHeightProperty().bind(visElemPane.heightProperty().multiply(0.3));
+            queryResultPane.prefHeightProperty().bind(visElemPane.heightProperty().multiply(0.3));
+            queryResultPane.maxHeightProperty().bind(visElemPane.heightProperty());
+            List<Map<String, Term>> result = tuProlog.solve(queryArgumentsTextField.getText());
+            int counter = 1;
+            if (result.isEmpty()){
+                queryResultTextArea.appendText("False");
+            }
+            for (Map<String, Term> varResults : result) {
+                queryResultTextArea.appendText(counter + ":" + varResults + "\n");
+                counter++;
+            }
+        } else {
+            queryResultPane.minHeightProperty().set(30);
+            queryResultPane.prefHeightProperty().set(30);
+            queryResultPane.maxHeightProperty().set(30);
+        }
     }
 
     private class TableTerm {
