@@ -17,6 +17,7 @@ BRACKET_OPEN: '[';
 BRACKET_CLOSE: ']';
 
 VBAR: '|';
+INFIX: '`';
 
 /* Eq operators */
 EQ: '==';
