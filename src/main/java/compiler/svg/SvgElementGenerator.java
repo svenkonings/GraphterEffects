@@ -144,7 +144,7 @@ public class SvgElementGenerator {
         attr.setMapping("y1", "y");
         attr.setMapping("width", "width");
         attr.setMapping("height", "height");
-        attr.setMapping("image", "href");
+        attr.setMapping("image", "xlink:href");
         // TODO: Add predicate for this
         attr.addDefault("preserveAspectRatio", "none");
         return attr;
