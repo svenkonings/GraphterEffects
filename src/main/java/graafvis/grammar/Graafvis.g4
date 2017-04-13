@@ -48,7 +48,7 @@ aMultiTerm: aTerm
 /* Consequence */
 cTerm: cTerm andOp cTerm                                                                                                #andConsequence
      | predicate (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                     #atomConsequence
-     | predicate BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                    #multiAtomConsequence   // Check for not predicate
+     | predicate BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                    #multiAtomConsequence
      | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | PAR_OPEN cTerm PAR_CLOSE                                                                                         #parConsequence

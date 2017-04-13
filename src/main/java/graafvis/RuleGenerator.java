@@ -99,7 +99,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
         for (LabelContext label : ctx.label()) {
             String asName = label.STRING().getText();
-            String dslName = label.ID() == null ? asName.substring(1, asName.length() - 1) : label.ID().getText();
+            String dslName = label.ID() == null ? removeOuterChars(asName) : label.ID().getText();
             addClause(clause(
                     struct(dslName, var("X")),
                     and(struct("node", var("X")), struct("label", var("X"), struct(asName)))
@@ -111,15 +111,17 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     @Override public Term visitEdgeLabelGen(EdgeLabelGenContext ctx) {
         for (LabelContext label : ctx.label()) {
             String asName = label.STRING().getText();
-            String dslName = label.ID() == null ? asName.substring(1, asName.length() - 1) : label.ID().getText();
+            String dslName = label.ID() == null ? removeOuterChars(asName) : label.ID().getText();
             addClause(clause(
                     struct(dslName, var("X")),
                     and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
             ));
+            // TODO is the edge object itself still the third argument?
             addClause(clause(
                     struct(dslName, var("X"), var("Y")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
             ));
+            // TODO is the edge object itself still the third argument?
             addClause(clause(
                     struct(dslName, var("X"), var("Y"), var("Z")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
@@ -166,20 +168,20 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     @Override public Term visitAtomAntecedent(AtomAntecedentContext ctx) {
         if (ctx.aTermSeries() == null) {
             // Constant, f.e. p
-            return new Struct(ctx.predicate.getText());
+            return new Struct(ctx.predicate().getText());
         } else {
             // Regular predicate, f.e. p(X), p(X,Y,Z), p()
-            return new Struct(ctx.predicate.getText(), aggregateVisit(ctx.aTermSeries().terms)); // TODO geen agg in geval van enkele term?
+            return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.aTermSeries().terms)); // TODO geen agg in geval van enkele term?
         }
         // TODO mogelijk deel verplaatsen naar TermTuple
     }
 
     @Override public Term visitMultiAndAtomAntecedent(MultiAndAtomAntecedentContext ctx) {
-        return and(aggregateVisitMultiTerms(ctx.predicate.getText(), ctx.terms));
+        return and(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.terms));
     }
 
     @Override public Term visitMultiOrAtomAntecedent(MultiOrAtomAntecedentContext ctx) {
-        return or(aggregateVisitMultiTerms(ctx.predicate.getText(), ctx.terms));
+        return or(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.terms));
     }
 
     @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
@@ -196,13 +198,13 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return struct(TUP_LIST, list(aggregateVisit(ctx.aTermSeries().aTerm())), visit(ctx.aTerm()));
     }
 
-//    @Override public Term visitTermVar(TermVarContext ctx) {
-//        return new Var(ctx.getText());
-//    }
-//
-//    @Override public Term visitTermWildcard(TermWildcardContext ctx) {
-//        return new Var(TUP_WILD_CARD);
-//    }
+    @Override public Term visitVariableAntecedent(VariableAntecedentContext ctx) {
+        return new Var(ctx.getText());
+    }
+
+    @Override public Term visitWildcardAntecedent(WildcardAntecedentContext ctx) {
+        return new Var(ctx.getText());
+    }
 //
 //    @Override public Term visitTermString(TermStringContext ctx) {
 //        return new Struct(ctx.getText());
@@ -257,6 +259,18 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
             }
         }
         return terms;
+    }
+
+    private String getFunctor(PredicateContext ctx) {
+        String s = ctx.getText();
+        if (ctx instanceof InfixPredicateContext) {
+            s = removeOuterChars(s);
+        }
+        return s;
+    }
+
+    private String removeOuterChars(String s) {
+        return s == null ? s : s.substring(1, s.length() - 1);
     }
 
     // --- Update logic model ---
