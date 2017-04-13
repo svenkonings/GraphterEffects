@@ -52,6 +52,7 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
         /* Compare antecedent and consequence */
         Set<String> antecedentVariables = antecedentCounter.getVariables();
         Set<String> consequenceVariables = consequenceCounter.getVariables();
+        System.out.println(antecedentVariables);
         for (String variable : antecedentVariables) {
             /* Add a warning if a variable occurs only once in the antecedent and never in the consequence */
             if (antecedentCounter.count(variable) == 1 && !consequenceVariables.contains(variable)) {

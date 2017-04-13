@@ -23,7 +23,7 @@ public class SingletonVariablesCheckTest {
         validityCheck("p(X) -> q(X).");
         validityCheck("p(X, Y) -> q(X), q(Y).");
         validityCheck("p(X), p(Y) -> q(X,Y).");
-        validityCheck("p([X|Y]) -> q(X), q(Y).");
+        validityCheck("p([X|[Y]]) -> q(X), q(Y).");
         validityCheck("p(q(X)) -> q(X).");
         validityCheck("q(x) -> p(q(x)).");
         validityCheck("p(x).");
