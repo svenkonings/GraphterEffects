@@ -2,14 +2,14 @@ package screens.idescreen.viselemviewer;
 
 import compiler.solver.VisElem;
 import compiler.solver.VisMap;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class VisElemViewerPresenter implements Initializable {
 
@@ -34,7 +34,11 @@ public class VisElemViewerPresenter implements Initializable {
         showContentInTreeView();
     }
 
-    public void showContentInTreeView() {
+    public void showContentInTreeView(){
+        showContentInTreeView(new HashSet<String>());
+    }
+
+    public void showContentInTreeView(Set<String> filterArgs) {
         TreeItem<String> rootItem = new TreeItem<String>("Vis Elems");
         rootItem.setExpanded(true);
         Map<String, VisElem> visElemMap = visMap.getMapping();
@@ -43,10 +47,24 @@ public class VisElemViewerPresenter implements Initializable {
             TreeItem visElemTreeItem = new TreeItem<String>("visElem " + atom);
             VisElem visElem = visElemMap.get(atom);
             for (String key : visElem.getValues().keySet())
-                visElemTreeItem.getChildren().add(new TreeItem<String>(key + ": " + visElem.getValues().get(key)));
+                if (filterArgs.size() != 0) {
+                    for (String filterArg : filterArgs) {
+                        if (key.toLowerCase().contains(filterArg.toLowerCase())) {
+                            visElemTreeItem.getChildren().add(new TreeItem<String>(key + ": " + visElem.getValues().get(key)));
+                        }
+                    }
+                } else {
+                    visElemTreeItem.getChildren().add(new TreeItem<String>(key + ": " + visElem.getValues().get(key)));
+                }
             rootItem.getChildren().add(visElemTreeItem);
         }
         visElemsView.setRoot(rootItem);
     }
 
+    public void filterButtonPressed(ActionEvent actionEvent) {
+        Set<String> keySet = new HashSet();
+        Collections.addAll(keySet, filterarguments.getText().split(","));
+        keySet.remove(""); //Because this will always be added.
+        showContentInTreeView(keySet);
+    }
 }
