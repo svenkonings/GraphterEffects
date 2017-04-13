@@ -32,7 +32,7 @@ aTerm: aTerm andOp aTerm                                                        
      | predicate=ID (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                                  #atomAntecedent
      | predicate=ID BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE                                 #multiAndAtomAntecedent
      | predicate=ID BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE                                  #multiOrAtomAntecedent
-     | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listAntecedent
+     | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
      | variable=HID                                                                                                     #variableAntecedent
      | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
      | PAR_OPEN aTerm PAR_CLOSE                                                                                         #parAntecedent
@@ -51,7 +51,7 @@ cTerm: cTerm andOp cTerm                                                        
      | INFIX (~INFIX)+ INFIX PAR_OPEN cTermSeries PAR_CLOSE                                                             #infixConsequence
      | predicate=ID (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                  #atomConsequence
      | predicate=ID BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                 #multiAtomConsequence   // Check for not predicate
-     | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTermSeries BRACKET_CLOSE)?)? BRACKET_CLOSE                         #listConsequence
+     | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | PAR_OPEN cTerm PAR_CLOSE                                                                                         #parConsequence
      | STRING                                                                                                           #stringConsequence
