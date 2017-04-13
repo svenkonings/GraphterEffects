@@ -4,7 +4,6 @@ import graafvis.errors.BlacklistedPredicateError;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisParser;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,7 +11,7 @@ import java.util.HashSet;
 /**
  * Makes sure blacklisted predicates are not used in consequences. Blacklists predicates that are generated from labels.
  */
-public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
+class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> { // TODO -- standard prolog predicates blacklisten + graph library predicates
 
     /** Set of predicates that are RHS blacklisted by default */
     private static final HashSet<String> DEFAULT_BLACKLIST = new HashSet<>();
@@ -25,16 +24,20 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     }
 
     /** Set of predicates that cannot be used in consequences */
-    private final HashSet<String> consequenceBlackList;
+    private final HashSet<String> consequenceBlackList = new HashSet<>();
 
     /** List of errors obtained during the checking phase */
-    private final ArrayList<VisError> errors;
+    private final ArrayList<VisError> errors = new ArrayList<>();
 
     /** Create a new blacklist */
     ConsequenceBlacklist() {
-        consequenceBlackList = new HashSet<>();
+        reset();
+    }
+
+    /** Reset the checker for new usage */
+    void reset() {
+        consequenceBlackList.clear();
         consequenceBlackList.addAll(DEFAULT_BLACKLIST);
-        errors = new ArrayList<>();
     }
 
     /*
@@ -118,7 +121,7 @@ public class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
      * Getters
      */
 
-    public ArrayList<VisError> getErrors() {
+    ArrayList<VisError> getErrors() {
         return errors;
     }
 

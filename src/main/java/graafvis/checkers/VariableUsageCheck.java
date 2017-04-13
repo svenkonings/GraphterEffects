@@ -1,9 +1,5 @@
 package graafvis.checkers;
 
-/**
- *
- */
-
 import graafvis.errors.UndefinedVariableError;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisBaseVisitor;
@@ -19,15 +15,15 @@ import java.util.HashSet;
 class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
 
     /** List of errors obtained during the checking phase */
-    private final ArrayList<VisError> errors;
+    private final ArrayList<VisError> errors = new ArrayList<>();
 
     /** Stores the variables used in a class */
-    private final HashSet<String> variables;
+    private final HashSet<String> variables = new HashSet<>();
 
-    /** Create a new variable usage check */
-    VariableUsageCheck() {
-        errors = new ArrayList<>();
-        variables = new HashSet<>();
+    /** Reset checker for new usage */
+    void reset() {
+        errors.clear();
+        variables.clear();
     }
 
     /*
@@ -75,7 +71,7 @@ class VariableUsageCheck extends GraafvisBaseVisitor<Void> {
      * Getters
      */
 
-    public ArrayList<VisError> getErrors() {
+    ArrayList<VisError> getErrors() {
         return errors;
     }
 

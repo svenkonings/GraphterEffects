@@ -11,21 +11,20 @@ import java.util.Set;
 /**
  * Generates warnings for unnecessary variable usage
  */
-public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
+class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
 
     /** Counter to keep track of variable usage in the antecedent of a clause */
-    private final VariableCounter antecedentCounter;
+    private final VariableCounter antecedentCounter = new VariableCounter();
     /** Counter to keep track of variable usage in the consequence of a clause */
-    private final VariableCounter consequenceCounter;
-
+    private final VariableCounter consequenceCounter = new VariableCounter();
     /** A list of warnings */
-    private final ArrayList<Warning> warnings;
+    private final ArrayList<Warning> warnings = new ArrayList<>();
 
-    /** Create a new singular variables check */
-    SingletonVariablesCheck() {
-        warnings = new ArrayList<>();
-        antecedentCounter = new VariableCounter();
-        consequenceCounter = new VariableCounter();
+    /** Reset the checker for new usage */
+    void reset() {
+        antecedentCounter.reset();
+        consequenceCounter.reset();
+        warnings.clear();
     }
 
     /*
@@ -50,12 +49,9 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
         /* Visit children */
         visitChildren(ctx);
         /* Compare antecedent and consequence */
-        Set<String> antecedentVariables = antecedentCounter.getVariables();
-        Set<String> consequenceVariables = consequenceCounter.getVariables();
-        System.out.println(antecedentVariables);
-        for (String variable : antecedentVariables) {
+        for (String variable : antecedentCounter.getVariables()) {
             /* Add a warning if a variable occurs only once in the antecedent and never in the consequence */
-            if (antecedentCounter.count(variable) == 1 && !consequenceVariables.contains(variable)) {
+            if (antecedentCounter.count(variable) == 1 && !consequenceCounter.getVariables().contains(variable)) {
                 LocationInProgram location = antecedentCounter.getLatestOccurrence(variable);
                 warnings.add(new SingletonVariableWarning(location.getLine(), location.getColumn(), variable));
             }
@@ -85,7 +81,7 @@ public class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
      * Getters
      */
 
-    public ArrayList<Warning> getWarnings() {
+    ArrayList<Warning> getWarnings() {
         return warnings;
     }
 

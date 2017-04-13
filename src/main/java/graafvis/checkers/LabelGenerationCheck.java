@@ -16,14 +16,14 @@ import java.util.ArrayList;
 /**
  * Checks whether the specified labels in label generation statements can actually be converted to predicates
  */
-public class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
+class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
 
     /** List of errors obtained during the checking phase */
-    private final ArrayList<VisError> errors;
+    private final ArrayList<VisError> errors = new ArrayList<>();
 
-    /** Create a new label generation check */
-    LabelGenerationCheck() {
-        errors = new ArrayList<>();
+    /** Reset checker for new usage */
+    void reset() {
+        errors.clear();
     }
 
     /*
@@ -86,7 +86,7 @@ public class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
      * Getters
      */
 
-    public ArrayList<VisError> getErrors() {
+    ArrayList<VisError> getErrors() {
         return errors;
     }
 
