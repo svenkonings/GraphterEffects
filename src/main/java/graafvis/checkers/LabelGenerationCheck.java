@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.TokenStream;
 import java.util.ArrayList;
 
 /**
- * Checks whether the specified labels in label generation statements can actually be converted to predicates
+ * Checks whether the specified labels in label generation statements can actually be converted to functors
  */
 class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
 
@@ -48,10 +48,10 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
         if (ctx.RENAME_TOKEN() == null) {
             String labelString = ctx.STRING().getText();
         /* Remove quotation marks */
-            String predicateToGenerate = labelString.substring(1, labelString.length() - 1);
+            String functorToGenerate = labelString.substring(1, labelString.length() - 1);
 
-        /* Parse predicate for correctness */
-            CharStream stream = new ANTLRInputStream(predicateToGenerate);
+        /* Parse functor for correctness */
+            CharStream stream = new ANTLRInputStream(functorToGenerate);
             GraafvisLexer lexer = new GraafvisLexer(stream);
             TokenStream tokenStream = new CommonTokenStream(lexer);
             GraafvisParser parser = new GraafvisParser(tokenStream);
@@ -63,21 +63,13 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
             parser.removeErrorListeners();
             parser.addErrorListener(errorListener);
 
-        /* Parse the predicate */
-            GraafvisParser.CTermContext termContext = parser.cTerm();
-            if (!(termContext instanceof GraafvisParser.AtomConsequenceContext)) {
-                int line = termContext.getStart().getLine();
-                int column = termContext.getStart().getCharPositionInLine();
-                this.errors.add(new InvalidPredicateGenerationError(line, column, predicateToGenerate));
-            } else if (((GraafvisParser.AtomConsequenceContext) termContext).PAR_OPEN() != null
-                    || ((GraafvisParser.AtomConsequenceContext) termContext).PAR_CLOSE() != null
-                    || ((GraafvisParser.AtomConsequenceContext) termContext).cTermSeries() != null) {
-                int line = ((GraafvisParser.AtomConsequenceContext) termContext).predicate().getStart().getLine();
-                int column = ((GraafvisParser.AtomConsequenceContext) termContext).predicate().getStart().getCharPositionInLine();
-                this.errors.add(new InvalidPredicateGenerationError(line, column, predicateToGenerate));
+        /* Parse the functor */
+            GraafvisParser.FunctorContext functor = parser.functor();
+            if (errorListener.hasErrors()) {
+                int line = functor.getStart().getLine();
+                int column = functor.getStart().getCharPositionInLine();
+                this.errors.add(new InvalidPredicateGenerationError(line, column, functorToGenerate));
             }
-        /* Check for graafvis.errors */
-            this.errors.addAll(errorListener.getErrors());
         }
         return null;
     }
