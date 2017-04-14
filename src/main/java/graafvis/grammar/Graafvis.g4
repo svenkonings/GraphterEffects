@@ -2,7 +2,7 @@ grammar Graafvis;
 
 import GraafvisVocab;
 
-/* A Graafvis script consists out of a list of imports, label predicate generation and a list of clauses */
+/* A Graafvis script consists out of a list of imports, label functor generation and a list of clauses */
 program: importVis*
          nodeLabelGen?
          edgeLabelGen?

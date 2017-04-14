@@ -2,16 +2,16 @@ package graafvis.errors;
 
 public class BlacklistedFunctorError extends VisError {
 
-    private final String predicate;
+    private final String functor;
 
-    public BlacklistedFunctorError(int row, int column, String predicate) {
+    public BlacklistedFunctorError(int row, int column, String functor) {
         super(row, column);
-        this.setMsg(String.format("Found blacklisted predicate \"%s\" at line %d:%d", predicate, row, column));
-        this.predicate = predicate;
+        this.setMsg(String.format("Found blacklisted functor \"%s\" at line %d:%d", functor, row, column));
+        this.functor = functor;
     }
 
-    public String getPredicate() {
-        return predicate;
+    public String getFunctor() {
+        return functor;
     }
 
 }

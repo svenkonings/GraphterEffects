@@ -1,7 +1,7 @@
 package graafvis.checkers;
 
 import graafvis.ErrorListener;
-import graafvis.errors.InvalidPredicateGenerationError;
+import graafvis.errors.InvalidFunctorGenerationError;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
@@ -68,7 +68,7 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
             if (errorListener.hasErrors()) {
                 int line = functor.getStart().getLine();
                 int column = functor.getStart().getCharPositionInLine();
-                this.errors.add(new InvalidPredicateGenerationError(line, column, functorToGenerate));
+                this.errors.add(new InvalidFunctorGenerationError(line, column, functorToGenerate));
             }
         }
         return null;
