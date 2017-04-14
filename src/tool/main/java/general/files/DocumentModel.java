@@ -4,6 +4,7 @@ import utils.Pair;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -46,8 +47,14 @@ public class DocumentModel extends Observable{
     }
 
     public void newGraafVisFile(){
-        new File("temp/newfile.vis").mkdir();
-        Path path = new File("temp/newfile.vis").toPath();
+        File newGraafvisFile = null;
+        try {
+            newGraafvisFile = new File("temp/newfile.vis");
+            newGraafvisFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Path path = newGraafvisFile.toPath();
         DocumentModel.getInstance().loadGraafVisFile(path);
         setChanged();
         notifyObservers(new Pair<>(DocumentModelChange.GRAAFVISFILECREATED,null));

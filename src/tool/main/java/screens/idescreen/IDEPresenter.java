@@ -1,6 +1,5 @@
 package screens.idescreen;
 
-import general.StageHistory;
 import general.ViewModel;
 import general.compiler.CompilationModel;
 import general.compiler.CompilationProgress;
@@ -32,10 +31,7 @@ import screens.idescreen.viselemviewer.VisElemViewerView;
 import utils.Pair;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -50,7 +46,6 @@ public class IDEPresenter implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        StageHistory.getInstance().setCurrentStage(this.getClass().getSimpleName());
 
         TopBarView topBarView = new TopBarView();
         borderPane.setTop(topBarView.getView());
@@ -58,29 +53,8 @@ public class IDEPresenter implements Initializable, Observer {
         BottomBarView bottomBarView = new BottomBarView();
         borderPane.setBottom(bottomBarView.getView());
 
-        /*
-        CodePaneView codePaneView = new CodePaneView();
-        Tab codeTab;
-        if (DocumentModel.getInstance().getGraafVisFilePath() == null){
-            codeTab = new Tab("New file", codePaneView.getView());
-        } else {
-            codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), codePaneView.getView());
-        }
-        */
         GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
-        Tab codeTab;
-        if (DocumentModel.getInstance().getGraafVisFilePath() == null){
-            try {
-                new File("temp/compiled").mkdirs();
-                IOManager.saveVIS(Paths.get("temp/newfile.vis"),"");
-                DocumentModel.getInstance().loadGraafVisFile(Paths.get("temp/newfile.vis"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            };
-            codeTab = new Tab("New file", graafVisEditorView.getView());
-        } else {
-            codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
-        }
+        Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
 
         GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
         graafVisEditorPresenter.getCodeArea().textProperty().addListener(new ChangeListener<String>() {

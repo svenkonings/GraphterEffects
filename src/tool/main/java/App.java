@@ -10,6 +10,7 @@ import javafx.stage.WindowEvent;
 import root.RootPresenter;
 import root.RootView;
 
+import java.io.File;
 import java.util.Set;
 
 public class App extends Application{
@@ -49,6 +50,11 @@ public class App extends Application{
             }
         });
         primaryStage.show();
+
+        //Preparing the files.
+        new File("temp/compiled").mkdirs();
+        DocumentModel.getInstance().newGraafVisFile();
+
         ((RootPresenter) rootView.getPresenter()).loadIDE();
     }
 

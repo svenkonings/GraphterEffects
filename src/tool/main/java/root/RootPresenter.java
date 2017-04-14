@@ -1,7 +1,6 @@
 package root;
 
 import general.ViewModel;
-import general.files.DocumentModel;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.StackPane;
 import screens.idescreen.IDEView;
@@ -30,7 +29,6 @@ public class RootPresenter implements Initializable {
     }
 
     public void loadIDE() {
-        DocumentModel.getInstance().newGraafVisFile();
         screens.idescreen.IDEView IDEView = new IDEView();
         rootPane.getChildren().add(IDEView.getView());
         //rootPane.wid
