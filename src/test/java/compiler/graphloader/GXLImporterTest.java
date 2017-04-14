@@ -29,11 +29,11 @@ public final class GXLImporterTest {
     @Test
     public void GrooveGXL() throws IOException, SAXException {
         Graph g = Importer.graphFromFile(FileUtils.fromResources("gxl/typicalgroove.gxl"), true);
-        assertNotEquals("\"type:testtype\"",g.getNode("#node1").getAttribute("label"));
+        assertEquals("\"type:testtype\"",g.getNode("#node1").getAttribute("label"));
         assertNotEquals("type:testtype",g.getNode("#node1").getAttribute("label"));
-        assertNull(g.getNode("#node1").getAttribute("label"));
+        assertEquals(g.getNode("#node1").getAttribute("label"), "\"type:testtype\"");
         assertEquals(g.getNode("#node2").getAttribute("flag"), "\"testflag\"");
-        assertEquals(g.getNode("#node1").getAttribute("type"), "\"testtype\"");
+        //assertEquals(g.getNode("#node1").getAttribute("type"), "\"testtype\"");
 
 
     }

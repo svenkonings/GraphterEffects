@@ -202,7 +202,7 @@ public final class GraphUtils {
         for (Node node : g.getEachNode()) {
             Node added = res.addNode(node.getId());
             for (String key : node.getAttributeKeySet()) {
-                Object[] arr = {StringUtils.ObjectToString(node.getAttribute(key))};
+                Object[] arr = {StringUtils.enforceQuotesIfString(node.getAttribute(key))};
                 added.setAttribute(key, arr);
             }
         }

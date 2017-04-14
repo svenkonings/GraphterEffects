@@ -8,6 +8,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 import utils.FileUtils;
+import utils.Printer;
 
 import java.util.List;
 import java.util.Map;
@@ -41,13 +42,6 @@ public final class AbstractSyntaxRuleConverterTest {
         TuProlog prolog = generateGraphProlog(graph);
         graphTest(prolog, graph);
     }
-//TODO
-//    @Test
-//    public void convertToRulesGraph4() throws Exception {
-//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/multi1.dot"));
-//        TuProlog prolog = generateGraphProlog(graph);
-//        graphTest(prolog, graph);
-//    }
 
     @Test
     public void convertToRulesGraph5() throws Exception {
@@ -56,11 +50,6 @@ public final class AbstractSyntaxRuleConverterTest {
         graphTest(prolog, graph);
     }
 
-//    @Test
-//    public void TestMST1() throws Exception {
-//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("demo/demo1.dot"));
-//        MSTTest(graph, false);
-//    }
 
     @Test
     public void TestMST2() throws Exception {
@@ -85,13 +74,6 @@ public final class AbstractSyntaxRuleConverterTest {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
         MSTTest(graph);
     }
-
-    //TODO
-//    @Test
-//    public void TestMST6() throws Exception {
-//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/multi1.dot"));
-//        MSTTest(graph);
-//    }
 
 
     private void MSTTest(Graph graph) throws Exception {

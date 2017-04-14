@@ -1,0 +1,5 @@
+//A simple undirected graph
+graph graphname {
+	textlabel[label="helloworld"];
+	intlabel[label=1];
+}
