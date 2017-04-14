@@ -24,6 +24,7 @@ public class LabelGenerationCheckTest {
         validityCheck("node labels: \"wolf\".");
         validityCheck("edge labels: \"!@#$\" as goat.");
         validityCheck("edge labels: \"go_at\".");
+        validityCheck("node labels: \"`Something`\"");
 
         invalidityCheck("node labels: \"Wolf\".");
         invalidityCheck("node labels: \"_wolf\".");
@@ -31,8 +32,7 @@ public class LabelGenerationCheckTest {
         invalidityCheck("edge labels: \"Wolf\".");
         invalidityCheck("edge labels: \"_wolf\".");
         invalidityCheck("edge labels: \"%^&$%\".");
-        invalidityCheck("edge labels: \"wolf()\".");
-        invalidityCheck("edge labels: \"wolf(wolf)\".");
+        invalidityCheck("edge labels: \"`wolf\".");
     }
 
     private void validityCheck(String program) {

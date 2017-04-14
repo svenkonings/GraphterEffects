@@ -63,7 +63,7 @@ cMultiTerm: cTerm
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor
-       | INFIX (~INFIX)+ INFIX                                                                                          #infixFunctor
+       | INFIX_ID                                                                                                       #infixFunctor
        ;
 
 /* Operators */
