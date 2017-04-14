@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="visElemPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.idescreen.ruleviewer.RuleViewerPresenter">
+<StackPane fx:id="visElemPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.idescreen.tab.ruleviewer.RuleViewerPresenter">
    <children>
       <TitledPane fx:id="titledPane" alignment="CENTER_RIGHT" collapsible="false" contentDisplay="RIGHT" nodeOrientation="LEFT_TO_RIGHT">
          <content>

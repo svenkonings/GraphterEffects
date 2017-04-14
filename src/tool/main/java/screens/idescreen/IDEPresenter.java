@@ -20,12 +20,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import screens.idescreen.bottombar.BottomBarView;
-import screens.idescreen.graafviseditor.GraafVisEditorPresenter;
-import screens.idescreen.graafviseditor.GraafVisEditorView;
-import screens.idescreen.ruleviewer.RuleViewerPresenter;
-import screens.idescreen.ruleviewer.RuleViewerView;
-import screens.idescreen.svgviewer.SVGViewerPresenter;
-import screens.idescreen.svgviewer.SVGViewerView;
+import screens.idescreen.tab.graafviseditor.GraafVisEditorPresenter;
+import screens.idescreen.tab.graafviseditor.GraafVisEditorView;
+import screens.idescreen.tab.ruleviewer.RuleViewerPresenter;
+import screens.idescreen.tab.ruleviewer.RuleViewerView;
+import screens.idescreen.tab.svgviewer.SVGViewerPresenter;
+import screens.idescreen.tab.svgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
 import screens.idescreen.viselemviewer.VisElemViewerPresenter;
 import screens.idescreen.viselemviewer.VisElemViewerView;
@@ -103,10 +103,8 @@ public class IDEPresenter implements Initializable, Observer {
     }
 
     public void bind(){
-        //borderPane.widthProperty().a
-        borderPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
-        borderPane.prefHeightProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).heightProperty() );
-        //borderPane.heightProperty().isEqualTo(viewModel.getMainView().getLayoutBounds().getHeight(),0);
+        borderPane.prefWidthProperty().bind(viewModel.sceneWidthProperty());
+        borderPane.prefHeightProperty().bind(viewModel.sceneHeigthProperty());
     }
 
 

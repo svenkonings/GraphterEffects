@@ -1,4 +1,4 @@
-package screens.idescreen.simpleviewer;
+package screens.idescreen.tab.simpleviewer;
 
 import com.airhacks.afterburner.views.FXMLView;
 

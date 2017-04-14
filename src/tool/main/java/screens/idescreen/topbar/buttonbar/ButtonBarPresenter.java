@@ -17,8 +17,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import screens.idescreen.simpleviewer.SimpleViewerPresenter;
-import screens.idescreen.simpleviewer.SimpleViewerView;
+import screens.idescreen.tab.simpleviewer.SimpleViewerPresenter;
+import screens.idescreen.tab.simpleviewer.SimpleViewerView;
 import utils.FileUtils;
 import utils.Pair;
 
@@ -178,7 +178,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void bind(){
-        splitPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
+        splitPane.prefWidthProperty().bind( viewModel.sceneWidthProperty() );
     }
 
     public void compileButtonPressed(ActionEvent actionEvent) {

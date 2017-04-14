@@ -1,4 +1,4 @@
-package screens.idescreen.simpleviewer;
+package screens.idescreen.tab.simpleviewer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

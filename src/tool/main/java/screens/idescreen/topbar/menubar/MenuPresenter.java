@@ -16,8 +16,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import screens.idescreen.about.AboutView;
-import screens.idescreen.simpleviewer.SimpleViewerPresenter;
-import screens.idescreen.simpleviewer.SimpleViewerView;
+import screens.idescreen.tab.simpleviewer.SimpleViewerPresenter;
+import screens.idescreen.tab.simpleviewer.SimpleViewerView;
 import utils.FileUtils;
 
 import javax.inject.Inject;
@@ -54,7 +54,7 @@ public class MenuPresenter implements Initializable {
     }
 
     public void bind(){
-        borderPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
+        borderPane.prefWidthProperty().bind( viewModel.sceneWidthProperty() );
         menuBar.prefWidthProperty().bind(borderPane.prefWidthProperty());
     }
 

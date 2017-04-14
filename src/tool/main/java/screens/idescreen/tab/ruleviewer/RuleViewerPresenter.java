@@ -1,4 +1,4 @@
-package screens.idescreen.ruleviewer;
+package screens.idescreen.tab.ruleviewer;
 
 import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;

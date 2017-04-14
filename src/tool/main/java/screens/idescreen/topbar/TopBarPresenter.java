@@ -4,7 +4,6 @@ import general.ViewModel;
 import javafx.fxml.Initializable;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import screens.idescreen.topbar.buttonbar.ButtonBarView;
 import screens.idescreen.topbar.menubar.MenuBarView;
 
@@ -43,6 +42,6 @@ public class TopBarPresenter implements Initializable{
     }
 
     public void bind() {
-        splitPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
+        splitPane.prefWidthProperty().bind(viewModel.sceneWidthProperty());
     }
 }

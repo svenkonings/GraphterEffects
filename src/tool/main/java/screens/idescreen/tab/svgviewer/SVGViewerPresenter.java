@@ -1,4 +1,4 @@
-package screens.idescreen.svgviewer;
+package screens.idescreen.tab.svgviewer;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

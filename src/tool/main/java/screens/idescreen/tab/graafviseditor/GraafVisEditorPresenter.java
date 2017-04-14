@@ -1,4 +1,4 @@
-package screens.idescreen.graafviseditor;
+package screens.idescreen.tab.graafviseditor;
 
 import general.files.DocumentModel;
 import javafx.fxml.FXML;
