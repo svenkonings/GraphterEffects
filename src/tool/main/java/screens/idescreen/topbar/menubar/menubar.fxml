@@ -12,32 +12,33 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-               <MenuItem mnemonicParsing="false" onAction="#loadScriptButtonPressed" text="Load Script" />
-               <MenuItem mnemonicParsing="false" onAction="#newScriptButtonPressed" text="New Script" />
+               <MenuItem mnemonicParsing="false" onAction="#loadScriptMenuItemPressed" text="Load Script" />
+               <MenuItem mnemonicParsing="false" onAction="#newScriptMenuItemPressed" text="New Script" />
                <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#loadGraphButtonPressed" text="Load Graph" />
+                <MenuItem mnemonicParsing="false" onAction="#loadGraphMenuItemPressed" text="Load Graph" />
                <SeparatorMenuItem mnemonicParsing="false" />
-               <MenuItem mnemonicParsing="false" onAction="#saveButtonPressed" text="Save" />
-               <MenuItem mnemonicParsing="false" onAction="#saveAsButtonPressed" text="Save as" />
+               <MenuItem mnemonicParsing="false" onAction="#saveMenuItemPressed" text="Save" />
+               <MenuItem mnemonicParsing="false" onAction="#saveAsMenuItemPressed" text="Save as" />
                <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#propertiesButtonPressed" text="Preferences" />
+                <MenuItem mnemonicParsing="false" onAction="#propertiesMenuItemPressed" text="Preferences" />
                <SeparatorMenuItem mnemonicParsing="false" />
-               <MenuItem mnemonicParsing="false" onAction="#exitButtonPressed" text="Exit" />
+               <MenuItem mnemonicParsing="false" onAction="#exitMenuItemPressed" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+              <MenuItem mnemonicParsing="false" onAction="#undoChangesMenutemPressed" text="Undo changes" />
             </items>
           </Menu>
          <Menu mnemonicParsing="false" text="View">
             <items>
-               <MenuItem mnemonicParsing="false" />
+               <MenuItem mnemonicParsing="false" onAction="#graphAsImageMenuItemPressed" text="View selected graph as Image" />
+               <MenuItem mnemonicParsing="false" onAction="#graphAsTextMenuItemPressed" text="View selected graph as Text" />
             </items>
          </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#helpMenuItemPressed" text="About" />
             </items>
           </Menu>
         </menus>
