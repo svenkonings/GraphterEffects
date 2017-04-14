@@ -7,8 +7,6 @@ import general.files.DocumentModel;
 import general.files.DocumentModelChange;
 import general.files.IOManager;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
@@ -16,12 +14,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.tab.graafviseditor.GraafVisEditorPresenter;
 import screens.idescreen.tab.graafviseditor.GraafVisEditorView;
-import screens.idescreen.tab.ruleviewer.RuleViewerPresenter;
 import screens.idescreen.tab.ruleviewer.RuleViewerView;
 import screens.idescreen.tab.svgviewer.SVGViewerPresenter;
 import screens.idescreen.tab.svgviewer.SVGViewerView;
@@ -39,7 +35,6 @@ import java.util.ResourceBundle;
 public class IDEPresenter implements Initializable, Observer {
 
     @FXML public BorderPane borderPane;
-    public Pane centerPane;
     public TabPane tabPane;
 
     @Inject private ViewModel viewModel;
@@ -53,103 +48,114 @@ public class IDEPresenter implements Initializable, Observer {
         BottomBarView bottomBarView = new BottomBarView();
         borderPane.setBottom(bottomBarView.getView());
 
-        GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
-        Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
-
-        GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
-        graafVisEditorPresenter.getCodeArea().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                codeTab.setText(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString() + " *");
-                DocumentModel.getInstance().setGraafvisChangesSaved(false);
-        }
-        });
-
-        codeTab.setClosable(false);
+        Tab codeTab = createGraafvisEditorTab();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         tabPane.getTabs().add(codeTab);
 
-        DocumentModel.getInstance().addObserver(this);
-        CompilationModel.getInstance().addObserver(this);
         bind();
 
+        DocumentModel.getInstance().addObserver(this);
+        CompilationModel.getInstance().addObserver(this);
 
     }
 
-    public void bind(){
+    private void bind(){
         borderPane.prefWidthProperty().bind(viewModel.sceneWidthProperty());
         borderPane.prefHeightProperty().bind(viewModel.sceneHeigthProperty());
     }
 
+    private Tab createGraafvisEditorTab(){
+        GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
+        String graafVisScriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
+        Tab codeTab = new Tab(graafVisScriptName, graafVisEditorView.getView());
+
+        GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
+        graafVisEditorPresenter.getCodeArea().textProperty().addListener((observable, oldValue, newValue) -> {
+            codeTab.setText(graafVisScriptName + " *");
+            DocumentModel.getInstance().setGraafvisChangesSaved(false);
+        });
+
+        //TODO, zijn deze nodig??
+        ((StackPane) graafVisEditorView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        ((StackPane) graafVisEditorView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+
+        codeTab.setClosable(false);
+        return codeTab;
+    }
+
+    private Tab createSVGViewerTab(String svgName){
+        SVGViewerView svgViewerView = new SVGViewerView();
+        SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
+
+        svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
+        svgViewerPresenter.showSVGAsImage();
+
+        Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
+        svgViewerTab.setClosable(true);
+        svgViewerTab.setOnCloseRequest(event -> {
+            if (! IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
+                event.consume();
+            }
+        });
+        svgViewerTab.setOnClosed(event -> DocumentModel.getInstance().removeGeneratedSVG(svgName));
+
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem showAsImage = new MenuItem("Show as Image");
+        MenuItem showAsText = new MenuItem("Show as Text");
+        showAsImage.setOnAction(event -> svgViewerPresenter.showSVGAsImage());
+        showAsText.setOnAction(event -> svgViewerPresenter.showSVGAsText());
+        contextMenu.getItems().addAll(showAsImage, showAsText);
+
+        ((StackPane) svgViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        ((StackPane) svgViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+
+        svgViewerTab.setContextMenu(contextMenu);
+
+        return svgViewerTab;
+    }
+
+    private Tab createRuleViewerTab(){
+        RuleViewerView ruleViewerView = new RuleViewerView();
+        ((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        ((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+        String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+
+        return new Tab("Rules " + graphName, ruleViewerView.getView());
+    }
+
+    private Tab createVisElemViewerTab(){
+        VisElemViewerView visElemViewerView = new VisElemViewerView();
+        VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
+        visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
+        ((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        ((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+        String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+
+        return new Tab("Vis Elems " + graphName,visElemViewerView.getView());
+    }
 
     @Override
     public void update(Observable o, Object arg) {
 
+        //TODO: ADD LOGGING
         if (arg instanceof Pair) {
             Pair arguments = (Pair) arg;
             if (arguments.get(0) instanceof DocumentModelChange) {
                 DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
                 switch (documentModelChange) {
                     case GRAAFVISFILELOADED:
-
                         DocumentModel.getInstance().setGraafvisChangesSaved(true);
-
-                        GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
-                        ((StackPane) graafVisEditorView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-                        ((StackPane) graafVisEditorView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-                        String scriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
-
-                        Tab codeTab = new Tab(scriptName, graafVisEditorView.getView());
-                        codeTab.setClosable(false);
-
-                        GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
-                        graafVisEditorPresenter.getCodeArea().textProperty().addListener(new ChangeListener<String>() {
-                            @Override
-                            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                                codeTab.setText(scriptName + " *");
-                                DocumentModel.getInstance().setGraafvisChangesSaved(false);
-                            }
-                        });
-
+                        Tab codeTab = createGraafvisEditorTab();
                         tabPane.getTabs().set(0, codeTab);
                         break;
+
                     case SVGGENERATED:
                         Platform.runLater(() -> {
-
-                            SVGViewerView svgViewerView = new SVGViewerView();
-                            ((StackPane) svgViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-                            ((StackPane) svgViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-
-                            SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
-
-                            String svgName = (String) arguments.get(1);
-                            svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
-                            svgViewerPresenter.showSVGAsImage();
-
-                            Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
-                            svgViewerTab.setClosable(true);
-                            svgViewerTab.setOnCloseRequest(event -> {
-                                if (! IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
-                                    event.consume();
-                                }
-                            });
-                            svgViewerTab.setOnClosed(event -> DocumentModel.getInstance().removeGeneratedSVG(svgName));
-
-                            final ContextMenu contextMenu = new ContextMenu();
-                            MenuItem showAsImage = new MenuItem("Show as Image");
-                            MenuItem showAsText = new MenuItem("Show as Text");
-                            contextMenu.getItems().addAll(showAsImage, showAsText);
-                            showAsImage.setOnAction(event -> svgViewerPresenter.showSVGAsImage());
-                            showAsText.setOnAction(event -> svgViewerPresenter.showSVGAsText());
-
-                            svgViewerTab.setContextMenu(contextMenu);
-
+                            Tab svgViewerTab = createSVGViewerTab((String) arguments.get(1));
                             tabPane.getTabs().add(svgViewerTab);
                         });
                         break;
                     case GRAAFVISFILESAVED:
-                        //scriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
-                        //tabPane.getTabs().get(0).setText(scriptName);
                 }
             }
         }
@@ -158,58 +164,39 @@ public class IDEPresenter implements Initializable, Observer {
             CompilationProgress compilationProgress = (CompilationProgress) arg;
             switch (compilationProgress) {
                 case COMPILATIONSTARTED:
-                    System.out.println("compilation started");
+                    //TODO LOGGING: System.out.println("compilation started");
                     CompilationModel.getInstance().addObserverToCompilation(this);
                     break;
                 case DEBUGCOMPILATIONSTARTED:
-                    System.out.println("debug compilation started");
+                    //TODO LOGGING: System.out.println("debug compilation started");
                     CompilationModel.getInstance().addObserverToCompilation(this);
                     break;
                 case GRAPHCONVERTED:
-                    System.out.println("Graph converted");
+                    //TODO LOGGING: System.out.println("Graph converted");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress) {
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                RuleViewerView ruleViewerView = new RuleViewerView();
-                                RuleViewerPresenter ruleViewerPresenter = (RuleViewerPresenter) ruleViewerView.getPresenter();
-                                //ruleViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
-                                ((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-                                ((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-                                String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
-                                tabPane.getTabs().add(new Tab("Rules " + graphName, ruleViewerView.getView()));
-                                //tabPane.getTabs().add(new Tab("Vis Elems " + graphName,visElemViewerView.getView()));
-                            }
+                        Platform.runLater(() -> {
+                            tabPane.getTabs().add(createRuleViewerTab());
                         });
                     }
                     break;
                 case GRAAFVISCOMPILED:
-                    System.out.println("Graafvis compiled");
+                    //TODO: LOGGING System.out.println("Graafvis compiled");
                     break;
                 case SOLVED:
-                    System.out.println("Logic solved");
+                    //TODO: LOGGING System.out.println("Logic solved");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                VisElemViewerView visElemViewerView = new VisElemViewerView();
-                                VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
-                                visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
-                                ((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-                                ((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-                                String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
-                                tabPane.getTabs().add(new Tab("Vis Elems " + graphName,visElemViewerView.getView()));
-                            }
+                        Platform.runLater(() -> {
+                            tabPane.getTabs().add(createVisElemViewerTab());
                         });
                     }
                     break;
                 case SVGGENERATED:
-                    System.out.println("SVG generated");
+                    //TODO: LOGGING System.out.println("SVG generated");
                     break;
                 case COMPILATIONFINISHED:
-                    System.out.println("Compilation complete");
+                    //TODO: LOGGING System.out.println("Compilation complete");
                     break;
                 case ERROROCCURED:
                     System.out.println("Error occured");
