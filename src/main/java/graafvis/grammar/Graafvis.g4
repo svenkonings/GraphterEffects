@@ -22,15 +22,15 @@ edgeLabelGen: EDGE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
-clause: (antecedent=aTerm ARROW)? consequence=cTerm EOL;
+clause: (antecedent=aTerm ARROW)? consequence=cTermSeries EOL;
 
 /* Antecedent */
 aTerm: aTerm andOp aTerm                                                                                                #andAntecedent
      | aTerm orOp aTerm                                                                                                 #orAntecedent
      | NOT aTerm                                                                                                        #notAntecedent
-     | predicate (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                                     #atomAntecedent
-     | predicate BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE                                    #multiAndAtomAntecedent
-     | predicate BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE                                     #multiOrAtomAntecedent
+     | functor (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                                       #compoundAntecedent
+     | functor BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE                                      #multiAndCompoundAntecedent
+     | functor BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE                                       #multiOrCompoundAntecedent
      | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
      | variable=HID                                                                                                     #variableAntecedent
      | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
@@ -39,35 +39,32 @@ aTerm: aTerm andOp aTerm                                                        
      | NUMBER                                                                                                           #numberAntecedent
      ;
 
-aTermSeries: terms+=aTerm (COMMA terms+=aTerm)*;
+aTermSeries: (terms+=aTerm COMMA)* terms+=aTerm;
 
 aMultiTerm: aTerm
           | PAR_OPEN aTermSeries? PAR_CLOSE
           ;
 
-// TODO wordt bij listregel wel echt gebruik gemaakt van de COMMA in cTermSeries? Of wordt daar andConseq gebruikt?
-// TODO par moet weg
 /* Consequence */
 cTerm: cTerm andOp cTerm                                                                                                #andConsequence
-     | predicate (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                     #atomConsequence
-     | predicate BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                    #multiAtomConsequence
+     | functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                       #compoundConsequence
+     | functor BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                      #multiCompoundConsequence
      | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
-     | PAR_OPEN cTerm PAR_CLOSE                                                                                         #parConsequence
      | STRING                                                                                                           #stringConsequence
      | NUMBER                                                                                                           #numberConsequence
      ;
 
-cTermSeries: terms+=cTerm (COMMA terms+=cTerm)*;
+cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
 
 cMultiTerm: cTerm
           | PAR_OPEN cTermSeries? PAR_CLOSE
           ;
 
-/* Predicates */
-predicate: ID                                                                                                           #idPredicate
-         | INFIX (~INFIX)+ INFIX                                                                                        #infixPredicate
-         ;
+/* Functors */
+functor: ID                                                                                                             #idFunctor
+       | INFIX (~INFIX)+ INFIX                                                                                          #infixFunctor
+       ;
 
 /* Operators */
 andOp: COMMA | AND;
