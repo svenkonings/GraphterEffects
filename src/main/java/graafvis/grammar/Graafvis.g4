@@ -39,7 +39,7 @@ aTerm: aTerm andOp aTerm                                                        
      | NUMBER                                                                                                           #numberAntecedent
      ;
 
-aTermSeries: terms+=aTerm (COMMA terms+=aTerm)*;
+aTermSeries: (terms+=aTerm COMMA)* terms+=aTerm ;
 
 aMultiTerm: aTerm
           | PAR_OPEN aTermSeries? PAR_CLOSE
