@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public class GraafVisEditorPresenter implements Initializable {
 
     @FXML public StackPane graafvisEditorPane;
+    private CodeArea codeArea;
 
     private static final String[] KEYWORDS = new String[] {
             "as", "(edge|graph|node)\\s*(labels)"
@@ -64,7 +65,7 @@ public class GraafVisEditorPresenter implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        CodeArea codeArea = new CodeArea();
+        codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
         codeArea.richChanges()
@@ -123,5 +124,13 @@ public class GraafVisEditorPresenter implements Initializable {
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
+    }
+
+    public CodeArea getCodeArea(){
+        return codeArea;
+    }
+
+    public void setCodeArea(CodeArea codeArea){
+        this.codeArea = codeArea;
     }
 }

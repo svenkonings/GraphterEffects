@@ -17,6 +17,7 @@ public class DocumentModel extends Observable{
     private Map<String, Path> generatedSVGMap = new HashMap<>();
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
     public String graafVisCode;
+    private boolean changesSaved = true;
 
     private Path lastSaveAndLoadPathGraafVis;
     private Path lastSavePathVisualization;
@@ -104,6 +105,10 @@ public class DocumentModel extends Observable{
         notifyObservers(new Pair<>(DocumentModelChange.SVGREMOVED, name));
     }
 
+    public Map<String,Path> getAllGeneratedSVGS(){
+        return generatedSVGMap;
+    }
+
     public Path getLastSaveAndLoadPathGraafVis() {
         return lastSaveAndLoadPathGraafVis;
     }
@@ -128,6 +133,16 @@ public class DocumentModel extends Observable{
     public void setLastLoadPathGraph(Path lastLoadPathGraph) {
         this.lastLoadPathGraph = lastLoadPathGraph;
     }
+
+    public boolean graafvisChangesSaved(){
+        return changesSaved;
+    }
+
+    public void setGraafvisChangesSaved(boolean changesSaved){
+        this.changesSaved = changesSaved;
+    }
+
+
 
     private static DocumentModel ourInstance = new DocumentModel();
 

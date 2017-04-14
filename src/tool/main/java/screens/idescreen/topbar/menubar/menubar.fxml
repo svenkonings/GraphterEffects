@@ -13,14 +13,16 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                <MenuItem mnemonicParsing="false" onAction="#loadScriptButtonPressed" text="Load Script" />
-                <MenuItem mnemonicParsing="false" onAction="#loadGraphButtonPressed" text="Load Graph" />
-               <SeparatorMenuItem mnemonicParsing="false" />
                <MenuItem mnemonicParsing="false" onAction="#newScriptButtonPressed" text="New Script" />
+               <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" onAction="#loadGraphButtonPressed" text="Load Graph" />
                <SeparatorMenuItem mnemonicParsing="false" />
                <MenuItem mnemonicParsing="false" onAction="#saveButtonPressed" text="Save" />
                <MenuItem mnemonicParsing="false" onAction="#saveAsButtonPressed" text="Save as" />
                <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem mnemonicParsing="false" onAction="#propertiesButtonPressed" text="Preferences" />
+               <SeparatorMenuItem mnemonicParsing="false" />
+               <MenuItem mnemonicParsing="false" onAction="#exitButtonPressed" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">

@@ -7,7 +7,7 @@ import general.compiler.CompilerRunnable;
 import general.compiler.CompilerUtils;
 import general.files.DocumentModel;
 import general.files.DocumentModelChange;
-import general.files.LoaderUtils;
+import general.files.IOManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -155,7 +155,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                     public void handle(MouseEvent event) {
                         if (event.getButton() == MouseButton.PRIMARY) {
                             if (!choiceBoxFilled) {
-                                LoaderUtils.showLoadGraphsPopup(false);
+                                IOManager.showLoadGraphsPopup(false);
                             }
                         }
                     }

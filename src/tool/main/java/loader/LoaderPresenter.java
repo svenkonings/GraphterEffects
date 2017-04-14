@@ -3,7 +3,7 @@ package loader;
 import general.StageHistory;
 import general.ViewModel;
 import general.files.DocumentModel;
-import general.files.LoaderUtils;
+import general.files.IOManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -32,7 +32,7 @@ public class LoaderPresenter implements Initializable{
     }
 
     public void loadScriptButtonPushed(ActionEvent actionEvent) {
-        LoaderUtils.showLoadScriptPopup();
+        IOManager.showLoadScriptPopup();
 
         Path script = DocumentModel.getInstance().getGraafVisFilePath();
         if (script != null) {
@@ -41,7 +41,7 @@ public class LoaderPresenter implements Initializable{
     }
 
     public void loadGraphButtonPushed(ActionEvent actionEvent) {
-        LoaderUtils.showLoadGraphsPopup(true);
+        IOManager.showLoadGraphsPopup(true);
 
         Map<String,Path> graphPathMap = DocumentModel.getInstance().getGraphPathMap();
         if (graphPathMap != null) {

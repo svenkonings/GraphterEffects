@@ -6,8 +6,10 @@ import general.compiler.CompilationModel;
 import general.compiler.CompilationProgress;
 import general.files.DocumentModel;
 import general.files.DocumentModelChange;
-import general.files.LoaderUtils;
+import general.files.IOManager;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
@@ -18,6 +20,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import screens.idescreen.bottombar.BottomBarView;
+import screens.idescreen.graafviseditor.GraafVisEditorPresenter;
 import screens.idescreen.graafviseditor.GraafVisEditorView;
 import screens.idescreen.ruleviewer.RuleViewerPresenter;
 import screens.idescreen.ruleviewer.RuleViewerView;
@@ -69,7 +72,7 @@ public class IDEPresenter implements Initializable, Observer {
         if (DocumentModel.getInstance().getGraafVisFilePath() == null){
             try {
                 new File("temp/compiled").mkdirs();
-                LoaderUtils.saveVIS(Paths.get("temp/newfile.vis"),"");
+                IOManager.saveVIS(Paths.get("temp/newfile.vis"),"");
                 DocumentModel.getInstance().loadGraafVisFile(Paths.get("temp/newfile.vis"));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -79,13 +82,21 @@ public class IDEPresenter implements Initializable, Observer {
             codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
         }
 
+        GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
+        graafVisEditorPresenter.getCodeArea().textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                codeTab.setText(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString() + " *");
+                DocumentModel.getInstance().setGraafvisChangesSaved(false);
+        }
+        });
+
         codeTab.setClosable(false);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         tabPane.getTabs().add(codeTab);
 
         DocumentModel.getInstance().addObserver(this);
         CompilationModel.getInstance().addObserver(this);
-
         bind();
 
 
@@ -108,17 +119,30 @@ public class IDEPresenter implements Initializable, Observer {
                 DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
                 switch (documentModelChange) {
                     case GRAAFVISFILELOADED:
+
+                        DocumentModel.getInstance().setGraafvisChangesSaved(true);
+
                         GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
                         ((StackPane) graafVisEditorView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
                         ((StackPane) graafVisEditorView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-                        Tab codeTab = new Tab(DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString(), graafVisEditorView.getView());
+                        String scriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
+
+                        Tab codeTab = new Tab(scriptName, graafVisEditorView.getView());
                         codeTab.setClosable(false);
+
+                        GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
+                        graafVisEditorPresenter.getCodeArea().textProperty().addListener(new ChangeListener<String>() {
+                            @Override
+                            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                                codeTab.setText(scriptName + " *");
+                                DocumentModel.getInstance().setGraafvisChangesSaved(false);
+                            }
+                        });
+
                         tabPane.getTabs().set(0, codeTab);
                         break;
                     case SVGGENERATED:
                         Platform.runLater(() -> {
-
-                            //Generate and load the content in the SVGViewerView2
 
                             SVGViewerView svgViewerView = new SVGViewerView();
                             ((StackPane) svgViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
@@ -132,6 +156,11 @@ public class IDEPresenter implements Initializable, Observer {
 
                             Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
                             svgViewerTab.setClosable(true);
+                            svgViewerTab.setOnCloseRequest(event -> {
+                                if (! IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
+                                    event.consume();
+                                }
+                            });
                             svgViewerTab.setOnClosed(event -> DocumentModel.getInstance().removeGeneratedSVG(svgName));
 
                             final ContextMenu contextMenu = new ContextMenu();
@@ -146,6 +175,9 @@ public class IDEPresenter implements Initializable, Observer {
                             tabPane.getTabs().add(svgViewerTab);
                         });
                         break;
+                    case GRAAFVISFILESAVED:
+                        //scriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
+                        //tabPane.getTabs().get(0).setText(scriptName);
                 }
             }
         }

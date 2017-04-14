@@ -1,5 +1,8 @@
 package general.files;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -13,8 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class LoaderUtils {
+public class IOManager {
 
     private static FileChooser.ExtensionFilter allFilesFilter = new FileChooser.ExtensionFilter("All files", "*");;
     private static FileChooser.ExtensionFilter visFilesFilter = new FileChooser.ExtensionFilter("VIS files (*.vis)", "*.VIS", "*.vis");;
@@ -83,8 +87,10 @@ public class LoaderUtils {
         codeList.add(codefile);
 
         try {
-            Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
-            DocumentModel.getInstance().loadGraafVisFile(fileLocation.toPath());///DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
+            if (fileLocation != null) {
+                Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
+                DocumentModel.getInstance().loadGraafVisFile(fileLocation.toPath());///DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,8 +125,10 @@ public class LoaderUtils {
         }
 
         try {
-            Files.write(saveLocation.toPath(), codeList, Charset.forName("UTF-8"));
-            //DocumentModel.getInstance().setLastSavePathVisualization(saveLocation.toPath());
+            if (saveLocation != null) {
+                Files.write(saveLocation.toPath(), codeList, Charset.forName("UTF-8"));
+                //DocumentModel.getInstance().setLastSavePathVisualization(saveLocation.toPath());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,5 +146,55 @@ public class LoaderUtils {
             }
             return sb.toString();
         }
+    }
+
+    public static boolean showSVGSaveDialog(Path path) {
+        String filename = path.getFileName().toString();
+        Optional<ButtonType> result = showSaveDialog(filename);
+        final boolean[] returnValue = {false};
+        result.ifPresent(buttonType -> {
+            if (buttonType.getButtonData().equals(ButtonBar.ButtonData.YES)) {
+                showSaveSVGPopup(path);
+                returnValue[0] = true;
+            } else if (buttonType.getButtonData().equals(ButtonBar.ButtonData.NO)) {
+                returnValue[0] = true;
+            } else {
+                returnValue[0] = false;
+            }
+        });
+        return returnValue[0];
+    }
+
+    public static boolean showGraafvisScriptSaveDialog(Path path, String codeFile) {
+        String filename = path.getFileName().toString();
+        Optional<ButtonType> result = showSaveDialog(filename);
+        final boolean[] returnValue = {false};
+        result.ifPresent(buttonType -> {
+            if (buttonType.getButtonData().equals(ButtonBar.ButtonData.YES)) {
+                showSaveScriptPopup(path, codeFile);
+                returnValue[0] = true;
+            } else if (buttonType.getButtonData().equals(ButtonBar.ButtonData.NO)) {
+                returnValue[0] = true;
+            } else {
+                returnValue[0] = false;
+            }
+        });
+        return returnValue[0];
+    }
+
+    private static Optional<ButtonType> showSaveDialog(String filename){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Graphter Effects");
+        alert.setHeaderText(null);
+
+        alert.setContentText("Save changes to " + filename + " before continuing?");
+
+        ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+        return alert.showAndWait();
+
     }
 }
