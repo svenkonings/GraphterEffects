@@ -6,10 +6,7 @@ import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
 import graafvis.grammar.GraafvisParser.*;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
@@ -28,9 +25,9 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     private List<Term> result = new ArrayList<>();
 
 
-    /**********************
+    /*****************
      --- Calling  ---
-     **********************/
+     *****************/
 
     // --- Testing TU Prolog ---
 
@@ -92,9 +89,9 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return rg.getResult();
     }
 
-    /*************************
+    /*******************
      --- Tree walker ---
-     *************************/
+     *******************/
 
     @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
         for (LabelContext label : ctx.label()) {
@@ -130,23 +127,23 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return null;
     }
 
-//
-//    @Override public Term visitClause(ClauseContext ctx) {
-//        if (ctx.consequence instanceof AndConsequenceContext)
-//        if (ctx.antecedent == null) {
-//            // Fact
-//            for (LiteralContext conseqLit : ctx.consequence().literal()) {
-//                addClause(visit(conseqLit));
-//            }
-//        } else {
-//            Term antecedent = visit(ctx.antecedent());
-//            // Rule
-//            for (LiteralContext conseqLit : ctx.consequence().literal()) {
-//                addClause(clause(visit(conseqLit), antecedent));
-//            }
-//        }
-//        return null;
-//    }
+
+    @Override public Term visitClause(ClauseContext ctx) {
+        // Add helper method
+        if (ctx.antecedent == null) {
+            // Fact
+            for (CTermContext consequenceTerm : ctx.consequence.terms) {
+                addClause(visit(consequenceTerm));
+            }
+        } else {
+            Term antecedent = visit(ctx.antecedent);
+            // Rule
+            for (CTermContext consequenceTerm : ctx.consequence.terms) {
+                addClause(clause(visit(consequenceTerm), antecedent));
+            }
+        }
+        return null;
+    }
 
 //    @Override public Term visitPfNest(PfNestContext ctx) {
 //        return visit(ctx.propositionalFormula()); // TODO is dit ok? want dat an deze eig weg
@@ -154,50 +151,43 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- ANTECEDENT ---
 
+    @Override public Term visitAndAntecedent(AndAntecedentContext ctx) {
+        return struct(TUP_AND, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
+    }
+
+    @Override public Term visitOrAntecedent(OrAntecedentContext ctx) {
+        return struct(TUP_OR, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
+    }
+
     @Override public Term visitNotAntecedent(NotAntecedentContext ctx) {
         return struct(TUP_NOT, visit(ctx.aTerm()));
     }
 
-    @Override public Term visitAndAntecedent(AndAntecedentContext ctx) {
-        return new Struct(TUP_AND, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
+    @Override public Term visitCompoundAntecedent(CompoundAntecedentContext ctx) {
+        return visitCompound(ctx.functor(), ctx.aTermSeries());
     }
 
-    @Override public Term visitOrAntecedent(OrAntecedentContext ctx) {
-        return new Struct(TUP_OR, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
+    @Override public Term visitMultiAndCompoundAntecedent(MultiAndCompoundAntecedentContext ctx) {
+        return and(aggregateVisitMultiTerms(ctx.functor().getText(), ctx.terms));
     }
 
-    @Override public Term visitAtomAntecedent(AtomAntecedentContext ctx) {
-        if (ctx.aTermSeries() == null) {
-            // Constant, f.e. p
-            return new Struct(ctx.predicate().getText());
-        } else {
-            // Regular predicate, f.e. p(X), p(X,Y,Z), p()
-            return new Struct(ctx.predicate().getText(), aggregateVisit(ctx.aTermSeries().terms)); // TODO geen agg in geval van enkele term?
-        }
-        // TODO mogelijk deel verplaatsen naar TermTuple
+    @Override public Term visitMultiOrCompoundAntecedent(MultiOrCompoundAntecedentContext ctx) {
+        return or(aggregateVisitMultiTerms(ctx.functor().getText(), ctx.terms));
     }
 
-    @Override public Term visitMultiAndAtomAntecedent(MultiAndAtomAntecedentContext ctx) {
-        return and(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.terms));
-    }
-
-    @Override public Term visitMultiOrAtomAntecedent(MultiOrAtomAntecedentContext ctx) {
-        return or(aggregateVisitMultiTerms(ctx.predicate().getText(), ctx.terms));
-    }
-
-    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
-        // HEAD & TAIL
-        /*
-        [a] = '.'(a,[])
-        [a,b] = '.'(a,'.'(b,[]))
-        [a,b|c] = '.'(a,'.'(b,c))
-        There can be only one | in a list, and no commas after it.
-         */
-        // Struct
-        // TODO null checks
-        // TODO meerdere heads
-        return struct(TUP_LIST, list(aggregateVisit(ctx.aTermSeries().aTerm())), visit(ctx.aTerm()));
-    }
+//    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
+//        // HEAD & TAIL
+//        /*
+//        [a] = '.'(a,[])
+//        [a,b] = '.'(a,'.'(b,[]))
+//        [a,b|c] = '.'(a,'.'(b,c))
+//        There can be only one | in a list, and no commas after it.
+//         */
+//        // Struct
+//        // TODO null checks
+//        // TODO meerdere heads
+//        return struct(TUP_LIST, list(aggregateVisit(ctx.aTermSeries().aTerm())), visit(ctx.aTerm()));
+//    }
 
     @Override public Term visitVariableAntecedent(VariableAntecedentContext ctx) {
         return var(ctx.getText());
@@ -221,6 +211,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return struct(TUP_AND, visit(ctx.cTerm(0)), visit(ctx.cTerm(1)));
     }
 
+    @Override public Term visitCompoundConsequence(CompoundConsequenceContext ctx) {
+        return visitCompound(ctx.functor(), ctx.cTermSeries());
+    }
+
     @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {
         return var(ctx.getText());
     }
@@ -236,9 +230,9 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // ---------
 
 
-    /*****************************
+    /**********************
      --- Helper methods ---
-     *****************************/
+     **********************/
 
     // --- Return one term for multiple visits ---
     public Term[] aggregateVisit(List<? extends ParseTree> ctxs) {
@@ -276,16 +270,27 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return terms;
     }
 
-    private String getFunctor(PredicateContext ctx) {
-        String s = ctx.getText();
-        if (ctx instanceof InfixPredicateContext) {
-            s = removeOuterChars(s);
+    public Term visitCompound(FunctorContext functor, ParseTree termSeries) {
+        if (termSeries == null) {
+            // Constant, f.e. p
+            return struct(getFunctor(functor));
+        } else {
+            // Regular predicate, f.e. p(X), p(X,Y,Z), p()
+            List<? extends ParseTree> terms = (termSeries instanceof ATermSeriesContext) ? ((ATermSeriesContext) termSeries).terms : ((CTermSeriesContext) termSeries).terms;
+            return struct(getFunctor(functor), aggregateVisit(terms)); // TODO geen agg in geval van enkele term?
         }
-        return s;
+        // TODO mogelijk deel verplaatsen naar TermTuple
+    }
+
+    // --- String building ---
+
+    private String getFunctor(FunctorContext ctx) {
+        String s = ctx.getText();
+        return (ctx instanceof InfixFunctorContext) ? removeOuterChars(s) : s;
     }
 
     private String removeOuterChars(String s) {
-        return s == null ? s : s.substring(1, s.length() - 1);
+        return (s == null) ? s : s.substring(1, s.length() - 1);
     }
 
     // --- Update logic model ---
