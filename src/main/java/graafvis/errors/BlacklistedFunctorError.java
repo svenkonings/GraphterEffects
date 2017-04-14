@@ -1,10 +1,10 @@
 package graafvis.errors;
 
-public class BlacklistedPredicateError extends VisError {
+public class BlacklistedFunctorError extends VisError {
 
     private final String predicate;
 
-    public BlacklistedPredicateError(int row, int column, String predicate) {
+    public BlacklistedFunctorError(int row, int column, String predicate) {
         super(row, column);
         this.setMsg(String.format("Found blacklisted predicate \"%s\" at line %d:%d", predicate, row, column));
         this.predicate = predicate;
