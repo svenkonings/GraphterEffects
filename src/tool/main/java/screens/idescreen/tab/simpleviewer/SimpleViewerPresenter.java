@@ -36,6 +36,8 @@ public class SimpleViewerPresenter implements Initializable {
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.replaceText(0, 0, content);
 
+        codeArea.setEditable(false);
+
         codeArea.prefWidthProperty().bind(simpleViewerPane.widthProperty());
         codeArea.prefHeightProperty().bind(simpleViewerPane.heightProperty());
 

@@ -19,6 +19,8 @@ public class DocumentModel extends Observable{
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
     public String graafVisCode;
     private boolean changesSaved = true;
+    private Path selectedPath;
+    private Path selectedGraph;
 
     private Path lastSaveAndLoadPathGraafVis;
     private Path lastSavePathVisualization;
@@ -149,6 +151,21 @@ public class DocumentModel extends Observable{
         this.changesSaved = changesSaved;
     }
 
+    public void setSelectedPath(Path selectedPath){
+        this.selectedPath = selectedPath;
+    }
+
+    public Path getSelectedPath(){
+        return selectedPath;
+    }
+
+    public void setSelectedGraph(String name){
+        this.selectedGraph = graphFileMap.get(name);
+    }
+
+    public Path getSelectedGraph(){
+        return selectedGraph;
+    }
 
 
     private static DocumentModel ourInstance = new DocumentModel();

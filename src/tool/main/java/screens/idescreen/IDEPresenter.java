@@ -14,7 +14,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import screens.idescreen.bottombar.BottomBarView;
 import screens.idescreen.tab.graafviseditor.GraafVisEditorPresenter;
 import screens.idescreen.tab.graafviseditor.GraafVisEditorView;
@@ -64,7 +63,7 @@ public class IDEPresenter implements Initializable, Observer {
         borderPane.prefHeightProperty().bind(viewModel.sceneHeigthProperty());
     }
 
-    private Tab createGraafvisEditorTab(){
+    public static Tab createGraafvisEditorTab(){
         GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
         String graafVisScriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
         Tab codeTab = new Tab(graafVisScriptName, graafVisEditorView.getView());
@@ -76,14 +75,14 @@ public class IDEPresenter implements Initializable, Observer {
         });
 
         //TODO, zijn deze nodig??
-        ((StackPane) graafVisEditorView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-        ((StackPane) graafVisEditorView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+        //((StackPane) graafVisEditorView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        //((StackPane) graafVisEditorView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
 
         codeTab.setClosable(false);
         return codeTab;
     }
 
-    private Tab createSVGViewerTab(String svgName){
+    public static Tab createSVGViewerTab(String svgName){
         SVGViewerView svgViewerView = new SVGViewerView();
         SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
 
@@ -106,29 +105,29 @@ public class IDEPresenter implements Initializable, Observer {
         showAsText.setOnAction(event -> svgViewerPresenter.showSVGAsText());
         contextMenu.getItems().addAll(showAsImage, showAsText);
 
-        ((StackPane) svgViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-        ((StackPane) svgViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+        //((StackPane) svgViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        //((StackPane) svgViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
 
         svgViewerTab.setContextMenu(contextMenu);
 
         return svgViewerTab;
     }
 
-    private Tab createRuleViewerTab(){
+    public static Tab createRuleViewerTab(){
         RuleViewerView ruleViewerView = new RuleViewerView();
-        ((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-        ((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+        //((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        //((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
         String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
 
         return new Tab("Rules " + graphName, ruleViewerView.getView());
     }
 
-    private Tab createVisElemViewerTab(){
+    public static Tab createVisElemViewerTab(){
         VisElemViewerView visElemViewerView = new VisElemViewerView();
         VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
         visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
-        ((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
-        ((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
+        //((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
+        //((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
         String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
 
         return new Tab("Vis Elems " + graphName,visElemViewerView.getView());

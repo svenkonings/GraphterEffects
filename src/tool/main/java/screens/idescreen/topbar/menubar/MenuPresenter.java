@@ -5,12 +5,9 @@ import general.compiler.CompilerRunnable;
 import general.files.DocumentModel;
 import general.files.IOManager;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -42,15 +39,6 @@ public class MenuPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         bind();
-        ((Pane) (viewModel.getMainView())).setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(final KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.F5) {
-                    System.out.println("F5 pressed");
-                    //Stop letting it do anything else
-                    keyEvent.consume();
-                }
-            }
-        });
     }
 
     public void bind(){
@@ -149,7 +137,6 @@ public class MenuPresenter implements Initializable {
         ButtonBar buttonBar = (ButtonBar) ((SplitPane) ((AnchorPane) topBar.getItems().get(1)).getChildren().get(0)).getItems().get(1);
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
         String selectedGraphName = comboBox.getSelectionModel().getSelectedItem().toString();
-        //String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
         Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
         CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
         new Thread(compilerRunnable).start();
