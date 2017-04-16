@@ -41,7 +41,7 @@ abstract class TestUtil {
         printIfRequired(String.format(TITLE, title));
     }
 
-    private static void printIfRequired(String text) {
+    static void printIfRequired(String text) {
         if (PRINT_PROCESS) {
             System.out.print(text);
         }
