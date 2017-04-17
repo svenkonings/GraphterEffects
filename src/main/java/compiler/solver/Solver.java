@@ -89,6 +89,12 @@ public class Solver {
         addClause(struct("height", var("Elem"), var("Height")),
                 struct("dimensions", var("Elem"), var(), var("Height"))
         );
+        addClause(struct("sameWidth", var("Elem1"), var("Elem2")),
+                struct("sameDimensions", var("Elem1"), var("Elem2"))
+        );
+        addClause(struct("sameHeight", var("Elem1"), var("Elem2")),
+                struct("sameDimensions", var("Elem1"), var("Elem2"))
+        );
         addClause(struct("vis", var("Elem")), or(
                 struct("shape", var("Elem"), var()),
                 struct("line", var("Elem"), var(), var()),
