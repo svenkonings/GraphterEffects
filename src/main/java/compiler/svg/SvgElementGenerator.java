@@ -154,7 +154,44 @@ public class SvgElementGenerator {
         attr.setMapping("x2", "x2");
         attr.setMapping("y1", "y1");
         attr.setMapping("y2", "y2");
+        attr.setMapping("markerStart", (element, value) -> {
+            addArrowDef(element);
+            element.addAttribute("marker-start", "url(#arrow)");
+        });
+        attr.setMapping("markerEnd", (element, value) -> {
+            addArrowDef(element);
+            element.addAttribute("marker-end", "url(#arrow)");
+        });
         return attr;
+    }
+
+    private static void addArrowDef(Element element) {
+        Element root = element.getParent();
+        Element defs = root.element("defs");
+        boolean hasArrow = false;
+        if (defs == null) {
+            defs = root.addElement("defs");
+        } else {
+            for (Object object : defs.elements("marker")) {
+                if (object instanceof Element && "arrow".equals(((Element) object).attributeValue("id"))) {
+                    hasArrow = true;
+                    break;
+                }
+            }
+        }
+        if (!hasArrow) {
+            Element arrow = defs.addElement("marker");
+            arrow.addAttribute("id", "arrow");
+            arrow.addAttribute("markerWidth", "10");
+            arrow.addAttribute("markerHeight", "10");
+            arrow.addAttribute("refX", "0");
+            arrow.addAttribute("refY", "3");
+            arrow.addAttribute("orient", "auto");
+            arrow.addAttribute("markerUnits", "strokeWidth");
+            arrow.addAttribute("id", "arrow");
+            Element path = arrow.addElement("path");
+            path.addAttribute("d", "M0,0 L0,6 L9,3 z");
+        }
     }
 
     public static SvgAttributeGenerator image() {
@@ -163,7 +200,13 @@ public class SvgElementGenerator {
         attr.setMapping("y1", "y");
         attr.setMapping("width", "width");
         attr.setMapping("height", "height");
-        attr.setMapping("image", "xlink:href");
+        attr.setMapping("image", (element, value) -> {
+            Element root = element.getParent();
+            if (root.getNamespaceForPrefix("xlink") == null) {
+                root.addNamespace("xlink", "http://www.w3.org/1999/xlink");
+            }
+            element.addAttribute("xlink:href", value);
+        });
         // TODO: Add predicate for this
         attr.addDefault("preserveAspectRatio", "none");
         return attr;

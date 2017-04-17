@@ -1,7 +1,7 @@
 Constraint defaults uitbreidbaar maken
 SVG document generator uitbreidbaar maken
-Logging
 Relatieve paden vanaf svg
+Logging
 
 Meer predicaten:
     Predicaat voor default grootes (ipv huidige defaults)
@@ -10,7 +10,6 @@ Meer predicaten:
     Elementen labels geven
     Stippelingtjes (stroke-dasharray)
     Lijnbreedte (stroke-width)
-    Vierkant en cirkel (dus gelijke breedte/hoogte)
     Driehoek
     Shape checken op valide shape
     Lijnen zonder van-naar
@@ -28,7 +27,7 @@ Meer predicaten:
     Ports (Arend)
 
 Taal:
-Vararg left predicaat
+Left met lijst van elementen
 Meer imports dan alleen labels
 
 Library:

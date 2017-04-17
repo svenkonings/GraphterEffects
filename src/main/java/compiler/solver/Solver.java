@@ -7,6 +7,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
+import utils.QuadConsumer;
 import utils.TriConsumer;
 
 import java.io.File;
@@ -115,6 +116,18 @@ public class Solver {
         );
         addClause(struct("line", list(var("FromElem"), var("ToElem")), var("FromElem"), var("ToElem")),
                 struct("line", var("FromElem"), var("ToElem"))
+        );
+        addClause(struct("line", var("Elem"), var("FromElem"), var("ToElem")),
+                struct("arrow", var("Elem"), var("FromElem"), var("ToElem"))
+        );
+        addClause(struct("arrow", list(var("FromElem"), var("ToElem")), var("FromElem"), var("ToElem")),
+                struct("arrow", var("FromElem"), var("ToElem"))
+        );
+        addClause(struct("arrow", var("Elem"), var("FromElem"), var("ToElem")),
+                struct("doubleArrow", var("Elem"), var("FromElem"), var("ToElem"))
+        );
+        addClause(struct("doubleArrow", list(var("FromElem"), var("ToElem")), var("FromElem"), var("ToElem")),
+                struct("doubleArrow", var("FromElem"), var("ToElem"))
         );
         addClause(struct("alignCenter", var("Elem1"), var("Elem2")),
                 struct("align", var("Elem1"), var("Elem2"))
@@ -236,12 +249,15 @@ public class Solver {
             elem.setValue("type", shape);
             shapeConstraints(elem);
         }));
-        putQuery("line(Elem, FromElem, ToElem)", forEach((visMap, values) -> {
-            Term key = values.get("Elem");
-            Term fromKey = values.get("FromElem");
-            Term toKey = values.get("ToElem");
-            lineConstraints(visMap, key, fromKey, toKey);
-        }));
+        putQuery("line(Elem, FromElem, ToElem)", lineQuery((line, fromElem, toElem, values) ->
+                lineConstraints(line, fromElem, toElem)
+        ));
+        putQuery("arrow(Elem, FromElem, ToElem)", lineQuery((line, fromElem, toElem, values) ->
+                line.setValue("markerEnd", "arrow")
+        ));
+        putQuery("doubleArrow(Elem, FromElem, ToElem)", lineQuery((line, fromElem, toElem, values) ->
+                line.setValue("markerStart", "arrow")
+        ));
         putQuery("image(Elem, Path)", elementQuery((elem, values) -> {
             setImage(elem, values);
             elem.set("type", "image");
@@ -347,6 +363,26 @@ public class Solver {
                 return;
             }
             consumer.accept(elem1, elem2, values);
+        });
+    }
+
+    /**
+     * Creates a {@link QueryConsumer} that calls the given {@link TriConsumer} for every result of the solved query.
+     * The {@link TriConsumer} receives the visualization elements that belongs to "Elem1" and "Elem2" variables and a
+     * {@link Map} of the results.
+     *
+     * @param consumer The given consumer.
+     * @return The {@link QueryConsumer}.
+     */
+    public static QueryConsumer lineQuery(QuadConsumer<VisElem, VisElem, VisElem, Map<String, Term>> consumer) {
+        return forEach((visMap, values) -> {
+            VisElem fromElem = visMap.get(values.get("FromElem"));
+            VisElem toElem = visMap.get(values.get("ToElem"));
+            if (fromElem == toElem) {
+                return;
+            }
+            VisElem line = visMap.get(values.get("Elem"));
+            consumer.accept(line, fromElem, toElem, values);
         });
     }
 
@@ -510,19 +546,11 @@ public class Solver {
      * Retreives the visualization elements associated with the given terms from the given map and sets line constraints
      * for the given line element.
      *
-     * @param visMap  The mapping of visualization elements.
-     * @param key     The key of the line element.
-     * @param fromKey The key of the visualization element at the start of this line.
-     * @param toKey   The key of the visualization element at the end of this line.
+     * @param line     The line element.
+     * @param fromElem The visualization element at the start of this line.
+     * @param toElem   The visualization element at the end of this line.
      */
-    public static void lineConstraints(VisMap visMap, Term key, Term fromKey, Term toKey) {
-        VisElem fromElem = visMap.get(fromKey);
-        VisElem toElem = visMap.get(toKey);
-        if (fromElem == toElem) {
-            return;
-        }
-        VisElem line = visMap.get(key);
-
+    public static void lineConstraints(VisElem line, VisElem fromElem, VisElem toElem) {
         line.set("type", "line");
         line.setVar("x1", fromElem.getVar("centerX"));
         line.setVar("y1", fromElem.getVar("centerY"));
