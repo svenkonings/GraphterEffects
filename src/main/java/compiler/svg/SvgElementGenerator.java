@@ -97,6 +97,8 @@ public class SvgElementGenerator {
         SvgAttributeGenerator attr = new SvgAttributeGenerator(name);
         attr.setMapping("colour", "fill");
         attr.setMapping("stroke", "stroke");
+        attr.setMapping("strokeWidth", "stroke-width");
+        attr.setMapping("strokeDashArray", "stroke-dasharray");
         return attr;
     }
 

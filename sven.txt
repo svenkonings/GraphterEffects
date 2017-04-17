@@ -6,12 +6,9 @@ Logging
 Meer predicaten:
     Predicaat voor default grootes (ipv huidige defaults)
     Images moeten default de dimensions van het plaatje krijgen
-    Pijltjes
     Elementen labels geven
-    Stippelingtjes (stroke-dasharray)
-    Lijnbreedte (stroke-width)
     Driehoek
-    Shape checken op valide shape
+    Shape checken op valide shape-waarde
     Lijnen zonder van-naar
     Beziercurves (eigen kromming meegeven) (kromming default, of als er een node tussenzit)
     Polylines (eigen path)

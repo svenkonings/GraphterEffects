@@ -217,6 +217,8 @@ public class Solver {
         // Markup
         putQuery("colour(Elem, Colour)", attrQuery("colour", "Colour"));
         putQuery("stroke(Elem, Colour)", attrQuery("stroke", "Colour"));
+        putQuery("strokeWidth(Elem, Width)", attrQuery("strokeWidth", "Width"));
+        putQuery("strokeDashArray(Elem, Array)", attrQuery("strokeDashArray", "Array"));
 
         // Absolute positioning
         putQuery("xPos(Elem, X)", attrQuery("x1", "X"));
