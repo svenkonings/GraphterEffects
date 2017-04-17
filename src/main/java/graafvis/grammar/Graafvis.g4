@@ -25,40 +25,46 @@ label: STRING (RENAME_TOKEN ID)?;
 clause: (antecedent=aTerm ARROW)? consequence=cTermSeries EOL;
 
 /* Antecedent */
-aTerm: aTerm andOp aTerm                                                                                                #andAntecedent
+aTerm: aTermTopLevel                                                                                                    #topLevelAntecedent
+     | aTerm andOp aTerm                                                                                                #andAntecedent
      | aTerm orOp aTerm                                                                                                 #orAntecedent
-     | NOT aTerm                                                                                                        #notAntecedent
-     | functor (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                                       #compoundAntecedent
-     | functor BRACE_OPEN terms+=aMultiTerm (andOp terms+=aMultiTerm)* BRACE_CLOSE                                      #multiAndCompoundAntecedent
-     | functor BRACE_OPEN terms+=aMultiTerm (orOp terms+=aMultiTerm)* BRACE_CLOSE                                       #multiOrCompoundAntecedent
-     | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
-     | variable=HID                                                                                                     #variableAntecedent
-     | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
-     | PAR_OPEN aTerm PAR_CLOSE                                                                                         #parAntecedent
-     | STRING                                                                                                           #stringAntecedent
-     | NUMBER                                                                                                           #numberAntecedent
      ;
 
-aTermSeries: (terms+=aTerm COMMA)* terms+=aTerm;
+aTermTopLevel: NOT aTermTopLevel                                                                                        #notAntecedent
+             | PAR_OPEN aTerm PAR_CLOSE                                                                                 #parAntecedent
+             | functor BRACE_OPEN (terms+=aMultiTerm andOp)* terms+=aMultiTerm BRACE_CLOSE                              #multiAndCompoundAntecedent
+             | functor BRACE_OPEN (terms+=aMultiTerm orOp)* terms+=aMultiTerm BRACE_CLOSE                               #multiOrCompoundAntecedent
+             | functor (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                               #compoundAntecedent
+             | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTermTopLevel? BRACKET_CLOSE)?)? BRACKET_CLOSE              #listAntecedent
+             | variable=HID                                                                                             #variableAntecedent
+             | wildcard=UNDERSCORE                                                                                      #wildcardAntecedent
+             | STRING                                                                                                   #stringAntecedent
+             | NUMBER                                                                                                   #numberAntecedent
+             ;
 
-aMultiTerm: aTerm
-          | PAR_OPEN aTermSeries? PAR_CLOSE
+aTermSeries: (terms+=aTermTopLevel COMMA)* terms+=aTermTopLevel;
+
+aMultiTerm: PAR_OPEN aTermSeries? PAR_CLOSE
+          | aTermTopLevel
           ;
 
 /* Consequence */
 cTerm: cTerm andOp cTerm                                                                                                #andConsequence
-     | functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                       #compoundConsequence
-     | functor BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                      #multiCompoundConsequence
-     | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
-     | variable=HID                                                                                                     #variableConsequence
-     | STRING                                                                                                           #stringConsequence
-     | NUMBER                                                                                                           #numberConsequence
+     | cTermTopLevel                                                                                                    #topLevelConsequence
      ;
 
-cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
+cTermTopLevel: functor BRACE_OPEN (terms+=cMultiTerm andOp)* terms+=cMultiTerm BRACE_CLOSE                              #multiCompoundConsequence
+             | functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                               #compoundConsequence
+             | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                      #listConsequence
+             | variable=HID                                                                                             #variableConsequence
+             | STRING                                                                                                   #stringConsequence
+             | NUMBER                                                                                                   #numberConsequence
+             ;
 
-cMultiTerm: cTerm
-          | PAR_OPEN cTermSeries? PAR_CLOSE
+cTermSeries: (terms+=cTermTopLevel COMMA)* terms+=cTermTopLevel;
+
+cMultiTerm: PAR_OPEN cTermSeries? PAR_CLOSE
+          | cTermTopLevel
           ;
 
 /* Functors */

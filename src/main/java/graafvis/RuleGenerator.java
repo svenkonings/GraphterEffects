@@ -1,7 +1,6 @@
 package graafvis;
 
 import alice.tuprolog.*;
-import alice.tuprolog.Number;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
 import graafvis.grammar.GraafvisParser;
@@ -10,6 +9,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static compiler.prolog.TuProlog.*;
@@ -97,10 +97,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         for (LabelContext label : ctx.label()) {
             String asName = label.STRING().getText();
             String dslName = label.ID() == null ? removeOuterChars(asName) : label.ID().getText();
-            addClause(clause(
+            addClause(
                     struct(dslName, var("X")),
                     and(struct("node", var("X")), struct("label", var("X"), struct(asName)))
-            ));
+            );
         }
         return null;
     }
@@ -109,38 +109,31 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         for (LabelContext label : ctx.label()) {
             String asName = label.STRING().getText();
             String dslName = label.ID() == null ? removeOuterChars(asName) : label.ID().getText();
-            addClause(clause(
+            addClause(
                     struct(dslName, var("X")),
                     and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
-            ));
+            );
             // TODO is the edge object itself still the third argument?
-            addClause(clause(
+            addClause(
                     struct(dslName, var("X"), var("Y")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
-            ));
+            );
             // TODO is the edge object itself still the third argument?
-            addClause(clause(
+            addClause(
                     struct(dslName, var("X"), var("Y"), var("Z")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
-            ));
+            );
         }
         return null;
     }
 
-
     @Override public Term visitClause(ClauseContext ctx) {
-        // Add helper method
-        if (ctx.antecedent == null) {
-            // Fact
-            for (CTermContext consequenceTerm : ctx.consequence.terms) {
-                addClause(visit(consequenceTerm));
+        Term antecedent = (ctx.antecedent == null) ? null : visit(ctx.antecedent);
+        for (CTermTopLevelContext cTerm : ctx.consequence.terms) {
+            if (cTerm instanceof MultiCompoundConsequenceContext) {
+                aggregateVisitMultiTerms(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).terms);
             }
-        } else {
-            Term antecedent = visit(ctx.antecedent);
-            // Rule
-            for (CTermContext consequenceTerm : ctx.consequence.terms) {
-                addClause(clause(visit(consequenceTerm), antecedent));
-            }
+            addClause(visit(cTerm), antecedent);
         }
         return null;
     }
@@ -151,6 +144,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- ANTECEDENT ---
 
+    @Override public Term visitParAntecedent(ParAntecedentContext ctx) {
+        return visit(ctx.aTerm());
+    }
+
     @Override public Term visitAndAntecedent(AndAntecedentContext ctx) {
         return struct(TUP_AND, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
     }
@@ -160,7 +157,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitNotAntecedent(NotAntecedentContext ctx) {
-        return struct(TUP_NOT, visit(ctx.aTerm()));
+        return struct(TUP_NOT, visit(ctx.aTermTopLevel()));
     }
 
     @Override public Term visitCompoundAntecedent(CompoundAntecedentContext ctx) {
@@ -168,11 +165,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiAndCompoundAntecedent(MultiAndCompoundAntecedentContext ctx) {
-        return and(aggregateVisitMultiTerms(ctx.functor().getText(), ctx.terms));
+        return and(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
     }
 
     @Override public Term visitMultiOrCompoundAntecedent(MultiOrCompoundAntecedentContext ctx) {
-        return or(aggregateVisitMultiTerms(ctx.functor().getText(), ctx.terms));
+        return or(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
     }
 
 //    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
@@ -215,6 +212,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return visitCompound(ctx.functor(), ctx.cTermSeries());
     }
 
+    @Override public Term visitMultiCompoundConsequence(MultiCompoundConsequenceContext ctx) {
+        return and(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
+    }
+
     @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {
         return var(ctx.getText());
     }
@@ -248,26 +249,38 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return terms;
     }
 
-    public Term[] aggregateVisitMultiTerms(String predicate, List<? extends ParseTree> ctxs) {
+    // Not checked for terms == null, as grammar prohibits p{}
+    public Term[] aggregateVisitMultiTerms(FunctorContext functor, List<? extends ParseTree> multiTerms) {
         // TODO check for null: [] en p()
-        if (ctxs == null) {
-            // No subtrees available
-            return new Term[0];
-        }
-        int n = ctxs.size();
-        Term[] terms = new Term[n];
+        // TODO terminology in comments
+        // Casting to make this function usable for all compound contexts
+//        List<? extends ParseTree> multiTerms;
+//        FunctorContext functor;
+//        if (ctx instanceof MultiAndCompoundAntecedentContext) {
+//            multiTerms = ((MultiAndCompoundAntecedentContext) ctx).terms;
+//            functor = ((MultiAndCompoundAntecedentContext) ctx).functor();
+//        } else if (ctx instanceof MultiOrCompoundAntecedentContext) {
+//            multiTerms = ((MultiOrCompoundAntecedentContext) ctx).terms;
+//            functor = ((MultiOrCompoundAntecedentContext) ctx).functor();
+//        } else {
+//            multiTerms = ((MultiCompoundConsequenceContext) ctx).terms;
+//            functor = ((MultiCompoundConsequenceContext) ctx).functor();
+//        }
+        int n = multiTerms.size();
+        Term[] results = new Term[n];
         for (int i = 0; i < n; i++) {
-            if (ctxs.get(i).getChild(0) instanceof ATermSeriesContext) {
-                // TermTuple
-                System.out.println("AVMT Termtuple: " + ctxs.get(i).getText());
-                terms[i] = new Struct(predicate, aggregateVisit(((ATermSeriesContext) ctxs.get(i).getChild(0)).terms));
-            } else {
-                // Term
-                System.out.println("AVMT Term: " + ctxs.get(i).getText());
-                terms[i] = new Struct(predicate, visit(ctxs.get(i)));
-            }
+            results[i] = struct(getFunctor(functor), aggregateVisit(getListFromMultiTerms(multiTerms.get(i))));
+//            if (multiTerm instanceof ATermSeriesContext) {
+//                // p{(X, Y), (A), (B, c, "hi")}
+//                System.out.println("AVMT Termtuple: " + multiTerms.get(i).getText());
+//                results[i] = struct(getFunctor(functor), aggregateVisit(((ATermSeriesContext) multiTerm).terms));
+//            } else {
+//                // p{a, B, "hi", [a,b,c,d]}
+//                System.out.println("AVMT Term: " + multiTerms.get(i).getText());
+//                results[i] = struct(getFunctor(functor), visit(multiTerms.get(i)));
+//            }
         }
-        return terms;
+        return results;
     }
 
     public Term visitCompound(FunctorContext functor, ParseTree termSeries) {
@@ -276,27 +289,59 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
             return struct(getFunctor(functor));
         } else {
             // Regular predicate, f.e. p(X), p(X,Y,Z), p()
-            List<? extends ParseTree> terms = (termSeries instanceof ATermSeriesContext) ? ((ATermSeriesContext) termSeries).terms : ((CTermSeriesContext) termSeries).terms;
+            List<? extends ParseTree> terms = getListFromTermSeries(termSeries);
             return struct(getFunctor(functor), aggregateVisit(terms)); // TODO geen agg in geval van enkele term?
         }
         // TODO mogelijk deel verplaatsen naar TermTuple
     }
 
+    // --- Casts to allow for generic methods ---
+
+    public static List<? extends ParseTree> getListFromTermSeries(ParseTree termContainer) {
+        if (termContainer instanceof ATermSeriesContext) {
+            return ((ATermSeriesContext) termContainer).terms;
+        }
+        return ((CTermSeriesContext) termContainer).terms;
+    }
+
+    public static List<? extends ParseTree> getListFromMultiTerms(ParseTree termContainer) {
+        System.out.println("TC " + termContainer.getText());
+        if (termContainer instanceof AMultiTermContext) {
+            // MultiTerm in antecedent
+            AMultiTermContext tc = (AMultiTermContext) termContainer;
+            // Without parenthesis
+            if (tc.aTermTopLevel() != null) {
+                return inList(tc.aTermTopLevel());
+            }
+            // With parenthesis (probably contains multiple terms)
+            return tc.aTermSeries().terms;
+        }
+        // MultiTerm in consequence
+        CMultiTermContext tc = (CMultiTermContext) termContainer;
+        // Without parenthesis
+        if (tc.cTermTopLevel() != null) {
+            return inList(tc.cTermTopLevel());
+        }
+        // With parenthesis (probably contains multiple terms)
+        return tc.cTermSeries().terms;
+    }
+
     // --- String building ---
 
-    private String getFunctor(FunctorContext ctx) {
+    private static String getFunctor(FunctorContext ctx) {
         String s = ctx.getText();
         return (ctx instanceof InfixFunctorContext) ? removeOuterChars(s) : s;
     }
 
-    private String removeOuterChars(String s) {
+    private static String removeOuterChars(String s) {
         return (s == null) ? s : s.substring(1, s.length() - 1);
     }
 
     // --- Update logic model ---
 
-    private void addClause(Term t) {
-        result.add(t);
+    private void addClause(Term head, Term body) {
+        Term term = (body == null) ? head : clause(head, body);
+        result.add(term);
     }
 
     // --- Getters & setters ---
@@ -307,6 +352,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     public void setResult(List<Term> ts) {
         this.result = ts;
+    }
+
+    // --- Generic collection help ---
+
+    public static <T> List<T> inList(T... ts) {
+        return Arrays.asList(ts);
     }
 
 }
