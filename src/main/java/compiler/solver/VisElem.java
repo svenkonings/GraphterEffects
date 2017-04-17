@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static utils.StringUtils.parseInt;
+
 /**
  * The {@code VisElem} class respresents a visualization element. A visualization element consists of name-value pairs,
  * with the values being {@link String} constants, and name-variable pairs, with the variables being {@link IntVar}
@@ -50,7 +52,7 @@ public class VisElem {
      */
     public void set(String name, String value) {
         try {
-            int constant = new BigDecimal(value).intValue();
+            int constant = parseInt(value);
             setVar(name, constant);
         } catch (NumberFormatException e) {
             setValue(name, value);

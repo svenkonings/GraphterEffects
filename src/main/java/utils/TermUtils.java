@@ -7,12 +7,25 @@ import org.graphstream.graph.Graph;
 
 import static compiler.prolog.TuProlog.struct;
 import static compiler.prolog.TuProlog.term;
+import static utils.StringUtils.parseInt;
+import static utils.StringUtils.removeQuotation;
 
 /**
  * Class used for methods to generate {@link Term} Objects and related tasks.
  */
-final class TermUtils {
+public class TermUtils {
 
+    public static int termToInt(Term term) {
+        return parseInt(stripQuotes(term));
+    }
+
+    public static String termToString(Term term) {
+        return term.toString().replaceAll("'", "");
+    }
+
+    public static String stripQuotes(Term term) {
+        return removeQuotation(term.toString());
+    }
 
     /**
      * Converts an {@link Element} to an {@link Term}.
@@ -23,7 +36,7 @@ final class TermUtils {
      * @param element {@link Element} to be converted to an {@link Term}
      * @return the generated {@link Term}
      */
-    static Term elementTerm(Element element) {
+    public static Term elementTerm(Element element) {
         if (element instanceof Graph) {
             return struct("graph", term(element.getId()));
         } else if (element instanceof Edge) {

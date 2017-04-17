@@ -1,6 +1,7 @@
 Constraint defaults uitbreidbaar maken
 SVG document generator uitbreidbaar maken
 Logging
+Relatieve paden vanaf svg
 
 Meer predicaten:
     Predicaat voor default grootes (ipv huidige defaults)
