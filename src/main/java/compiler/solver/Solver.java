@@ -533,8 +533,8 @@ public class Solver {
         elem.setVar("height", elem.getVar("size"));
 
         elem.setVar("radius", elem.getVar("size").div(2).intVar());
-        elem.setVar("radiusX", elem.getVar("size"));
-        elem.setVar("radiusY", elem.getVar("size"));
+        elem.setVar("radiusX", elem.getVar("radius"));
+        elem.setVar("radiusY", elem.getVar("radius"));
 
         elem.setVar("minX", elem.getVar("x1"));
         elem.setVar("centerX", elem.getVar("x1").add(elem.getVar("radiusX")).intVar());
