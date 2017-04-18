@@ -13,8 +13,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static compiler.prolog.TuProlog.*;
-import static compiler.prolog.TuProlog.struct;
+import static prolog.TuProlog.*;
+import static prolog.TuProlog.struct;
 import static graafvis.generator.RuleGenerator.TUP_NOT;
 import static org.junit.Assert.assertEquals;
 

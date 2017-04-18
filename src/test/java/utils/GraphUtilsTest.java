@@ -1,6 +1,6 @@
 package utils;
 
-import compiler.graphloader.Importer;
+import graphloader.Importer;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;

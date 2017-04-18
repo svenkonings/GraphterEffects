@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import screens.idescreen.about.AboutView;
@@ -108,7 +109,7 @@ public class MenuPresenter implements Initializable {
     }
 
     public void saveAsMenuItemPressed(ActionEvent actionEvent) {
-        TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
+        TabPane tabPane = (TabPane) (((BorderPane) ((StackPane)viewModel.getMainView()).getChildren().get(0)).getCenter());
         Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
         String viewerTabID = viewerTab.getText();
 

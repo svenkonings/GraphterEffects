@@ -4,7 +4,7 @@ import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import compiler.prolog.TuProlog;
+import prolog.TuProlog;
 import general.compiler.CompilationModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
