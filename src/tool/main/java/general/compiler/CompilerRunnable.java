@@ -1,9 +1,6 @@
 package general.compiler;
 
 import general.files.DocumentModel;
-import graafvis.GraafvisCompiler;
-import graafvis.errors.VisError;
-import graafvis.warnings.Warning;
 import org.dom4j.Document;
 
 import java.io.File;
@@ -52,7 +49,7 @@ public class CompilerRunnable implements Runnable {
         try {
             if (maxCompilationProgress == CompilationProgress.COMPILATIONFINISHED) {
                 compilation.compileGraafVis();
-                compilation.addGraphRules();
+                compilation.addASCRLibrary();
                 compilation.solve();
                 compilation.generateSVG();
                 saveGeneratedSVG(compilation.getGeneratedSVG());
@@ -61,7 +58,7 @@ public class CompilerRunnable implements Runnable {
                     compilation.compileGraafVis();
                 }
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAPHCONVERTED.ordinal()) {
-                    compilation.addGraphRules();
+                    compilation.addASCRLibrary();
                 }
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.SOLVED.ordinal()) {
                     compilation.solve();
