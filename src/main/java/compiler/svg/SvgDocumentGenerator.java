@@ -39,7 +39,6 @@ public class SvgDocumentGenerator {
     public static Document generate(SvgElementGenerator generator, Collection<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
-        root.addNamespace("xlink", "http://www.w3.org/1999/xlink");
 
         int minX = min(visElems, "minX");
         int minY = min(visElems, "minY");

@@ -1,5 +1,6 @@
 package utils;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -115,6 +116,10 @@ public final class StringUtils {
             return false;
         }
         return true;
+    }
+
+    public static int parseInt(String value) {
+        return new BigDecimal(value).intValue();
     }
 
     public static boolean isFloat(String expectedValue) {
