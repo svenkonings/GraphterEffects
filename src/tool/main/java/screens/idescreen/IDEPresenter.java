@@ -198,6 +198,7 @@ public class IDEPresenter implements Initializable, Observer {
                     //TODO: LOGGING System.out.println("Compilation complete");
                     break;
                 case ERROROCCURED:
+                    //TODO: Show error screen
                     System.out.println("Error occured");
                     break;
             }

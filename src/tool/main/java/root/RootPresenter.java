@@ -18,6 +18,7 @@ public class RootPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        rootPane.setPrefHeight(350);
         viewModel.setMainView(rootPane);
         //rootPane.centerProperty().bind(viewModel.mainViewProperty());
         //rootPane.widthProperty().isEqualTo(1000,0);

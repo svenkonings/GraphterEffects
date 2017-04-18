@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import screens.idescreen.about.AboutView;
 import screens.idescreen.tab.simpleviewer.SimpleViewerPresenter;
 import screens.idescreen.tab.simpleviewer.SimpleViewerView;
@@ -27,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 public class MenuPresenter implements Initializable {
 
@@ -47,22 +47,12 @@ public class MenuPresenter implements Initializable {
     }
 
     public void exitMenuItemPressed(ActionEvent actionEvent) {
-        if (!DocumentModel.getInstance().graafvisChangesSaved()){
-            if(!IOManager.showGraafvisScriptSaveDialog(DocumentModel.getInstance().getGraafVisFilePath(), DocumentModel.getInstance().graafVisCode)){
-                actionEvent.consume();
-                return;
-            }
-        }
-        Set<String> svgNames = DocumentModel.getInstance().getAllGeneratedSVGS().keySet();
-        for (String svgName: svgNames){
-            if(IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
-                DocumentModel.getInstance().getAllGeneratedSVGS().remove(svgName);
-            } else {
-                actionEvent.consume();
-                return;
-            }
-        }
-        System.exit(0);
+        borderPane.fireEvent(
+                new WindowEvent(
+                        borderPane.getScene().getWindow(),
+                        WindowEvent.WINDOW_CLOSE_REQUEST
+                )
+        );
     }
 
     public void loadScriptMenuItemPressed(ActionEvent actionEvent) {

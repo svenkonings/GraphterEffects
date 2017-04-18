@@ -7,10 +7,12 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.commons.io.FileUtils;
 import root.RootPresenter;
 import root.RootView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
 public class App extends Application{
@@ -45,6 +47,11 @@ public class App extends Application{
                         event.consume();
                         return;
                     }
+                }
+                try {
+                    FileUtils.deleteDirectory(new File("temp"));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
                 System.exit(0);
             }

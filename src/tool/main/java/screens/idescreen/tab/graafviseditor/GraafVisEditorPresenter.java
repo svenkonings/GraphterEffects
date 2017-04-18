@@ -1,5 +1,6 @@
 package screens.idescreen.tab.graafviseditor;
 
+import general.ViewModel;
 import general.files.DocumentModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,6 +12,7 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import utils.FileUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 public class GraafVisEditorPresenter implements Initializable {
 
     @FXML public StackPane graafvisEditorPane;
+    @Inject ViewModel viewModel;
     private CodeArea codeArea;
 
     private static final String[] KEYWORDS = new String[] {
@@ -91,7 +94,6 @@ public class GraafVisEditorPresenter implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         graafvisEditorPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
         graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-keywords.css").toExternalForm());

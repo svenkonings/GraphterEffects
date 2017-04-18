@@ -23,7 +23,6 @@ public class TopBarPresenter implements Initializable{
         MenuBarView menuBarView = new MenuBarView();
         ButtonBarView buttonBarView = new ButtonBarView();
 
-        //TODO: DO this with bind and properties
         splitPane.setDividerPosition(1,splitPane.getHeight() - splitPane.getInsets().getBottom());
         SplitPane.setResizableWithParent(topAnchorPane, Boolean.FALSE);
         SplitPane.setResizableWithParent(bottomAnchorPane, Boolean.FALSE);
