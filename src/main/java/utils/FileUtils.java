@@ -61,6 +61,12 @@ public final class FileUtils {
         return Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
     }
 
+    /**
+     * Returns a String read from a file.
+     * @param file A given file.
+     * @return The String contents of that file.
+     * @throws IOException Throw when the file could not be read.
+     */
     public static String readFromFile(File file) throws IOException {
         return new String(Files.readAllBytes(file.toPath()));
     }

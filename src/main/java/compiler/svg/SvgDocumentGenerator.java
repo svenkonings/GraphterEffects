@@ -11,12 +11,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * A generator for converting visualization elements to a SVG docuemtn
  */
 // TODO: Extendibility
+@SuppressWarnings("WeakerAccess")
 public class SvgDocumentGenerator {
 
     /**

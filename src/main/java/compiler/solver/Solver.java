@@ -23,6 +23,7 @@ import static utils.TermUtils.*;
 /**
  * The constraint solver.
  */
+@SuppressWarnings("WeakerAccess")
 public class Solver {
 
     private final Set<Term> clauses;

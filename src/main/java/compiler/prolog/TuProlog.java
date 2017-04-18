@@ -285,7 +285,7 @@ public class TuProlog {
         return prolog;
     }
 
-    public static List<LogListener> loglisteners = new ArrayList<>();
+    public static final List<LogListener> loglisteners = new ArrayList<>();
     public static void addLogListener(LogListener e) {
         loglisteners.add(e);
     }

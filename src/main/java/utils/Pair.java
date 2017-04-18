@@ -20,7 +20,6 @@ public class Pair<T, U> implements Iterable {
 
     /**
      * Creates a new Pair.
-     *
      * @param t The first Object to be contained.
      * @param u The second Object to be contained.
      */
@@ -31,7 +30,6 @@ public class Pair<T, U> implements Iterable {
 
     /**
      * Returns the first element contained in this Pair.
-     *
      * @return The first element in this Pair.
      */
     public T getFirst() {
@@ -40,7 +38,6 @@ public class Pair<T, U> implements Iterable {
 
     /**
      * Returns the second element contained in this Pair.
-     *
      * @return The second element in this Pair.
      */
     public U getSecond() {
@@ -49,7 +46,6 @@ public class Pair<T, U> implements Iterable {
 
     /**
      * Retrieves an element from this Pair based on index.
-     *
      * @param index Index of the element to return.
      * @return Element in this Pair on that index.
      */
@@ -64,7 +60,6 @@ public class Pair<T, U> implements Iterable {
 
     /**
      * Returns a String representation of this Pair.
-     *
      * @return A String representation of this Pair.
      */
     @Override
@@ -75,7 +70,6 @@ public class Pair<T, U> implements Iterable {
 
     /**
      * Returns an Iterator that iterates over the two Objects in this Pair.
-     *
      * @return an Iterator that iterates over the two Objects in this Pair.
      */
     @Override

@@ -2,18 +2,16 @@ package compiler.asrc;
 
 
 import alice.tuprolog.*;
-import org.graphstream.graph.Element;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
+import org.graphstream.graph.*;
 import utils.GraphUtils;
 import utils.StringUtils;
 
 import java.lang.Double;
-import java.util.ArrayList;
-import java.util.List;
 
-import static compiler.prolog.TuProlog.*;
+import static compiler.prolog.TuProlog.intVal;
+import static compiler.prolog.TuProlog.struct;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class GraphLibrary extends Library {
 
     public Graph graph;
@@ -45,7 +43,7 @@ public abstract class GraphLibrary extends Library {
             if (value instanceof Struct) {
                 Object res = rID.getAttribute(rname);
                 if (res instanceof String) {
-                    return /*StringUtils.stripOnce(((String)res)).equals(rstringvalue) ||*/ ((String)res).equals(rstringvalue);
+                    return /*StringUtils.stripOnce(((String)res)).equals(rstringvalue) ||*/ res.equals(rstringvalue);
                 }
                 return rID.getAttribute(rname).equals(rstringvalue);
             } else if (value instanceof Var) {
@@ -68,17 +66,35 @@ public abstract class GraphLibrary extends Library {
 
     //does not support backtracking
     boolean numeric(Struct key, Term value, GetNumber actualnumber, boolean nodes, boolean edges, boolean graphs) {
+        Element gotten = GraphUtils.getByID(graph, key.getName());
+        if (!nodes && gotten instanceof Node) {
+            return false;
+        }
+        if (!edges && gotten instanceof Edge) {
+            return false;
+        }
+        if (!graphs && gotten instanceof Graph) {
+            return false;
+        }
+
         if (value instanceof Int) {
-            return ((Int) value).intValue() == actualnumber.get(GraphUtils.getByID(graph, key.getName()));
+            return ((Int) value).intValue() == actualnumber.get(gotten);
         } else if (value instanceof Var) {
-            return value.unify(getEngine(), intVal(actualnumber.get(GraphUtils.getByID(graph, key.getName()))));
+            return value.unify(getEngine(), intVal(actualnumber.get(gotten)));
         }
         return false;
     }
 
     //does not support backtracking
     boolean bool(Struct key, GetBool actualbool, boolean nodes, boolean edges, boolean graphs) {
-        return actualbool.get(GraphUtils.getByID(graph, key.getName()));
+        Element gotten = GraphUtils.getByID(graph, key.getName());
+        if (!nodes && gotten instanceof Node) {
+            return false;
+        }
+        if (!edges && gotten instanceof Edge) {
+            return false;
+        }
+        return !(!graphs && gotten instanceof Graph) && actualbool.get(gotten);
     }
 
 

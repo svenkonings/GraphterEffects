@@ -5,7 +5,6 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.xml.sax.SAXException;
@@ -22,12 +21,13 @@ import java.util.*;
 /**
  * Class used to import graphs saved in GXL format.
  */
+@SuppressWarnings("WeakerAccess")
 final class GXLImporter {
 
     /**
      * Set of seen IDs to ensure uniqueness of IDs given to GraphStream Graph elements.
      */
-    private static Set<String> ids = new HashSet<>();
+    private static final Set<String> ids = new HashSet<>();
     /**
      * Counter used to guarantee unique IDs for GraphStream Graph elements.
      */
@@ -219,16 +219,7 @@ final class GXLImporter {
     }
 
     private static Graph Grooveify(Graph input) {
-        Graph res;
-        if (input instanceof DefaultGraph) {
-            res = new DefaultGraph(input.getId());
-        } else if (input instanceof SingleGraph) {
-            res = new SingleGraph(input.getId());
-        } else if (input instanceof MultiGraph) {
-            res = new MultiGraph(input.getId());
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        Graph res = GraphUtils.newGraphWithSameType(input);
         for (String key : input.getAttributeKeySet()) {
             res.setAttribute(key, (Object) input.getAttribute(key));
         }

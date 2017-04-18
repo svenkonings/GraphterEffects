@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Class used to import graphs from formats natively supported by GraphStream.
  */
+@SuppressWarnings("WeakerAccess")
 final class GraphStreamImporter {
 
     /**

@@ -9,6 +9,7 @@ import java.util.Map;
 /**
  * Generates SVG elements from visualization elements.
  */
+@SuppressWarnings("WeakerAccess")
 public class SvgElementGenerator {
 
     /** The mapping from visualization element type to {@link SvgAttributeGenerator} */

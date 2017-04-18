@@ -3,7 +3,6 @@ package utils;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +14,6 @@ public final class Printer {
 
     /**
      * Prints a user-friendly text representation of a Graph into the console.
-     *
      * @param g Graph to be printed.
      */
     public static void pprint(Graph g) {
@@ -36,11 +34,11 @@ public final class Printer {
         builder.append(attrstring).append("\n");
 
         List<Element> nodeset = new LinkedList<>(g.getNodeSet());
-        Collections.sort(nodeset, (o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+        nodeset.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
         builder.append("NODES\n");
         addfromlist(builder, nodeset, false, false);
         List<Element> edgeset = new LinkedList<>(g.getEdgeSet());
-        Collections.sort(edgeset, (o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+        edgeset.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
         builder.append("EDGES\n");
         addfromlist(builder, edgeset, false, false);
         System.out.println(builder.toString());

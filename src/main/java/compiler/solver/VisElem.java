@@ -3,7 +3,6 @@ package compiler.solver;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -193,11 +192,8 @@ public class VisElem {
     public boolean hasValue(String name) {
         if (values.containsKey(name)) {
             return true;
-        } else if (vars.containsKey(name)) {
-            return vars.get(name).isInstantiated();
-        } else {
-            return false;
-        }
+        } else
+            return vars.containsKey(name) && vars.get(name).isInstantiated();
     }
 
     /**

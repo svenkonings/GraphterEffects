@@ -7,13 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class used for methods to manipulate String Objects and related tasks.
+ * Class used for methods to manipulate {@link String} Objects and related tasks.
  */
 public final class StringUtils {
 
     /**
      * Repeats a character n times
-     *
      * @param in Character to be repeated.
      * @param n  Number of times to repeat.
      * @return String containing <code>in</code> n times.
@@ -25,10 +24,9 @@ public final class StringUtils {
     }
 
     /**
-     * Compare two Strings ending in integers with String first, Number second logic.
-     *
-     * @param id1 First String to be compared.
-     * @param id2 Second String to be compared.
+     * Compare two {@code String} objects ending in integers with {@code String} first, number second logic.
+     * @param id1 First {@code String} to be compared.
+     * @param id2 Second {@code String} to be compared.
      * @return -1, 0 or 1 depending on the result of the comparison.
      */
     public static int compareStrings(String id1, String id2) {
@@ -51,10 +49,9 @@ public final class StringUtils {
     }
 
     /**
-     * Splits a String into a String part at the beginning and an Integer part at the end.
-     *
+     * Splits a {@code String} into a {@code String} part at the beginning and an Integer part at the end.
      * @param input Input to be splitted.
-     * @return A Pair containing the two parts of the split.
+     * @return A {@link Pair} containing the two parts of the split.
      */
     public static Pair<String, Integer> stripTrailingNumbers(String input) {
         String digs = "";
@@ -70,11 +67,10 @@ public final class StringUtils {
     }
 
     /**
-     * Returns an accurate String representation of any Object, including arrays and collections of arrays or arrays of
+     * Returns an accurate {@code String} representation of any {@code Object}, including arrays and collections of arrays or arrays of
      * arrays.
-     *
      * @param in Object of which the representation is required.
-     * @return A String representing the Object.
+     * @return A {@code String} representing the Object.
      */
     public static String ObjectToString(Object in) {
         if (in instanceof Double && (Double) in ==Math.floor((Double) in)) {
@@ -99,9 +95,13 @@ public final class StringUtils {
             return "\"" + removeQuotation(in.toString()) + "\"";
         }
         return String.valueOf(in);
-        //throw new RuntimeException("String found without quotation marks!");
     }
 
+    /**
+     * Removes all surrounding quotation from a given {@code String}
+     * @param in A given String
+     * @return A Sring with all surrounding quotation removed.
+     */
     public static String removeQuotation(String in) {
         while (in.startsWith("'") && in.endsWith("'") || in.startsWith("\"") && in.endsWith("\"")) {
             in = in.substring(1, in.length() - 1);
@@ -109,30 +109,54 @@ public final class StringUtils {
         return in;
     }
 
-    public static boolean isInteger(String expectedValue) {
+    /**
+     * Returns whether this given {@code String} represents an integer.
+     * @param input A given String.
+     * @return Whether the {@code String} represents an integer.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static boolean isInteger(String input) {
         try{
-            Integer.parseInt(expectedValue);
+            Integer.parseInt(input);
         } catch (NumberFormatException e) {
             return false;
         }
         return true;
     }
 
+    /**
+     * Parses a String into an integer.
+     * The difference between this and {@link Integer#parseInt} is that his parses a decimal dot as well.
+     * A {@link NumberFormatException} is thrown when the String could not be parsed.
+     * @param value A given {@code String}.
+     * @return The parsed int.
+     */
     public static int parseInt(String value) {
         return new BigDecimal(value).intValue();
     }
 
-    public static boolean isFloat(String expectedValue) {
+    /**
+     * Returns whether this given {@code String} represents a double.
+     * @param input A given String.
+     * @return Whether the {@code String} represents a double.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static boolean isDouble(String input) {
         try{
-            Double.parseDouble(expectedValue);
+            Double.parseDouble(input);
         } catch (NumberFormatException e) {
             return false;
         }
         return true;
     }
 
+    /**
+     * Ensures all Strings contained in this Object have quotes (") around them unless they represent integers.
+     * Supported objects: array, {@link String}, {@link Collection}.
+     * @param in Input object.
+     * @return The edited object.
+     */
     public static Object enforceQuotesIfString(Object in) {
-
             if (in instanceof Object[]) {
                 Object[] res = new String[((Object[]) in).length];
                 for (int i = 0; i < ((Object[]) in).length; i++) {
@@ -160,13 +184,5 @@ public final class StringUtils {
         return in;
     }
 
-    public static String stripOnce(String res) {
-        if (res.startsWith("\"")) {
-            res = res.substring(0);
-        }
-        if (res.endsWith("\"")) {
-            res = res.substring(res.length()-1);
-        }
-        return res;
-    }
+
 }

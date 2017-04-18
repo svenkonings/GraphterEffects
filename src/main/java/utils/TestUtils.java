@@ -58,7 +58,7 @@ public final class TestUtils {
 
                         List<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", struct(element.getId()), struct(attributeKey), var("Value"))));
                         String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
-                        if (StringUtils.isFloat(StringUtils.removeQuotation(expectedValue)) || expectedValue.contains("[")) {
+                        if (StringUtils.isDouble(StringUtils.removeQuotation(expectedValue)) || expectedValue.contains("[")) {
                             return;
                         }
                     try {
