@@ -76,7 +76,8 @@ public class Compilation extends Observable{
     }
 
     /**
-     * Adds the ASCR 
+     * Adds the ASCR Library to the Compilation
+     * @throws 
      */
     public void addASCRLibrary() throws IOException, SAXException {
         Graph graph = Importer.graphFromFile(graphFile.toFile());
