@@ -43,20 +43,36 @@ final class GXLImporter {
      * @param ext File extension to verify.
      * @return <tt>true</tt> if the file extension is accepted.
      */
-    static boolean acceptsExtension(String ext) {
+    public static boolean acceptsExtension(String ext) {
         return acceptslist.contains(ext.toLowerCase());
     }
 
 
-    static Graph read(File file, boolean addUnderscores) throws IOException, SAXException {
-        return read(file.getAbsolutePath(), addUnderscores);
+    /**
+     * Reads a {@link File} in GXL format into a {@link Graph}.
+     * @param file {@link File} to read into a {@link Graph}.
+     * @param addPrefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
+     * @return {@link Graph} containing the graph represented in the file.
+     * @throws IOException  Thrown when the file could not be read.
+     * @throws SAXException Thrown when the file contains incorrect syntax.
+     */
+    public static Graph read(File file, boolean addPrefix) throws IOException, SAXException {
+        return read(file.getAbsolutePath(), addPrefix);
     }
 
-    static Graph read(String path, boolean addUnderscores) throws IOException, SAXException {
+    /**
+     * Reads a file in GXL format into a {@link Graph}.
+     * @param path Path to the file to read into a {@link Graph}.
+     * @param addPrefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
+     * @return {@link Graph} containing the graph represented in the file.
+     * @throws IOException  Thrown when the file could not be read.
+     * @throws SAXException Thrown when the file contains incorrect syntax.
+     */
+    public static Graph read(String path, boolean addPrefix) throws IOException, SAXException {
         try {
-            return read(path, addUnderscores, false);
+            return read(path, addPrefix, false);
         } catch (EdgeRejectedException e) {
-            return read(path, addUnderscores, true);
+            return read(path, addPrefix, true);
         }
     }
 
@@ -69,24 +85,24 @@ final class GXLImporter {
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
+    public static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
         return read(file.getAbsolutePath(), addUnderscores, multigraph);
     }
 
     /**
-     * Reads a file in GXL format into a GraphStream graph Object.
+     * Reads a file in GXL format into a {@link Graph}.
      *
-     * @param path           Path to the file to read into a GraphsStream Graph Object.
-     * @param addUnderscores <tt>true</tt> if underscores are to be added to the IDs of the read graph.
-     * @return A GraphStream Graph Object containing the graph represented in the file.
+     * @param path           Path to the file to read into a {@link Graph}.
+     * @param addprefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
+     * @return {@link Graph} containing the graph represented in the file.
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
      */
-    static Graph read(String path, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
+    public static Graph read(String path, boolean addprefix, boolean multigraph) throws IOException, SAXException {
         ids.clear();
         idcounter = 0;
         String prefix = "";
-        if (addUnderscores) {
+        if (addprefix) {
             prefix = GraphUtils.ILLEGAL_PREFIX;
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
@@ -111,8 +127,6 @@ final class GXLImporter {
             tograph.setAttribute(graph.getAttrAt(p).getName(), getFromGXLValue(content, true));
 
         }
-
-
         boolean directed = graph.getAttribute("edgemode").equals("directed");
 
         List<GXLGraphElement> nodes = new LinkedList<>();
@@ -128,7 +142,7 @@ final class GXLImporter {
             }
         }
         for (GXLGraphElement elem : nodes) {
-            String id = getID(elem, addUnderscores);
+            String id = getID(elem, addprefix);
             Node n = tograph.addNode(id);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
@@ -136,7 +150,7 @@ final class GXLImporter {
             }
         }
         for (GXLGraphElement elem : edges) {
-            String id = getID(elem, addUnderscores);
+            String id = getID(elem, addprefix);
             Edge e = tograph.addEdge(id, prefix + elem.getAttribute("from"), prefix + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
@@ -167,9 +181,9 @@ final class GXLImporter {
     }
 
     /**
-     * Returns a String or List read from a GXLValue.
+     * Returns a {@link String} or {@link List} read from a {@link GXLValue}.
      *
-     * @param in GXLValue to be read from.
+     * @param in {@code GXLValue} to be read from.
      * @return String or List Object, depending on whether it's an atomic or composite GXLValue.
      */
     private static Object getFromGXLValue(GXLValue in, boolean addQuotes) {
