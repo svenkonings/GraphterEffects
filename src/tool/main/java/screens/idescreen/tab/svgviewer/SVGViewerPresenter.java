@@ -1,18 +1,9 @@
-package screens.idescreen.tab.svgviewer;
+package screens.idescreen.svgviewer;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.concurrent.Worker;
-import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import netscape.javascript.JSException;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -23,11 +14,9 @@ import utils.FileUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,9 +27,6 @@ public class SVGViewerPresenter implements Initializable {
     private String svgName;
     private Path svgPath;
     private String svgAsString;
-
-    final WebView webview = new WebView();
-    final WebEngine webEngine = webview.getEngine();
 
 
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))"
@@ -59,105 +45,8 @@ public class SVGViewerPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         webView = new WebView();
-        webview.setPrefHeight(5);
-
-        //svgViewerPane.setPadding(new Insets(20,20,20,20));
-
-        svgViewerPane.widthProperty().addListener( new ChangeListener<Object>() {
-            public void changed(ObservableValue<?> observable, Object oldValue, Object newValue)
-            {
-                Double width = (Double)newValue;
-                System.out.println("Region width changed: " + width);
-                webview.setPrefWidth(width);
-                adjustHeight();
-            }
-        });
-
-
-        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
-
-            @Override
-            public void changed(ObservableValue<? extends State> arg0, State oldState, State newState) {
-                if (newState.equals(Worker.State.SUCCEEDED)) {
-                    adjustHeight();
-                }
-            }
-        });
-        Set<Node> scrolls = svgViewerPane.lookupAll(".scroll-bar");
-        for (Node scroll : scrolls) {
-            scroll.setVisible(false);
-        }
-
-        Set<Node> scrolls2 = webview.lookupAll(".scroll-bar");
-        for (Node scroll : scrolls) {
-            scroll.setVisible(false);
-        }
-        // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
-        webview.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
-            @Override public void onChanged(Change<? extends Node> change) {
-                Set<Node> scrolls = webview.lookupAll(".scroll-bar");
-                for (Node scroll : scrolls) {
-                    scroll.setVisible(false);
-                }
-            }
-        });
-
-        try {
-            setContent(FileUtils.readFromFile(
-                    Paths.get("s0.svg")
-                            .toFile()).replaceAll(">", ">\n"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        svgViewerPane.getChildren().add(webview);
-    }
-
-    public void setContent( final String content )
-    {
-        Platform.runLater(new Runnable(){
-            @Override
-            public void run() {
-                webEngine.loadContent(getHtml(content));
-                Platform.runLater(new Runnable(){
-                    @Override
-                    public void run() {
-                        adjustHeight();
-                    }
-                });
-            }
-        });
-    }
-
-
-    private void adjustHeight() {
-
-        Platform.runLater(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    //"document.getElementById('mydiv').offsetHeight"
-                    Object result = webEngine.executeScript(
-                            "document.getElementById('mydiv').offsetHeight");
-                    if (result instanceof Integer) {
-                        Integer i = (Integer) result;
-                        double height = new Double(i);
-                        height = height;
-                        webview.setPrefHeight(height);
-                        System.out.println("height on state: " + height + " prefh: " + webview.getPrefHeight());
-                    }
-                } catch (JSException e) {
-                    // not important
-                }
-            }
-        });
-
-    }
-
-    private String getHtml(String content) {
-        return "<html><body>" +
-                "<div id=\"mydiv\">" + content + "</div>" +
-                "</body></html>";
+        webView.prefWidthProperty().bind(svgViewerPane.widthProperty());
+        webView.prefHeightProperty().bind(svgViewerPane.heightProperty());
     }
 
     public void loadContent(String svgName, Path content){
