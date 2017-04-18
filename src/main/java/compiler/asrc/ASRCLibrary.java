@@ -82,7 +82,7 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given object is directed, be it an {@link Edge} or {@link Graph}.
-     * @param ID Identifier of the {@code Graph} element.
+     * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given object is directed.
      */
     public boolean directedsecond_1(Term ID) {
@@ -91,7 +91,7 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given object is undirected, be it an {@link Edge} or {@link Graph}.
-     * @param ID Identifier of the {@code Graph} element.
+     * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given object is undirected.
      */
     public boolean undirectedsecond_1(Term ID) {
@@ -111,8 +111,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} object is mixed.
-     * @param ID Identifier of the {@code Graph} element.
-     * @return Whether the given {@code Graph} is undirected.
+     * @param ID Identifier of the {@link Graph} element.
+     * @return Whether the given {@link Graph} is undirected.
      */
     public boolean mixedsecond_1(Term ID) {
         return directedsecond_1(ID) == undirectedsecond_1(ID);
@@ -120,8 +120,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} has this {@link Edge} count or unifies otherwise.
-     * @param ID Identifier of the {@code Graph}.
-     * @param count {@code Edge} count of the {@code Graph}
+     * @param ID Identifier of the {@link Graph}.
+     * @param count {@link Edge} count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
     public boolean edgecountsecond_2(Term ID, Term count) {
@@ -130,8 +130,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} is a {@link SingleGraph}.
-     * @param ID Identifier of the {@code Graph}.
-     * @return Whether the {@code Graph} is a {@code SingleGraph}.
+     * @param ID Identifier of the {@link Graph}.
+     * @return Whether the {@link Graph} is a {@link SingleGraph}.
      */
     public boolean singlegraphsecond_1(Term ID) {
         return bool((Struct) ID.getTerm(), n -> n instanceof SingleGraph, false, false, true);
@@ -139,8 +139,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} is a {@link MultiGraph}.
-     * @param ID Identifier of the {@code Graph}.
-     * @return Whether the {@code Graph} is a {@code MultiGraph}.
+     * @param ID Identifier of the {@link Graph}.
+     * @return Whether the {@link Graph} is a {@link MultiGraph}.
      */
     public boolean multigraphsecond_1(Term ID) {
         return bool((Struct) ID.getTerm(), n -> n instanceof MultiGraph, false, false, true);
@@ -148,8 +148,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} has this {@link Node} count or unifies otherwise.
-     * @param ID Identifier of the {@code Graph}.
-     * @param count {@code Node} count of the {@code Graph}
+     * @param ID Identifier of the {@link Graph}.
+     * @param count {@link Node} count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
     public boolean nodecountsecond_2(Term ID, Term count) {
@@ -158,8 +158,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} has this component count or unifies otherwise.
-     * @param ID Identifier of the {@code Graph}.
-     * @param count Component count of the {@code Graph}
+     * @param ID Identifier of the {@link Graph}.
+     * @param count Component count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
     public boolean componentcountsecond_2(Term ID, Term count) {
@@ -168,8 +168,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} element has this number of attributes or unifies otherwise.
-     * @param ID Identifier of the {@code Graph}.
-     * @param count Attribute count of the {@code Graph}
+     * @param ID Identifier of the {@link Graph}.
+     * @param count Attribute count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
     public boolean attributecountsecond_2(Term ID, Term count) {
@@ -178,8 +178,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Node} has this degree or unifies otherwise.
-     * @param ID Identifier of the {@code Node}.
-     * @param count Degree of the {@code Node}
+     * @param ID Identifier of the {@link Node}.
+     * @param count Degree of the {@link Node}
      * @return Whether unification was possible or the given degree was correct.
      */
     public boolean degreesecond_2(Term ID, Term count) {
@@ -188,8 +188,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Node} has this indegree or unifies otherwise.
-     * @param ID Identifier of the {@code Node}.
-     * @param count Indegree of the {@code Node}
+     * @param ID Identifier of the {@link Node}.
+     * @param count Indegree of the {@link Node}
      * @return Whether unification was possible or the given indegree was correct.
      */
     public boolean indegreesecond_2(Term ID, Term count) {
@@ -198,8 +198,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Node} has this outdegree or unifies otherwise.
-     * @param ID Identifier of the {@code Node}.
-     * @param count Outdegree of the {@code Node}
+     * @param ID Identifier of the {@link Node}.
+     * @param count Outdegree of the {@link Node}
      * @return Whether unification was possible or the given outdegree was correct.
      */
     public boolean outdegreesecond_2(Term ID, Term count) {
@@ -208,8 +208,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Node} has this number of neighbours or unifies otherwise.
-     * @param ID Identifier of the {@code Node}.
-     * @param count Number of neighbours the {@code Node} has.
+     * @param ID Identifier of the {@link Node}.
+     * @param count Number of neighbours the {@link Node} has.
      * @return Whether unification was possible or the given number was correct.
      */
     public boolean neighbourcountsecond_2(Term ID, Term count) {
@@ -219,8 +219,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Node} is in a specific component of the {@link Graph} or unifies otherwise.
-     * @param ID Identifier of the {@code Node}
-     * @param component Numeric identifier of the component this {@code Node} is in.
+     * @param ID Identifier of the {@link Node}
+     * @param component Numeric identifier of the component this {@link Node} is in.
      * @return Whether unification was possible or the given component ID was correct.
      */
     public boolean incomponentsecond_2(Term ID, Term component) {
@@ -232,10 +232,10 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether an {@link Edge} is in the shortest path between two {@link Node} objects or unifies otherwise.
-     * @param ID Identifier of the {@code Edge}.
-     * @param from Source {@code Node} of the shortest path.
-     * @param to Target {@code Node} of the shortest path.
-     * @return Whether the given {@code Edge} lies on the shortest path between the two {@code Node} objects.
+     * @param ID Identifier of the {@link Edge}.
+     * @param from Source {@link Node} of the shortest path.
+     * @param to Target {@link Node} of the shortest path.
+     * @return Whether the given {@link Edge} lies on the shortest path between the two {@link Node} objects.
      */
     public boolean inshortestpathsecond_3(Term ID, Term from, Term to) {
         if (dijkstra==null) {
@@ -251,8 +251,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether an {@link Edge} is in the minimal spanning tree of the {@link Graph}.
-     * @param ID Identifier of the {@code Edge}.
-     * @return Whether the {@code Edge} is in the minimal spanning tree of the {@code Graph}.
+     * @param ID Identifier of the {@link Edge}.
+     * @return Whether the {@link Edge} is in the minimal spanning tree of the {@link Graph}.
      */
     @SuppressWarnings("SuspiciousMethodCalls")
     public boolean inmstsecond_1(Term ID) {

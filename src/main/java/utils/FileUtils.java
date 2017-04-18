@@ -45,6 +45,7 @@ public final class FileUtils {
      *
      * @param dir Directory to search files in.
      * @return All files within this directory.
+     * @throws IOException Thrown when access was denied.
      */
     public static List<File> recursiveInDirectory(File dir) throws IOException {
         return Files.walk(dir.toPath()).map(Path::toFile).filter(File::isFile).collect(Collectors.toList());

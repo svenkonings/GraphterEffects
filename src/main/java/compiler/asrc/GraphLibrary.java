@@ -23,7 +23,7 @@ public abstract class GraphLibrary extends Library {
     protected final Graph graph;
 
     /**
-     * Creates a new {@code GraphLibrary}.
+     * Creates a new {@link GraphLibrary}.
      * @param g {@link Graph} on which predicates are performed.
      */
     public GraphLibrary(Graph g) {
@@ -120,7 +120,7 @@ public abstract class GraphLibrary extends Library {
      * @param graphs Whether this method is applicable for {@link org.graphstream.graph.Graph} objects.
      * @return Whether the condition holds.
      */
-    boolean bool(Struct ID, GetBool actualbool, boolean nodes, boolean edges, boolean graphs) {
+    protected boolean bool(Struct ID, GetBool actualbool, boolean nodes, boolean edges, boolean graphs) {
         Element gotten = GraphUtils.getByID(graph, ID.getName());
         return !(!nodes && gotten instanceof Node) && !(!edges && gotten instanceof Edge) && !(!graphs && gotten instanceof Graph) && actualbool.get(gotten);
     }
@@ -129,14 +129,14 @@ public abstract class GraphLibrary extends Library {
     /**
      * Interface that returns numeric information about a {@link Element}.
      */
-    public interface GetNumber {
+    protected interface GetNumber {
         int get(Element n);
     }
 
     /**
      * Interface that returns boolean information about a {@link Element}.
      */
-    public interface GetBool {
+    protected interface GetBool {
         boolean get(Element n);
     }
 }
