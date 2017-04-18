@@ -77,7 +77,8 @@ public class Compilation extends Observable{
 
     /**
      * Adds the ASCR Library to the Compilation
-     * @throws 
+     * @throws IOException Thrown when an the {@link Graph} could not be loaded from disk.
+     * @throws SAXException Thrown when the {@link Graph} file contains syntax errors.
      */
     public void addASCRLibrary() throws IOException, SAXException {
         Graph graph = Importer.graphFromFile(graphFile.toFile());
