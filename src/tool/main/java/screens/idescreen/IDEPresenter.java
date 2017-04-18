@@ -162,7 +162,7 @@ public class IDEPresenter implements Initializable, Observer {
         else if (arg instanceof CompilationProgress){
             CompilationProgress compilationProgress = (CompilationProgress) arg;
             switch (compilationProgress) {
-                case COMPILATIONSTARTED:
+                case NORMALCOMPILATIONSTARTED:
                     //TODO LOGGING: System.out.println("compilation started");
                     CompilationModel.getInstance().addObserverToCompilation(this);
                     break;

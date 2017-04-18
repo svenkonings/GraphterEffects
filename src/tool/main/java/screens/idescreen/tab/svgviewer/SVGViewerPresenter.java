@@ -64,7 +64,6 @@ public class SVGViewerPresenter implements Initializable {
             svgViewerPane.getChildren().remove(0);
         }
         svgViewerPane.getChildren().add(webView);
-        System.out.println(svgAsString);
         webView.getEngine().loadContent(svgAsString);
         //webView.getEngine().loadContent(FileUtils.readFromFile(new File("demo1.svg") ));
         webView.setContextMenuEnabled(false);

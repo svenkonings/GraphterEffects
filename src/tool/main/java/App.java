@@ -13,6 +13,7 @@ import root.RootView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 public class App extends Application{
@@ -39,8 +40,7 @@ public class App extends Application{
                         return;
                     }
                 }
-                Set<String> svgNames = DocumentModel.getInstance().getAllGeneratedSVGS().keySet();
-                //Error
+                Set<String> svgNames = new HashSet<>(DocumentModel.getInstance().getAllGeneratedSVGS().keySet());
                 for (String svgName: svgNames){
                     if(IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
                         DocumentModel.getInstance().getAllGeneratedSVGS().remove(svgName);

@@ -1,0 +1,36 @@
+//A random network
+graph {
+	a -- b[distance=690];
+	a -- c[distance=205];
+	b -- e[distance=380];
+	c -- d[distance=405];
+	c -- f[distance=290];
+	d -- e[distance=530];
+	d -- g[distance=585];
+	e -- k[distance=260];
+	f -- g[distance=550];
+	g -- h[distance=410];
+	g -- i[distance=310];
+	j -- k[distance=650];
+	
+	a[name="Amsterdam"];
+	b[name="Berlin"];
+	c[name="Brussels"];
+	d[name="Frankfurt"];
+	e[name="Prague"];
+	f[name="Paris"];
+	g[name="Geneva"];
+	h[name="Milan"];
+	i[name="Grenoble"];
+	j[name="Florence"];
+	k[name="Munich"];
+	
+	wolf[label="wolf"];
+	schaap[label="schaap"];
+	kool[label="kool"];
+	
+	wolf -- a[label="in"];
+	schaap -- j[label="in"];
+	kool -- d[label="in"];
+	
+}

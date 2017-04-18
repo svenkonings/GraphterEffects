@@ -56,7 +56,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
     public void update(Observable o, Object arg) {
         CompilationProgress compilationProgress = (CompilationProgress) arg;
         switch (compilationProgress){
-            case COMPILATIONSTARTED:
+            case NORMALCOMPILATIONSTARTED:
                 CompilationModel.getInstance().addObserverToCompilation(this);
                 compilationResultTextArea.setText("Compilation started \n");
                 compilationResultTitledPane.setExpanded(true);

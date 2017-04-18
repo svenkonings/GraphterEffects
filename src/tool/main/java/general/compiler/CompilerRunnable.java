@@ -1,16 +1,14 @@
 package general.compiler;
 
-import general.files.DocumentModel;
-import org.dom4j.Document;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+
+/**
+ * Compilation Runnable
+ *
+ * <P>This runnable is reponsible for executing the compilation.
+ * When runned it will create a new (debug) {@link Compilation} and will
+ * excecute the different compilation methods on the {@link Compilation}, e.g:{@link Compilation#compileGraafVis()}
+ */
 
 public class CompilerRunnable implements Runnable {
 
@@ -19,12 +17,29 @@ public class CompilerRunnable implements Runnable {
     private Compilation compilation;
     private CompilationProgress maxCompilationProgress;
 
+    /**
+     * Constructor for a {@link CompilerRunnable} for a normal {@link Compilation}.
+     *
+     * @param scriptFile The path of where the Graafvis Script is stored
+     * @param graphFile The path of where the Abstract Syntax Graph is stored
+     *                  See //TODO{@link } which fileformats are suported.
+     */
     public CompilerRunnable(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
         maxCompilationProgress = CompilationProgress.COMPILATIONFINISHED;
     }
 
+    /**
+     * Constructor for a {@link CompilerRunnable} for a debug {@link Compilation}. The compilation becomes a debug compilation
+     * if the {@paramref maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     *
+     * @param scriptFile The path of where the Graafvis Script is stored
+     * @param graphFile The path of where the Abstract Syntax Graph is stored
+     *                  See //TODO{@link } which fileformats are suported.
+     * @param maxCompilationProgress The {@link CompilationProgress} until which the compilation is supposed to
+     *                    continue.
+     */
     public CompilerRunnable(Path scriptFile, Path graphFile, CompilationProgress maxCompilationProgress){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
@@ -32,6 +47,10 @@ public class CompilerRunnable implements Runnable {
 
     }
 
+    /**
+     * Creates a new (debug) {@link Compilation}, and tries to excecute the compilation methods on it.
+     * The compilation won't be started until {@link CompilationModel#allObserversAdded} has been signalled.
+     */
     @Override
     public synchronized void run() {
         compilation = new Compilation(scriptFile, graphFile, maxCompilationProgress);
@@ -52,7 +71,7 @@ public class CompilerRunnable implements Runnable {
                 compilation.addASCRLibrary();
                 compilation.solve();
                 compilation.generateSVG();
-                saveGeneratedSVG(compilation.getGeneratedSVG());
+                CompilerUtils.saveGeneratedSVG(graphFile.getFileName().toString().split("\\.")[0], compilation.getGeneratedSVG());
             } else {
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAAFVISCOMPILED.ordinal()) {
                     compilation.compileGraafVis();
@@ -73,27 +92,5 @@ public class CompilerRunnable implements Runnable {
 
     }
 
-    private void saveGeneratedSVG(Document document){
-        //Sets the name of this SVG to the name of the dot.
-        String svgFileName = graphFile.getFileName().toString().split("\\.")[0];
-        int counter = DocumentModel.getInstance().generateSVGCounter(svgFileName);
-        if (counter != 0){
-            svgFileName += "(" + counter + ")";
-        }
-        document.setName(svgFileName);
 
-        String svgxml = document.asXML();
-        List<String> svgxmltext = new ArrayList<>();
-        svgxmltext.add(svgxml);
-
-        new File("temp/compiled/").mkdirs();
-
-        Path file = Paths.get("temp/compiled/",document.getName() + ".svg");
-        try {
-            Files.write(file, svgxmltext, Charset.forName("UTF-8"));
-            DocumentModel.getInstance().addGeneratedSVG(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
