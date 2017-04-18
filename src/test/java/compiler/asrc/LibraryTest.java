@@ -76,8 +76,8 @@ public class LibraryTest {
 //        testSuccess(struct("label", struct("#(a;c)"), var("X")), digraph);
 
 
-        testSuccess(struct("label", var("X"), struct("bcd")), digraph);
-        testSuccess(struct("label", struct("#(a;b)"), struct("abc")), digraph);
+        testSuccess(struct("label", var("X"), struct("\"bcd\"")), digraph);
+        testSuccess(struct("label", struct("#(a;b)"), struct("\"abc\"")), digraph);
         testSuccess(struct("label", struct("#(a;b)"), var("X")), digraph);
 
         testSuccess(struct("label", var("X"), var("Y")), digraph); //generation not supported
