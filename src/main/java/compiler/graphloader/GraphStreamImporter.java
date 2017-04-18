@@ -36,7 +36,7 @@ final class GraphStreamImporter {
 
     /**
      * Reads a {@link Graph} from a {@link File}.
-     * @param file {@code File} to read from.
+     * @param file {@link File} to read from.
      * @return A {@link Graph} containing the graph represented in the file.
      * @throws IOException Thrown when the file could not be read.
      */
@@ -51,7 +51,7 @@ final class GraphStreamImporter {
     /**
      * Reads a {@link File} in some graph format into a GraphStream graph Object.
      *
-     * @param file {@code File} to read into a GraphsStream Graph Object.
+     * @param file {@link File} to read into a GraphsStream Graph Object.
      * @return A {@link Graph} containing the graph represented in the file.
      * @throws IOException Thrown when the file could not be read.
      */
@@ -72,7 +72,7 @@ final class GraphStreamImporter {
     /**
      * Returns an {@link Iterator} iterating over all accepted extensions.
      *
-     * @return An {@code Iterator} over all accepted extensions.
+     * @return An {@link Iterator} over all accepted extensions.
      */
     public static Iterator<String> accepted() {
         return acceptslist.iterator();

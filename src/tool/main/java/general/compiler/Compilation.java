@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
-
 /**
  * Compilation Object.
  *
@@ -77,9 +76,9 @@ public class Compilation extends Observable{
     }
 
     /**
-     * Adds the ASCR Library to the Compilation and notifies its observers abouts its progress.
-     * @throws IOException
-     * throws SAXException
+     * Adds the ASCR Library to the Compilation
+     * @throws IOException Thrown when an the {@link Graph} could not be loaded from disk.
+     * @throws SAXException Thrown when the {@link Graph} file contains syntax errors.
      */
     public void addASCRLibrary() throws IOException, SAXException {
         Graph graph = Importer.graphFromFile(graphFile.toFile());

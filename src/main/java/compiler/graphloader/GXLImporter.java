@@ -183,7 +183,7 @@ final class GXLImporter {
     /**
      * Returns a {@link String} or {@link List} read from a {@link GXLValue}.
      *
-     * @param in {@code GXLValue} to be read from.
+     * @param in {@link GXLValue} to be read from.
      * @return String or List Object, depending on whether it's an atomic or composite GXLValue.
      */
     private static Object getFromGXLValue(GXLValue in, boolean addQuotes) {
