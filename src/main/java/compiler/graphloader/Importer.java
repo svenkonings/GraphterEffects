@@ -15,10 +15,10 @@ import java.io.IOException;
 public final class Importer {
 
     /**
-     * Reads a graph from a variety of formats.
+     * Reads a {@link Graph} from a variety of formats.
      *
      * @param path Path to the file from which to read the Graph.
-     * @return A GraphStream graph read from the file.
+     * @return A {@link Graph} read from the file.
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
@@ -27,10 +27,9 @@ public final class Importer {
     }
 
     /**
-     * Reads a graph from a variety of formats.
-     *
-     * @param file File from which to read the Graph
-     * @return A GraphStream graph read from the file.
+     * Reads a {@link Graph} from a variety of formats.
+     * @param file {@link File} from which to read the Graph
+     * @return A {@link Graph} read from the file.
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */
@@ -39,9 +38,10 @@ public final class Importer {
     }
 
     /**
-     * @param file             File from which to read the Graph
+     * Reads a {@link Graph} from a variety of formats.
+     * @param file File from which to read the Graph
      * @param addIllegalPrefix <tt>true</tt> if underscores should be added to the IDs in the graph.
-     * @return A GraphStream graph read from the file.
+     * @return A {@link Graph} read from the file.
      * @throws IOException  Thrown when the File could not be read.
      * @throws SAXException Thrown when the File has a GXL extension but with faulty syntax.
      */

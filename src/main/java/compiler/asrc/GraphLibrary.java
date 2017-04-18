@@ -12,19 +12,19 @@ import static compiler.prolog.TuProlog.intVal;
 import static compiler.prolog.TuProlog.struct;
 
 /**
- * Prolog library used for Graph predicates.
+ * Prolog library used for {@link Graph} predicates.
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class GraphLibrary extends Library {
 
     /**
-     * Graph on which predicates are performed.
+     * {@link Graph} on which predicates are performed.
      */
     protected final Graph graph;
 
     /**
      * Creates a new {@code GraphLibrary}.
-     * @param g Graph on which predicates are performed.
+     * @param g {@link Graph} on which predicates are performed.
      */
     public GraphLibrary(Graph g) {
         this.graph = g;
