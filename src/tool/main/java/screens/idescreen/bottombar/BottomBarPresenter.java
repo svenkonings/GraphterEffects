@@ -65,6 +65,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 CompilationModel.getInstance().addObserverToCompilation(this);
                 compilationResultTextArea.setText("Debug Compilation started \n");
                 compilationResultTitledPane.setExpanded(true);
+                break;
             case SOLVED:
                 compilationResultTextArea.appendText("SVG generated\n");
                 break;

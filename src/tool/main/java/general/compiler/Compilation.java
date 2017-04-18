@@ -9,7 +9,6 @@ import compiler.prolog.TuProlog;
 import compiler.solver.Solver;
 import compiler.solver.VisMap;
 import compiler.svg.SvgDocumentGenerator;
-import exceptions.UnknownGraphTypeException;
 import graafvis.GraafvisCompiler;
 import graafvis.errors.VisError;
 import graafvis.warnings.Warning;
@@ -26,6 +25,13 @@ import java.util.Observable;
 
 public class Compilation extends Observable{
 
+    /**
+     * Compilation Object.
+     *
+     * <P>This is a data object for a compilation process.
+     * It contains all the methods necessary to advance compilation as well as
+     * all the data generated during the compilation process.
+     */
 
     private Path scriptFile;
     private Path graphFile;
@@ -38,6 +44,14 @@ public class Compilation extends Observable{
     private Exception exception;
     private GraafvisCompiler compiler;
 
+    /**
+     * Constructor for a normal compilation.
+     *
+     * @param scriptFile The path of where the Graafvis Script is stored
+     * @param graphFile The path of where the Abstract Syntax Graph is stored
+     *                  See //TODO{@link } which fileformats are suported.
+     */
+
     public Compilation(Path scriptFile, Path graphFile){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
@@ -45,15 +59,27 @@ public class Compilation extends Observable{
         this.compiler = new GraafvisCompiler();
     }
 
-    //To create debug compilations which stop at a certain progress
-    protected Compilation(Path scriptFile, Path graphFile, CompilationProgress maxProgress){
+    /**
+     * Constructor for a debug compilation.
+     *
+     * @param scriptFile The path of where the Graafvis Script is stored
+     * @param graphFile The path of where the Abstract Syntax Graph is stored
+     *                  See //TODO{@link } which fileformats are suported.
+     * @param maxProgress The {@link CompilationProgress} until which the compilation is supposed to
+     *                    continue.
+     */
+    public Compilation(Path scriptFile, Path graphFile, CompilationProgress maxProgress){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
         this.maxProgress = maxProgress;
         this.compiler = new GraafvisCompiler();
     }
 
-    public void addGraphRules() throws IOException, SAXException, UnknownGraphTypeException {
+    /**
+     * Adds the ASCR Library to the Compilation
+     * @throws 
+     */
+    public void addASCRLibrary() throws IOException, SAXException {
         Graph graph = Importer.graphFromFile(graphFile.toFile());
         asrcLibrary = new ASRCLibrary(graph);
         setChanged();

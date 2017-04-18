@@ -1,6 +1,6 @@
 package general.compiler;
 
-import general.files.LoaderUtils;
+import general.files.IOManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class CompilerUtils {
         new File("/temp/compiler").mkdirs();
         Path tempFilePath = Paths.get("/temp/compiler",filename);
         try {
-            LoaderUtils.saveVIS(tempFilePath,code);
+            IOManager.saveVIS(tempFilePath,code);
             return tempFilePath;
         } catch (IOException e) {
             e.printStackTrace();

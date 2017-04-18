@@ -7,7 +7,7 @@ import general.compiler.CompilerRunnable;
 import general.compiler.CompilerUtils;
 import general.files.DocumentModel;
 import general.files.DocumentModelChange;
-import general.files.LoaderUtils;
+import general.files.IOManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,9 +16,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import screens.idescreen.simpleviewer.SimpleViewerPresenter;
-import screens.idescreen.simpleviewer.SimpleViewerView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import screens.idescreen.tab.simpleviewer.SimpleViewerPresenter;
+import screens.idescreen.tab.simpleviewer.SimpleViewerView;
 import utils.FileUtils;
 import utils.Pair;
 
@@ -51,21 +54,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
             graafVisScriptNameLabel.setText("New Script");
         } else {
             graafVisScriptNameLabel.setText(graafvisScriptPath.getFileName().toString());
-        }
-
-        //graphComboBox.setTe
-        for (int i = graphComboBox.getItems().size()-1; i >= 0; i++){
-            graphComboBox.getItems().remove(i);
-            choiceBoxFilled = false;
-        }
-        for (String name: graphPathMap.keySet()){
-            choiceBoxFilled = true;
-            graphComboBox.getItems().add(name);
-        }
-        if (graphPathMap.keySet().size() > 0) {
-            graphComboBox.getSelectionModel().select(0);
-        } else {
-            graphComboBox.setItems(FXCollections.observableArrayList());
         }
 
         graphComboBox.setPromptText("Select graphs");
@@ -116,27 +104,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
                             }
                         }
                     };
-
-
-                    /* TODO: Test of dit gewild is (Dat je ook vanuit de menuitems een graaf kan weergeven).
-                    listCell.setContextMenu(generateGraphContextMenu());
-                    listCell.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            if (event.getButton() == MouseButton.SECONDARY) {
-                                event.consume();
-                            }
-                        }
-                    });
-                    listCell.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            if (event.getButton() == MouseButton.SECONDARY) {
-                                event.consume();
-                            }
-                        }
-                    });
-                    */
                     return listCell;
                 }
                 );
@@ -155,7 +122,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                     public void handle(MouseEvent event) {
                         if (event.getButton() == MouseButton.PRIMARY) {
                             if (!choiceBoxFilled) {
-                                LoaderUtils.showLoadGraphsPopup(false);
+                                IOManager.showLoadGraphsPopup(false);
                             }
                         }
                     }
@@ -170,6 +137,26 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
+        graphComboBox.setOnAction(event -> {
+            DocumentModel.getInstance().setSelectedGraph(
+                    graphComboBox.getSelectionModel().getSelectedItem().toString());
+        });
+
+
+        for (int i = graphComboBox.getItems().size()-1; i >= 0; i++){
+            graphComboBox.getItems().remove(i);
+            choiceBoxFilled = false;
+        }
+        for (String name: graphPathMap.keySet()){
+            choiceBoxFilled = true;
+            graphComboBox.getItems().add(name);
+        }
+        if (graphPathMap.keySet().size() > 0) {
+            graphComboBox.getSelectionModel().select(0);
+        } else {
+            graphComboBox.setItems(FXCollections.observableArrayList());
+        }
+
         compileButton.setDisable(!choiceBoxFilled);
         debugButton.setDisable(!choiceBoxFilled);
 
@@ -178,12 +165,12 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void bind(){
-        splitPane.prefWidthProperty().bind( ((Pane) (viewModel.getMainView()).getParent()).widthProperty() );
+        splitPane.prefWidthProperty().bind( viewModel.sceneWidthProperty() );
     }
 
     public void compileButtonPressed(ActionEvent actionEvent) {
         if (graphComboBox.getSelectionModel().getSelectedIndex() >= 0) {
-            Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
+            Path graphFilePath = DocumentModel.getInstance().getSelectedGraph();
             Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
             String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
@@ -206,21 +193,16 @@ public class ButtonBarPresenter implements Initializable, Observer {
         int indexSelected;
         switch (documentModelChange) {
             case GRAPHFILELOADED:
-                indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
                 String graphFileNameNew = (String) arguments.get(1);
-                //graphComboBox.setItems(FXCollections.observableArrayList());
                 choiceBoxFilled = true;
                 compileButton.setDisable(false);
                 debugButton.setDisable(false);
 
                 graphComboBox.getItems().add(graphFileNameNew);
-                //When nothing is selected, select the first item from the list.
-                if (indexSelected == -1){
-                    indexSelected = 0;
-                }
-                graphComboBox.getSelectionModel().select(indexSelected);
-                //TODO: Make disctinction between all new files and one extra file
-                break;
+                graphComboBox.getSelectionModel().select(graphComboBox.getItems().size()-1);
+                DocumentModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
+
+                               break;
             case GRAPHFILEREMOVED:
                 indexSelected = graphComboBox.getSelectionModel().getSelectedIndex();
                 String graphFileNameRemoved = (String) arguments.get(1);
@@ -234,6 +216,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 }
 
                 graphComboBox.getSelectionModel().select(indexSelected);
+                DocumentModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
 
                 if(graphComboBox.getItems().size() == 0){
                     choiceBoxFilled = false;
@@ -259,8 +242,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         showAsImage.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
-                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+                Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
                 CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
                 new Thread(compilerRunnable).start();
             }
@@ -268,8 +250,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         showAsText.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                String selectedGraphName = graphComboBox.getSelectionModel().getSelectedItem().toString();
-                Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+                Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
                 String graphAsString = "";
                 try {
                     graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
@@ -279,15 +260,15 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 TabPane centralTabPane = (TabPane) ((BorderPane) (((AnchorPane) splitPane.getParent()).getParent().getParent()).getParent()).getCenter();
                 SimpleViewerView simpleViewerView = new SimpleViewerView();
                 SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
-                simpleViewerPresenter.loadContent(selectedGraphName, graphAsString);
-                centralTabPane.getTabs().add(new Tab(selectedGraphName, simpleViewerView.getView()));
+                simpleViewerPresenter.loadContent(selectedGraphPath.getFileName().toString(), graphAsString);
+                centralTabPane.getTabs().add(new Tab(selectedGraphPath.getFileName().toString(), simpleViewerView.getView()));
             }
         });
         return contextMenu;
     }
 
     public void generateVisElemsButtonPressed(ActionEvent actionEvent) {
-        Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
+        Path graphFilePath = DocumentModel.getInstance().getSelectedGraph();
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
@@ -301,8 +282,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void generateRulesButtonPressed(ActionEvent actionEvent) {
-        System.out.println("I WAS PRESSED");
-        Path graphFilePath = DocumentModel.getInstance().getGraphPathMap().get(graphComboBox.getSelectionModel().getSelectedItem());
+        Path graphFilePath = DocumentModel.getInstance().getSelectedGraph();
         Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first

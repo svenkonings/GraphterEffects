@@ -23,6 +23,17 @@ Meer predicaten:
     Afstand buren op layout
     Ports (Arend)
 
+Dingen die uit de usuability test kwamen:
+    Align center toevoegen
+    Edge met T,S,ID is niet handig. We beginnen namelijk verder over alles met ID
+    Ellipse is als standaard type van een line niet erg handig.
+    Arend vond hoe text werkte niet logisch:
+    Arend verwacht als default degrad dat als de breedte van text verandert dat de hoogte mee schaalt.
+    Hij wou alleen de width zetten en dat hoogte direct goed gaat.
+    Kunnen we de VisMap in het debug scherm laten zien voordat hij gesolved is?
+
+
+
 Taal:
 Left met lijst van elementen
 Meer imports dan alleen labels

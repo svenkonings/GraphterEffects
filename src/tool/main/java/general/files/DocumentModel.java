@@ -4,6 +4,7 @@ import utils.Pair;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -17,6 +18,9 @@ public class DocumentModel extends Observable{
     private Map<String, Path> generatedSVGMap = new HashMap<>();
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
     public String graafVisCode;
+    private boolean changesSaved = true;
+    private Path selectedPath;
+    private Path selectedGraph;
 
     private Path lastSaveAndLoadPathGraafVis;
     private Path lastSavePathVisualization;
@@ -45,8 +49,14 @@ public class DocumentModel extends Observable{
     }
 
     public void newGraafVisFile(){
-        new File("temp/newfile.vis").mkdir();
-        Path path = new File("temp/newfile.vis").toPath();
+        File newGraafvisFile = null;
+        try {
+            newGraafvisFile = new File("temp/newfile.vis");
+            newGraafvisFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Path path = newGraafvisFile.toPath();
         DocumentModel.getInstance().loadGraafVisFile(path);
         setChanged();
         notifyObservers(new Pair<>(DocumentModelChange.GRAAFVISFILECREATED,null));
@@ -104,6 +114,10 @@ public class DocumentModel extends Observable{
         notifyObservers(new Pair<>(DocumentModelChange.SVGREMOVED, name));
     }
 
+    public Map<String,Path> getAllGeneratedSVGS(){
+        return generatedSVGMap;
+    }
+
     public Path getLastSaveAndLoadPathGraafVis() {
         return lastSaveAndLoadPathGraafVis;
     }
@@ -128,6 +142,31 @@ public class DocumentModel extends Observable{
     public void setLastLoadPathGraph(Path lastLoadPathGraph) {
         this.lastLoadPathGraph = lastLoadPathGraph;
     }
+
+    public boolean graafvisChangesSaved(){
+        return changesSaved;
+    }
+
+    public void setGraafvisChangesSaved(boolean changesSaved){
+        this.changesSaved = changesSaved;
+    }
+
+    public void setSelectedPath(Path selectedPath){
+        this.selectedPath = selectedPath;
+    }
+
+    public Path getSelectedPath(){
+        return selectedPath;
+    }
+
+    public void setSelectedGraph(String name){
+        this.selectedGraph = graphFileMap.get(name);
+    }
+
+    public Path getSelectedGraph(){
+        return selectedGraph;
+    }
+
 
     private static DocumentModel ourInstance = new DocumentModel();
 
