@@ -40,6 +40,7 @@ public class App extends Application{
                     }
                 }
                 Set<String> svgNames = DocumentModel.getInstance().getAllGeneratedSVGS().keySet();
+                //Error
                 for (String svgName: svgNames){
                     if(IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
                         DocumentModel.getInstance().getAllGeneratedSVGS().remove(svgName);

@@ -1,4 +1,4 @@
-package screens.idescreen.svgviewer;
+package screens.idescreen.tab.svgviewer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,7 +47,7 @@ public class SVGViewerPresenter implements Initializable {
         webView = new WebView();
         webView.prefWidthProperty().bind(svgViewerPane.widthProperty());
         webView.prefHeightProperty().bind(svgViewerPane.heightProperty());
-    }
+}
 
     public void loadContent(String svgName, Path content){
         this.svgName = svgName;
@@ -64,7 +64,7 @@ public class SVGViewerPresenter implements Initializable {
             svgViewerPane.getChildren().remove(0);
         }
         svgViewerPane.getChildren().add(webView);
-        //System.out.println(FileUtils.readFromFile(n));
+        System.out.println(svgAsString);
         webView.getEngine().loadContent(svgAsString);
         //webView.getEngine().loadContent(FileUtils.readFromFile(new File("demo1.svg") ));
         webView.setContextMenuEnabled(false);
