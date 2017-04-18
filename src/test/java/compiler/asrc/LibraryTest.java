@@ -1,25 +1,21 @@
 package compiler.asrc;
 
-import alice.tuprolog.*;
+import alice.tuprolog.SolveInfo;
+import alice.tuprolog.Term;
 import compiler.graphloader.Importer;
 import compiler.prolog.TuProlog;
 import org.graphstream.graph.Graph;
 import org.junit.Before;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 import utils.FileUtils;
 import utils.GraphUtils;
-import utils.Printer;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static compiler.prolog.TuProlog.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class LibraryTest {
 

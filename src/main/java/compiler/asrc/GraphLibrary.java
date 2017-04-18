@@ -11,23 +11,40 @@ import java.lang.Double;
 import static compiler.prolog.TuProlog.intVal;
 import static compiler.prolog.TuProlog.struct;
 
+/**
+ * Prolog library used for Graph predicates.
+ */
 @SuppressWarnings("WeakerAccess")
 public abstract class GraphLibrary extends Library {
 
-    public Graph graph;
+    /**
+     * Graph on which predicates are performed.
+     */
+    protected final Graph graph;
 
+    /**
+     * Creates a new {@code GraphLibrary}.
+     * @param g Graph on which predicates are performed.
+     */
     public GraphLibrary(Graph g) {
         this.graph = g;
     }
 
+    /**
+     * Returns a Prolog theory to be added to the Prolog solver. Use an empty {@link String} if unwished for.
+     * @return a Prolog theory.
+     */
     @Override
     public abstract String getTheory();
 
-    public void setGraph(Graph graph) {
-        this.graph = graph;
-    }
 
-    //supports backtracking but no generation
+    /**
+     * Method used to retrieve any attribute from an {@link Element}, or to check their value.
+     * @param ID ID of the element with an attribute.
+     * @param attrname Name of the attribute.
+     * @param value Value of the attribute with that name.
+     * @return Whether unification was possible.
+     */
     public boolean attributesecond_3(Term ID, Term attrname, Term value) {
         try {
             value = value.getTerm();
@@ -39,11 +56,10 @@ public abstract class GraphLibrary extends Library {
             if (!rID.hasAttribute(rname)) {
                 return false;
             }
-
             if (value instanceof Struct) {
                 Object res = rID.getAttribute(rname);
                 if (res instanceof String) {
-                    return /*StringUtils.stripOnce(((String)res)).equals(rstringvalue) ||*/ res.equals(rstringvalue);
+                    return res.equals(rstringvalue);
                 }
                 return rID.getAttribute(rname).equals(rstringvalue);
             } else if (value instanceof Var) {
@@ -64,9 +80,18 @@ public abstract class GraphLibrary extends Library {
         }
     }
 
-    //does not support backtracking
-    boolean numeric(Struct key, Term value, GetNumber actualnumber, boolean nodes, boolean edges, boolean graphs) {
-        Element gotten = GraphUtils.getByID(graph, key.getName());
+    /**
+     * Method used for predicates with two arguments of which the second is a numeric property.
+     * @param ID ID of the element with the numeric property.
+     * @param numericValue Numeric value of this property.
+     * @param numberGetter {@link GetNumber} that specifices what numeric value holds for this object.
+     * @param nodes Whether this method is applicable for {@link org.graphstream.graph.Node} objects.
+     * @param edges Whether this method is applicable for {@link org.graphstream.graph.Edge} objects.
+     * @param graphs Whether this method is applicable for {@link org.graphstream.graph.Graph} objects.
+     * @return Whether unification was possible.
+     */
+    protected boolean numeric(Struct ID, Term numericValue, GetNumber numberGetter, boolean nodes, boolean edges, boolean graphs) {
+        Element gotten = GraphUtils.getByID(graph, ID.getName());
         if (!nodes && gotten instanceof Node) {
             return false;
         }
@@ -77,31 +102,40 @@ public abstract class GraphLibrary extends Library {
             return false;
         }
 
-        if (value instanceof Int) {
-            return ((Int) value).intValue() == actualnumber.get(gotten);
-        } else if (value instanceof Var) {
-            return value.unify(getEngine(), intVal(actualnumber.get(gotten)));
+        if (numericValue instanceof Int) {
+            return ((Int) numericValue).intValue() == numberGetter.get(gotten);
+        } else if (numericValue instanceof Var) {
+            return numericValue.unify(getEngine(), intVal(numberGetter.get(gotten)));
         }
         return false;
     }
 
-    //does not support backtracking
-    boolean bool(Struct key, GetBool actualbool, boolean nodes, boolean edges, boolean graphs) {
-        Element gotten = GraphUtils.getByID(graph, key.getName());
-        if (!nodes && gotten instanceof Node) {
-            return false;
-        }
-        if (!edges && gotten instanceof Edge) {
-            return false;
-        }
-        return !(!graphs && gotten instanceof Graph) && actualbool.get(gotten);
+    /**
+     * Method used for predicates with one argument that exists based on a condition.
+     * Does not support {@link Var} IDs.
+     * @param ID  ID of which the condition holds.
+     * @param actualbool {@link GetBool} that specifies whether the condition holds.
+     * @param nodes Whether this method is applicable for {@link org.graphstream.graph.Node} objects.
+     * @param edges Whether this method is applicable for {@link org.graphstream.graph.Edge} objects.
+     * @param graphs Whether this method is applicable for {@link org.graphstream.graph.Graph} objects.
+     * @return Whether the condition holds.
+     */
+    boolean bool(Struct ID, GetBool actualbool, boolean nodes, boolean edges, boolean graphs) {
+        Element gotten = GraphUtils.getByID(graph, ID.getName());
+        return !(!nodes && gotten instanceof Node) && !(!edges && gotten instanceof Edge) && !(!graphs && gotten instanceof Graph) && actualbool.get(gotten);
     }
 
 
+    /**
+     * Interface that returns numeric information about a {@link Element}.
+     */
     public interface GetNumber {
         int get(Element n);
     }
 
+    /**
+     * Interface that returns boolean information about a {@link Element}.
+     */
     public interface GetBool {
         boolean get(Element n);
     }
