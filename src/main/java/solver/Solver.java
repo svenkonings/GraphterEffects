@@ -14,27 +14,27 @@ import java.util.stream.Collectors;
  */
 public class Solver {
 
-    private final ConsequenceLibrary defaultLibrary;
+    private final VisLibrary defaultLibrary;
 
-    private final Map<String, ConsequenceLibrary> libraries;
+    private final Map<String, VisLibrary> libraries;
 
     /**
      * Creates a new solver.
      */
     public Solver() {
-        defaultLibrary = new DefaultConsequenceLibrary();
+        defaultLibrary = new DefaultVisLibrary();
         libraries = new HashMap<>();
     }
 
-    public ConsequenceLibrary putLibrary(String name, ConsequenceLibrary library) {
+    public VisLibrary putLibrary(String name, VisLibrary library) {
         return libraries.put(name, library);
     }
 
-    public ConsequenceLibrary getLibrary(String name) {
+    public VisLibrary getLibrary(String name) {
         return libraries.get(name);
     }
 
-    public ConsequenceLibrary removeLibrary(String name) {
+    public VisLibrary removeLibrary(String name) {
         return libraries.remove(name);
     }
 
@@ -44,9 +44,10 @@ public class Solver {
      * @return The {@link List} of visualization elements.
      */
     public VisMap solve(TuProlog prolog) throws InvalidTheoryException, SolveException {
-        List<ConsequenceLibrary> libraries = prolog.solve("visLibrary(X)").stream()
+        List<VisLibrary> libraries = prolog.solve("visLibrary(X)").stream()
                 .map(Map::values)
                 .map(Collection::iterator)
+                .filter(Iterator::hasNext)
                 .map(Iterator::next)
                 .map(TermUtils::stripQuotes)
                 .map(this::getLibrary)
@@ -66,26 +67,27 @@ public class Solver {
 
         boolean succes = model.getSolver().solve();
         if (!succes) {
-            throw new SolveException(visMap, "No solution found.");
+            throw new SolveException(visMap, "No solution found");
         }
         return visMap;
     }
 
-    public static boolean loadLibrary(TuProlog prolog, ConsequenceLibrary library) {
+    public static void loadLibrary(TuProlog prolog, VisLibrary library) {
+        if (library == null) {
+            throw new LibraryException("Library not found");
+        }
         try {
             prolog.addTheory(library.getTerms().toArray(new Term[0]));
-            return true;
         } catch (InvalidTheoryException e) {
-            e.printStackTrace();
-            return false;
+            throw new LibraryException(e);
         }
     }
 
-    public static void solveLibrary(VisMap visMap, TuProlog prolog, ConsequenceLibrary library) {
+    public static void solveLibrary(VisMap visMap, TuProlog prolog, VisLibrary library) {
         library.getQueries().forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
     }
 
-    public static void setLibraryDefaults(VisMap visMap, ConsequenceLibrary library) {
+    public static void setLibraryDefaults(VisMap visMap, VisLibrary library) {
         visMap.values().forEach(library::setDefaults);
     }
 }

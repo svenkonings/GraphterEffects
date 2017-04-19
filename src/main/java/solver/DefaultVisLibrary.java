@@ -21,9 +21,9 @@ import static utils.GraphUtils.ILLEGAL_PREFIX;
 import static utils.StringUtils.parseInt;
 import static utils.TermUtils.*;
 
-public class DefaultConsequenceLibrary extends ConsequenceLibrary {
+public class DefaultVisLibrary extends VisLibrary {
 
-    public DefaultConsequenceLibrary() {
+    public DefaultVisLibrary() {
         super();
         setDefaultClauses();
         setDefaultQueries();
@@ -394,12 +394,12 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         try {
             elem.getVar("width").updateLowerBound(0, Cause.Null);
         } catch (ContradictionException e) {
-            throw new ConsequenceException("Couldn't update width");
+            throw new LibraryException("Couldn't update width");
         }
         try {
             elem.getVar("height").updateLowerBound(0, Cause.Null);
         } catch (ContradictionException e) {
-            throw new ConsequenceException("Couldn't update height");
+            throw new LibraryException("Couldn't update height");
         }
 
         elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
@@ -423,7 +423,7 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         try {
             elem.getVar("size").updateLowerBound(0, Cause.Null);
         } catch (ContradictionException e) {
-            throw new ConsequenceException("Couldn't update size");
+            throw new LibraryException("Couldn't update size");
         }
         elem.setVar("width", elem.getVar("size"));
         elem.setVar("height", elem.getVar("size"));
@@ -465,12 +465,7 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
     }
 
-    /**
-     * Should be called before {@link org.chocosolver.solver.Solver#solve}. Sets the default visualization element type
-     * (including the associated constraints), provided it doesn't already exist.
-     *
-     * @param elem The given visualization element.
-     */
+    @Override
     public void setDefaults(VisElem elem) {
         if (!elem.hasValue("type")) {
             elem.setValue("type", "ellipse");

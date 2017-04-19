@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 
 import static prolog.TuProlog.clause;
 
-public abstract class ConsequenceLibrary {
+public abstract class VisLibrary {
 
     /** Terms to be added before querieing */
     protected final Set<Term> terms;
@@ -19,7 +19,7 @@ public abstract class ConsequenceLibrary {
     /** Mapping from query to {@link QueryConsumer}. */
     protected final Map<String, QueryConsumer> queries;
 
-    public ConsequenceLibrary() {
+    public VisLibrary() {
         this.terms = new HashSet<>();
         this.queries = new LinkedHashMap<>();
     }
@@ -124,5 +124,11 @@ public abstract class ConsequenceLibrary {
         });
     }
 
-    public abstract void setDefaults(VisElem visElem);
+    /**
+     * Should be called before {@link org.chocosolver.solver.Solver#solve}. Sets the default visualization element type
+     * (including the associated constraints), provided it doesn't already exist.
+     *
+     * @param elem The given visualization element.
+     */
+    public abstract void setDefaults(VisElem elem);
 }
