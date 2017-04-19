@@ -16,10 +16,10 @@ public class VisMap {
     /** The internal mapping. */
     private final Map<String, VisElem> mapping;
 
-    /** The default lower bound of a variable */
+    /** The default lower bound of a variable. */
     private int lowerBound;
 
-    /** The default upper bound of a variable */
+    /** The default upper bound of a variable. */
     private int upperBound;
 
     /**

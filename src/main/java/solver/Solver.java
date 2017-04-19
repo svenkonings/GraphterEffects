@@ -47,7 +47,7 @@ public class Solver {
      *
      * @return The {@link List} of visualization elements.
      */
-    public VisMap solve(TuProlog prolog) throws InvalidTheoryException {
+    public VisMap solve(TuProlog prolog) throws InvalidTheoryException, SolveException {
         prolog.addTheory(clauses.toArray(new Term[0]));
         Model model = new Model();
         VisMap visMap = new VisMap(model);
@@ -55,7 +55,7 @@ public class Solver {
         visMap.values().forEach(Solver::setDefaults);
         boolean succes = model.getSolver().solve();
         if (!succes) {
-            throw new SolveException("No solution found.");
+            throw new SolveException(visMap, "No solution found.");
         }
         return visMap;
     }
