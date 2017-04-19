@@ -47,7 +47,6 @@ aMultiTerm: aTerm
 /* Consequence */
 cTerm: functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                       #compoundConsequence
      | functor BRACE_OPEN (terms+=cMultiTerm COMMA)* terms+=cMultiTerm BRACE_CLOSE                                      #multiCompoundConsequence
-     | functor BRACE_OPEN terms+=cMultiTerm (COMMA terms+=cMultiTerm)*? BRACE_CLOSE                                     #multiCompoundConsequence
      | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | STRING                                                                                                           #stringConsequence
