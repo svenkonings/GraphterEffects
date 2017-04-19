@@ -1,8 +1,10 @@
 package solver;
 
 import alice.tuprolog.Term;
+import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import utils.FileUtils;
 import utils.QuadConsumer;
@@ -15,13 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import static prolog.TuProlog.*;
-import static prolog.TuProlog.struct;
-import static prolog.TuProlog.var;
 import static utils.GraphUtils.ILLEGAL_PREFIX;
 import static utils.StringUtils.parseInt;
-import static utils.TermUtils.stripQuotes;
-import static utils.TermUtils.termToInt;
-import static utils.TermUtils.termToString;
+import static utils.TermUtils.*;
 
 public class DefaultConsequenceLibrary extends ConsequenceLibrary {
 
@@ -393,8 +391,16 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
      * @param elem The given visualization element.
      */
     public static void shapeConstraints(VisElem elem) {
-        elem.getVar("width").ge(0).post();
-        elem.getVar("height").ge(0).post();
+        try {
+            elem.getVar("width").updateLowerBound(0, Cause.Null);
+        } catch (ContradictionException e) {
+            throw new ConsequenceException("Couldn't update width");
+        }
+        try {
+            elem.getVar("height").updateLowerBound(0, Cause.Null);
+        } catch (ContradictionException e) {
+            throw new ConsequenceException("Couldn't update height");
+        }
 
         elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
         elem.setVar("radiusY", elem.getVar("height").div(2).intVar());
@@ -414,7 +420,11 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
      * @param elem The given visualization element.
      */
     public static void symmetricShapeConstraints(VisElem elem) {
-        elem.getVar("size").ge(0).post();
+        try {
+            elem.getVar("size").updateLowerBound(0, Cause.Null);
+        } catch (ContradictionException e) {
+            throw new ConsequenceException("Couldn't update size");
+        }
         elem.setVar("width", elem.getVar("size"));
         elem.setVar("height", elem.getVar("size"));
 

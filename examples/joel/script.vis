@@ -4,8 +4,6 @@ node labels:
     "c",
     "d",
     "e".
-bounds(0, 200).
-
 
 /*
 shape(a, rectangle).
