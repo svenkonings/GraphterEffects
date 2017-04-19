@@ -35,7 +35,7 @@ final class GXLImporter {
     /**
      * List of file extensions accepted by this importer.
      */
-    private static final List<String> acceptslist = Arrays.asList("gxl", "gst", "gpl", "gst", "gpr", "gty");
+    private static final List<String> acceptslist = Arrays.asList("gxl", "gst", "gpl", "gpr", "gty");
 
     /**
      * Returns whether an extension is accepted by this importer.
