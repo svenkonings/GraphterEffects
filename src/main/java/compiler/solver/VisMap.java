@@ -16,7 +16,11 @@ public class VisMap {
     /** The internal mapping. */
     private final Map<String, VisElem> mapping;
 
-    private int minBound, maxBound;
+    /** The default lower bound of a variable */
+    private int lowerBound;
+
+    /** The default upper bound of a variable */
+    private int upperBound;
 
     /**
      * Creates a new {@code VisMap} with the given model and an empty mapping.
@@ -36,13 +40,19 @@ public class VisMap {
     public VisMap(Model model, Map<String, VisElem> mapping) {
         this.model = model;
         this.mapping = mapping;
-        this.minBound = 0;
-        this.maxBound = 2000;
+        this.lowerBound = 0;
+        this.upperBound = 2000;
     }
 
-    public void setBounds(int minBound, int maxBound) {
-        this.minBound = minBound;
-        this.maxBound = maxBound;
+    /**
+     * Set the default bounds to the given lower and upper bound.
+     *
+     * @param lowerBound The given lower bound.
+     * @param upperBound The given upper bound.
+     */
+    public void setBounds(int lowerBound, int upperBound) {
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
     }
 
     /**
@@ -62,7 +72,7 @@ public class VisMap {
      * @return The visualization element.
      */
     public VisElem get(String key) {
-        return mapping.computeIfAbsent(key, k -> new VisElem(model, minBound, maxBound));
+        return mapping.computeIfAbsent(key, k -> new VisElem(model, lowerBound, upperBound));
     }
 
     /**
@@ -74,12 +84,20 @@ public class VisMap {
         return model;
     }
 
-    public int getMinBound() {
-        return minBound;
+    /**
+     * Get the default lower bound.
+     * @return The lower bound.
+     */
+    public int getLowerBound() {
+        return lowerBound;
     }
 
-    public int getMaxBound() {
-        return maxBound;
+    /**
+     * Get the default upper bound.
+     * @return The upper bound.
+     */
+    public int getUpperBound() {
+        return upperBound;
     }
 
     /**

@@ -44,3 +44,5 @@ Library:
 FIXME: Node required
 
 Logische predicaten in solver documenteren
+
+shape(cirlce). enzo op waar zetten.
