@@ -19,15 +19,6 @@ import static prolog.TuProlog.struct;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ASRCLibrary extends GraphLibrary {
 
-
-    /**
-     * Creates a new ASRCLibrary that retrieves information from a given {@link Graph}.
-     * @param g Given {@code Graph}
-     */
-    public ASRCLibrary(Graph g) {
-        super(g);
-    }
-
     /**
      * Returns the Prolog Theory associated with this library. Contains generative predicates ({@link Graph}/{@link Edge}/{@link Node}) as well as functional predicates.
      * @return The Prolog theory.

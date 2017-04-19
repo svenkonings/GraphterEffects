@@ -20,14 +20,14 @@ public abstract class GraphLibrary extends Library {
     /**
      * {@link Graph} on which predicates are performed.
      */
-    protected final Graph graph;
+    protected Graph graph;
 
-    /**
-     * Creates a new {@link GraphLibrary}.
-     * @param g {@link Graph} on which predicates are performed.
-     */
-    public GraphLibrary(Graph g) {
-        this.graph = g;
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
 
     /**

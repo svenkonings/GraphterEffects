@@ -24,7 +24,9 @@ public final class AbstractSyntaxRuleConverterWLIB {
     public void convertToRulesGraph1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
         TuProlog prolog = new TuProlog();
-        prolog.loadLibrary(new ASRCLibrary(graph));
+        ASRCLibrary library = new ASRCLibrary();
+        library.setGraph(graph);
+        prolog.loadLibrary(library);
         graphTest(prolog, graph);
     }
 
@@ -32,7 +34,9 @@ public final class AbstractSyntaxRuleConverterWLIB {
     public void convertToRulesGraph2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
         TuProlog prolog = new TuProlog();
-        prolog.loadLibrary(new ASRCLibrary(graph));
+        ASRCLibrary library = new ASRCLibrary();
+        library.setGraph(graph);
+        prolog.loadLibrary(library);
         graphTest(prolog, graph);
     }
 
@@ -40,7 +44,9 @@ public final class AbstractSyntaxRuleConverterWLIB {
     public void convertToRulesGraph3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
         TuProlog prolog = new TuProlog();
-        prolog.loadLibrary(new ASRCLibrary(graph));
+        ASRCLibrary library = new ASRCLibrary();
+        library.setGraph(graph);
+        prolog.loadLibrary(library);
         graphTest(prolog, graph);
     }
 
@@ -48,7 +54,9 @@ public final class AbstractSyntaxRuleConverterWLIB {
     public void convertToRulesGraph5() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
         TuProlog prolog = new TuProlog();
-        prolog.loadLibrary(new ASRCLibrary(graph));
+        ASRCLibrary library = new ASRCLibrary();
+        library.setGraph(graph);
+        prolog.loadLibrary(library);
         Printer.pprint(graph);
         graphTest(prolog, graph);
     }
@@ -80,7 +88,9 @@ public final class AbstractSyntaxRuleConverterWLIB {
     private void MSTTest(Graph graph) throws Exception {
         int length = GraphUtils.getMST(graph).size();
         TuProlog prolog = new TuProlog();
-        prolog.loadLibrary(new ASRCLibrary(graph));
+        ASRCLibrary library = new ASRCLibrary();
+        library.setGraph(graph);
+        prolog.loadLibrary(library);
         List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("X")),struct("inmst", var("X"))));
         assertEquals(length, a.size());
     }

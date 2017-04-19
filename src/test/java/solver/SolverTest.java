@@ -2,6 +2,7 @@ package solver;
 
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
+import org.graphstream.graph.implementations.DefaultGraph;
 import prolog.TuProlog;
 import svg.SvgDocumentGenerator;
 import org.dom4j.Document;
@@ -15,8 +16,7 @@ import static prolog.TuProlog.*;
 public class SolverTest {
     public static void main(String[] args) throws InvalidTheoryException, IOException, SolveException {
         Solver solver = new Solver();
-        TuProlog prolog = new TuProlog(testData());
-        VisMap visMap = solver.solve(prolog);
+        VisMap visMap = solver.solve(new DefaultGraph("id"), testData());
         Document document = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(document, "test.svg");
     }

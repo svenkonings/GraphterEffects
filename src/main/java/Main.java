@@ -29,10 +29,8 @@ public class Main {
         System.out.println();
         terms.forEach(System.out::println);
         System.out.println();
-        TuProlog prolog = new TuProlog(terms);
         Solver solver = new Solver();
-        prolog.loadLibrary(new ASRCLibrary(graph));
-        VisMap visMap = solver.solve(prolog);
+        VisMap visMap = solver.solve(graph, terms);
         visMap.getModel().getSolver().printStatistics();
         Document document = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(document, args[2]);

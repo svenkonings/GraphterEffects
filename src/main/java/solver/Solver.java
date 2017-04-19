@@ -1,8 +1,12 @@
 package solver;
 
+import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
+import asrc.ASRCLibrary;
+import asrc.GraphLibrary;
 import org.chocosolver.solver.Model;
+import org.graphstream.graph.Graph;
 import prolog.TuProlog;
 import utils.TermUtils;
 
@@ -14,28 +18,46 @@ import java.util.stream.Collectors;
  */
 public class Solver {
 
-    private final VisLibrary defaultLibrary;
+    private final GraphLibrary defaultGraphLibrary;
 
-    private final Map<String, VisLibrary> libraries;
+    private final Map<String, GraphLibrary> graphLibraries;
+
+    private final VisLibrary defaultVisLibrary;
+
+    private final Map<String, VisLibrary> visLibraries;
 
     /**
      * Creates a new solver.
      */
     public Solver() {
-        defaultLibrary = new DefaultVisLibrary();
-        libraries = new HashMap<>();
+        defaultGraphLibrary = new ASRCLibrary();
+        graphLibraries = new HashMap<>();
+        defaultVisLibrary = new DefaultVisLibrary();
+        visLibraries = new HashMap<>();
     }
 
-    public VisLibrary putLibrary(String name, VisLibrary library) {
-        return libraries.put(name, library);
+    public GraphLibrary putGraphLibrary(String name, GraphLibrary library) {
+        return graphLibraries.put(name, library);
     }
 
-    public VisLibrary getLibrary(String name) {
-        return libraries.get(name);
+    public GraphLibrary getGraphLibrary(String name) {
+        return graphLibraries.get(name);
     }
 
-    public VisLibrary removeLibrary(String name) {
-        return libraries.remove(name);
+    public GraphLibrary removeGraphLibrary(String name) {
+        return graphLibraries.remove(name);
+    }
+
+    public VisLibrary putVisLibrary(String name, VisLibrary library) {
+        return visLibraries.put(name, library);
+    }
+
+    public VisLibrary getVisLibrary(String name) {
+        return visLibraries.get(name);
+    }
+
+    public VisLibrary removeVisLibrary(String name) {
+        return visLibraries.remove(name);
     }
 
     /**
@@ -43,27 +65,41 @@ public class Solver {
      *
      * @return The {@link List} of visualization elements.
      */
-    public VisMap solve(TuProlog prolog) throws InvalidTheoryException, SolveException {
-        List<VisLibrary> libraries = prolog.solve("visLibrary(X)").stream()
+    public VisMap solve(Graph graph, List<Term> terms) throws InvalidTheoryException, SolveException {
+        TuProlog prolog = new TuProlog(terms);
+
+        List<GraphLibrary> graphLibraries = prolog.solve("graphLibrary(X)").stream()
                 .map(Map::values)
                 .map(Collection::iterator)
                 .filter(Iterator::hasNext)
                 .map(Iterator::next)
                 .map(TermUtils::stripQuotes)
-                .map(this::getLibrary)
+                .map(this::getGraphLibrary)
                 .collect(Collectors.toList());
 
-        loadLibrary(prolog, defaultLibrary);
-        libraries.forEach(library -> loadLibrary(prolog, library));
+        List<VisLibrary> visLibraries = prolog.solve("visLibrary(X)").stream()
+                .map(Map::values)
+                .map(Collection::iterator)
+                .filter(Iterator::hasNext)
+                .map(Iterator::next)
+                .map(TermUtils::stripQuotes)
+                .map(this::getVisLibrary)
+                .collect(Collectors.toList());
+
+        loadGraphLibrary(prolog, graph, defaultGraphLibrary);
+        graphLibraries.forEach(library -> loadGraphLibrary(prolog, graph, library));
+
+        loadVisLibrary(prolog, defaultVisLibrary);
+        visLibraries.forEach(library -> loadVisLibrary(prolog, library));
 
         Model model = new Model();
         VisMap visMap = new VisMap(model);
 
-        solveLibrary(visMap, prolog, defaultLibrary);
-        libraries.forEach(library -> solveLibrary(visMap, prolog, library));
+        solveVisLibrary(visMap, prolog, defaultVisLibrary);
+        visLibraries.forEach(library -> solveVisLibrary(visMap, prolog, library));
 
-        setLibraryDefaults(visMap, defaultLibrary);
-        libraries.forEach(library -> setLibraryDefaults(visMap, library));
+        setVisLibraryDefaults(visMap, defaultVisLibrary);
+        visLibraries.forEach(library -> setVisLibraryDefaults(visMap, library));
 
         boolean succes = model.getSolver().solve();
         if (!succes) {
@@ -72,7 +108,19 @@ public class Solver {
         return visMap;
     }
 
-    public static void loadLibrary(TuProlog prolog, VisLibrary library) {
+    public static void loadGraphLibrary(TuProlog prolog, Graph graph, GraphLibrary library) {
+        if (library == null) {
+            throw new LibraryException("Library not found");
+        }
+        library.setGraph(graph);
+        try {
+            prolog.loadLibrary(library);
+        } catch (InvalidLibraryException e) {
+            throw new LibraryException(e);
+        }
+    }
+
+    public static void loadVisLibrary(TuProlog prolog, VisLibrary library) {
         if (library == null) {
             throw new LibraryException("Library not found");
         }
@@ -83,11 +131,11 @@ public class Solver {
         }
     }
 
-    public static void solveLibrary(VisMap visMap, TuProlog prolog, VisLibrary library) {
+    public static void solveVisLibrary(VisMap visMap, TuProlog prolog, VisLibrary library) {
         library.getQueries().forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
     }
 
-    public static void setLibraryDefaults(VisMap visMap, VisLibrary library) {
+    public static void setVisLibraryDefaults(VisMap visMap, VisLibrary library) {
         visMap.values().forEach(library::setDefaults);
     }
 }
