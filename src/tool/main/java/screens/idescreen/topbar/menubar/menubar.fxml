@@ -20,8 +20,6 @@
                <MenuItem mnemonicParsing="false" onAction="#saveMenuItemPressed" text="Save" />
                <MenuItem mnemonicParsing="false" onAction="#saveAsMenuItemPressed" text="Save as" />
                <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#propertiesMenuItemPressed" text="Preferences" />
-               <SeparatorMenuItem mnemonicParsing="false" />
                <MenuItem mnemonicParsing="false" onAction="#exitMenuItemPressed" text="Exit" />
             </items>
           </Menu>

@@ -101,9 +101,6 @@ public class MenuPresenter implements Initializable {
         }
     }
 
-    public void propertiesMenuItemPressed(ActionEvent actionEvent) {
-    }
-
     public void loadGraphMenuItemPressed(ActionEvent actionEvent) {
         IOManager.showLoadGraphsPopup(false);
     }

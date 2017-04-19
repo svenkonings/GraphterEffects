@@ -1,5 +1,10 @@
 package general.compiler;
 
+import alice.tuprolog.InvalidTheoryException;
+import graafvis.GraafvisCompiler;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
@@ -66,11 +71,14 @@ public class CompilerRunnable implements Runnable {
         }
         //TODO: error resolving
         try {
+            boolean hasSolution = false;
             if (maxCompilationProgress == CompilationProgress.COMPILATIONFINISHED) {
                 compilation.compileGraafVis();
                 compilation.addASCRLibrary();
-                compilation.solve();
-                compilation.generateSVG();
+                hasSolution = compilation.solve();
+                if (hasSolution) {
+                    compilation.generateSVG();
+                }
                 CompilerUtils.saveGeneratedSVG(graphFile.getFileName().toString().split("\\.")[0], compilation.getGeneratedSVG());
             } else {
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAAFVISCOMPILED.ordinal()) {
@@ -80,13 +88,21 @@ public class CompilerRunnable implements Runnable {
                     compilation.addASCRLibrary();
                 }
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.SOLVED.ordinal()) {
-                    compilation.solve();
+                    hasSolution = compilation.solve();
                 }
-                if (maxCompilationProgress.ordinal() >= CompilationProgress.SVGGENERATED.ordinal()) {
+                if (hasSolution && maxCompilationProgress.ordinal() >= CompilationProgress.SVGGENERATED.ordinal()) {
                     compilation.generateSVG();
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            compilation.setException(e);
+        } catch (InvalidTheoryException e) {
+            compilation.setException(e);
+        } catch (SAXException e) {
+            compilation.setException(e);
+        } catch (GraafvisCompiler.SyntaxException e) {
+            compilation.setException(e);
+        } catch (GraafvisCompiler.CheckerException e) {
             compilation.setException(e);
         }
 

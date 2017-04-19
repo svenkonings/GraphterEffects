@@ -1,5 +1,7 @@
 package screens.idescreen.bottombar;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import prolog.LogListener;
 import prolog.TuProlog;
 import general.ViewModel;
@@ -23,26 +25,40 @@ import java.util.ResourceBundle;
 
 public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
+    public Button expandButton;
     @Inject ViewModel viewModel;
     public TitledPane compilationResultTitledPane;
     public TextArea compilationResultTextArea;
+    public boolean maximized;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         compilationResultTitledPane.prefWidthProperty().bind(viewModel.getMainView().getScene().widthProperty());
 
         compilationResultTitledPane.setPrefHeight(25);
-        compilationResultTextArea.setPrefHeight(100);
-
         compilationResultTitledPane.setExpanded(false);
 
         compilationResultTitledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue){
-                    compilationResultTitledPane.setPrefHeight(100);
+                if (newValue) {
+                    compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
                 } else {
                     compilationResultTitledPane.setPrefHeight(25);
+                }
+            }
+        });
+
+        viewModel.sceneHeigthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (compilationResultTitledPane.isExpanded()){
+                    if (maximized){
+                        compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().subtract(65).doubleValue());
+                    } else {
+                        compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                        System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
+                    }
                 }
             }
         });
@@ -67,10 +83,36 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 compilationResultTitledPane.setExpanded(true);
                 break;
             case SOLVED:
+                String measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
+                int nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+                int nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+
+                compilationResultTextArea.appendText("Constraints solved:\n");
+                compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
+                compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
+                compilationResultTextArea.appendText("Measures : \n");
+                compilationResultTextArea.appendText(measures + "\n");
+                break;
+            case SVGGENERATED:
                 compilationResultTextArea.appendText("SVG generated\n");
                 break;
             case ERROROCCURED:
                 compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
+                break;
+            case NOSOLUTION:
+                measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
+                nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+                nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+
+                compilationResultTextArea.appendText("No solution found:\n");
+                compilationResultTextArea.appendText("Constraints solved:\n");
+                compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
+                compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
+                compilationResultTextArea.appendText("Measures : \n");
+                compilationResultTextArea.appendText(measures + "\n");
+                break;
+            case COMPILEERROR:
+                compilationResultTextArea.appendText("A compile error occured:");
                 Compilation compilation = CompilationModel.getInstance().getCompilation();
                 for (VisError error : compilation.getErrors()) {
                     compilationResultTextArea.appendText(error.toString() + "\n");
@@ -91,5 +133,20 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
             }
         });
 
+    }
+
+    public void expandButtonPressed(ActionEvent actionEvent) {
+        if (compilationResultTitledPane.isExpanded()) {
+            if (!maximized) {
+                compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().subtract(65).doubleValue());
+                maximized = true;
+                expandButton.setText("Reduce");
+            } else {
+                compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                maximized = false;
+                expandButton.setText("Maximize");
+            }
+        }
+        //System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
     }
 }

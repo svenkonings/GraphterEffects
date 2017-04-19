@@ -13,7 +13,7 @@ import java.util.List;
 import static prolog.TuProlog.*;
 
 public class SolverTest {
-    public static void main(String[] args) throws InvalidTheoryException, IOException {
+    public static void main(String[] args) throws InvalidTheoryException, IOException, SolveException {
         Solver solver = new Solver();
         TuProlog prolog = new TuProlog(testData());
         VisMap visMap = solver.solve(prolog);

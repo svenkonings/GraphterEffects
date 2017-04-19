@@ -111,7 +111,7 @@ public class Compilation extends Observable{
      * //TODO: User libraries?
      * @throws InvalidTheoryException
      */
-    public void solve() throws InvalidTheoryException {
+    public boolean solve() throws InvalidTheoryException {
         List<Term> rules = new LinkedList<>();
         //rules.addAll(abstractSyntaxRules);
         rules.addAll(scriptRules);
@@ -123,13 +123,20 @@ public class Compilation extends Observable{
         }
 
         Solver solver = new Solver();
+
         try {
             visMap = solver.solve(prolog);
-        } catch (SolveException e) {
-            e.printStackTrace();
+        } catch (SolveException e){
+            visMap = e.getVisMap();
+            setChanged();
+            notifyObservers(CompilationProgress.NOSOLUTION);
+            return false;
+        } catch (Exception e){
+            setException(e);
         }
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);
+        return true;
     }
 
     /**

@@ -39,12 +39,12 @@ public class VisElemViewerPresenter implements Initializable {
     }
 
     public void showContentInTreeView(Set<String> filterArgs) {
-        TreeItem<String> rootItem = new TreeItem<String>("Vis Elems");
+        TreeItem<String> rootItem = new TreeItem<String>("Visualization Elements");
         rootItem.setExpanded(true);
         Map<String, VisElem> visElemMap = visMap.getMapping();
 
         for (String atom : visElemMap.keySet()) {
-            TreeItem visElemTreeItem = new TreeItem<String>("visElem " + atom);
+            TreeItem visElemTreeItem = new TreeItem<String>("Element " + atom);
             VisElem visElem = visElemMap.get(atom);
             for (String key : visElem.getValues().keySet())
                 if (filterArgs.size() != 0) {
