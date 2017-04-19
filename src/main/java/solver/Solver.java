@@ -56,7 +56,7 @@ public class Solver {
         boolean succes = model.getSolver().solve();
         model.getSolver().printStatistics();
         if (!succes) {
-            throw new RuntimeException("No solution found.");
+            throw new SolveException("No solution found.");
         }
         return visMap;
     }

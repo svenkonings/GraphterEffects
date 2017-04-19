@@ -17,6 +17,9 @@ import static utils.StringUtils.parseInt;
  */
 public class VisElem {
 
+    /** The key of this element */
+    private final String key;
+
     /** The model associated with this element. */
     private final Model model;
 
@@ -33,13 +36,15 @@ public class VisElem {
     private final Map<String, IntVar> vars;
 
     /**
-     * Constructs a new {@code VisElem} with the given model and default bounds.
+     * Constructs a new {@code VisElem} with the given key, model and default bounds.
      *
+     * @param key        The given key.
      * @param model      The given model.
      * @param lowerBound The default lower bound of a variable.
      * @param upperBound The default upper bound of a variable.
      */
-    public VisElem(Model model, int lowerBound, int upperBound) {
+    public VisElem(String key, Model model, int lowerBound, int upperBound) {
+        this.key = key;
         this.model = model;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
@@ -76,12 +81,13 @@ public class VisElem {
     public String setValue(String name, String value) {
         if (vars.containsKey(name)) {
             IntVar var = vars.get(name);
-            throw new ElementException("%s is already defined as the variable %s and" +
-                    "can't be defined as the value %s", name, var, value);
+            throw new ElementException("%s.%s is already defined as the variable %s and" +
+                    "can't be defined as the value %s", key, name, var, value);
         } else if (values.containsKey(name)) {
             String currentValue = values.get(name);
             if (!currentValue.equals(value)) {
-                throw new ElementException("%s already has the value %s instead of %s", name, currentValue, value);
+                throw new ElementException("%s.%s already has the value %s instead of %s",
+                        key, name, currentValue, value);
             }
             return value;
         } else {
@@ -102,19 +108,20 @@ public class VisElem {
     public IntVar setVar(String name, int constant) {
         if (values.containsKey(name)) {
             String value = values.get(name);
-            throw new ElementException("%s is already defined as the value %s and" +
-                    "can't be defined as a variable with the constant %d", name, value, constant);
+            throw new ElementException("%s.%s is already defined as the value %s and" +
+                    "can't be defined as a variable with the constant %d", key, name, value, constant);
         } else if (vars.containsKey(name)) {
             IntVar var = vars.get(name);
             if (!var.isInstantiated()) {
                 try {
                     var.instantiateTo(constant, Cause.Null);
                 } catch (ContradictionException e) {
-                    throw new ElementException("%s with domain [%d, %d] can't be instantiated to %d",
-                            name, var.getLB(), var.getUB(), constant);
+                    throw new ElementException("%s.%s with domain [%d, %d] can't be instantiated to %d",
+                            key, name, var.getLB(), var.getUB(), constant);
                 }
             } else if (!var.isInstantiatedTo(constant)) {
-                throw new ElementException("%s already has the value %d instead of %d", name, var.getValue(), constant);
+                throw new ElementException("%s.%s already has the value %d instead of %d",
+                        key, name, var.getValue(), constant);
             }
             return var;
         } else {
@@ -137,21 +144,21 @@ public class VisElem {
     public IntVar setVar(String name, int lb, int ub) {
         if (values.containsKey(name)) {
             String value = values.get(name);
-            throw new ElementException("%s is already defined as the value %s and" +
-                    "can't be defined as a variable with the bounds [%d, %d]", name, value, lb, ub);
+            throw new ElementException("%s.%s is already defined as the value %s and" +
+                    "can't be defined as a variable with the bounds [%d, %d]", key, name, value, lb, ub);
         } else if (vars.containsKey(name)) {
             IntVar var = vars.get(name);
             try {
                 var.updateLowerBound(lb, Cause.Null);
             } catch (ContradictionException e) {
-                throw new ElementException("%s with domain [%d, %d] can't update the lower bound to %d",
-                        name, var.getLB(), var.getUB(), lb);
+                throw new ElementException("%s.%s with domain [%d, %d] can't update the lower bound to %d",
+                        key, name, var.getLB(), var.getUB(), lb);
             }
             try {
                 var.updateUpperBound(ub, Cause.Null);
             } catch (ContradictionException e) {
-                throw new ElementException("%s with domain [%d, %d] can't update the upper bound to %d",
-                        name, var.getLB(), var.getUB(), ub);
+                throw new ElementException("%s.%s with domain [%d, %d] can't update the upper bound to %d",
+                        key, name, var.getLB(), var.getUB(), ub);
             }
             return var;
         } else {
@@ -172,8 +179,8 @@ public class VisElem {
     public IntVar setVar(String name, IntVar newVar) {
         if (values.containsKey(name)) {
             String value = values.get(name);
-            throw new ElementException("%s is already defined as the value %s and" +
-                    "can't be defined as the variable %s", name, value, newVar);
+            throw new ElementException("%s.%s is already defined as the value %s and" +
+                    "can't be defined as the variable %s", key, name, value, newVar);
         } else if (vars.containsKey(name)) {
             IntVar var = vars.get(name);
             if (!var.equals(newVar)) {
@@ -200,12 +207,39 @@ public class VisElem {
     }
 
     /**
+     * Get the key of this element.
+     *
+     * @return The key of this element.
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
      * Get the model associated to this element.
      *
      * @return The model associated to this element.
      */
     public Model getModel() {
         return model;
+    }
+
+    /**
+     * Get the default lower bound.
+     *
+     * @return The lower bound.
+     */
+    public int getLowerBound() {
+        return lowerBound;
+    }
+
+    /**
+     * Get the default upper bound.
+     *
+     * @return The upper bound.
+     */
+    public int getUpperBound() {
+        return upperBound;
     }
 
     /**

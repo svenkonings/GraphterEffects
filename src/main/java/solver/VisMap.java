@@ -72,7 +72,7 @@ public class VisMap {
      * @return The visualization element.
      */
     public VisElem get(String key) {
-        return mapping.computeIfAbsent(key, k -> new VisElem(model, lowerBound, upperBound));
+        return mapping.computeIfAbsent(key, k -> new VisElem(k, model, lowerBound, upperBound));
     }
 
     /**
