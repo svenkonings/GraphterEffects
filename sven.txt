@@ -1,10 +1,12 @@
+// FIXME IMPORTS!!!
 Constraint defaults uitbreidbaar maken
 SVG document generator uitbreidbaar maken
 Relatieve paden vanaf svg
 Logging
+Defaults fixen: Predicaat voor default grootes (ipv huidige defaults)
 
 Meer predicaten:
-    Predicaat voor default grootes (ipv huidige defaults)
+    NumberFormatException().
     Images moeten default de dimensions van het plaatje krijgen
     Elementen labels geven
     Driehoek
@@ -40,3 +42,7 @@ Meer imports dan alleen labels
 
 Library:
 FIXME: Node required
+
+Logische predicaten in solver documenteren
+
+shape(cirlce). enzo op waar zetten.

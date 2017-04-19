@@ -1,7 +1,7 @@
 package screens.idescreen.bottombar;
 
-import compiler.prolog.LogListener;
-import compiler.prolog.TuProlog;
+import prolog.LogListener;
+import prolog.TuProlog;
 import general.ViewModel;
 import general.compiler.Compilation;
 import general.compiler.CompilationModel;
