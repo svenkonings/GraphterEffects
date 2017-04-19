@@ -1,9 +1,5 @@
 package screens.idescreen.bottombar;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import prolog.LogListener;
-import prolog.TuProlog;
 import general.ViewModel;
 import general.compiler.Compilation;
 import general.compiler.CompilationModel;
@@ -14,8 +10,11 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
+import prolog.LogListener;
+import prolog.TuProlog;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -37,6 +36,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
         compilationResultTitledPane.setPrefHeight(25);
         compilationResultTitledPane.setExpanded(false);
+        /*
         expandButton.setDisable(true);
 
         compilationResultTitledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
@@ -52,6 +52,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 }
             }
         });
+        */
 
         viewModel.sceneHeigthProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -101,7 +102,8 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 compilationResultTextArea.appendText("SVG generated\n");
                 break;
             case ERROROCCURED:
-                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
+                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
+                        CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
                 break;
             case NOSOLUTION:
                 measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
@@ -117,6 +119,8 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 break;
             case COMPILEERROR:
                 compilationResultTextArea.appendText("A compile error occured:");
+                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
+                        CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
                 Compilation compilation = CompilationModel.getInstance().getCompilation();
                 for (VisError error : compilation.getErrors()) {
                     compilationResultTextArea.appendText(error.toString() + "\n");
@@ -139,6 +143,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
     }
 
+    /*
     public void expandButtonPressed(ActionEvent actionEvent) {
         if (compilationResultTitledPane.isExpanded()) {
             if (!maximized) {
@@ -153,4 +158,5 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
         }
         //System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
     }
+    */
 }

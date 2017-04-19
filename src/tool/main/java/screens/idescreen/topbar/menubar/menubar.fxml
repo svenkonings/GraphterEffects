@@ -30,8 +30,8 @@
           </Menu>
          <Menu mnemonicParsing="false" text="View">
             <items>
-               <MenuItem mnemonicParsing="false" onAction="#graphAsImageMenuItemPressed" text="View selected graph as Image" />
-               <MenuItem mnemonicParsing="false" onAction="#graphAsTextMenuItemPressed" text="View selected graph as Text" />
+               <MenuItem mnemonicParsing="false" onAction="#graphAsImageMenuItemPressed" text="Graph default visualization" />
+               <MenuItem mnemonicParsing="false" onAction="#graphAsTextMenuItemPressed" text="Graph file" />
             </items>
          </Menu>
           <Menu mnemonicParsing="false" text="Help">
