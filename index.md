@@ -68,13 +68,15 @@ The tool includes...
 * debug tools for inspection of generated rules and visualization elements
 
 ## Contributors
+
 ### Developers
 * Ron van Bree
 * Lindsay Kempen
 * Sven Konings
 * Hans van der Laan
 * Pim van Leeuwen
-### Client \& supervisor
+
+### Client & supervisor
 Arend Rensink
 
 ## Contact
