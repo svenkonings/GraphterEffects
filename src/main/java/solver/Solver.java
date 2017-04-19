@@ -54,7 +54,6 @@ public class Solver {
         queries.forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
         visMap.values().forEach(Solver::setDefaults);
         boolean succes = model.getSolver().solve();
-        model.getSolver().printStatistics();
         if (!succes) {
             throw new SolveException("No solution found.");
         }
