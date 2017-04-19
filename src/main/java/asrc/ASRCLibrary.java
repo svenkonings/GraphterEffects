@@ -238,15 +238,14 @@ public class ASRCLibrary extends GraphLibrary {
      * @return Whether the given {@link Edge} lies on the shortest path between the two {@link Node} objects.
      */
     public boolean inshortestpathsecond_3(Term ID, Term from, Term to) {
-        if (dijkstra==null) {
-            Dijkstra dijkstra = new Dijkstra(null, "_ATTRIBUTE_FOR_SHORTEST_PATH_", null);
+        if (dijkstra == null) {
+            dijkstra = new Dijkstra(null, "_ATTRIBUTE_FOR_SHORTEST_PATH_", null);
             dijkstra.init(graph);
         }
         dijkstra.setSource(graph.getNode(((Struct) from.getTerm()).getName()));
         dijkstra.compute();
         Path a = dijkstra.getPath(graph.getNode(((Struct) to.getTerm()).getName()));
         return a.contains((Edge) graph.getEdge(((Struct) ID.getTerm()).getName()));
-
     }
 
     /**
