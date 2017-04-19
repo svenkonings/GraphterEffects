@@ -17,16 +17,16 @@ import static utils.StringUtils.parseInt;
  */
 public class VisElem {
 
-    /** The key of this element */
+    /** The key of this element. */
     private final String key;
 
     /** The model associated with this element. */
     private final Model model;
 
-    /** The default lower bound of a variable */
+    /** The default lower bound of a variable. */
     private final int lowerBound;
 
-    /** The default upper bound of a variable */
+    /** The default upper bound of a variable. */
     private final int upperBound;
 
     /** The values of this element. */

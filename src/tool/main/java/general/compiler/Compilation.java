@@ -6,6 +6,7 @@ import alice.tuprolog.Term;
 import asrc.ASRCLibrary;
 import graphloader.Importer;
 import prolog.TuProlog;
+import solver.SolveException;
 import solver.Solver;
 import solver.VisMap;
 import svg.SvgDocumentGenerator;
@@ -122,7 +123,11 @@ public class Compilation extends Observable{
         }
 
         Solver solver = new Solver();
-        visMap = solver.solve(prolog);
+        try {
+            visMap = solver.solve(prolog);
+        } catch (SolveException e) {
+            e.printStackTrace();
+        }
         setChanged();
         notifyObservers(CompilationProgress.SOLVED);
     }

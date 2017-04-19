@@ -4,6 +4,7 @@ import alice.tuprolog.Term;
 import asrc.ASRCLibrary;
 import graphloader.Importer;
 import prolog.TuProlog;
+import solver.SolveException;
 import solver.Solver;
 import solver.VisMap;
 import svg.SvgDocumentGenerator;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException {
+    public static void main(String[] args) throws IOException, SAXException, UnknownGraphTypeException, InvalidTheoryException, InvalidLibraryException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SolveException {
         assert args.length == 3;
         Graph graph = Importer.graphFromFile(args[0]);
         Printer.pprint(graph);
