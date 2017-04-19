@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.ArrayList;
 import java.util.List;
 
-import static compiler.prolog.TuProlog.*;
+import static prolog.TuProlog.*;
 
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     public static final String TUP_WILD_CARD = "_";

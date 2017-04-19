@@ -5,8 +5,8 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 
-import static compiler.prolog.TuProlog.struct;
-import static compiler.prolog.TuProlog.term;
+import static prolog.TuProlog.struct;
+import static prolog.TuProlog.term;
 import static utils.StringUtils.parseInt;
 import static utils.StringUtils.removeQuotation;
 

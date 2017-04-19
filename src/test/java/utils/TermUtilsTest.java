@@ -2,7 +2,7 @@ package utils;
 
 import org.junit.Test;
 
-import static compiler.prolog.TuProlog.*;
+import static prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
 
 public class TermUtilsTest {

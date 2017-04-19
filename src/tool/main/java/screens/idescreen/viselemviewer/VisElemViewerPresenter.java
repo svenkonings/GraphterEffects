@@ -1,7 +1,7 @@
 package screens.idescreen.viselemviewer;
 
-import compiler.solver.VisElem;
-import compiler.solver.VisMap;
+import solver.VisElem;
+import solver.VisMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

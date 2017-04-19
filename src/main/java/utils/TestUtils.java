@@ -1,7 +1,7 @@
 package utils;
 
 import alice.tuprolog.Term;
-import compiler.prolog.TuProlog;
+import prolog.TuProlog;
 import org.graphstream.graph.Element;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-import static compiler.prolog.TuProlog.*;
+import static prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
 import static utils.TermUtils.elementTerm;
 

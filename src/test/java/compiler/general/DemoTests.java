@@ -1,20 +1,17 @@
 package compiler.general;
 
-import compiler.graphloader.Importer;
-import compiler.prolog.TuProlog;
-import compiler.solver.Solver;
-import compiler.solver.VisElem;
-import compiler.solver.VisMap;
-import compiler.svg.SvgDocumentGenerator;
+import graphloader.Importer;
+import prolog.TuProlog;
+import solver.Solver;
+import solver.VisMap;
+import svg.SvgDocumentGenerator;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 import utils.FileUtils;
 
-import java.util.List;
-
-import static compiler.asrc.GraphRuleTests.generateGraphProlog;
-import static compiler.prolog.TuProlog.*;
+import static asrc.GraphRuleTests.generateGraphProlog;
+import static prolog.TuProlog.*;
 
 public final class DemoTests {
     @Test
