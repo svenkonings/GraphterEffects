@@ -1,5 +1,5 @@
 # Graphter Effects
-###### introducing Graafvis
+### introducing Graafvis
 Current graph visualization solutions lack the functionality to easily create rich visualizations
 that intuitively show what these graphs represent. For the Design Project (TCS MOD11) we
 have created the library and tool Graphter Effects that can generate these customized
@@ -32,22 +32,22 @@ They are then converted to Prolog rules and a Prolog library.
 ![Library design diagram](http://i.imgur.com/6w84s60.png "Library design diagram")
 
 Three programming paradigms are involved:
-###### Logic
+### Logic
 Using Prolog, the logic programming done in Graafvis is solved such that visualization solutions are found.
-###### Imperative
+### Imperative
 When during the Prolog solving process graph information is required,
 it is retrieved at run time from the Prolog library using imperative Java code.
-###### Contraint
+### Contraint
 Numeric values such as position and dimensions are solved using Chocosolver:
 a constraint logic programming interface.
 
 The resulting visualization elements are afterwards bundled into an SVG file.
 
 ## Visualization output
-*Output: a generated&ast; visualization using the script and the input graph above*
+*Output: a generated\* visualization using the script and the input graph above*
 
 ![Visualization output with constraints](http://i.imgur.com/L6mgRh3.jpg "Visualization output with constraints")
-&ast;The constraints depicted with arrows and labels are added to the generated visualization for clarification purposes
+\*The constraints depicted with arrows and labels are added to the generated visualization for clarification purposes
 
 The SVG image resulting from the Graphter Effects visualization process contains visualization elements
 that abide the given Graafvis rules. It contains a representation of the graph with relatable and intuitive imagery.
@@ -68,13 +68,13 @@ The tool includes...
 * debug tools for inspection of generated rules and visualization elements
 
 ## Contributors
-###### Developers
+### Developers
 * Ron van Bree
 * Lindsay Kempen
 * Sven Konings
 * Hans van der Laan
 * Pim van Leeuwen
-###### Client &amp; supervisor
+### Client \& supervisor
 Arend Rensink
 
 ## Contact
