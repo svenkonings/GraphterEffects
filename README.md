@@ -74,7 +74,8 @@ The tool includes...
 * Sven Konings
 * Hans van der Laan
 * Pim van Leeuwen
-### Client \& supervisor
+
+### Client & supervisor
 Arend Rensink
 
 ## Contact
