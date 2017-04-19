@@ -214,4 +214,8 @@ public class Compilation extends Observable{
 
     }
 
+    public void abort() {
+        setChanged();
+        notifyObservers(CompilationProgress.ABORTED);
+    }
 }

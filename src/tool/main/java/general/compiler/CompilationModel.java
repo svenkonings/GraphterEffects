@@ -40,7 +40,11 @@ public class CompilationModel extends Observable {
      *
      * @param compilation The newly started compilation
      */
-    protected void setCompilation(Compilation compilation){
+    protected void setCompilation(Compilation compilation) {
+        if (this.compilation != null) {
+            this.compilation.abort();
+        }
+        lock.lock();
         this.compilation = compilation;
         setChanged();
         if (!compilation.isDebug()) {
@@ -48,6 +52,7 @@ public class CompilationModel extends Observable {
         } else {
             notifyObservers(CompilationProgress.DEBUGCOMPILATIONSTARTED);
         }
+        lock.unlock();
     }
 
     /**

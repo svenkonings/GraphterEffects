@@ -6,6 +6,8 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Compilation Runnable
@@ -15,7 +17,7 @@ import java.nio.file.Path;
  * excecute the different compilation methods on the {@link Compilation}, e.g:{@link Compilation#compileGraafVis()}
  */
 
-public class CompilerRunnable implements Runnable {
+public class CompilerRunnable implements Runnable, Observer{
 
     private Path scriptFile;
     private Path graphFile;
@@ -109,4 +111,12 @@ public class CompilerRunnable implements Runnable {
     }
 
 
+    @Override
+    public void update(Observable o, Object arg) {
+        if (arg instanceof CompilationProgress) {
+            if (((CompilationProgress) arg).equals(CompilationProgress.ABORTED)){
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
 }

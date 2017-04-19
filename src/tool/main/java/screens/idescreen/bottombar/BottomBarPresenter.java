@@ -9,6 +9,7 @@ import graafvis.warnings.Warning;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -36,7 +37,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
         compilationResultTitledPane.setPrefHeight(25);
         compilationResultTitledPane.setExpanded(false);
-        /*
+
         expandButton.setDisable(true);
 
         compilationResultTitledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
@@ -52,7 +53,6 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 }
             }
         });
-        */
 
         viewModel.sceneHeigthProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -79,55 +79,91 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
         switch (compilationProgress){
             case NORMALCOMPILATIONSTARTED:
                 CompilationModel.getInstance().addObserverToCompilation(this);
-                compilationResultTextArea.setText("Compilation started \n");
-                compilationResultTitledPane.setExpanded(true);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.setText("Compilation started \n");
+                        compilationResultTitledPane.setExpanded(true);
+                    }
+                });
                 break;
             case DEBUGCOMPILATIONSTARTED:
                 CompilationModel.getInstance().addObserverToCompilation(this);
-                compilationResultTextArea.setText("Debug Compilation started \n");
-                compilationResultTitledPane.setExpanded(true);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.setText("Debug Compilation started \n");
+                        compilationResultTitledPane.setExpanded(true);
+                    }
+                });
                 break;
             case SOLVED:
                 String measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
                 int nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
                 int nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
 
-                compilationResultTextArea.appendText("Constraints solved:\n");
-                compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
-                compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
-                compilationResultTextArea.appendText("Measures : \n");
-                compilationResultTextArea.appendText(measures + "\n");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.appendText("Constraints solved:\n");
+                        compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
+                        compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
+                        compilationResultTextArea.appendText("Measures : \n");
+                        compilationResultTextArea.appendText(measures + "\n");
+                    }
+                });
                 break;
             case SVGGENERATED:
-                compilationResultTextArea.appendText("SVG generated\n");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.appendText("SVG generated\n");
+                    }
+                });
                 break;
             case ERROROCCURED:
-                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
-                        CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
+                                CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
+                    }
+                });
                 break;
             case NOSOLUTION:
                 measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
                 nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
                 nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
 
-                compilationResultTextArea.appendText("No solution found:\n");
-                compilationResultTextArea.appendText("Constraints solved:\n");
-                compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
-                compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
-                compilationResultTextArea.appendText("Measures : \n");
-                compilationResultTextArea.appendText(measures + "\n");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.appendText("No solution found:\n");
+                        compilationResultTextArea.appendText("Constraints solved:\n");
+                        compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
+                        compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
+                        compilationResultTextArea.appendText("Measures : \n");
+                        compilationResultTextArea.appendText(measures + "\n");
+                    }
+                });
                 break;
             case COMPILEERROR:
-                compilationResultTextArea.appendText("A compile error occured:");
-                compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
-                        CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
-                Compilation compilation = CompilationModel.getInstance().getCompilation();
-                for (VisError error : compilation.getErrors()) {
-                    compilationResultTextArea.appendText(error.toString() + "\n");
-                }
-                for (Warning warning : compilation.getWarnings()) {
-                    compilationResultTextArea.appendText(warning.toString() + "\n");
-                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        compilationResultTextArea.appendText("A compile error occured:");
+                        compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
+                                CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
+                        Compilation compilation = CompilationModel.getInstance().getCompilation();
+                        for (VisError error : compilation.getErrors()) {
+                            compilationResultTextArea.appendText(error.toString() + "\n");
+                        }
+                        for (Warning warning : compilation.getWarnings()) {
+                            compilationResultTextArea.appendText(warning.toString() + "\n");
+                        }
+
+                    }
+                });
                 break;
         }
     }
@@ -143,7 +179,6 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
     }
 
-    /*
     public void expandButtonPressed(ActionEvent actionEvent) {
         if (compilationResultTitledPane.isExpanded()) {
             if (!maximized) {
@@ -156,7 +191,5 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 expandButton.setText("Maximize");
             }
         }
-        //System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
     }
-    */
 }

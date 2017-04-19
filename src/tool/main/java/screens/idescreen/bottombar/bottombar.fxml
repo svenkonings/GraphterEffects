@@ -9,8 +9,6 @@
       <TextArea fx:id="compilationResultTextArea" editable="false" />
    </content>
    <graphic>
-      <!--
       <Button fx:id="expandButton" mnemonicParsing="false" onAction="#expandButtonPressed" text="Maximize" />
-      -->
    </graphic>
 </TitledPane>
