@@ -37,14 +37,18 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
         compilationResultTitledPane.setPrefHeight(25);
         compilationResultTitledPane.setExpanded(false);
+        expandButton.setDisable(true);
 
         compilationResultTitledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                    expandButton.setDisable(false);
                 } else {
                     compilationResultTitledPane.setPrefHeight(25);
+                    expandButton.setText("Maximize");
+                    expandButton.setDisable(true);
                 }
             }
         });
