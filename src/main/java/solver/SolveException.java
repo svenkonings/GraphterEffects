@@ -1,7 +1,7 @@
 package solver;
 
 /**
- * An exception for duplicate elements.
+ * An exception for when an error occurs during the solving process.
  */
 public class SolveException extends Exception {
 

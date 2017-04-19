@@ -33,6 +33,7 @@ public class Main {
         Solver solver = new Solver();
         prolog.loadLibrary(new ASRCLibrary(graph));
         VisMap visMap = solver.solve(prolog);
+        visMap.getModel().getSolver().printStatistics();
         Document document = SvgDocumentGenerator.generate(visMap.values());
         SvgDocumentGenerator.writeDocument(document, args[2]);
     }
