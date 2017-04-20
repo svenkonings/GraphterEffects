@@ -130,6 +130,9 @@ public class DefaultVisLibrary extends VisLibrary {
         /*
           First, query the bounds
         */
+        putQuery("eval", ((visMap, results) -> {
+            // Do nothing.
+        }));
         putQuery("bounds(MinBound, MaxBound)", (visMap, results) -> {
             if (results.size() == 0) {
                 return;
