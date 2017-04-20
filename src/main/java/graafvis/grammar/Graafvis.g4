@@ -20,42 +20,50 @@ edgeLabelGen: EDGE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
-clause: (antecedent=aTermSeries ARROW)? consequence=cTermSeries EOL;
+clause: (antecedent=aTermExpr ARROW)? consequence=cTermSeries EOL;
 
 /* Antecedent */
-aTerm: aTerm SEMICOLON aTerm                                                                                            #orAntecedent
-     | NOT aTerm                                                                                                        #notAntecedent
-     | functor (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                                       #compoundAntecedent
-     | functor BRACE_OPEN (terms+=aMultiTerm COMMA)* terms+=aMultiTerm BRACE_CLOSE                                      #multiAndCompoundAntecedent
-     | functor BRACE_OPEN (terms+=aMultiTerm SEMICOLON)* terms+=aMultiTerm BRACE_CLOSE                                  #multiOrCompoundAntecedent
+aTerm: NOT aTerm                                                                                                        #notAntecedent
+     | functor (PAR_OPEN arguments=aTermSeries? PAR_CLOSE)?                                                             #compoundAntecedent
+     | functor BRACE_OPEN (args+=aMultiArg COMMA)* args+=aMultiArg BRACE_CLOSE                                          #multiAndCompoundAntecedent
+     | functor BRACE_OPEN (args+=aMultiArg SEMICOLON)* args+=aMultiArg BRACE_CLOSE                                      #multiOrCompoundAntecedent
      | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
+     | PAR_OPEN aTermExpr PAR_CLOSE                                                                                     #parAntecedent
      | variable=HID                                                                                                     #variableAntecedent
      | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
-     | PAR_OPEN aTermSeries PAR_CLOSE                                                                                   #parAntecedent
      | STRING                                                                                                           #stringAntecedent
      | NUMBER                                                                                                           #numberAntecedent
      ;
 
-aTermSeries: (terms+=aTerm COMMA)* terms+=aTerm;
+aTermSeries: aTermSeries SEMICOLON aTermSeries                                                                          #semicolonSeriesAntecedent
+           | aTermSeries COMMA aTermSeries                                                                              #commaSeriesAntecedent
+           | aTerm                                                                                                      #termSeriesAntecedent
+           ;
 
-aMultiTerm: aTerm
-          | PAR_OPEN PAR_CLOSE
-          ;
+aTermExpr: aTermExpr COMMA aTermExpr                                                                                    #andExpressionAntecedent
+         | aTermExpr SEMICOLON aTermExpr                                                                                #orExpressionAntecedent
+         | PAR_OPEN aTermExpr PAR_CLOSE                                                                                 #parExpressionAntecedent
+         | aTerm                                                                                                        #termExpressionAntecedent
+         ;
+
+aMultiArg: PAR_OPEN aTermSeries? PAR_CLOSE
+         | aTerm
+         ;
 
 /* Consequence */
-cTerm: functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                       #compoundConsequence
-     | functor BRACE_OPEN (terms+=cMultiTerm COMMA)* terms+=cMultiTerm BRACE_CLOSE                                      #multiCompoundConsequence
+cTerm: functor (PAR_OPEN arguments=cTermSeries? PAR_CLOSE)?                                                             #compoundConsequence
+     | functor BRACE_OPEN (args+=cMultiArg COMMA)* args+=cMultiArg BRACE_CLOSE                                          #multiCompoundConsequence
      | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | STRING                                                                                                           #stringConsequence
      | NUMBER                                                                                                           #numberConsequence
      ;
 
-cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
-
-cMultiTerm: cTerm
-          | PAR_OPEN cTermSeries? PAR_CLOSE
+cMultiArg : PAR_OPEN cTermSeries? PAR_CLOSE
+          | cTerm
           ;
+
+cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor

@@ -35,15 +35,15 @@ aTerm: NOT aTerm                                                                
      | NUMBER                                                                                                           #numberAntecedent
      ;
 
-aTermSeries: aTermSeries SEMICOLON aTermSeries
-           | aTermSeries COMMA aTermSeries
-           | aTerm
+aTermSeries: aTermSeries SEMICOLON aTermSeries                                                                          #orSeriesAntecedent
+           | aTermSeries COMMA aTermSeries                                                                              #andSeriesAntecedent
+           | aTerm                                                                                                      #termSeriesAntecedent
            ;
 
-aTermExpr: aTermExpr COMMA aTermExpr
-         | aTermExpr SEMICOLON aTermExpr
-         | PAR_OPEN aTermExpr PAR_CLOSE
-         | aTerm
+aTermExpr: aTermExpr COMMA aTermExpr                                                                                    #andExpressionAntecedent
+         | aTermExpr SEMICOLON aTermExpr                                                                                #orExpressionAntecedent
+         | PAR_OPEN aTermExpr PAR_CLOSE                                                                                 #parExpressionAntecedent
+         | aTerm                                                                                                        #termExpressionAntecedent
          ;
 
 aMultiArg: PAR_OPEN aTermSeries? PAR_CLOSE
@@ -63,7 +63,7 @@ cMultiArg : PAR_OPEN cTermSeries? PAR_CLOSE
           | cTerm
           ;
 
-cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm ;
+cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor

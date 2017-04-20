@@ -176,6 +176,7 @@ public class RuleGeneratorTest {
                                 or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))))
                 )
         );
+        //TODO node{(X), (A,(B1,B2;B3);C), Z} -> r.
     }
 
     @Test

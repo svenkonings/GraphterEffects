@@ -132,7 +132,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         for (CTermContext cTerm : ctx.consequence.terms) {
             if (cTerm instanceof MultiCompoundConsequenceContext) {
                 // TODO werkt dit wel?
-                aggregateVisitMultiTerms(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).terms);
+                aggregateVisitMultiTerms(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
             }
             addClause(visit(cTerm), antecedent);
         }
@@ -145,10 +145,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- ANTECEDENT ---
 
-    @Override public Term visitOrAntecedent(OrAntecedentContext ctx) {
-        return or(visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
-    }
-
     @Override public Term visitNotAntecedent(NotAntecedentContext ctx) {
         return struct(TUP_NOT, visit(ctx.aTerm()));
     }
@@ -158,15 +154,15 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiAndCompoundAntecedent(MultiAndCompoundAntecedentContext ctx) {
-        return and(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
+        return and(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitMultiOrCompoundAntecedent(MultiOrCompoundAntecedentContext ctx) {
-        return or(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
+        return or(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitParAntecedent(ParAntecedentContext ctx) {
-        return visit(ctx.aTermSeries());
+        return visit(ctx.aTermExpr());
     }
 
 //    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
@@ -199,8 +195,24 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return number(ctx.getText());
     }
 
-    @Override public Term visitATermSeries(ATermSeriesContext ctx) {
-        return safeAnd(visitAggregate(ctx.terms));
+    @Override public Term visitOrSeriesAntecedent(OrSeriesAntecedentContext ctx) {
+        return or(visit(ctx.aTermSeries(0)), visit(ctx.aTermSeries(1)));
+    }
+
+    @Override public Term visitAndSeriesAntecedent(AndSeriesAntecedentContext ctx) {
+        return and(visit(ctx.aTermSeries(0)), visit(ctx.aTermSeries(1)));
+    }
+
+    @Override public Term visitAndExpressionAntecedent(AndExpressionAntecedentContext ctx) {
+        return and(visit(ctx.aTermExpr(0)), visit(ctx.aTermExpr(1)));
+    }
+
+    @Override public Term visitOrExpressionAntecedent(OrExpressionAntecedentContext ctx) {
+        return or(visit(ctx.aTermExpr(0)), visit(ctx.aTermExpr(1)));
+    }
+
+    @Override public Term visitParExpressionAntecedent(ParExpressionAntecedentContext ctx) {
+        return visit(ctx.aTermExpr());
     }
 
     // --- CONSEQUENCE ---
@@ -210,7 +222,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiCompoundConsequence(MultiCompoundConsequenceContext ctx) {
-        return and(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
+        return and(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {
@@ -248,34 +260,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // Not checked for terms == null, as grammar prohibits p{}
     public Term[] aggregateVisitMultiTerms(FunctorContext functor, List<? extends ParseTree> multiTerms) {
-        // TODO check for null: [] en p()
-        // TODO terminology in comments
-        // Casting to make this function usable for all compound contexts
-//        List<? extends ParseTree> multiTerms;
-//        FunctorContext functor;
-//        if (ctx instanceof MultiAndCompoundAntecedentContext) {
-//            multiTerms = ((MultiAndCompoundAntecedentContext) ctx).terms;
-//            functor = ((MultiAndCompoundAntecedentContext) ctx).functor();
-//        } else if (ctx instanceof MultiOrCompoundAntecedentContext) {
-//            multiTerms = ((MultiOrCompoundAntecedentContext) ctx).terms;
-//            functor = ((MultiOrCompoundAntecedentContext) ctx).functor();
-//        } else {
-//            multiTerms = ((MultiCompoundConsequenceContext) ctx).terms;
-//            functor = ((MultiCompoundConsequenceContext) ctx).functor();
-//        }
         int n = multiTerms.size();
         Term[] results = new Term[n];
         for (int i = 0; i < n; i++) {
-            results[i] = safeStruct(getFunctor(functor), visitAggregate(getListFromMultiTerms(multiTerms.get(i))));
-//            if (multiTerm instanceof ATermSeriesContext) {
-//                // p{(X, Y), (A), (B, c, "hi")}
-//                System.out.println("AVMT Termtuple: " + multiTerms.get(i).getText());
-//                results[i] = struct(getFunctor(functor), visitAggregate(((ATermSeriesContext) multiTerm).terms));
-//            } else {
-//                // p{a, B, "hi", [a,b,c,d]}
-//                System.out.println("AVMT Term: " + multiTerms.get(i).getText());
-//                results[i] = struct(getFunctor(functor), visit(multiTerms.get(i)));
-//            }
+            results[i] = safeStruct(getFunctor(functor), visit(getMultiArg(multiTerms.get(i))));
         }
         return results;
     }
@@ -295,48 +283,41 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     public static List<? extends ParseTree> getListFromTermSeries(ParseTree termContainer) {
         if (termContainer instanceof ATermSeriesContext) {
+            // Antecedent
             return ((ATermSeriesContext) termContainer).terms;
         }
+        // Consequence
         return ((CTermSeriesContext) termContainer).terms;
     }
 
-    public static List<? extends ParseTree> getListFromMultiTerms(ParseTree termContainer) {
+    public static ParseTree getMultiArg(ParseTree termContainer) {
         System.out.println("TC " + termContainer.getText());
-        if (termContainer instanceof AMultiTermContext) {
+        if (termContainer instanceof AMultiArgContext) {
             // MultiTerm in antecedent
-            AMultiTermContext tc = (AMultiTermContext) termContainer;
-            ParseTree aTerm = tc.aTerm();
-            // No terms: empty parenthesis
-            if (aTerm == null) {
-                return null;
-            }
+            AMultiArgContext tc = (AMultiArgContext) termContainer;
             // Terms available
             // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
-            if (aTerm instanceof ATermSeriesContext) {
-                return ((ATermSeriesContext) aTerm).terms;
+            if (tc.aTermSeries() != null) {
+                return tc.aTermSeries();
             }
             // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
-            return inList(tc.aTerm());
+            if (tc.aTerm() != null) {
+                return tc.aTerm();
+            }
+            // [Case 3] No terms: empty parenthesis
+            return null;
         }
         // MultiTerm in consequence
-        CMultiTermContext tc = (CMultiTermContext) termContainer;
+        CMultiArgContext tc = (CMultiArgContext) termContainer;
         // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
         if (tc.cTermSeries() != null) {
-            return tc.cTermSeries().terms;
+            return tc.cTermSeries();
         }
         // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
         if (tc.cTerm() != null) {
-            return inList(tc.cTerm());
+            return tc.cTerm();
         }
-        // No terms: empty parenthesis
         return null;
-//        CMultiTermContext tc = (CMultiTermContext) termContainer;
-//        // Without parenthesis
-//        if (tc.cTermTopLevel() != null) {
-//            return inList(tc.cTermTopLevel());
-//        }
-//        // With parenthesis (probably contains multiple terms)
-//        return tc.cTermSeries().terms;
     }
 
     // --- String building ---
