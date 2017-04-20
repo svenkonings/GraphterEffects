@@ -37,13 +37,12 @@ aTerm: NOT aTerm                                                                
 
 aArgSeries: args+=orSeries (COMMA args+=orSeries)*;
 
-orSeries : aTerm (SEMICOLON aTerm)*;
+orSeries: args+=aTerm (SEMICOLON args+=aTerm)*;
 
-
-aTermExpr: aTermExpr COMMA aTermExpr
-         | aTermExpr SEMICOLON aTermExpr
-         | PAR_OPEN aTermExpr PAR_CLOSE
-         | aTerm
+aTermExpr: aTermExpr COMMA aTermExpr                                                                                    #andExpressionAntecedent
+         | aTermExpr SEMICOLON aTermExpr                                                                                #orExpressionAntecedent
+         | PAR_OPEN aTermExpr PAR_CLOSE                                                                                 #parExpressionAntecedent
+         | aTerm                                                                                                        #termExpressionAntecedent
          ;
 
 aMultiArg: PAR_OPEN aArgSeries? PAR_CLOSE
@@ -59,11 +58,11 @@ cTerm: functor (PAR_OPEN args=cArgSeries? PAR_CLOSE)?                           
      | NUMBER                                                                                                           #numberConsequence
      ;
 
+cArgSeries: (args+=cTerm COMMA)* args+=cTerm ;
+
 cMultiArg : PAR_OPEN cArgSeries? PAR_CLOSE
           | cTerm
           ;
-
-cArgSeries: (args+=cTerm COMMA)* args+=cTerm ;
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor

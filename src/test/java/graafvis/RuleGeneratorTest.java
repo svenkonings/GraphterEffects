@@ -25,15 +25,15 @@ public class RuleGeneratorTest {
         multAssert("p(X), p(Y).", struct("p", var("X")), struct("p", var("Y")));
         // TODO LISTS
         // List
-//        singleAssert("p([X,Y]).", struct("p", list(var("X"), var("Y"))));
-//        // arg1: list, arg2: constant
-//        singleAssert("shape([X,Y], square).",
-//                struct("shape", list(var("X"), var("Y")), struct("square"))
-//        );
-//        // Nested list
-//        singleAssert("shape([X,[3, \"wolf\"]], square).",
-//                struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square"))
-//        );
+        singleAssert("p([X,Y]).", struct("p", list(var("X"), var("Y"))));
+        // arg1: list, arg2: constant
+        singleAssert("shape([X,Y], square).",
+                struct("shape", list(var("X"), var("Y")), struct("square"))
+        );
+        // Nested list
+        singleAssert("shape([X,[3, \"wolf\"]], square).",
+                struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square"))
+        );
         // TODO head & tail lists
         // TODO Find way to test wildcards
     }
@@ -55,36 +55,35 @@ public class RuleGeneratorTest {
                 clause(struct("s", var("X")), and(struct("p", var("X")), struct("q", var("X"))))
         );
         // TODO Lists
-//        singleAssert("node(X), node(Y), edge(X, Y) -> shape([X,Y], line).",
-//                clause(
-//                        struct("shape", list(var("X"), var("Y")), struct("line")),
-//                        and(struct("node", var("X")), struct("node", var("Y")), struct("edge", var("X"), var("Y")))
-//                )
-//        );
+        singleAssert("node(X), node(Y), edge(X, Y) -> shape([X,Y], line).",
+                clause(
+                        struct("shape", list(var("X"), var("Y")), struct("line")),
+                        and(struct("node", var("X")), struct("node", var("Y")), struct("edge", var("X"), var("Y")))
+                )
+        );
 
         // Or
-        // TODO order
-//        singleAssert("p(X); q(X) -> r(X).",
-//                clause(struct("r", var("X")), or(struct("p", var("X")), struct("q", var("X"))))
-//        );
-//        singleAssert("p(X), q(X); r(X) -> s(X).",
-//                clause(
-//                        struct("s", var("X")),
-//                        or(and(struct("p", var("X")), struct("q", var("X"))), struct("r", var("X")))
-//                )
-//        );
-//        singleAssert("p(X); q(X), r(X) -> s(X).",
-//                clause(
-//                        struct("s", var("X")),
-//                        or(struct("p", var("X")), and(struct("q", var("X")), struct("r", var("X"))))
-//                )
-//        );
-//        singleAssert("p(X); q(X), r(X); s(X) -> t(X).",
-//                clause(
-//                        struct("t", var("X")),
-//                        or(or(struct("p", var("X")), and(struct("q", var("X")), struct("r", var("X")))), struct("s", var("X")))
-//                )
-//        );
+        singleAssert("p(X); q(X) -> r(X).",
+                clause(struct("r", var("X")), or(struct("p", var("X")), struct("q", var("X"))))
+        );
+        singleAssert("p(X), q(X); r(X) -> s(X).",
+                clause(
+                        struct("s", var("X")),
+                        or(and(struct("p", var("X")), struct("q", var("X"))), struct("r", var("X")))
+                )
+        );
+        singleAssert("p(X); q(X), r(X) -> s(X).",
+                clause(
+                        struct("s", var("X")),
+                        or(struct("p", var("X")), and(struct("q", var("X")), struct("r", var("X"))))
+                )
+        );
+        singleAssert("p(X); q(X), r(X); s(X) -> t(X).",
+                clause(
+                        struct("t", var("X")),
+                        or(or(struct("p", var("X")), and(struct("q", var("X")), struct("r", var("X")))), struct("s", var("X")))
+                )
+        );
 
         // Nest
         singleAssert("p(X), (q(X); r(X)) -> s(X).",
@@ -120,30 +119,13 @@ public class RuleGeneratorTest {
         singleAssert("node{X,(Y),(Z1, Z2)}.",
                 and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z1"), var("Z2")))
         );
+        singleAssert("node{X, Y, Z} -> a.",
+                clause(struct("a"), and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))));
         // Semicolon
         singleAssert("node{X;Y;Z} -> a.",
                 clause(struct("a"), or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))))
         );
         singleAssert("node{X;(Y);(Z1, Z2)} -> a.",
-                clause(
-                        struct("a"),
-                        or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z1"), var("Z2")))
-                )
-        );
-        // And (+ mixed)
-        singleAssert("node{X and Y and Z}.",
-                and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))
-        );
-        singleAssert("node{X and Y and Z} -> a.",
-                clause(struct("a"), and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))));
-        singleAssert("node{X and (Y), (Z1, Z2)}.",
-                and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z1"), var("Z2")))
-        );
-        // Or (+ mixed)
-        singleAssert("node{X ; Y or Z} -> a.",
-                clause(struct("a"), or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))))
-        );
-        singleAssert("node{X or (Y) or (Z1, Z2)} -> a.",
                 clause(
                         struct("a"),
                         or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z1"), var("Z2")))
@@ -176,7 +158,16 @@ public class RuleGeneratorTest {
                                 or(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))))
                 )
         );
-        //TODO node{(X), (A,(B1,B2;B3);C), Z} -> r.
+        multAssert("node{(X),(A,(B1,B2;B3);C),Z} -> r.",
+                clause(
+                        struct("r"),
+                        and(
+                                struct("node", var("X")),
+                                struct("node", var("A"), or(or(and(var("B1"), var("B2")), var("B3")), var("C"))),
+                                struct("node", var("Z"))
+                        )
+                )
+        );
     }
 
     @Test

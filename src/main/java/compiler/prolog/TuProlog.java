@@ -196,6 +196,24 @@ public class TuProlog {
     }
 
     /**
+     * Creates a concatenation of or clauses with the given terms.
+     * If there are no terms, it will return an empty {@link Struct}.
+     * If there is one terms, it will return that one {@link Term}.
+     *
+     * @param terms The given term.
+     * @return The resulting {@link Term}.
+     */
+    public static Term safeOr(Term... terms) {
+        if (terms.length == 0) {
+            return new Struct();
+        } else if (terms.length == 1) {
+            return terms[0];
+        }
+        return concatTerms(";", terms);
+    }
+
+
+    /**
      * Creates a concatenation of clauses with the given name and the given terms.
      *
      * @param name  The given name.
