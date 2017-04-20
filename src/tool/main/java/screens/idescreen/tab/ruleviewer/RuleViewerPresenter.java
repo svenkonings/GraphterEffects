@@ -53,7 +53,7 @@ public class RuleViewerPresenter implements Initializable {
         headColumn.setPrefWidth(200);
         tailColumn.setCellValueFactory(cellData -> cellData.getValue().tail);
         tailColumn.prefWidthProperty().bind(rulesTable.widthProperty().subtract(headColumn.widthProperty()));
-        loadContent(CompilationModel.getInstance().getCompilation().getSolveResults().getProlog());
+        loadContent(CompilationModel.getInstance().getCompilation().getProlog());
     }
 
     public void loadContent(TuProlog tuProlog) {

@@ -5,7 +5,8 @@ package general.compiler;
  */
 public enum CompilationProgress {
 
-    NORMALCOMPILATIONSTARTED(0),DEBUGCOMPILATIONSTARTED(0),GRAAFVISCOMPILED(1),GRAPHCONVERTED(2), SOLVED(3),SVGGENERATED(4),COMPILATIONFINISHED(5),  ERROROCCURED(6), COMPILEERROR(6), NOSOLUTION(6), ABORTED(5);
+    NORMALCOMPILATIONSTARTED(0), DEBUGCOMPILATIONSTARTED(0), GRAAFVISCOMPILED(1), GRAPHLOADED(2), PROLOGLOADED(3),
+    SOLVED(4), SVGGENERATED(5), COMPILATIONFINISHED(6), ABORTED(6), ERROROCCURED(7), COMPILEERROR(7), NOSOLUTION(7);
 
     private final int ordinal;
 
@@ -16,7 +17,7 @@ public enum CompilationProgress {
     /**
      * @return the ordinal
      */
-    private int getOrdinal(){
+    private int getOrdinal() {
         return ordinal;
     }
 }

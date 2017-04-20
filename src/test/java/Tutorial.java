@@ -38,17 +38,8 @@ public class Tutorial {
             System.out.println(svgString);
 
 
-        } catch (GraafvisCompiler.SyntaxException e) {
+        } catch (GraafvisCompiler.SyntaxException | GraafvisCompiler.CheckerException | IOException | SAXException e) {
             //Thrown when the Graafvis script contains syntax errors.
-            e.printStackTrace();
-        } catch (GraafvisCompiler.CheckerException e) {
-            //Thrown when the Graafvis script contains semantics errors.
-            e.printStackTrace();
-        } catch (SAXException e) {
-            //Thrown when the Graph file contains syntax errors.
-            e.printStackTrace();
-        } catch (IOException e) {
-            //Thrown when the graph file could not be read.
             e.printStackTrace();
         }
     }

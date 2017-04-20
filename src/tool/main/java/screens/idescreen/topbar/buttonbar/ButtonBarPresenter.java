@@ -269,7 +269,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
         Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
-            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.GRAPHCONVERTED)).start();
+            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.PROLOGLOADED)).start();
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box

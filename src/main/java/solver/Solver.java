@@ -14,24 +14,17 @@ import solver.library.LibraryException;
 import solver.library.VisLibrary;
 import utils.TermUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * The constraint solver.
  */
 @SuppressWarnings("WeakerAccess")
 public class Solver {
-
     private final GraphLibraryLoader defaultGraphLibraryLoader;
-
     private final Map<String, GraphLibraryLoader> graphLibraryLoaders;
 
     private final VisLibrary defaultVisLibrary;
-
     private final Map<String, VisLibrary> visLibraries;
 
     /**
@@ -80,8 +73,32 @@ public class Solver {
         return visLibraries.remove(name);
     }
 
-    public SolveResults solve(Collection<Term> terms) throws InvalidTheoryException {
-        return solve(null, terms);
+    public TuProlog getProlog(Collection<Term> terms) {
+        return getProlog(null, terms);
+    }
+
+    public TuProlog getProlog(Graph graph, Collection<Term> terms) {
+        TuProlog prolog;
+        try {
+            prolog = new TuProlog(terms);
+        } catch (InvalidTheoryException e) {
+            throw new LibraryException(e);
+        }
+
+        if (graph != null) {
+            Set<GraphLibrary> graphLibraries = getGraphLibraries(prolog, graph);
+            graphLibraries.forEach(library -> loadGraphLibrary(prolog, library));
+        }
+        getVisLibraries(prolog).forEach(library -> loadVisLibrary(prolog, library));
+        return prolog;
+    }
+
+    public SolveResults solve(Collection<Term> terms) {
+        return solve(getProlog(terms));
+    }
+
+    public SolveResults solve(Graph graph, Collection<Term> terms) {
+        return solve(getProlog(graph, terms));
     }
 
     /**
@@ -90,46 +107,38 @@ public class Solver {
      *
      * @return The {@link List} of visualization elements.
      */
-    public SolveResults solve(Graph graph, Collection<Term> terms) {
-        TuProlog prolog;
-        try {
-            prolog = new TuProlog(terms);
-        } catch (InvalidTheoryException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (graph != null) {
-            GraphLibrary defaultGraphLibrary = defaultGraphLibraryLoader.getInstance(graph);
-            List<GraphLibrary> graphLibraries = prolog.solve("graphLibrary(X)").stream()
-                    .map(map -> map.get("X"))
-                    .map(TermUtils::stripQuotes)
-                    .map(name -> getGraphLibrary(name, graph))
-                    .collect(Collectors.toList());
-
-            loadGraphLibrary(prolog, defaultGraphLibrary);
-            graphLibraries.forEach(library -> loadGraphLibrary(prolog, library));
-        }
-
-        List<VisLibrary> visLibraries = prolog.solve("visLibrary(X)").stream()
-                .map(map -> map.get("X"))
-                .map(TermUtils::stripQuotes)
-                .map(this::getVisLibrary)
-                .collect(Collectors.toList());
-
-        loadVisLibrary(prolog, defaultVisLibrary);
-        visLibraries.forEach(library -> loadVisLibrary(prolog, library));
-
+    public SolveResults solve(TuProlog prolog) {
         Model model = new Model();
         VisMap visMap = new VisMap(model);
 
-        solveVisLibrary(visMap, prolog, defaultVisLibrary);
+        Set<VisLibrary> visLibraries = getVisLibraries(prolog);
         visLibraries.forEach(library -> solveVisLibrary(visMap, prolog, library));
-
-        setVisLibraryDefaults(visMap, defaultVisLibrary);
         visLibraries.forEach(library -> setVisLibraryDefaults(visMap, library));
 
         boolean succes = model.getSolver().solve();
         return new SolveResults(succes, prolog, model, visMap);
+    }
+
+    private Set<GraphLibrary> getGraphLibraries(TuProlog prolog, Graph graph) {
+        Set<GraphLibrary> libraries = new HashSet<>();
+        libraries.add(defaultGraphLibraryLoader.getInstance(graph));
+        prolog.solve("graphLibrary(X)").stream()
+                .map(map -> map.get("X"))
+                .map(TermUtils::stripQuotes)
+                .map(name -> getGraphLibrary(name, graph))
+                .forEach(libraries::add);
+        return libraries;
+    }
+
+    private Set<VisLibrary> getVisLibraries(TuProlog prolog) {
+        Set<VisLibrary> libraries = new HashSet<>();
+        libraries.add(defaultVisLibrary);
+        prolog.solve("visLibrary(X)").stream()
+                .map(map -> map.get("X"))
+                .map(TermUtils::stripQuotes)
+                .map(this::getVisLibrary)
+                .forEach(libraries::add);
+        return libraries;
     }
 
     private static void loadGraphLibrary(TuProlog prolog, GraphLibrary library) {
