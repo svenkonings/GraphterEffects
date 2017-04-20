@@ -1,4 +1,4 @@
-grammar Graafvis;
+grammar BetterGraafvis;
 
 import GraafvisVocab;
 
