@@ -2,7 +2,6 @@ package asrc;
 
 
 import alice.tuprolog.*;
-import exceptions.SolvingInProgressException;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
@@ -25,6 +24,10 @@ public abstract class GraphLibrary extends Library {
      * {@link Graph} on which predicates are performed.
      */
     protected final Graph graph;
+
+    public Graph getGraph() {
+        return graph;
+    }
 
     public GraphLibrary(Graph graph) {
         this.graph = graph;

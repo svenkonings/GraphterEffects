@@ -127,6 +127,8 @@ public class DefaultVisLibrary extends VisLibrary {
      * Set the default queries and their associated {@link QueryConsumer}.
      */
     private void setDefaultQueries() {
+
+        putQuery("eval", ((visMap, maps) -> {}));
         /*
           First, query the bounds
         */

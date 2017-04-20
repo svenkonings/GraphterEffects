@@ -23,8 +23,7 @@ public class GraphRuleTests {
 
     public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException, InvalidTheoryException {
         TuProlog prolog = new TuProlog();
-        ASRCLibrary library = new ASRCLibrary();
-        library.setGraph(graph);
+        ASRCLibrary library = new ASRCLibrary(graph);
         try {
             prolog.loadLibrary(library);
         } catch (InvalidLibraryException e) {

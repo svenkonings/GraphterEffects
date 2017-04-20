@@ -201,7 +201,6 @@ public class Compilation extends Observable{
     public TuProlog getProlog() throws InvalidTheoryException, InvalidLibraryException {
         TuProlog tuProlog = new TuProlog(scriptRules);
         ASRCLibrary asrcLibrary = new ASRCLibrary(graph);
-        asrcLibrary.setGraph(graph);
         tuProlog.loadLibrary(asrcLibrary);
         return tuProlog;
 
