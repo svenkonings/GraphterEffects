@@ -1,6 +1,6 @@
 package general.compiler;
 
-import general.files.DocumentModel;
+import general.files.FileModel;
 import general.files.IOManager;
 import org.dom4j.Document;
 
@@ -39,7 +39,7 @@ public class CompilerUtils {
      * @param svgDocument generated SVG
      */
     public static void saveGeneratedSVG(String filename, Document svgDocument){
-        int counter = DocumentModel.getInstance().generateSVGCounter(filename);
+        int counter = FileModel.getInstance().generateSVGCounter(filename);
         if (counter != 0){
             filename += "(" + counter + ")";
         }
@@ -55,7 +55,7 @@ public class CompilerUtils {
         Path file = Paths.get("temp/compiled/",svgDocument.getName() + ".svg");
         try {
             Files.write(file, svgxmltext, Charset.forName("UTF-8"));
-            DocumentModel.getInstance().addGeneratedSVG(file);
+            FileModel.getInstance().addGeneratedSVG(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -41,9 +41,6 @@ public class CompilationModel extends Observable {
      * @param compilation The newly started compilation
      */
     protected void setCompilation(Compilation compilation) {
-        if (this.compilation != null) {
-            this.compilation.abort();
-        }
         lock.lock();
         this.compilation = compilation;
         setChanged();
@@ -63,9 +60,9 @@ public class CompilationModel extends Observable {
      * @param observer the object which wants to observe the compilation
      */
     public void addObserverToCompilation(Observer observer){
-        compilation.addObserver(observer);
         lock.lock();
-        if (this.countObservers() + 1 == compilation.countObservers()){
+        compilation.addObserver(observer);
+        if (this.countObservers() + 1 == compilation.countObservers()){ //The +1 is for the CompilerRunnable
             allObserversAdded.signal();
         }
         lock.unlock();

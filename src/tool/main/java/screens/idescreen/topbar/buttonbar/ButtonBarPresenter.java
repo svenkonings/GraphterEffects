@@ -5,8 +5,8 @@ import general.ViewModel;
 import general.compiler.CompilationProgress;
 import general.compiler.CompilerRunnable;
 import general.compiler.CompilerUtils;
-import general.files.DocumentModel;
-import general.files.DocumentModelChange;
+import general.files.FileModel;
+import general.files.FileModelChange;
 import general.files.IOManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -45,8 +45,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Path graafvisScriptPath = DocumentModel.getInstance().getGraafVisFilePath();
-        Map<String,Path> graphPathMap = DocumentModel.getInstance().getGraphPathMap();
+        Path graafvisScriptPath = FileModel.getInstance().getGraafVisFilePath();
+        Map<String,Path> graphPathMap = FileModel.getInstance().getGraphPathMap();
 
         if (graafvisScriptPath == null) {
             graafVisScriptNameLabel.setText("New Script");
@@ -79,7 +79,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                         {
                             // Since the ListView reuses cells, we need to get the item first, before making changes.
                             String item = getItem();
-                            DocumentModel.getInstance().removeGraph(item);
+                            FileModel.getInstance().removeGraph(item);
                             //if (isSelected()) {
                             //graphComboBox.getSelectionModel().select(null);
                             //}
@@ -126,7 +126,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
-        graphComboBox.setOnAction(event -> DocumentModel.getInstance().setSelectedGraph(
+        graphComboBox.setOnAction(event -> FileModel.getInstance().setSelectedGraph(
                 graphComboBox.getSelectionModel().getSelectedItem().toString()));
 
 
@@ -147,7 +147,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         compileButton.setDisable(!choiceBoxFilled);
         debugButton.setDisable(!choiceBoxFilled);
 
-        DocumentModel.getInstance().addObserver(this);
+        FileModel.getInstance().addObserver(this);
         bind();
     }
 
@@ -157,10 +157,10 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     public void compileButtonPressed(ActionEvent actionEvent) {
         if (graphComboBox.getSelectionModel().getSelectedIndex() >= 0) {
-            Path graphFilePath = DocumentModel.getInstance().getSelectedGraph();
-            Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
+            Path graphFilePath = FileModel.getInstance().getSelectedGraph();
+            Path scriptFilePath = FileModel.getInstance().getGraafVisFilePath();
 
-            String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
+            String codeOnScreen = FileModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
             Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(), codeOnScreen);
             try {
                 new Thread(new CompilerRunnable(tempFilePath, graphFilePath)).start();
@@ -175,8 +175,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        Pair<DocumentModelChange, Object> arguments = (Pair) arg;
-        DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
+        Pair<FileModelChange, Object> arguments = (Pair) arg;
+        FileModelChange documentModelChange = (FileModelChange) arguments.get(0);
         int indexSelected;
         switch (documentModelChange) {
             case GRAPHFILELOADED:
@@ -187,7 +187,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
                 graphComboBox.getItems().add(graphFileNameNew);
                 graphComboBox.getSelectionModel().select(graphComboBox.getItems().size()-1);
-                DocumentModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
+                FileModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
 
                                break;
             case GRAPHFILEREMOVED:
@@ -203,7 +203,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 }
 
                 graphComboBox.getSelectionModel().select(indexSelected);
-                DocumentModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
+                FileModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
 
                 if(graphComboBox.getItems().size() == 0){
                     choiceBoxFilled = false;
@@ -213,7 +213,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 break;
 
             case GRAAFVISFILELOADED:
-                Path script = DocumentModel.getInstance().getGraafVisFilePath();
+                Path script = FileModel.getInstance().getGraafVisFilePath();
                 graafVisScriptNameLabel.setText(script.getFileName().toString());
                 break;
             default:
@@ -227,12 +227,12 @@ public class ButtonBarPresenter implements Initializable, Observer {
         MenuItem showAsText = new MenuItem("Show File");
         contextMenu.getItems().addAll(showAsImage, showAsText);
         showAsImage.setOnAction(event -> {
-            Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
+            Path selectedGraphPath = FileModel.getInstance().getSelectedGraph();
             CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
             new Thread(compilerRunnable).start();
         });
         showAsText.setOnAction(event -> {
-            Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
+            Path selectedGraphPath = FileModel.getInstance().getSelectedGraph();
             String graphAsString = "";
             try {
                 graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
@@ -249,10 +249,10 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void generateVisElemsButtonPressed(ActionEvent actionEvent) {
-        Path graphFilePath = DocumentModel.getInstance().getSelectedGraph();
-        Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
+        Path graphFilePath = FileModel.getInstance().getSelectedGraph();
+        Path scriptFilePath = FileModel.getInstance().getGraafVisFilePath();
 
-        String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
+        String codeOnScreen = FileModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
         Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
             new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.SOLVED)).start();
@@ -263,10 +263,10 @@ public class ButtonBarPresenter implements Initializable, Observer {
     }
 
     public void generateRulesButtonPressed(ActionEvent actionEvent) {
-        Path graphFilePath = DocumentModel.getInstance().getSelectedGraph();
-        Path scriptFilePath = DocumentModel.getInstance().getGraafVisFilePath();
+        Path graphFilePath = FileModel.getInstance().getSelectedGraph();
+        Path scriptFilePath = FileModel.getInstance().getGraafVisFilePath();
 
-        String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
+        String codeOnScreen = FileModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
         Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
             new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.PROLOGLOADED)).start();

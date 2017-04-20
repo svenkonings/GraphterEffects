@@ -119,9 +119,9 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 break;
             case COMPILEERROR:
                 Platform.runLater(() -> {
-                    compilationResultTextArea.appendText("A compile error occured:");
-                    compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
-                            CompilationModel.getInstance().getCompilation().getException().getMessage() + "\n");
+                    compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString()
+                            //+ CompilationModel.getInstance().getCompilation().getException().getMessage()
+                            + "\n");
                     Compilation compilation = CompilationModel.getInstance().getCompilation();
                     for (VisError error : compilation.getErrors()) {
                         compilationResultTextArea.appendText(error.toString() + "\n");

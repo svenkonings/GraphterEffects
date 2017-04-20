@@ -2,7 +2,7 @@ package screens.idescreen.topbar.menubar;
 
 import general.ViewModel;
 import general.compiler.CompilerRunnable;
-import general.files.DocumentModel;
+import general.files.FileModel;
 import general.files.IOManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MenuPresenter implements Initializable {
+public class MenuBarPresenter implements Initializable {
 
     public Pane borderPane;
     public MenuBar menuBar;
@@ -57,8 +57,8 @@ public class MenuPresenter implements Initializable {
     }
 
     public void loadScriptMenuItemPressed(ActionEvent actionEvent) {
-        if (!DocumentModel.getInstance().graafvisChangesSaved()){
-            if(IOManager.showGraafvisScriptSaveDialog(DocumentModel.getInstance().getGraafVisFilePath(), DocumentModel.getInstance().graafVisCode)){
+        if (!FileModel.getInstance().graafvisChangesSaved()){
+            if(IOManager.showGraafvisScriptSaveDialog(FileModel.getInstance().getGraafVisFilePath(), FileModel.getInstance().graafVisCode)){
                 IOManager.showLoadScriptPopup();
             }
         } else {
@@ -69,14 +69,14 @@ public class MenuPresenter implements Initializable {
     }
 
     public void newScriptMenuItemPressed(ActionEvent actionEvent) {
-        if (!DocumentModel.getInstance().graafvisChangesSaved()){
-            if(IOManager.showGraafvisScriptSaveDialog(DocumentModel.getInstance().getGraafVisFilePath(), DocumentModel.getInstance().graafVisCode)){
-                DocumentModel.getInstance().newGraafVisFile();
+        if (!FileModel.getInstance().graafvisChangesSaved()){
+            if(IOManager.showGraafvisScriptSaveDialog(FileModel.getInstance().getGraafVisFilePath(), FileModel.getInstance().graafVisCode)){
+                FileModel.getInstance().newGraafVisFile();
             }
         } else {
-            DocumentModel.getInstance().newGraafVisFile();
+            FileModel.getInstance().newGraafVisFile();
         }
-        DocumentModel.getInstance().newGraafVisFile();
+        FileModel.getInstance().newGraafVisFile();
     }
 
     public void saveMenuItemPressed(ActionEvent actionEvent) {
@@ -89,18 +89,18 @@ public class MenuPresenter implements Initializable {
         }
 
         if (viewerTabID.endsWith(".vis")){
-            Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
-            String code = DocumentModel.getInstance().graafVisCode;
+            Path codePath = FileModel.getInstance().getGraafVisFilePath();
+            String code = FileModel.getInstance().graafVisCode;
             List<String> codeList = new ArrayList<>();
             codeList.add(code);
             try {
                 Files.write(codePath, codeList, Charset.forName("UTF-8"));
-                DocumentModel.getInstance().loadGraafVisFile(codePath);
+                FileModel.getInstance().loadGraafVisFile(codePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            IOManager.showSaveSVGPopup(DocumentModel.getInstance().getGeneratedSVG(viewerTabID));
+            IOManager.showSaveSVGPopup(FileModel.getInstance().getGeneratedSVG(viewerTabID));
         }
     }
 
@@ -114,11 +114,11 @@ public class MenuPresenter implements Initializable {
         String viewerTabID = viewerTab.getText();
 
         if (tabPane.getSelectionModel().getSelectedIndex() == 0){
-            Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
-            String code = DocumentModel.getInstance().graafVisCode;
+            Path codePath = FileModel.getInstance().getGraafVisFilePath();
+            String code = FileModel.getInstance().graafVisCode;
             IOManager.showSaveScriptPopup(codePath, code);
         } else {
-            IOManager.showSaveSVGPopup(DocumentModel.getInstance().getGeneratedSVG(viewerTabID));
+            IOManager.showSaveSVGPopup(FileModel.getInstance().getGeneratedSVG(viewerTabID));
         }
     }
 
@@ -128,7 +128,7 @@ public class MenuPresenter implements Initializable {
         ButtonBar buttonBar = (ButtonBar) ((SplitPane) ((AnchorPane) topBar.getItems().get(1)).getChildren().get(0)).getItems().get(1);
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
         String selectedGraphName = comboBox.getSelectionModel().getSelectedItem().toString();
-        Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+        Path selectedGraphPath = FileModel.getInstance().getGraphPathMap().get(selectedGraphName);
         CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
         new Thread(compilerRunnable).start();
     }
@@ -140,7 +140,7 @@ public class MenuPresenter implements Initializable {
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
         String selectedGraphName = comboBox.getSelectionModel().getSelectedItem().toString();
 
-        Path selectedGraphPath = DocumentModel.getInstance().getGraphPathMap().get(selectedGraphName);
+        Path selectedGraphPath = FileModel.getInstance().getGraphPathMap().get(selectedGraphName);
         String graphAsString = "";
         try {
             graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
@@ -155,10 +155,10 @@ public class MenuPresenter implements Initializable {
     }
 
     public void undoChangesMenutemPressed(ActionEvent actionEvent) {
-        Path graafvisScriptPath = DocumentModel.getInstance().getGraafVisFilePath();
-        if (!DocumentModel.getInstance().graafvisChangesSaved()) {
-            if (IOManager.showGraafvisScriptSaveDialog(graafvisScriptPath, DocumentModel.getInstance().graafVisCode)) {
-                DocumentModel.getInstance().loadGraafVisFile(graafvisScriptPath);
+        Path graafvisScriptPath = FileModel.getInstance().getGraafVisFilePath();
+        if (!FileModel.getInstance().graafvisChangesSaved()) {
+            if (IOManager.showGraafvisScriptSaveDialog(graafvisScriptPath, FileModel.getInstance().graafVisCode)) {
+                FileModel.getInstance().loadGraafVisFile(graafvisScriptPath);
             }
         }
     }

@@ -1,22 +1,21 @@
 package general.compiler;
 
 import alice.tuprolog.Term;
+import graafvis.GraafvisCompiler;
+import graafvis.errors.VisError;
+import graafvis.warnings.Warning;
 import graphloader.Importer;
+import org.dom4j.Document;
+import org.graphstream.graph.Graph;
+import org.xml.sax.SAXException;
 import prolog.TuProlog;
 import solver.SolveResults;
 import solver.Solver;
 import svg.SvgDocumentGenerator;
-import graafvis.GraafvisCompiler;
-import graafvis.errors.VisError;
-import graafvis.warnings.Warning;
-import org.dom4j.Document;
-import org.graphstream.graph.Graph;
-import org.xml.sax.SAXException;
 import utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
@@ -33,7 +32,7 @@ public class Compilation extends Observable{
     private Path scriptFile;
     private Path graphFile;
 
-    private CompilationProgress maxProgress;
+    private CompilationProgress targetProgress;
     private List<Term> scriptTerms;
     private Graph graph;
     private Solver solver;
@@ -51,26 +50,23 @@ public class Compilation extends Observable{
      *                  See //TODO{@link } which fileformats are suported.
      */
     public Compilation(Path scriptFile, Path graphFile){
-        this.scriptFile = scriptFile;
-        this.graphFile = graphFile;
-        this.maxProgress = CompilationProgress.COMPILATIONFINISHED;
-        this.compiler = new GraafvisCompiler();
+        this(scriptFile,graphFile,CompilationProgress.COMPILATIONFINISHED);
     }
 
     /**
      * Constructor for a debug compilation. The compilation becomes a debug compilation
-     * if the {@code maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     * if the {@code targetProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
      *
      * @param scriptFile The path of where the Graafvis Script is stored
      * @param graphFile The path of where the Abstract Syntax Graph is stored
      *                  See //TODO{@link } which fileformats are suported.
-     * @param maxProgress The {@link CompilationProgress} until which the compilation is supposed to
+     * @param targetProgress The {@link CompilationProgress} until which the compilation is supposed to
      *                    continue.
      */
-    public Compilation(Path scriptFile, Path graphFile, CompilationProgress maxProgress){
+    public Compilation(Path scriptFile, Path graphFile, CompilationProgress targetProgress){
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
-        this.maxProgress = maxProgress;
+        this.targetProgress = targetProgress;
         this.compiler = new GraafvisCompiler();
     }
 
@@ -136,25 +132,29 @@ public class Compilation extends Observable{
     }
 
     /** Sets the encountered exception and notifies its observers abouts the encountered exception*/
-    public void setException(Exception exception){
+    public void setException(Exception exception) {
         this.exception = exception;
         setChanged();
-        notifyObservers(CompilationProgress.ERROROCCURED);
+        if (exception instanceof GraafvisCompiler.SyntaxException || exception instanceof GraafvisCompiler.CheckerException) {
+            notifyObservers(CompilationProgress.COMPILEERROR);
+        } else {
+            notifyObservers(CompilationProgress.ERROROCCURED);
+        }
     }
 
     /** Returns if this compilation is a debug compilation. The compilation is a debug compilation
-     * if the {@link Compilation#maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     * if the {@link Compilation#targetProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
      * @return if this compilation is a debug compilation
      * */
     public boolean isDebug(){
-        return !maxProgress.equals(CompilationProgress.COMPILATIONFINISHED);
+        return !targetProgress.equals(CompilationProgress.COMPILATIONFINISHED);
     }
 
     /**
      * @return the {@link CompilationProgress} until which the compilation is supposed to continue.
      */
-    public CompilationProgress getMaxProgress(){
-        return maxProgress;
+    public CompilationProgress getTargetProgress(){
+        return targetProgress;
     }
 
     /**

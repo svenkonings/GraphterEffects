@@ -32,9 +32,7 @@ public class CompilerRunnable implements Runnable, Observer {
      *                   suported.
      */
     public CompilerRunnable(Path scriptFile, Path graphFile) {
-        this.scriptFile = scriptFile;
-        this.graphFile = graphFile;
-        maxCompilationProgress = CompilationProgress.COMPILATIONFINISHED;
+        this(scriptFile, graphFile, CompilationProgress.COMPILATIONFINISHED);
     }
 
     /**
@@ -44,13 +42,14 @@ public class CompilerRunnable implements Runnable, Observer {
      * @param scriptFile             The path of where the Graafvis Script is stored
      * @param graphFile              The path of where the Abstract Syntax Graph is stored See //TODO{@link } which
      *                               fileformats are suported.
-     * @param maxCompilationProgress The {@link CompilationProgress} until which the compilation is supposed to
+     * @param targetProgress The {@link CompilationProgress} until which the compilation is supposed to
      *                               continue.
      */
-    public CompilerRunnable(Path scriptFile, Path graphFile, CompilationProgress maxCompilationProgress) {
+    public CompilerRunnable(Path scriptFile, Path graphFile, CompilationProgress targetProgress) {
         this.scriptFile = scriptFile;
         this.graphFile = graphFile;
-        this.maxCompilationProgress = maxCompilationProgress;
+        this.maxCompilationProgress = targetProgress;
+        compilation = new Compilation(scriptFile, graphFile, maxCompilationProgress);
 
     }
 
@@ -60,10 +59,10 @@ public class CompilerRunnable implements Runnable, Observer {
      */
     @Override
     public synchronized void run() {
-        compilation = new Compilation(scriptFile, graphFile, maxCompilationProgress);
         CompilationModel.getInstance().setCompilation(compilation);
+        CompilationModel.getInstance().addObserverToCompilation(this);
         try {
-            while (CompilationModel.getInstance().countObservers() != compilation.countObservers()) {
+            while (CompilationModel.getInstance().countObservers() + 1 != compilation.countObservers()) {
                 CompilationModel.getInstance().lock.lock();
                 CompilationModel.getInstance().allObserversAdded.await();
                 CompilationModel.getInstance().lock.unlock();
@@ -100,10 +99,12 @@ public class CompilerRunnable implements Runnable, Observer {
                     compilation.generateSVG();
                 }
             }
-        } catch (IOException | GraafvisCompiler.SyntaxException | SAXException | GraafvisCompiler.CheckerException e) {
+        } catch (IOException | SAXException e) {
             compilation.setException(e);
-        }
+        } catch (GraafvisCompiler.CheckerException | GraafvisCompiler.SyntaxException e) {
+            compilation.setException(e);
 
+        }
     }
 
 

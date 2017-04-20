@@ -31,8 +31,8 @@ public class IOManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select GraafVis Script");
 
-        fileChooser.setInitialDirectory((DocumentModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile()));
-        //System.out.println((DocumentModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile()));
+        fileChooser.setInitialDirectory(FileModel.getInstance().getDefaultDirectoryPath().toFile());
+        //System.out.println((FileModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile()));
 
         fileChooser.getExtensionFilters().add(visFilesFilter);
         fileChooser.getExtensionFilters().add(allFilesFilter);
@@ -40,9 +40,9 @@ public class IOManager {
 
         File script = fileChooser.showOpenDialog(new Stage());
         if (script != null) {
-            DocumentModel.getInstance().loadGraafVisFile(script.toPath());
+            FileModel.getInstance().loadGraafVisFile(script.toPath());
             //Path subpath = script.toPath().subpath(0, script.toPath().getNameCount()-1);
-            //DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(subpath);
+            //FileModel.getInstance().setLastSaveAndLoadPathGraafVis(subpath);
         }
     }
 
@@ -65,14 +65,14 @@ public class IOManager {
             for (File file: graphFileList){
                 graphPathList.add(file.toPath());
             }
-            //DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(graphPathList.get(0).subpath(0,graphPathList.get(0).getNameCount()-1));
+            //FileModel.getInstance().setLastSaveAndLoadPathGraafVis(graphPathList.get(0).subpath(0,graphPathList.get(0).getNameCount()-1));
 
             if (replaceExistingFiles) {
-                DocumentModel.getInstance().removeAllGraphs();
-                DocumentModel.getInstance().loadAllGraph(graphPathList);
+                FileModel.getInstance().removeAllGraphs();
+                FileModel.getInstance().loadAllGraph(graphPathList);
             }
             else {
-                DocumentModel.getInstance().loadAllGraph(graphPathList);
+                FileModel.getInstance().loadAllGraph(graphPathList);
             }
         }
     }
@@ -81,7 +81,7 @@ public class IOManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save GraafVis Script");
         fileChooser.getExtensionFilters().add(visFilesFilter);
-        fileChooser.setInitialDirectory(DocumentModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile());
+        fileChooser.setInitialDirectory(FileModel.getInstance().getDefaultDirectoryPath().toFile());
         fileChooser.setInitialFileName(path.getFileName().toString());
         File fileLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
@@ -90,7 +90,7 @@ public class IOManager {
         try {
             if (fileLocation != null) {
                 Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
-                DocumentModel.getInstance().loadGraafVisFile(fileLocation.toPath());///DocumentModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
+                FileModel.getInstance().loadGraafVisFile(fileLocation.toPath());///FileModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class IOManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Generated Visualization");
         fileChooser.getExtensionFilters().add(svgFilesFilter);
-        fileChooser.setInitialDirectory(DocumentModel.getInstance().getLastSavePathVisualization().toFile());
+        fileChooser.setInitialDirectory(FileModel.getInstance().getDefaultDirectoryPath().toFile());
         fileChooser.setInitialFileName(svgPath.getFileName().toString());
         File saveLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
@@ -128,7 +128,7 @@ public class IOManager {
         try {
             if (saveLocation != null) {
                 Files.write(saveLocation.toPath(), codeList, Charset.forName("UTF-8"));
-                //DocumentModel.getInstance().setLastSavePathVisualization(saveLocation.toPath());
+                //FileModel.getInstance().setLastSavePathVisualization(saveLocation.toPath());
             }
         } catch (IOException e) {
             e.printStackTrace();

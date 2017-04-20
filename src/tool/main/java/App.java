@@ -1,5 +1,5 @@
 import com.airhacks.afterburner.injection.Injector;
-import general.files.DocumentModel;
+import general.files.FileModel;
 import general.files.IOManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -30,16 +30,16 @@ public class App extends Application{
         primaryStage.setScene(scene);
 
         primaryStage.setOnCloseRequest(event -> {
-            if (!DocumentModel.getInstance().graafvisChangesSaved()){
-                if(!IOManager.showGraafvisScriptSaveDialog(DocumentModel.getInstance().getGraafVisFilePath(), DocumentModel.getInstance().graafVisCode)){
+            if (!FileModel.getInstance().graafvisChangesSaved()){
+                if(!IOManager.showGraafvisScriptSaveDialog(FileModel.getInstance().getGraafVisFilePath(), FileModel.getInstance().graafVisCode)){
                     event.consume();
                     return;
                 }
             }
-            Set<String> svgNames = new HashSet<>(DocumentModel.getInstance().getAllGeneratedSVGS().keySet());
+            Set<String> svgNames = new HashSet<>(FileModel.getInstance().getAllGeneratedSVGS().keySet());
             for (String svgName: svgNames){
-                if(IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
-                    DocumentModel.getInstance().getAllGeneratedSVGS().remove(svgName);
+                if(IOManager.showSVGSaveDialog(FileModel.getInstance().getGeneratedSVG(svgName))){
+                    FileModel.getInstance().getAllGeneratedSVGS().remove(svgName);
                 } else {
                     event.consume();
                     return;
@@ -57,7 +57,7 @@ public class App extends Application{
         //Preparing the files.
         //noinspection ResultOfMethodCallIgnored
         new File("temp/compiled").mkdirs();
-        DocumentModel.getInstance().newGraafVisFile();
+        FileModel.getInstance().newGraafVisFile();
 
         ((RootPresenter) rootView.getPresenter()).loadIDE();
     }

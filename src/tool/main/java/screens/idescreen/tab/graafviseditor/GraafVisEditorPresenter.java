@@ -1,7 +1,7 @@
 package screens.idescreen.tab.graafviseditor;
 
 import general.ViewModel;
-import general.files.DocumentModel;
+import general.files.FileModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.StackPane;
@@ -83,20 +83,20 @@ public class GraafVisEditorPresenter implements Initializable {
                         //TODO: Explain error in detail
                         //Intersting: not findable on google :o
                     }
-                    DocumentModel.getInstance().graafVisCode = codeArea.getText();
+                    FileModel.getInstance().graafVisCode = codeArea.getText();
                 });
 
         String graafVisCode;
         try {
-            graafVisCode = FileUtils.readFromFile(DocumentModel.getInstance().getGraafVisFilePath().toFile());
+            graafVisCode = FileUtils.readFromFile(FileModel.getInstance().getGraafVisFilePath().toFile());
             codeArea.replaceText(0, 0, graafVisCode);
-            DocumentModel.getInstance().graafVisCode = graafVisCode;
+            FileModel.getInstance().graafVisCode = graafVisCode;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         graafvisEditorPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
-        graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-keywords.css").toExternalForm());
+        graafvisEditorPane.getStylesheets().add(GraafVisEditorPresenter.class.getResource("graafvis-highlighting.css").toExternalForm());
 
         codeArea.prefWidthProperty().bind(graafvisEditorPane.widthProperty());
         codeArea.prefHeightProperty().bind(graafvisEditorPane.heightProperty());

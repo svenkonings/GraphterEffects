@@ -3,8 +3,8 @@ package screens.idescreen;
 import general.ViewModel;
 import general.compiler.CompilationModel;
 import general.compiler.CompilationProgress;
-import general.files.DocumentModel;
-import general.files.DocumentModelChange;
+import general.files.FileModel;
+import general.files.FileModelChange;
 import general.files.IOManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,8 +21,8 @@ import screens.idescreen.tab.ruleviewer.RuleViewerView;
 import screens.idescreen.tab.svgviewer.SVGViewerPresenter;
 import screens.idescreen.tab.svgviewer.SVGViewerView;
 import screens.idescreen.topbar.TopBarView;
-import screens.idescreen.viselemviewer.VisElemViewerPresenter;
-import screens.idescreen.viselemviewer.VisElemViewerView;
+import screens.idescreen.tab.viselemviewer.VisElemViewerPresenter;
+import screens.idescreen.tab.viselemviewer.VisElemViewerView;
 import utils.Pair;
 
 import javax.inject.Inject;
@@ -53,7 +53,7 @@ public class IDEPresenter implements Initializable, Observer {
 
         bind();
 
-        DocumentModel.getInstance().addObserver(this);
+        FileModel.getInstance().addObserver(this);
         CompilationModel.getInstance().addObserver(this);
 
     }
@@ -65,13 +65,13 @@ public class IDEPresenter implements Initializable, Observer {
 
     public static Tab createGraafvisEditorTab(){
         GraafVisEditorView graafVisEditorView = new GraafVisEditorView();
-        String graafVisScriptName = DocumentModel.getInstance().getGraafVisFilePath().getFileName().toString();
+        String graafVisScriptName = FileModel.getInstance().getGraafVisFilePath().getFileName().toString();
         Tab codeTab = new Tab(graafVisScriptName, graafVisEditorView.getView());
 
         GraafVisEditorPresenter graafVisEditorPresenter = (GraafVisEditorPresenter) graafVisEditorView.getPresenter();
         graafVisEditorPresenter.getCodeArea().textProperty().addListener((observable, oldValue, newValue) -> {
             codeTab.setText(graafVisScriptName + " *");
-            DocumentModel.getInstance().setGraafvisChangesSaved(false);
+            FileModel.getInstance().setGraafvisChangesSaved(false);
         });
 
         //TODO, zijn deze nodig??
@@ -86,17 +86,17 @@ public class IDEPresenter implements Initializable, Observer {
         SVGViewerView svgViewerView = new SVGViewerView();
         SVGViewerPresenter svgViewerPresenter = (SVGViewerPresenter) svgViewerView.getPresenter();
 
-        svgViewerPresenter.loadContent(svgName, DocumentModel.getInstance().getGeneratedSVG(svgName));
+        svgViewerPresenter.loadContent(svgName, FileModel.getInstance().getGeneratedSVG(svgName));
         svgViewerPresenter.showSVGAsImage();
 
         Tab svgViewerTab = new Tab(svgName, svgViewerView.getView());
         svgViewerTab.setClosable(true);
         svgViewerTab.setOnCloseRequest(event -> {
-            if (! IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
+            if (! IOManager.showSVGSaveDialog(FileModel.getInstance().getGeneratedSVG(svgName))){
                 event.consume();
             }
         });
-        svgViewerTab.setOnClosed(event -> DocumentModel.getInstance().removeGeneratedSVG(svgName));
+        svgViewerTab.setOnClosed(event -> FileModel.getInstance().removeGeneratedSVG(svgName));
 
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem showAsImage = new MenuItem("Show as Image");
@@ -139,11 +139,11 @@ public class IDEPresenter implements Initializable, Observer {
         //TODO: ADD LOGGING
         if (arg instanceof Pair) {
             Pair arguments = (Pair) arg;
-            if (arguments.get(0) instanceof DocumentModelChange) {
-                DocumentModelChange documentModelChange = (DocumentModelChange) arguments.get(0);
+            if (arguments.get(0) instanceof FileModelChange) {
+                FileModelChange documentModelChange = (FileModelChange) arguments.get(0);
                 switch (documentModelChange) {
                     case GRAAFVISFILELOADED:
-                        DocumentModel.getInstance().setGraafvisChangesSaved(true);
+                        FileModel.getInstance().setGraafvisChangesSaved(true);
                         Tab codeTab = createGraafvisEditorTab();
                         tabPane.getTabs().set(0, codeTab);
                         break;
@@ -154,7 +154,6 @@ public class IDEPresenter implements Initializable, Observer {
                             tabPane.getTabs().add(svgViewerTab);
                         });
                         break;
-                    case GRAAFVISFILESAVED:
                 }
             }
         }
@@ -173,7 +172,7 @@ public class IDEPresenter implements Initializable, Observer {
                 case PROLOGLOADED:
                     //TODO LOGGING: System.out.println("Graph converted");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
-                            CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress) {
+                            CompilationModel.getInstance().getCompilation().getTargetProgress() == compilationProgress) {
                         Platform.runLater(() -> tabPane.getTabs().add(createRuleViewerTab()));
                     }
                     break;
@@ -183,7 +182,7 @@ public class IDEPresenter implements Initializable, Observer {
                 case SOLVED:
                     //TODO: LOGGING System.out.println("Logic solved");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
-                            CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress){
+                            CompilationModel.getInstance().getCompilation().getTargetProgress() == compilationProgress){
                         Platform.runLater(() -> tabPane.getTabs().add(createVisElemViewerTab()));
                     }
                     break;
@@ -195,7 +194,6 @@ public class IDEPresenter implements Initializable, Observer {
                     break;
                 case ERROROCCURED:
                     //TODO: Show error screen
-                    System.out.println("Error occured");
                     break;
             }
         }

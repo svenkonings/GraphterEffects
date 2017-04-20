@@ -9,7 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DocumentModel extends Observable{
+public class FileModel extends Observable{
+
 
 
     private Path graafVisFilePath;
@@ -19,12 +20,8 @@ public class DocumentModel extends Observable{
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
     public String graafVisCode;
     private boolean changesSaved = true;
-    private Path selectedPath;
     private Path selectedGraph;
-
-    private Path lastSaveAndLoadPathGraafVis;
-    private Path lastSavePathVisualization;
-    private Path lastLoadPathGraph;
+    private final Path defaultDirectoryPath;
 
     public Path getGraafVisFilePath() {
         return graafVisFilePath;
@@ -33,7 +30,7 @@ public class DocumentModel extends Observable{
     public void loadGraafVisFile(Path graafVisFilePath) {
         this.graafVisFilePath = graafVisFilePath;
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.GRAAFVISFILELOADED, graafVisFilePath.getFileName().toString()));
+        notifyObservers(new Pair<>(FileModelChange.GRAAFVISFILELOADED, graafVisFilePath.getFileName().toString()));
     }
 
     public int generateSVGCounter(String name){
@@ -58,9 +55,9 @@ public class DocumentModel extends Observable{
             e.printStackTrace();
         }
         Path path = newGraafvisFile.toPath();
-        DocumentModel.getInstance().loadGraafVisFile(path);
+        FileModel.getInstance().loadGraafVisFile(path);
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.GRAAFVISFILECREATED,null));
+        notifyObservers(new Pair<>(FileModelChange.GRAAFVISFILECREATED,null));
     }
 
     public Map<String,Path> getGraphPathMap() {
@@ -75,16 +72,16 @@ public class DocumentModel extends Observable{
         if(graphFileList.size() == 11){
             Pair<String,Path> removedGraph = graphFileList.removeLast();
             setChanged();
-            notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILEREMOVED, removedGraph.getFirst()));
+            notifyObservers(new Pair<>(FileModelChange.GRAPHFILEREMOVED, removedGraph.getFirst()));
         }
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILELOADED, graphPath.getFileName().toString() ));
+        notifyObservers(new Pair<>(FileModelChange.GRAPHFILELOADED, graphPath.getFileName().toString() ));
     }
 
     public void removeAllGraphs(){
         graphFileMap = new HashMap<>();
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILEREMOVEDALL,null));
+        notifyObservers(new Pair<>(FileModelChange.GRAPHFILEREMOVEDALL,null));
     }
 
     public void loadAllGraph(List<Path> graphPaths) {
@@ -96,13 +93,13 @@ public class DocumentModel extends Observable{
     public void removeGraph(String name){
         graphFileMap.remove(name);
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.GRAPHFILEREMOVED,name));
+        notifyObservers(new Pair<>(FileModelChange.GRAPHFILEREMOVED,name));
     }
 
     public void addGeneratedSVG(Path path){
         generatedSVGMap.put(path.getFileName().toString(), path);
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.SVGGENERATED, path.getFileName().toString()));
+        notifyObservers(new Pair<>(FileModelChange.SVGGENERATED, path.getFileName().toString()));
     }
 
     public Path getGeneratedSVG(String name) {
@@ -112,36 +109,11 @@ public class DocumentModel extends Observable{
     public void removeGeneratedSVG(String name) {
         generatedSVGMap.remove(name);
         setChanged();
-        notifyObservers(new Pair<>(DocumentModelChange.SVGREMOVED, name));
+        notifyObservers(new Pair<>(FileModelChange.SVGREMOVED, name));
     }
 
     public Map<String,Path> getAllGeneratedSVGS(){
         return generatedSVGMap;
-    }
-
-    public Path getLastSaveAndLoadPathGraafVis() {
-        return lastSaveAndLoadPathGraafVis;
-    }
-
-    public void setLastSaveAndLoadPathGraafVis(Path lastSaveAndLoadPathGraafVis) {
-        this.lastSaveAndLoadPathGraafVis = lastSaveAndLoadPathGraafVis;
-    }
-
-    public Path getLastSavePathVisualization() {
-        return lastSavePathVisualization;
-    }
-
-    public void setLastSavePathVisualization(Path lastSavePathVisualization) {
-        this.lastSavePathVisualization = lastSavePathVisualization;
-    }
-
-
-    public Path getLastLoadPathGraph() {
-        return lastLoadPathGraph;
-    }
-
-    public void setLastLoadPathGraph(Path lastLoadPathGraph) {
-        this.lastLoadPathGraph = lastLoadPathGraph;
     }
 
     public boolean graafvisChangesSaved(){
@@ -152,13 +124,6 @@ public class DocumentModel extends Observable{
         this.changesSaved = changesSaved;
     }
 
-    public void setSelectedPath(Path selectedPath){
-        this.selectedPath = selectedPath;
-    }
-
-    public Path getSelectedPath(){
-        return selectedPath;
-    }
 
     public void setSelectedGraph(String name){
         this.selectedGraph = graphFileMap.get(name);
@@ -168,17 +133,19 @@ public class DocumentModel extends Observable{
         return selectedGraph;
     }
 
+    public Path getDefaultDirectoryPath() {
+        return defaultDirectoryPath;
+    }
 
-    private static DocumentModel ourInstance = new DocumentModel();
+    private static FileModel ourInstance = new FileModel();
 
-    public static DocumentModel getInstance() {
+    public static FileModel getInstance() {
         return ourInstance;
     }
 
-    private DocumentModel() {
-        String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-        lastLoadPathGraph = Paths.get(path);
-        lastSaveAndLoadPathGraafVis = Paths.get(path);
-        lastSavePathVisualization = Paths.get(path);
+    private FileModel() {
+        defaultDirectoryPath = Paths.get(FileSystemView.getFileSystemView().getDefaultDirectory().getPath());
     }
+
+
 }

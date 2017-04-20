@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 public class SVGViewerPresenter implements Initializable {
 
     public WebView webView;
+    public CodeArea codeArea;
     @FXML public StackPane svgViewerPane;
     private String svgName;
     private Path svgPath;
@@ -47,7 +48,14 @@ public class SVGViewerPresenter implements Initializable {
         webView = new WebView();
         webView.prefWidthProperty().bind(svgViewerPane.widthProperty());
         webView.prefHeightProperty().bind(svgViewerPane.heightProperty());
-}
+
+        codeArea = new CodeArea();
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        codeArea.textProperty().addListener((obs, oldText, newText) -> codeArea.setStyleSpans(0, computeHighlighting(newText)));
+        codeArea.prefWidthProperty().bind(svgViewerPane.widthProperty());
+        codeArea.prefHeightProperty().bind(svgViewerPane.heightProperty());
+
+    }
 
     public void loadContent(String svgName, Path content){
         this.svgName = svgName;
@@ -65,7 +73,6 @@ public class SVGViewerPresenter implements Initializable {
         }
         svgViewerPane.getChildren().add(webView);
         webView.getEngine().loadContent(svgAsString);
-        //webView.getEngine().loadContent(FileUtils.readFromFile(new File("demo1.svg") ));
         webView.setContextMenuEnabled(false);
     }
 
@@ -73,15 +80,7 @@ public class SVGViewerPresenter implements Initializable {
         if (svgViewerPane.getChildren().size() == 1){
             svgViewerPane.getChildren().remove(0);
         }
-
-        CodeArea codeArea = new CodeArea();
-        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-
-        codeArea.textProperty().addListener((obs, oldText, newText) -> codeArea.setStyleSpans(0, computeHighlighting(newText)));
         codeArea.replaceText(0, 0, svgAsString);
-
-        codeArea.prefWidthProperty().bind(svgViewerPane.widthProperty());
-        codeArea.prefHeightProperty().bind(svgViewerPane.heightProperty());
 
         svgViewerPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
         svgViewerPane.getStylesheets().add(SVGViewerPresenter.class.getResource("xml-highlighting.css").toExternalForm());
