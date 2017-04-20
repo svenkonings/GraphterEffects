@@ -1,4 +1,4 @@
-grammar Graafvis;
+grammar TestGrammar;
 
 import GraafvisVocab;
 
@@ -22,19 +22,18 @@ edgeLabelGen: EDGE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
-clause: (antecedent=aTerm ARROW)? consequence=cTermSeries EOL;
+clause: (antecedent=aTermSeries ARROW)? consequence=cTermSeries EOL;
 
 /* Antecedent */
-aTerm: aTerm andOp aTerm                                                                                                #andAntecedent
-     | aTerm orOp aTerm                                                                                                 #orAntecedent
+aTerm: aTerm SEMICOLON aTerm                                                                                            #orAntecedent
      | NOT aTerm                                                                                                        #notAntecedent
      | functor (PAR_OPEN aTermSeries? PAR_CLOSE)?                                                                       #compoundAntecedent
-     | functor BRACE_OPEN (terms+=aMultiTerm andOp)* terms+=aMultiTerm BRACE_CLOSE                                      #multiAndCompoundAntecedent
-     | functor BRACE_OPEN (terms+=aMultiTerm orOp)* terms+=aMultiTerm BRACE_CLOSE                                       #multiOrCompoundAntecedent
+     | functor BRACE_OPEN (terms+=aMultiTerm COMMA)* terms+=aMultiTerm BRACE_CLOSE                                      #multiAndCompoundAntecedent
+     | functor BRACE_OPEN (terms+=aMultiTerm SEMICOLON)* terms+=aMultiTerm BRACE_CLOSE                                  #multiOrCompoundAntecedent
      | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
      | variable=HID                                                                                                     #variableAntecedent
      | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
-     | PAR_OPEN aTerm PAR_CLOSE                                                                                         #parAntecedent
+     | PAR_OPEN aTermSeries PAR_CLOSE                                                                                   #parAntecedent
      | STRING                                                                                                           #stringAntecedent
      | NUMBER                                                                                                           #numberAntecedent
      ;
@@ -42,13 +41,12 @@ aTerm: aTerm andOp aTerm                                                        
 aTermSeries: (terms+=aTerm COMMA)* terms+=aTerm;
 
 aMultiTerm: aTerm
-          | PAR_OPEN aTermSeries? PAR_CLOSE
+          | PAR_OPEN PAR_CLOSE
           ;
 
 /* Consequence */
-cTerm: cTerm andOp cTerm                                                                                                #andConsequence
-     | functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                       #compoundConsequence
-     | functor BRACE_OPEN terms+=cMultiTerm (andOp terms+=cMultiTerm)* BRACE_CLOSE                                      #multiCompoundConsequence
+cTerm: functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                                                                       #compoundConsequence
+     | functor BRACE_OPEN (terms+=cMultiTerm COMMA)* terms+=cMultiTerm BRACE_CLOSE                                      #multiCompoundConsequence
      | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | STRING                                                                                                           #stringConsequence
@@ -57,15 +55,11 @@ cTerm: cTerm andOp cTerm                                                        
 
 cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
 
-cMultiTerm: PAR_OPEN cTermSeries? PAR_CLOSE
-          | cTerm
+cMultiTerm: cTerm
+          | PAR_OPEN PAR_CLOSE
           ;
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor
        | INFIX_ID                                                                                                       #infixFunctor
        ;
-
-/* Operators */
-andOp: COMMA | AND;
-orOp: SEMICOLON | OR;
