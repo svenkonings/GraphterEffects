@@ -3,12 +3,14 @@ package asrc;
 
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import prolog.TuProlog;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
+import prolog.TuProlog;
 import utils.GraphUtils;
+
+import java.util.*;
 
 import static prolog.TuProlog.struct;
 
@@ -19,13 +21,17 @@ import static prolog.TuProlog.struct;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ASRCLibrary extends GraphLibrary {
 
-
     /**
      * Creates a new ASRCLibrary that retrieves information from a given {@link Graph}.
-     * @param g Given {@code Graph}
+     * @param graph Given {@code Graph}
      */
-    public ASRCLibrary(Graph g) {
-        super(g);
+    public ASRCLibrary(Graph graph) {
+        super(graph);
+    }
+
+    @Override
+    public GraphLibraryLoader getLoader() {
+        return ASRCLibrary::new;
     }
 
     /**
@@ -77,6 +83,9 @@ public class ASRCLibrary extends GraphLibrary {
         sb.append("incomponent(X, Y) :- node(X), incomponentsecond(X, Y).\n");
         sb.append("inmst(X) :- edge(X), inmstsecond(X).\n");
         sb.append("inshortestpath(X,Y,Z) :- edge(X), node(Y), node(Z), inshortestpathsecond(X,Y,Z).\n");
+        sb.append("index(X,Y) :- node(X), indexsecond(X,Y).\n");
+        sb.append("index(X,Y) :- edge(X), indexsecond(X,Y).\n");
+        sb.append("index(X,Y) :- graph(X), indexsecond(X,Y).\n");
         return sb.toString();
     }
 
@@ -106,6 +115,7 @@ public class ASRCLibrary extends GraphLibrary {
     @SuppressWarnings("SameReturnValue")
     public boolean println_1(Term ignore) {
         TuProlog.log(ignore.getTerm().toString());
+        System.out.println(ignore.getTerm().toString());
         return true;
     }
 
@@ -258,6 +268,31 @@ public class ASRCLibrary extends GraphLibrary {
         try {
             return bool((Struct) ID.getTerm(), n -> GraphUtils.getMST(graph).contains(n), false, true, false);
         } catch (Exception | AssertionError e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    private Map<Element, Integer> indexing;
+    /**
+     * Returns whether a {@link Element} has the given index or unifies otherwise.
+     * @param ID Identifier of the {@link Element}.
+     * @param index Index of the {@link Element}.
+     * @return Whether the {@link Element} has the given index or unifies otherwise.
+     */
+    public boolean indexsecond_2(Term ID, Term index) {
+        try {
+            if (indexing == null) {
+                indexing = new HashMap<>();
+                List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
+                elems.sort(Comparator.comparing(Element::getId));
+                for (int i = 0; i < elems.size(); i++) {
+                    indexing.put(elems.get(i), i);
+                }
+            }
+            return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
+        }catch (Exception e) {
             e.printStackTrace();
             return false;
         }

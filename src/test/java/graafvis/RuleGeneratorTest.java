@@ -18,9 +18,6 @@ import static prolog.TuProlog.struct;
 import static graafvis.generator.RuleGenerator.TUP_NOT;
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Lindsay on 31-Mar-17.
- */
 public class RuleGeneratorTest {
 
     @Test

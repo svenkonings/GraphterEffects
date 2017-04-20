@@ -1,4 +1,4 @@
-package solver;
+package solver.library;
 
 import alice.tuprolog.Term;
 import org.chocosolver.solver.Cause;
@@ -6,6 +6,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
+import solver.VisElem;
 import utils.FileUtils;
 import utils.QuadConsumer;
 import utils.TriConsumer;
@@ -21,9 +22,9 @@ import static utils.GraphUtils.ILLEGAL_PREFIX;
 import static utils.StringUtils.parseInt;
 import static utils.TermUtils.*;
 
-public class DefaultConsequenceLibrary extends ConsequenceLibrary {
+public class DefaultVisLibrary extends VisLibrary {
 
-    public DefaultConsequenceLibrary() {
+    public DefaultVisLibrary() {
         super();
         setDefaultClauses();
         setDefaultQueries();
@@ -129,6 +130,9 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         /*
           First, query the bounds
         */
+        putQuery("eval", ((visMap, results) -> {
+            // Do nothing.
+        }));
         putQuery("bounds(MinBound, MaxBound)", (visMap, results) -> {
             if (results.size() == 0) {
                 return;
@@ -170,16 +174,22 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         putQuery("shape(Elem, Shape)", elementQuery((elem, values) -> {
             String shape = termToString(values.get("Shape"));
             switch (shape) {
+                case "ellipse":
+                    shapeConstraints(elem, 2);
+                    break;
+                case "rectangle":
+                    shapeConstraints(elem, 1);
+                    break;
                 case "circle":
+                    symmetricShapeConstraints(elem, 2);
+                    break;
                 case "square":
-                    symmetricShapeConstraints(elem);
+                    symmetricShapeConstraints(elem, 1);
                     break;
                 default:
-                    shapeConstraints(elem);
-                    break;
+                    throw new LibraryException("Unknown shape: %s", shape);
             }
             elem.setValue("type", shape);
-            shapeConstraints(elem);
         }));
         putQuery("line(Elem, FromElem, ToElem)", lineQuery((line, fromElem, toElem, values) ->
                 lineConstraints(line, fromElem, toElem)
@@ -193,12 +203,12 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         putQuery("image(Elem, Path)", elementQuery((elem, values) -> {
             setImage(elem, values);
             elem.set("type", "image");
-            shapeConstraints(elem);
+            shapeConstraints(elem, 1);
         }));
         putQuery("text(Elem, Text)", elementQuery((elem, values) -> {
             elem.setValue("type", "text");
             elem.setValue("text", stripQuotes(values.get("Text")));
-            shapeConstraints(elem);
+            shapeConstraints(elem, 1);
         }));
 
         // Global visualizations
@@ -390,17 +400,9 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
      *
      * @param elem The given visualization element.
      */
-    public static void shapeConstraints(VisElem elem) {
-        try {
-            elem.getVar("width").updateLowerBound(0, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new ConsequenceException("Couldn't update width");
-        }
-        try {
-            elem.getVar("height").updateLowerBound(0, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new ConsequenceException("Couldn't update height");
-        }
+    public static void shapeConstraints(VisElem elem, int minSize) {
+        updateLowerBound(elem, "width", minSize);
+        updateLowerBound(elem, "height", minSize);
 
         elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
         elem.setVar("radiusY", elem.getVar("height").div(2).intVar());
@@ -419,12 +421,8 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
      *
      * @param elem The given visualization element.
      */
-    public static void symmetricShapeConstraints(VisElem elem) {
-        try {
-            elem.getVar("size").updateLowerBound(0, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new ConsequenceException("Couldn't update size");
-        }
+    public static void symmetricShapeConstraints(VisElem elem, int minSize) {
+        updateLowerBound(elem, "size", minSize);
         elem.setVar("width", elem.getVar("size"));
         elem.setVar("height", elem.getVar("size"));
 
@@ -465,16 +463,11 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
     }
 
-    /**
-     * Should be called before {@link org.chocosolver.solver.Solver#solve}. Sets the default visualization element type
-     * (including the associated constraints), provided it doesn't already exist.
-     *
-     * @param elem The given visualization element.
-     */
+    @Override
     public void setDefaults(VisElem elem) {
         if (!elem.hasValue("type")) {
             elem.setValue("type", "ellipse");
-            shapeConstraints(elem);
+            shapeConstraints(elem, 2);
         }
         if (!elem.hasVar("z")) {
             switch (elem.getValue("type")) {
@@ -489,6 +482,16 @@ public class DefaultConsequenceLibrary extends ConsequenceLibrary {
                     break;
 
             }
+        }
+    }
+
+    public static void updateLowerBound(VisElem elem, String varName, int lb) {
+        IntVar var = elem.getVar(varName);
+        try {
+            var.updateLowerBound(lb, Cause.Null);
+        } catch (ContradictionException e) {
+            throw new LibraryException("Couldn't apply the lower bound %d of %s.%s with bounds[%d, %d]",
+                    lb, elem.getKey(), varName, var.getLB(), var.getUB());
         }
     }
 }

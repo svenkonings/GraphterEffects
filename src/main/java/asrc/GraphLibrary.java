@@ -2,7 +2,10 @@ package asrc;
 
 
 import alice.tuprolog.*;
-import org.graphstream.graph.*;
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.Element;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import utils.GraphUtils;
 import utils.StringUtils;
 
@@ -24,11 +27,13 @@ public abstract class GraphLibrary extends Library {
 
     /**
      * Creates a new {@link GraphLibrary}.
-     * @param g {@link Graph} on which predicates are performed.
+     * @param graph {@link Graph} on which predicates are performed.
      */
-    public GraphLibrary(Graph g) {
-        this.graph = g;
+    public GraphLibrary(Graph graph) {
+        this.graph = graph;
     }
+
+    public abstract GraphLibraryLoader getLoader();
 
     /**
      * Returns a Prolog theory to be added to the Prolog solver. Use an empty {@link String} if unwished for.

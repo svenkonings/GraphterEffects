@@ -1,25 +1,25 @@
 package compiler.general;
 
+import alice.tuprolog.Term;
 import graphloader.Importer;
-import prolog.TuProlog;
-import solver.Solver;
-import solver.VisMap;
-import svg.SvgDocumentGenerator;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
+import solver.SolveResults;
+import solver.Solver;
+import svg.SvgDocumentGenerator;
 import utils.FileUtils;
 
-import static asrc.GraphRuleTests.generateGraphProlog;
+import java.util.Arrays;
+import java.util.List;
+
 import static prolog.TuProlog.*;
 
 public final class DemoTests {
     @Test
     public void demo1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo1.dot"));
-        //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
-        prolog.addTheory(
+        List<Term> terms = Arrays.asList(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
                 clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
@@ -39,17 +39,15 @@ public final class DemoTests {
                 clause(struct("text", var("N"), var("L")), struct("attribute", term("label"), var("X"), var("L")))
         );
         Solver solver = new Solver();
-        VisMap visMap = solver.solve(prolog);
-        Document svg = SvgDocumentGenerator.generate(visMap.values());
+        SolveResults results = solver.solve(graph, terms);
+        Document svg = SvgDocumentGenerator.generate(results.getVisMap().values());
         SvgDocumentGenerator.writeDocument(svg, "demo1.svg");
     }
 
     @Test
     public void demo2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo2.dot"));
-        //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
-        prolog.addTheory(
+        List<Term> terms = Arrays.asList(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
                 clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
@@ -82,17 +80,15 @@ public final class DemoTests {
                 clause(struct("colour", var("N"), term("red")), struct("neighbourcount", var("N"), intVal(4)))
         );
         Solver solver = new Solver();
-        VisMap visMap = solver.solve(prolog);
-        Document svg = SvgDocumentGenerator.generate(visMap.values());
+        SolveResults results = solver.solve(graph, terms);
+        Document svg = SvgDocumentGenerator.generate(results.getVisMap().values());
         SvgDocumentGenerator.writeDocument(svg, "demo2.svg");
     }
 
     @Test
     public void demo3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo3.dot"));
-        //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
-        prolog.addTheory(
+        List<Term> terms = Arrays.asList(
                 //Display nodes as circles
                 clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
                 clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
@@ -114,17 +110,15 @@ public final class DemoTests {
                 clause(struct("stroke", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
         );
         Solver solver = new Solver();
-        VisMap visMap = solver.solve(prolog);
-        Document svg = SvgDocumentGenerator.generate(visMap.values());
+        SolveResults results = solver.solve(graph, terms);
+        Document svg = SvgDocumentGenerator.generate(results.getVisMap().values());
         SvgDocumentGenerator.writeDocument(svg, "demo3.svg");
     }
 
     @Test
     public void demo4() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/start.gst"));
-        //Printer.pprint(graph);
-        TuProlog prolog = generateGraphProlog(graph);
-        prolog.addTheory(
+        List<Term> terms = Arrays.asList(
                 //Shows the wolf image
                 clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/wolf.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("wolf"))),
                 clause(struct("pos", var("N"), intVal(50), intVal(85)), struct("attribute", term("label"), var("N"), term("wolf"))),
@@ -149,8 +143,8 @@ public final class DemoTests {
                 struct("background-image", struct(FileUtils.fromResources("demo/images/river.png").getAbsolutePath()))
         );
         Solver solver = new Solver();
-        VisMap visMap = solver.solve(prolog);
-        Document svg = SvgDocumentGenerator.generate(visMap.values());
+        SolveResults results = solver.solve(graph, terms);
+        Document svg = SvgDocumentGenerator.generate(results.getVisMap().values());
         SvgDocumentGenerator.writeDocument(svg, "demo4.svg");
     }
 }

@@ -98,9 +98,9 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 });
                 break;
             case SOLVED:
-                String measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
-                int nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
-                int nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+                String measures = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getSolver().getMeasures().toString();
+                int nbVars = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
+                int nbConstraints = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
 
                 Platform.runLater(new Runnable() {
                     @Override
@@ -131,9 +131,9 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 });
                 break;
             case NOSOLUTION:
-                measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
-                nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
-                nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+                measures = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getSolver().getMeasures().toString();
+                nbVars = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
+                nbConstraints = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
 
                 Platform.runLater(new Runnable() {
                     @Override

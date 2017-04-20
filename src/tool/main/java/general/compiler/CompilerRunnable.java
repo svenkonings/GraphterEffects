@@ -76,7 +76,7 @@ public class CompilerRunnable implements Runnable, Observer{
             boolean hasSolution = false;
             if (maxCompilationProgress == CompilationProgress.COMPILATIONFINISHED) {
                 compilation.compileGraafVis();
-                compilation.addASCRLibrary();
+                compilation.addGraph();
                 hasSolution = compilation.solve();
                 if (hasSolution) {
                     compilation.generateSVG();
@@ -87,7 +87,7 @@ public class CompilerRunnable implements Runnable, Observer{
                     compilation.compileGraafVis();
                 }
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.GRAPHCONVERTED.ordinal()) {
-                    compilation.addASCRLibrary();
+                    compilation.addGraph();
                 }
                 if (maxCompilationProgress.ordinal() >= CompilationProgress.SOLVED.ordinal()) {
                     hasSolution = compilation.solve();

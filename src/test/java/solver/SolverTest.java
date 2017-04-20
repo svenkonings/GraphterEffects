@@ -2,9 +2,8 @@ package solver;
 
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
-import prolog.TuProlog;
-import svg.SvgDocumentGenerator;
 import org.dom4j.Document;
+import svg.SvgDocumentGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,11 +12,10 @@ import java.util.List;
 import static prolog.TuProlog.*;
 
 public class SolverTest {
-    public static void main(String[] args) throws InvalidTheoryException, IOException, SolveException {
+    public static void main(String[] args) throws InvalidTheoryException, IOException {
         Solver solver = new Solver();
-        TuProlog prolog = new TuProlog(testData());
-        VisMap visMap = solver.solve(prolog);
-        Document document = SvgDocumentGenerator.generate(visMap.values());
+        SolveResults results = solver.solve(testData());
+        Document document = SvgDocumentGenerator.generate(results.getVisMap().values());
         SvgDocumentGenerator.writeDocument(document, "test.svg");
     }
 

@@ -32,10 +32,7 @@ public final class GXLImporterTest {
         assertEquals(g.getNode("#node1").getAttribute("label"), "\"type:testtype\"");
         assertEquals(g.getNode("#node2").getAttribute("flag"), "\"testflag\"");
         //assertEquals(g.getNode("#node1").getAttribute("type"), "\"testtype\"");
-
-
     }
-
 
     private void testFromFolder(String folder) throws IOException, SAXException {
         for (File f : FileUtils.recursiveInDirectory(FileUtils.fromResources(folder))) {
