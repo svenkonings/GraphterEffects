@@ -1,4 +1,3 @@
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import graafvis.GraafvisCompiler;
 import graphloader.Importer;

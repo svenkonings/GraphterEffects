@@ -3,9 +3,9 @@ package solver;
 import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
-import asrc.ASRCLibrary;
-import asrc.GraphLibrary;
-import asrc.GraphLibraryLoader;
+import asc.ASCLibrary;
+import asc.GraphLibrary;
+import asc.GraphLibraryLoader;
 import org.chocosolver.solver.Model;
 import org.graphstream.graph.Graph;
 import prolog.TuProlog;
@@ -31,7 +31,7 @@ public class Solver {
      * Creates a new solver.
      */
     public Solver() {
-        defaultGraphLibraryLoader = ASRCLibrary::new;
+        defaultGraphLibraryLoader = ASCLibrary::new;
         graphLibraryLoaders = new HashMap<>();
         defaultVisLibrary = new DefaultVisLibrary();
         visLibraries = new HashMap<>();

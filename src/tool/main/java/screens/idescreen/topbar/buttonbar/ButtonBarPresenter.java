@@ -10,13 +10,11 @@ import general.files.DocumentModelChange;
 import general.files.IOManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -58,54 +56,51 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
         graphComboBox.setPromptText("Select graphs");
 
-        graphComboBox.setCellFactory(lv -> {
-                    ListCell<String> listCell = new ListCell<String>() {
-                        // This is the node that will display the text and the cross.
-                        // I chose a hyperlink, but you can change to button, image, etc.
-                        private HBox graphic;
+        graphComboBox.setCellFactory(lv -> new ListCell<String>() {
+            // This is the node that will display the text and the cross.
+            // I chose a hyperlink, but you can change to button, image, etc.
+            private HBox graphic;
 
-                        // this is the constructor for the anonymous class.
+            // this is the constructor for the anonymous class.
+            {
+                Label label = new Label();
+                // Bind the label text to the item property. If your ComboBox items are not Strings you should use a converter.
+                label.textProperty().bind(itemProperty());
+                // Set max width to infinity so the cross is all the way to the right.
+                label.setMaxWidth(Double.POSITIVE_INFINITY);
+                // We have to modify the hiding behavior of the ComboBox to allow clicking on the hyperlink,
+                // so we need to hide the ComboBox when the label is clicked (item selected).
+                label.setOnMouseClicked(event -> graphComboBox.hide());
+
+                Hyperlink cross = new Hyperlink(" X ");
+                cross.setVisited(true); // So it is black, and not blue.
+
+                cross.setOnMouseClicked(event ->
                         {
-                            Label label = new Label();
-                            // Bind the label text to the item property. If your ComboBox items are not Strings you should use a converter.
-                            label.textProperty().bind(itemProperty());
-                            // Set max width to infinity so the cross is all the way to the right.
-                            label.setMaxWidth(Double.POSITIVE_INFINITY);
-                            // We have to modify the hiding behavior of the ComboBox to allow clicking on the hyperlink,
-                            // so we need to hide the ComboBox when the label is clicked (item selected).
-                            label.setOnMouseClicked(event -> graphComboBox.hide());
-
-                            Hyperlink cross = new Hyperlink(" X ");
-                            cross.setVisited(true); // So it is black, and not blue.
-
-                            cross.setOnMouseClicked(event ->
-                                    {
-                                        // Since the ListView reuses cells, we need to get the item first, before making changes.
-                                        String item = getItem();
-                                        DocumentModel.getInstance().removeGraph(item);
-                                        //if (isSelected()) {
-                                        //graphComboBox.getSelectionModel().select(null);
-                                        //}
-                                    }
-                            );
-                            // Arrange controls in a HBox, and set display to graphic only (the text is included in the graphic in this implementation).
-                            graphic = new HBox(label, cross);
-                            graphic.setHgrow(label, Priority.ALWAYS);
-                            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                            // Since the ListView reuses cells, we need to get the item first, before making changes.
+                            String item = getItem();
+                            DocumentModel.getInstance().removeGraph(item);
+                            //if (isSelected()) {
+                            //graphComboBox.getSelectionModel().select(null);
+                            //}
                         }
+                );
+                // Arrange controls in a HBox, and set display to graphic only (the text is included in the graphic in this implementation).
+                graphic = new HBox(label, cross);
+                HBox.setHgrow(label, Priority.ALWAYS);
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            }
 
-                        @Override
-                        protected void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                            } else {
-                                setGraphic(graphic);
-                            }
-                        }
-                    };
-                    return listCell;
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(graphic);
                 }
+            }
+        }
                 );
         // We have to set a custom skin, otherwise the ComboBox disappears before the click on the Hyperlink is registered.
         graphComboBox.setSkin(new ComboBoxListViewSkin<String>(graphComboBox) {
@@ -131,10 +126,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
-        graphComboBox.setOnAction(event -> {
-            DocumentModel.getInstance().setSelectedGraph(
-                    graphComboBox.getSelectionModel().getSelectedItem().toString());
-        });
+        graphComboBox.setOnAction(event -> DocumentModel.getInstance().setSelectedGraph(
+                graphComboBox.getSelectionModel().getSelectedItem().toString()));
 
 
         for (int i = graphComboBox.getItems().size()-1; i >= 0; i++){

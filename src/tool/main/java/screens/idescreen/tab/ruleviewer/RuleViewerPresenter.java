@@ -1,16 +1,14 @@
 package screens.idescreen.tab.ruleviewer;
 
-import alice.tuprolog.InvalidLibraryException;
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import prolog.TuProlog;
 import general.compiler.CompilationModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import prolog.TuProlog;
 
 import java.net.URL;
 import java.util.Iterator;

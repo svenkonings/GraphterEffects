@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 
 import alice.tuprolog.Struct;
@@ -9,8 +9,12 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import prolog.TuProlog;
 import utils.GraphUtils;
+import utils.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static prolog.TuProlog.struct;
 
@@ -19,23 +23,25 @@ import static prolog.TuProlog.struct;
  * Default library for {@link Graph} predicates.
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ASRCLibrary extends GraphLibrary {
+public class ASCLibrary extends GraphLibrary {
 
     /**
-     * Creates a new ASRCLibrary that retrieves information from a given {@link Graph}.
+     * Creates a new ASCLibrary that retrieves information from a given {@link Graph}.
+     *
      * @param graph Given {@code Graph}
      */
-    public ASRCLibrary(Graph graph) {
+    public ASCLibrary(Graph graph) {
         super(graph);
     }
 
     @Override
     public GraphLibraryLoader getLoader() {
-        return ASRCLibrary::new;
+        return ASCLibrary::new;
     }
 
     /**
      * Returns the Prolog Theory associated with this library. Contains generative predicates ({@link Graph}/{@link Edge}/{@link Node}) as well as functional predicates.
+     *
      * @return The Prolog theory.
      */
     @Override
@@ -91,24 +97,27 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given object is directed, be it an {@link Edge} or {@link Graph}.
+     *
      * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given object is directed.
      */
     public boolean directedsecond_1(Term ID) {
-        return bool((Struct) ID.getTerm(), GraphUtils::isDirectedGeneral, false,true, true);
+        return bool((Struct) ID.getTerm(), GraphUtils::isDirectedGeneral, false, true, true);
     }
 
     /**
      * Returns whether the given object is undirected, be it an {@link Edge} or {@link Graph}.
+     *
      * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given object is undirected.
      */
     public boolean undirectedsecond_1(Term ID) {
-        return bool((Struct) ID.getTerm(), GraphUtils::isUnDirectedGeneral, false,true, true);
+        return bool((Struct) ID.getTerm(), GraphUtils::isUnDirectedGeneral, false, true, true);
     }
 
     /**
      * Logs the given term, then returns true
+     *
      * @param ignore Term to be logged
      * @return true
      */
@@ -121,6 +130,7 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} object is mixed.
+     *
      * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given {@link Graph} is undirected.
      */
@@ -130,16 +140,18 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} has this {@link Edge} count or unifies otherwise.
-     * @param ID Identifier of the {@link Graph}.
+     *
+     * @param ID    Identifier of the {@link Graph}.
      * @param count {@link Edge} count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
     public boolean edgecountsecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Graph)n).getEdgeCount(), false, false, true);
+        return numeric((Struct) ID.getTerm(), count, n -> ((Graph) n).getEdgeCount(), false, false, true);
     }
 
     /**
      * Returns whether the given {@link Graph} is a {@link SingleGraph}.
+     *
      * @param ID Identifier of the {@link Graph}.
      * @return Whether the {@link Graph} is a {@link SingleGraph}.
      */
@@ -149,6 +161,7 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} is a {@link MultiGraph}.
+     *
      * @param ID Identifier of the {@link Graph}.
      * @return Whether the {@link Graph} is a {@link MultiGraph}.
      */
@@ -158,17 +171,19 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} has this {@link Node} count or unifies otherwise.
-     * @param ID Identifier of the {@link Graph}.
+     *
+     * @param ID    Identifier of the {@link Graph}.
      * @param count {@link Node} count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
     public boolean nodecountsecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Graph)n).getNodeCount(), false, false, true);
+        return numeric((Struct) ID.getTerm(), count, n -> ((Graph) n).getNodeCount(), false, false, true);
     }
 
     /**
      * Returns whether the given {@link Graph} has this component count or unifies otherwise.
-     * @param ID Identifier of the {@link Graph}.
+     *
+     * @param ID    Identifier of the {@link Graph}.
      * @param count Component count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
@@ -178,7 +193,8 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Graph} element has this number of attributes or unifies otherwise.
-     * @param ID Identifier of the {@link Graph}.
+     *
+     * @param ID    Identifier of the {@link Graph}.
      * @param count Attribute count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
@@ -188,48 +204,53 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether the given {@link Node} has this degree or unifies otherwise.
-     * @param ID Identifier of the {@link Node}.
+     *
+     * @param ID    Identifier of the {@link Node}.
      * @param count Degree of the {@link Node}
      * @return Whether unification was possible or the given degree was correct.
      */
     public boolean degreesecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Node)n).getDegree(), true, false, false);
+        return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getDegree(), true, false, false);
     }
 
     /**
      * Returns whether the given {@link Node} has this indegree or unifies otherwise.
-     * @param ID Identifier of the {@link Node}.
+     *
+     * @param ID    Identifier of the {@link Node}.
      * @param count Indegree of the {@link Node}
      * @return Whether unification was possible or the given indegree was correct.
      */
     public boolean indegreesecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Node)n).getInDegree(), true, false, false);
+        return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getInDegree(), true, false, false);
     }
 
     /**
      * Returns whether the given {@link Node} has this outdegree or unifies otherwise.
-     * @param ID Identifier of the {@link Node}.
+     *
+     * @param ID    Identifier of the {@link Node}.
      * @param count Outdegree of the {@link Node}
      * @return Whether unification was possible or the given outdegree was correct.
      */
     public boolean outdegreesecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Node)n).getOutDegree(), true, false, false);
+        return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getOutDegree(), true, false, false);
     }
 
     /**
      * Returns whether the given {@link Node} has this number of neighbours or unifies otherwise.
-     * @param ID Identifier of the {@link Node}.
+     *
+     * @param ID    Identifier of the {@link Node}.
      * @param count Number of neighbours the {@link Node} has.
      * @return Whether unification was possible or the given number was correct.
      */
     public boolean neighbourcountsecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> GraphUtils.neighbourCount((Node)n), true, false, false);
+        return numeric((Struct) ID.getTerm(), count, n -> GraphUtils.neighbourCount((Node) n), true, false, false);
     }
 
 
     /**
      * Returns whether the given {@link Node} is in a specific component of the {@link Graph} or unifies otherwise.
-     * @param ID Identifier of the {@link Node}
+     *
+     * @param ID        Identifier of the {@link Node}
      * @param component Numeric identifier of the component this {@link Node} is in.
      * @return Whether unification was possible or the given component ID was correct.
      */
@@ -242,9 +263,10 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether an {@link Edge} is in the shortest path between two {@link Node} objects or unifies otherwise.
-     * @param ID Identifier of the {@link Edge}.
+     *
+     * @param ID   Identifier of the {@link Edge}.
      * @param from Source {@link Node} of the shortest path.
-     * @param to Target {@link Node} of the shortest path.
+     * @param to   Target {@link Node} of the shortest path.
      * @return Whether the given {@link Edge} lies on the shortest path between the two {@link Node} objects.
      */
     public boolean inshortestpathsecond_3(Term ID, Term from, Term to) {
@@ -260,6 +282,7 @@ public class ASRCLibrary extends GraphLibrary {
 
     /**
      * Returns whether an {@link Edge} is in the minimal spanning tree of the {@link Graph}.
+     *
      * @param ID Identifier of the {@link Edge}.
      * @return Whether the {@link Edge} is in the minimal spanning tree of the {@link Graph}.
      */
@@ -275,32 +298,25 @@ public class ASRCLibrary extends GraphLibrary {
 
 
     private Map<Element, Integer> indexing;
+
     /**
      * Returns whether a {@link Element} has the given index or unifies otherwise.
-     * @param ID Identifier of the {@link Element}.
+     *
+     * @param ID    Identifier of the {@link Element}.
      * @param index Index of the {@link Element}.
      * @return Whether the {@link Element} has the given index or unifies otherwise.
      */
     public boolean indexsecond_2(Term ID, Term index) {
-        try {
-            if (indexing == null) {
-                indexing = new HashMap<>();
-                List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
-                elems.sort(Comparator.comparing(Element::getId));
-                for (int i = 0; i < elems.size(); i++) {
-                    indexing.put(elems.get(i), i);
-                }
+        if (indexing == null) {
+            indexing = new HashMap<>();
+            List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
+            elems.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+            for (int i = 0; i < elems.size(); i++) {
+                indexing.put(elems.get(i), i);
             }
-            return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return false;
         }
+        return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
     }
-
-
-
-
 
 
 }

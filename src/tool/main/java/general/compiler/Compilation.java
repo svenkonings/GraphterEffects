@@ -1,6 +1,5 @@
 package general.compiler;
 
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import graphloader.Importer;
 import prolog.TuProlog;
@@ -60,7 +59,7 @@ public class Compilation extends Observable{
 
     /**
      * Constructor for a debug compilation. The compilation becomes a debug compilation
-     * if the {@paramref maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     * if the {@code maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
      *
      * @param scriptFile The path of where the Graafvis Script is stored
      * @param graphFile The path of where the Abstract Syntax Graph is stored

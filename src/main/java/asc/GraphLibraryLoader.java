@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 import org.graphstream.graph.Graph;
 

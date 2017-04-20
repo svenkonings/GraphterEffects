@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 import alice.tuprolog.Term;
 import graphloader.Importer;
@@ -12,14 +12,14 @@ import utils.FileUtils;
 import java.util.List;
 import java.util.Map;
 
-import static asrc.GraphRuleTests.generateGraphProlog;
-import static asrc.GraphRuleTests.graphTest;
+import static asc.GraphRuleTests.generateGraphProlog;
+import static asc.GraphRuleTests.graphTest;
 import static prolog.TuProlog.and;
 import static prolog.TuProlog.struct;
 import static prolog.TuProlog.var;
 import static org.junit.Assert.assertEquals;
 
-public final class AbstractSyntaxRuleConverterTest {
+public final class AbstractSyntaxConverterTest {
 
     @Test
     public void convertToRulesGraph1() throws Exception {

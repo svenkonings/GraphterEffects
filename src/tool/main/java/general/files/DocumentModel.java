@@ -14,7 +14,7 @@ public class DocumentModel extends Observable{
 
     private Path graafVisFilePath;
     private Map<String, Path> graphFileMap = new HashMap<>();
-    private LinkedList<Pair<String,Path>> graphFileList = new LinkedList<Pair<String,Path>>(); //Serves as a FIFO Queue;
+    private LinkedList<Pair<String,Path>> graphFileList = new LinkedList<>(); //Serves as a FIFO Queue;
     private Map<String, Path> generatedSVGMap = new HashMap<>();
     private Map<String, Integer> generatedSVGCounterMap = new HashMap<>(); //To make sure 2 files don't have the same name.
     public String graafVisCode;
@@ -52,6 +52,7 @@ public class DocumentModel extends Observable{
         File newGraafvisFile = null;
         try {
             newGraafvisFile = new File("temp/newfile.vis");
+            //noinspection ResultOfMethodCallIgnored
             newGraafvisFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();

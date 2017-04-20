@@ -174,9 +174,7 @@ public class IDEPresenter implements Initializable, Observer {
                     //TODO LOGGING: System.out.println("Graph converted");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress) {
-                        Platform.runLater(() -> {
-                            tabPane.getTabs().add(createRuleViewerTab());
-                        });
+                        Platform.runLater(() -> tabPane.getTabs().add(createRuleViewerTab()));
                     }
                     break;
                 case GRAAFVISCOMPILED:
@@ -186,9 +184,7 @@ public class IDEPresenter implements Initializable, Observer {
                     //TODO: LOGGING System.out.println("Logic solved");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress){
-                        Platform.runLater(() -> {
-                            tabPane.getTabs().add(createVisElemViewerTab());
-                        });
+                        Platform.runLater(() -> tabPane.getTabs().add(createVisElemViewerTab()));
                     }
                     break;
                 case SVGGENERATED:

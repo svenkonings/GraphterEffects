@@ -2,11 +2,9 @@ import com.airhacks.afterburner.injection.Injector;
 import general.files.DocumentModel;
 import general.files.IOManager;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.FileUtils;
 import root.RootPresenter;
 import root.RootView;
@@ -31,35 +29,33 @@ public class App extends Application{
         scene.getStylesheets().add(uri);
         primaryStage.setScene(scene);
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                if (!DocumentModel.getInstance().graafvisChangesSaved()){
-                    if(!IOManager.showGraafvisScriptSaveDialog(DocumentModel.getInstance().getGraafVisFilePath(), DocumentModel.getInstance().graafVisCode)){
-                        event.consume();
-                        return;
-                    }
+        primaryStage.setOnCloseRequest(event -> {
+            if (!DocumentModel.getInstance().graafvisChangesSaved()){
+                if(!IOManager.showGraafvisScriptSaveDialog(DocumentModel.getInstance().getGraafVisFilePath(), DocumentModel.getInstance().graafVisCode)){
+                    event.consume();
+                    return;
                 }
-                Set<String> svgNames = new HashSet<>(DocumentModel.getInstance().getAllGeneratedSVGS().keySet());
-                for (String svgName: svgNames){
-                    if(IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
-                        DocumentModel.getInstance().getAllGeneratedSVGS().remove(svgName);
-                    } else {
-                        event.consume();
-                        return;
-                    }
-                }
-                try {
-                    FileUtils.deleteDirectory(new File("temp"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                System.exit(0);
             }
+            Set<String> svgNames = new HashSet<>(DocumentModel.getInstance().getAllGeneratedSVGS().keySet());
+            for (String svgName: svgNames){
+                if(IOManager.showSVGSaveDialog(DocumentModel.getInstance().getGeneratedSVG(svgName))){
+                    DocumentModel.getInstance().getAllGeneratedSVGS().remove(svgName);
+                } else {
+                    event.consume();
+                    return;
+                }
+            }
+            try {
+                FileUtils.deleteDirectory(new File("temp"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
         });
         primaryStage.show();
 
         //Preparing the files.
+        //noinspection ResultOfMethodCallIgnored
         new File("temp/compiled").mkdirs();
         DocumentModel.getInstance().newGraafVisFile();
 

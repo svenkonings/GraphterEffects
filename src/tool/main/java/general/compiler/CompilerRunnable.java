@@ -1,6 +1,5 @@
 package general.compiler;
 
-import alice.tuprolog.InvalidTheoryException;
 import graafvis.GraafvisCompiler;
 import org.xml.sax.SAXException;
 
@@ -40,7 +39,7 @@ public class CompilerRunnable implements Runnable, Observer {
 
     /**
      * Constructor for a {@link CompilerRunnable} for a debug {@link Compilation}. The compilation becomes a debug
-     * compilation if the {@paramref maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     * compilation if the {@code maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
      *
      * @param scriptFile             The path of where the Graafvis Script is stored
      * @param graphFile              The path of where the Abstract Syntax Graph is stored See //TODO{@link } which

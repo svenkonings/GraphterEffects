@@ -54,13 +54,13 @@ public final class StringUtils {
      * @return A {@link Pair} containing the two parts of the split.
      */
     public static Pair<String, Integer> stripTrailingNumbers(String input) {
-        String digs = "";
+        StringBuilder digs = new StringBuilder();
         while (input.length() > 0 && (Character.isDigit(input.charAt(input.length() - 1)))) {
-            digs = input.charAt(input.length() - 1) + digs;
+            digs.insert(0, input.charAt(input.length() - 1));
             input = input.substring(0, input.length() - 1);
         }
         try {
-            return new Pair<>(input, Integer.parseInt(digs));
+            return new Pair<>(input, Integer.parseInt(digs.toString()));
         } catch (NumberFormatException e) {
             return new Pair<>(input, -1);
         }

@@ -120,7 +120,7 @@ public class MenuPresenter implements Initializable {
     }
 
     public void graphAsImageMenuItemPressed(ActionEvent actionEvent) {
-        BorderPane centralBorder = ((BorderPane) (((AnchorPane) borderPane.getParent()).getParent().getParent()).getParent());
+        BorderPane centralBorder = ((BorderPane) (borderPane.getParent().getParent().getParent()).getParent());
         SplitPane topBar = (SplitPane) centralBorder.getTop();
         ButtonBar buttonBar = (ButtonBar) ((SplitPane) ((AnchorPane) topBar.getItems().get(1)).getChildren().get(0)).getItems().get(1);
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
@@ -131,7 +131,7 @@ public class MenuPresenter implements Initializable {
     }
 
     public void graphAsTextMenuItemPressed(ActionEvent actionEvent) {
-        BorderPane centralBorder = ((BorderPane) (((AnchorPane) borderPane.getParent()).getParent().getParent()).getParent());
+        BorderPane centralBorder = ((BorderPane) (borderPane.getParent().getParent().getParent()).getParent());
         SplitPane topBar = (SplitPane) centralBorder.getTop();
         ButtonBar buttonBar = (ButtonBar) ((SplitPane) ((AnchorPane) topBar.getItems().get(1)).getChildren().get(0)).getItems().get(1);
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);

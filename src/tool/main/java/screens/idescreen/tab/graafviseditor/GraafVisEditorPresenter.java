@@ -35,9 +35,9 @@ public class GraafVisEditorPresenter implements Initializable {
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
 
 
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
+    private static final String PAREN_PATTERN = "[()]";
+    private static final String BRACE_PATTERN = "[{}]";
+    private static final String BRACKET_PATTERN = "[\\[]]";
 
     //Patterns concerning the logical flow
     private static final String DOT_PATTERN = "\\.";
@@ -86,7 +86,7 @@ public class GraafVisEditorPresenter implements Initializable {
                     DocumentModel.getInstance().graafVisCode = codeArea.getText();
                 });
 
-        String graafVisCode = null;
+        String graafVisCode;
         try {
             graafVisCode = FileUtils.readFromFile(DocumentModel.getInstance().getGraafVisFilePath().toFile());
             codeArea.replaceText(0, 0, graafVisCode);
