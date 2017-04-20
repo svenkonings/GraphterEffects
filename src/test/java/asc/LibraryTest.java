@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 import alice.tuprolog.SolveInfo;
 import alice.tuprolog.Term;
@@ -33,17 +33,17 @@ public class LibraryTest {
     public void init() throws Exception {
         diengine = new TuProlog();
         digraph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph4.dot"));
-        diengine.loadLibrary(new ASRCLibrary(digraph));
+        diengine.loadLibrary(new ASCLibrary(digraph));
         asrcmap.put(digraph, diengine);
 
         undiengine = new TuProlog();
         undigraph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph5.dot"));
-        undiengine.loadLibrary(new ASRCLibrary(undigraph));
+        undiengine.loadLibrary(new ASCLibrary(undigraph));
         asrcmap.put(undigraph, undiengine);
 
         emptyengine = new TuProlog();
         empty = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/empty.dot"));
-        emptyengine.loadLibrary(new ASRCLibrary(empty));
+        emptyengine.loadLibrary(new ASCLibrary(empty));
         asrcmap.put(empty, emptyengine);
     }
 

@@ -21,9 +21,9 @@ import java.util.Optional;
 
 public class IOManager {
 
-    private static FileChooser.ExtensionFilter allFilesFilter = new FileChooser.ExtensionFilter("All files", "*");;
-    private static FileChooser.ExtensionFilter visFilesFilter = new FileChooser.ExtensionFilter("VIS files (*.vis)", "*.VIS", "*.vis");;
-    private static FileChooser.ExtensionFilter graphFilesFilter = new FileChooser.ExtensionFilter("Graph files (*.dot, ... )", "*.DOT", "*.dot","*.gxl","*.GXL");;
+    private static FileChooser.ExtensionFilter allFilesFilter = new FileChooser.ExtensionFilter("All files", "*");
+    private static FileChooser.ExtensionFilter visFilesFilter = new FileChooser.ExtensionFilter("VIS files (*.vis)", "*.VIS", "*.vis");
+    private static FileChooser.ExtensionFilter graphFilesFilter = new FileChooser.ExtensionFilter("Graph files (*.dot, ... )", "*.DOT", "*.dot","*.gxl","*.GXL");
     private static FileChooser.ExtensionFilter dotFilesFilter = new FileChooser.ExtensionFilter("DOT files (*.dot)", "*.DOT", "*.dot");
     private static FileChooser.ExtensionFilter svgFilesFilter = new FileChooser.ExtensionFilter("SVG files (*.svg)", "*.svg");
 
@@ -157,11 +157,7 @@ public class IOManager {
             if (buttonType.getButtonData().equals(ButtonBar.ButtonData.YES)) {
                 showSaveSVGPopup(path);
                 returnValue[0] = true;
-            } else if (buttonType.getButtonData().equals(ButtonBar.ButtonData.NO)) {
-                returnValue[0] = true;
-            } else {
-                returnValue[0] = false;
-            }
+            } else returnValue[0] = buttonType.getButtonData().equals(ButtonBar.ButtonData.NO);
         });
         return returnValue[0];
     }
@@ -174,11 +170,7 @@ public class IOManager {
             if (buttonType.getButtonData().equals(ButtonBar.ButtonData.YES)) {
                 showSaveScriptPopup(path, codeFile);
                 returnValue[0] = true;
-            } else if (buttonType.getButtonData().equals(ButtonBar.ButtonData.NO)) {
-                returnValue[0] = true;
-            } else {
-                returnValue[0] = false;
-            }
+            } else returnValue[0] = buttonType.getButtonData().equals(ButtonBar.ButtonData.NO);
         });
         return returnValue[0];
     }
@@ -196,6 +188,7 @@ public class IOManager {
 
         alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        //noinspection ConstantConditions
         stage.getIcons().add(
                 new Image(IOManager.class.getClassLoader().getResource("graphter_effects_logo.png").toExternalForm()));
 

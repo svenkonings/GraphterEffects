@@ -1,7 +1,7 @@
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import asrc.GraphLibrary;
-import asrc.GraphLibraryLoader;
+import asc.GraphLibrary;
+import asc.GraphLibraryLoader;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;

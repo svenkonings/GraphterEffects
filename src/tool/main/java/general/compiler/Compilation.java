@@ -1,17 +1,16 @@
 package general.compiler;
 
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
-import graphloader.Importer;
-import solver.SolveResults;
-import solver.Solver;
-import svg.SvgDocumentGenerator;
 import graafvis.GraafvisCompiler;
 import graafvis.errors.VisError;
 import graafvis.warnings.Warning;
+import graphloader.Importer;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
+import solver.SolveResults;
+import solver.Solver;
+import svg.SvgDocumentGenerator;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class Compilation extends Observable{
 
     /**
      * Constructor for a debug compilation. The compilation becomes a debug compilation
-     * if the {@paramref maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     * if the {@code maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
      *
      * @param scriptFile The path of where the Graafvis Script is stored
      * @param graphFile The path of where the Abstract Syntax Graph is stored
@@ -104,9 +103,8 @@ public class Compilation extends Observable{
      * and notifies its observers abouts its progress.
      * The resulting Visualization Elements are put into {@link Compilation#solveResults}
      * //TODO: User libraries?
-     * @throws InvalidTheoryException
      */
-    public boolean solve() throws InvalidTheoryException {
+    public boolean solve() {
         List<Term> rules = new LinkedList<>();
         rules.addAll(scriptRules);
         Solver solver = new Solver();

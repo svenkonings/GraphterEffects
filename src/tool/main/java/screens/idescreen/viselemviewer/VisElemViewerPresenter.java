@@ -35,26 +35,26 @@ public class VisElemViewerPresenter implements Initializable {
     }
 
     public void showContentInTreeView(){
-        showContentInTreeView(new HashSet<String>());
+        showContentInTreeView(new HashSet<>());
     }
 
     public void showContentInTreeView(Set<String> filterArgs) {
-        TreeItem<String> rootItem = new TreeItem<String>("Visualization Elements");
+        TreeItem<String> rootItem = new TreeItem<>("Visualization Elements");
         rootItem.setExpanded(true);
         Map<String, VisElem> visElemMap = visMap.getMapping();
 
         for (String atom : visElemMap.keySet()) {
-            TreeItem visElemTreeItem = new TreeItem<String>("Element " + atom);
+            TreeItem visElemTreeItem = new TreeItem<>("Element " + atom);
             VisElem visElem = visElemMap.get(atom);
             for (String key : visElem.getValues().keySet())
                 if (filterArgs.size() != 0) {
                     for (String filterArg : filterArgs) {
                         if (key.toLowerCase().contains(filterArg.toLowerCase())) {
-                            visElemTreeItem.getChildren().add(new TreeItem<String>(key + ": " + visElem.getValues().get(key)));
+                            visElemTreeItem.getChildren().add(new TreeItem<>(key + ": " + visElem.getValues().get(key)));
                         }
                     }
                 } else {
-                    visElemTreeItem.getChildren().add(new TreeItem<String>(key + ": " + visElem.getValues().get(key)));
+                    visElemTreeItem.getChildren().add(new TreeItem<>(key + ": " + visElem.getValues().get(key)));
                 }
             rootItem.getChildren().add(visElemTreeItem);
         }

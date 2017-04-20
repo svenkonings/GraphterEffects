@@ -1,16 +1,14 @@
 package screens.idescreen.tab.ruleviewer;
 
-import alice.tuprolog.InvalidLibraryException;
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import prolog.TuProlog;
 import general.compiler.CompilationModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import prolog.TuProlog;
 
 import java.net.URL;
 import java.util.Iterator;
@@ -64,15 +62,15 @@ public class RuleViewerPresenter implements Initializable {
             Term term = it.next();
             term.getTerm();
             String head = ((Struct) term).getArg(0).toString();
-            String tail = "";
+            StringBuilder tail = new StringBuilder();
             if (((Struct) term).getArity() - 1 <= 1) {
-                tail += ((Struct) term).getArg(1);
+                tail.append(((Struct) term).getArg(1));
             }
             for (int i = 2; i <= ((Struct) term).getArity() - 1; i++) {
-                tail += ((Struct) term).getArg(i);
+                tail.append(((Struct) term).getArg(i));
             }
 
-            TableTerm tableTerm = new TableTerm(head,tail);
+            TableTerm tableTerm = new TableTerm(head, tail.toString());
             rulesTable.getItems().add(tableTerm);
 
         }

@@ -77,9 +77,7 @@ public class SVGViewerPresenter implements Initializable {
         CodeArea codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
-        codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            codeArea.setStyleSpans(0, computeHighlighting(newText));
-        });
+        codeArea.textProperty().addListener((obs, oldText, newText) -> codeArea.setStyleSpans(0, computeHighlighting(newText)));
         codeArea.replaceText(0, 0, svgAsString);
 
         codeArea.prefWidthProperty().bind(svgViewerPane.widthProperty());

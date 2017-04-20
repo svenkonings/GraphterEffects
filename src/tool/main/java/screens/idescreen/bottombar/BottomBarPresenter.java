@@ -7,8 +7,6 @@ import general.compiler.CompilationProgress;
 import graafvis.errors.VisError;
 import graafvis.warnings.Warning;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -40,30 +38,24 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
         expandButton.setDisable(true);
 
-        compilationResultTitledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
-                    expandButton.setDisable(false);
-                } else {
-                    compilationResultTitledPane.setPrefHeight(25);
-                    expandButton.setText("Maximize");
-                    expandButton.setDisable(true);
-                }
+        compilationResultTitledPane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                expandButton.setDisable(false);
+            } else {
+                compilationResultTitledPane.setPrefHeight(25);
+                expandButton.setText("Maximize");
+                expandButton.setDisable(true);
             }
         });
 
-        viewModel.sceneHeigthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if (compilationResultTitledPane.isExpanded()){
-                    if (maximized){
-                        compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().subtract(65).doubleValue());
-                    } else {
-                        compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
-                        System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
-                    }
+        viewModel.sceneHeigthProperty().addListener((observable, oldValue, newValue) -> {
+            if (compilationResultTitledPane.isExpanded()){
+                if (maximized){
+                    compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().subtract(65).doubleValue());
+                } else {
+                    compilationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                    System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
                 }
             }
         });
@@ -79,22 +71,16 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
         switch (compilationProgress){
             case NORMALCOMPILATIONSTARTED:
                 CompilationModel.getInstance().addObserverToCompilation(this);
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.setText("Compilation started \n");
-                        compilationResultTitledPane.setExpanded(true);
-                    }
+                Platform.runLater(() -> {
+                    compilationResultTextArea.setText("Compilation started \n");
+                    compilationResultTitledPane.setExpanded(true);
                 });
                 break;
             case DEBUGCOMPILATIONSTARTED:
                 CompilationModel.getInstance().addObserverToCompilation(this);
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.setText("Debug Compilation started \n");
-                        compilationResultTitledPane.setExpanded(true);
-                    }
+                Platform.runLater(() -> {
+                    compilationResultTextArea.setText("Debug Compilation started \n");
+                    compilationResultTitledPane.setExpanded(true);
                 });
                 break;
             case SOLVED:
@@ -102,67 +88,48 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 int nbVars = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
                 int nbConstraints = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
 
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.appendText("Constraints solved:\n");
-                        compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
-                        compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
-                        compilationResultTextArea.appendText("Measures : \n");
-                        compilationResultTextArea.appendText(measures + "\n");
-                    }
+                Platform.runLater(() -> {
+                    compilationResultTextArea.appendText("Constraints solved:\n");
+                    compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
+                    compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
+                    compilationResultTextArea.appendText("Measures : \n");
+                    compilationResultTextArea.appendText(measures + "\n");
                 });
                 break;
             case SVGGENERATED:
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.appendText("SVG generated\n");
-                    }
-                });
+                Platform.runLater(() -> compilationResultTextArea.appendText("SVG generated\n"));
                 break;
             case ERROROCCURED:
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
-                                CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
-                    }
-                });
+                Platform.runLater(() -> compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
+                        CompilationModel.getInstance().getCompilation().getException().getMessage() + "\n"));
                 break;
             case NOSOLUTION:
                 measures = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getSolver().getMeasures().toString();
                 nbVars = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
                 nbConstraints = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
 
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.appendText("No solution found:\n");
-                        compilationResultTextArea.appendText("Constraints solved:\n");
-                        compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
-                        compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
-                        compilationResultTextArea.appendText("Measures : \n");
-                        compilationResultTextArea.appendText(measures + "\n");
-                    }
+                Platform.runLater(() -> {
+                    compilationResultTextArea.appendText("No solution found:\n");
+                    compilationResultTextArea.appendText("Constraints solved:\n");
+                    compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
+                    compilationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
+                    compilationResultTextArea.appendText("Measures : \n");
+                    compilationResultTextArea.appendText(measures + "\n");
                 });
                 break;
             case COMPILEERROR:
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        compilationResultTextArea.appendText("A compile error occured:");
-                        compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
-                                CompilationModel.getInstance().getCompilation().getException().getMessage().toString() + "\n");
-                        Compilation compilation = CompilationModel.getInstance().getCompilation();
-                        for (VisError error : compilation.getErrors()) {
-                            compilationResultTextArea.appendText(error.toString() + "\n");
-                        }
-                        for (Warning warning : compilation.getWarnings()) {
-                            compilationResultTextArea.appendText(warning.toString() + "\n");
-                        }
-
+                Platform.runLater(() -> {
+                    compilationResultTextArea.appendText("A compile error occured:");
+                    compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString() +
+                            CompilationModel.getInstance().getCompilation().getException().getMessage() + "\n");
+                    Compilation compilation = CompilationModel.getInstance().getCompilation();
+                    for (VisError error : compilation.getErrors()) {
+                        compilationResultTextArea.appendText(error.toString() + "\n");
                     }
+                    for (Warning warning : compilation.getWarnings()) {
+                        compilationResultTextArea.appendText(warning.toString() + "\n");
+                    }
+
                 });
                 break;
         }
@@ -170,12 +137,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
 
     @Override
     public void textAdded(String added) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                compilationResultTextArea.appendText(added + "\n");
-            }
-        });
+        Platform.runLater(() -> compilationResultTextArea.appendText(added + "\n"));
 
     }
 

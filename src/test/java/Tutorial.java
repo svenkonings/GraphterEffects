@@ -1,4 +1,3 @@
-import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import graafvis.GraafvisCompiler;
 import graphloader.Importer;
@@ -44,9 +43,6 @@ public class Tutorial {
             e.printStackTrace();
         } catch (GraafvisCompiler.CheckerException e) {
             //Thrown when the Graafvis script contains semantics errors.
-            e.printStackTrace();
-        } catch (InvalidTheoryException e) {
-            //Thrown when the list of terms resulting from Graafvis is not accepted by Prolog. This should not occur!!
             e.printStackTrace();
         } catch (SAXException e) {
             //Thrown when the Graph file contains syntax errors.

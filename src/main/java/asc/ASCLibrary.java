@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 
 import alice.tuprolog.Struct;
@@ -9,6 +9,7 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import prolog.TuProlog;
 import utils.GraphUtils;
+import utils.StringUtils;
 
 import java.util.*;
 
@@ -19,19 +20,19 @@ import static prolog.TuProlog.struct;
  * Default library for {@link Graph} predicates.
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ASRCLibrary extends GraphLibrary {
+public class ASCLibrary extends GraphLibrary {
 
     /**
-     * Creates a new ASRCLibrary that retrieves information from a given {@link Graph}.
+     * Creates a new ASCLibrary that retrieves information from a given {@link Graph}.
      * @param graph Given {@code Graph}
      */
-    public ASRCLibrary(Graph graph) {
+    public ASCLibrary(Graph graph) {
         super(graph);
     }
 
     @Override
     public GraphLibraryLoader getLoader() {
-        return ASRCLibrary::new;
+        return ASCLibrary::new;
     }
 
     /**
@@ -282,20 +283,15 @@ public class ASRCLibrary extends GraphLibrary {
      * @return Whether the {@link Element} has the given index or unifies otherwise.
      */
     public boolean indexsecond_2(Term ID, Term index) {
-        try {
-            if (indexing == null) {
-                indexing = new HashMap<>();
-                List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
-                elems.sort(Comparator.comparing(Element::getId));
-                for (int i = 0; i < elems.size(); i++) {
-                    indexing.put(elems.get(i), i);
-                }
+        if (indexing ==null) {
+            indexing = new HashMap<>();
+            List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
+            elems.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+            for (int i = 0; i < elems.size(); i++) {
+                indexing.put(elems.get(i), i);
             }
-            return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return false;
         }
+        return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
     }
 
 

@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 
 import alice.tuprolog.*;

@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 import graphloader.Importer;
 import prolog.TuProlog;
@@ -7,10 +7,10 @@ import org.junit.Test;
 import utils.FileUtils;
 import utils.Printer;
 
-import static asrc.GraphRuleTests.generateGraphProlog;
-import static asrc.GraphRuleTests.graphTest;
+import static asc.GraphRuleTests.generateGraphProlog;
+import static asc.GraphRuleTests.graphTest;
 
-public final class ASRCIntergrationTest {
+public final class ASCIntergrationTest {
     @Test
     public void intergrationTestDOT() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));

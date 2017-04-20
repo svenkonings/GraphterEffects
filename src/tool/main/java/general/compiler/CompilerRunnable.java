@@ -1,6 +1,5 @@
 package general.compiler;
 
-import alice.tuprolog.InvalidTheoryException;
 import graafvis.GraafvisCompiler;
 import org.xml.sax.SAXException;
 
@@ -39,7 +38,7 @@ public class CompilerRunnable implements Runnable, Observer{
 
     /**
      * Constructor for a {@link CompilerRunnable} for a debug {@link Compilation}. The compilation becomes a debug compilation
-     * if the {@paramref maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
+     * if the {@code maxProgress} is not {@link CompilationProgress#COMPILATIONFINISHED}.
      *
      * @param scriptFile The path of where the Graafvis Script is stored
      * @param graphFile The path of where the Abstract Syntax Graph is stored
@@ -96,15 +95,7 @@ public class CompilerRunnable implements Runnable, Observer{
                     compilation.generateSVG();
                 }
             }
-        } catch (IOException e) {
-            compilation.setException(e);
-        } catch (InvalidTheoryException e) {
-            compilation.setException(e);
-        } catch (SAXException e) {
-            compilation.setException(e);
-        } catch (GraafvisCompiler.SyntaxException e) {
-            compilation.setException(e);
-        } catch (GraafvisCompiler.CheckerException e) {
+        } catch (IOException | SAXException | GraafvisCompiler.CheckerException | GraafvisCompiler.SyntaxException e) {
             compilation.setException(e);
         }
 
@@ -114,7 +105,7 @@ public class CompilerRunnable implements Runnable, Observer{
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof CompilationProgress) {
-            if (((CompilationProgress) arg).equals(CompilationProgress.ABORTED)){
+            if (arg.equals(CompilationProgress.ABORTED)){
                 Thread.currentThread().interrupt();
             }
         }

@@ -21,6 +21,7 @@ public class CompilerUtils {
      * @param code the graafvis code
      */
     public static Path saveAsTempScript(String filename, String code){
+        //noinspection ResultOfMethodCallIgnored
         new File("/temp/compiler").mkdirs();
         Path tempFilePath = Paths.get("/temp/compiler",filename);
         try {
@@ -48,6 +49,7 @@ public class CompilerUtils {
         List<String> svgxmltext = new ArrayList<>();
         svgxmltext.add(svgxml);
 
+        //noinspection ResultOfMethodCallIgnored
         new File("temp/compiled/").mkdirs();
 
         Path file = Paths.get("temp/compiled/",svgDocument.getName() + ".svg");

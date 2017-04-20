@@ -1,4 +1,4 @@
-package asrc;
+package asc;
 
 import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
@@ -23,7 +23,7 @@ public class GraphRuleTests {
     public static TuProlog generateGraphProlog(Graph graph) throws InvalidTheoryException {
         TuProlog prolog = new TuProlog();
         try {
-            prolog.loadLibrary(new ASRCLibrary(graph));
+            prolog.loadLibrary(new ASCLibrary(graph));
         } catch (InvalidLibraryException e) {
             e.printStackTrace();
         }
