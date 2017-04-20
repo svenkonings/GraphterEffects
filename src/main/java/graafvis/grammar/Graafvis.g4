@@ -63,7 +63,7 @@ cMultiArg : PAR_OPEN cArgSeries? PAR_CLOSE
           | cTerm
           ;
 
-cArgSeries: (terms+=cTerm COMMA)* terms+=cTerm ;
+cArgSeries: (args+=cTerm COMMA)* args+=cTerm ;
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor
