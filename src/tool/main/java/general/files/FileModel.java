@@ -33,7 +33,7 @@ public class FileModel extends Observable{
         notifyObservers(new Pair<>(FileModelChange.GRAAFVISFILELOADED, graafVisFilePath.getFileName().toString()));
     }
 
-    public int generateSVGCounter(String name){
+    public synchronized int generateSVGCounter(String name){
         if (generatedSVGCounterMap.containsKey(name)){
             int key = generatedSVGCounterMap.get(name);
             key++;

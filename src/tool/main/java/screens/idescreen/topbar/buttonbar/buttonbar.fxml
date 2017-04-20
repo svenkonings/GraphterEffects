@@ -10,7 +10,7 @@
 <?import javafx.scene.control.SplitPane?>
 
 <SplitPane fx:id="splitPane" dividerPositions="0.2709030100334448" prefHeight="33.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.idescreen.topbar.buttonbar.ButtonBarPresenter">
-    <Label fx:id="graafVisScriptNameLabel" maxWidth="150.0" minWidth="150.0" prefHeight="17.0" prefWidth="150.0" text="Label">
+    <Label fx:id="graafVisScriptNameLabel" maxWidth="150.0" minWidth="150.0" onMouseClicked="#graafVisScriptNameLabelClicked" prefHeight="17.0" prefWidth="150.0" text="Label">
       <padding>
          <Insets left="5.0" />
       </padding></Label>
@@ -18,7 +18,7 @@
       <buttons>
          <ComboBox fx:id="graphComboBox" prefWidth="150.0" />
           <Button fx:id="compileButton" maxWidth="60.0" minWidth="32.0" mnemonicParsing="false" onAction="#compileButtonPressed" prefHeight="25.0" prefWidth="60.0" text="Compile" />
-         <MenuButton fx:id="debugButton" mnemonicParsing="false"  text="Debug">
+         <MenuButton fx:id="debugButton" mnemonicParsing="false" text="Debug">
            <items>
              <MenuItem mnemonicParsing="false" onAction="#generateRulesButtonPressed" text="Generate Rules" />
              <MenuItem mnemonicParsing="false" onAction="#generateVisElemsButtonPressed" text="Generate Vis Elems" />

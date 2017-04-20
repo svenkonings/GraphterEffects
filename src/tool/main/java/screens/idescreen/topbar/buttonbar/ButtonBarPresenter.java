@@ -276,4 +276,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
             //TODO: Handle exceptions by showing them in an error box
         }
     }
+
+    public void graafVisScriptNameLabelClicked(MouseEvent mouseEvent) {
+        TabPane centralTabPane = (TabPane) ((BorderPane) (splitPane.getParent().getParent().getParent()).getParent()).getCenter();
+        centralTabPane.getSelectionModel().select(0);
+    }
 }
