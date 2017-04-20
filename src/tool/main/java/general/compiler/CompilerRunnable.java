@@ -100,7 +100,7 @@ public class CompilerRunnable implements Runnable, Observer {
                     compilation.generateSVG();
                 }
             }
-        } catch (IOException | InvalidTheoryException | GraafvisCompiler.SyntaxException | SAXException | GraafvisCompiler.CheckerException e) {
+        } catch (IOException | GraafvisCompiler.SyntaxException | SAXException | GraafvisCompiler.CheckerException e) {
             compilation.setException(e);
         }
 
