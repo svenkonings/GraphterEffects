@@ -56,7 +56,7 @@ cTerm: functor (PAR_OPEN cTermSeries? PAR_CLOSE)?                               
 cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm;
 
 cMultiTerm: cTerm
-          | PAR_OPEN PAR_CLOSE
+          | PAR_OPEN cTermSeries? PAR_CLOSE
           ;
 
 /* Functors */
