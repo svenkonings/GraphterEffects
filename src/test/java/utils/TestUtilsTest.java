@@ -18,9 +18,4 @@ public final class TestUtilsTest {
             e.printStackTrace();
         }
     }
-
-    @Test
-    public void testViewSvg() throws IOException {
-        TestUtils.showSVG(FileUtils.fromResources("kiwi.svg"), 1000);
-    }
 }

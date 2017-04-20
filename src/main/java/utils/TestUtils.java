@@ -1,18 +1,19 @@
 package utils;
 
+import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import prolog.TuProlog;
 import org.graphstream.graph.Element;
+import prolog.TuProlog;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static prolog.TuProlog.*;
 import static org.junit.Assert.assertEquals;
+import static prolog.TuProlog.*;
 import static utils.TermUtils.elementTerm;
 
 public final class TestUtils {
@@ -62,7 +63,7 @@ public final class TestUtils {
                             return;
                         }
                     try {
-                        assert answerContains(answers, "Value", expectedValue);
+                        assert answerContains(answers, "Value", expectedValue) || ((Struct)answers.get(0).get("Value")).getName().equals(expectedValue);
                     } catch (Exception | AssertionError e) {
                         assert false;
                     }
@@ -85,16 +86,4 @@ public final class TestUtils {
         f.pack();
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
-
-    public static void showSVG(File file, long time) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("\"/Program Files (x86)/Google/Chrome/Application/chrome.exe\"", file.getAbsolutePath(), "--new-window");
-        Process p = pb.start();
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        p.destroy();
-    }
-
 }

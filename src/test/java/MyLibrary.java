@@ -15,17 +15,20 @@ public class MyLibrary extends GraphLibrary {
 
     @Override
     public GraphLibraryLoader getLoader() {
+        //Returns the default graphloader (as lambda).
         return MyLibrary::new;
     }
 
     @Override
     public String getTheory() {
         //This makes sure the predicates called are Struct objects, and Graph elements retrieved are of the correct type.
-        return "hasloop(X) :- node(X), hasloopsecond(X).\n" +
-                "idlength(X,Y) :- node(X), idlengthsecond(X,Y).\n" +
-                "idlength(X,Y) :- edge(X), idlengthsecond(X,Y).\n" +
-                "idlength(X,Y) :- graph(X), idlengthsecond(X,Y).\n" +
-                "triangle(X,Y,Z) :- edge(X), edge(Y), edge(Z), trianglesecond(X,Y,Z).";
+        StringBuilder res = new StringBuilder();
+        res.append("hasloop(X) :- node(X), hasloopsecond(X).\n");
+        res.append("idlength(X,Y) :- node(X), idlengthsecond(X,Y).\n");
+        res.append("idlength(X,Y) :- edge(X), idlengthsecond(X,Y).\n");
+        res.append("idlength(X,Y) :- graph(X), idlengthsecond(X,Y).\n");
+        res.append("triangle(X,Y,Z) :- edge(X), edge(Y), edge(Z), trianglesecond(X,Y,Z).");
+        return res.toString();
     }
 
     public boolean hasloopsecond_1(Term node) {

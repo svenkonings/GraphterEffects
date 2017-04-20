@@ -84,7 +84,7 @@ public final class AbstractSyntaxConverterTest {
             length++;
         }
         TuProlog prolog = generateGraphProlog(graph);
-        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("ID")), struct("inmst", var("ID"))));
+        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("ID")), struct("inMST", var("ID"))));
         assertEquals(length, a.size());
     }
 }

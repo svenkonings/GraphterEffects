@@ -86,7 +86,7 @@ public final class AbstractSyntaxConverterWLIB {
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
-        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("X")),struct("inmst", var("X"))));
+        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("X")),struct("inMST", var("X"))));
         assertEquals(length, a.size());
     }
 }

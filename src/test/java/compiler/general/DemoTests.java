@@ -115,36 +115,37 @@ public final class DemoTests {
         SvgDocumentGenerator.writeDocument(svg, "demo3.svg");
     }
 
-    @Test
-    public void demo4() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/start.gst"));
-        List<Term> terms = Arrays.asList(
-                //Shows the wolf image
-                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/wolf.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("wolf"))),
-                clause(struct("pos", var("N"), intVal(50), intVal(85)), struct("attribute", term("label"), var("N"), term("wolf"))),
-                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("wolf"))),
-
-                //Shows the sheep image
-                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/sheep.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Goat"))),
-                clause(struct("pos", var("N"), intVal(200), intVal(45)), struct("attribute", term("label"), var("N"), term("type:Goat"))),
-                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("type:Goat"))),
-
-                //Shows the cabbage image
-                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/cabbage.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
-                clause(struct("pos", var("N"), intVal(350), intVal(5)), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
-                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
-
-                //Shows the boat image
-                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/boat.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Boat"))),
-                clause(struct("pos", var("N"), intVal(400), intVal(220)), struct("attribute", term("label"), var("N"), term("type:Boat"))),
-                clause(struct("dimensions", var("N"), intVal(450), intVal(190)), struct("attribute", term("label"), var("N"), term("type:Boat"))),
-
-                //Shows the river image
-                struct("background-image", struct(FileUtils.fromResources("demo/images/river.png").getAbsolutePath()))
-        );
-        Solver solver = new Solver();
-        SolveResults results = solver.solve(graph, terms);
-        Document svg = SvgDocumentGenerator.generate(results.getVisMap().values());
-        SvgDocumentGenerator.writeDocument(svg, "demo4.svg");
-    }
+//    @Test
+//    public void demo4() throws Exception {
+//        Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/start.gst"));
+//        Printer.pprint(graph);
+//        List<Term> terms = Arrays.asList(
+//                //Shows the wolf image
+//                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/wolf.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("wolf"))),
+//                clause(struct("pos", var("N"), intVal(50), intVal(85)), struct("attribute", term("label"), var("N"), term("wolf"))),
+//                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("wolf"))),
+//
+//                //Shows the sheep image
+//                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/sheep.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Goat"))),
+//                clause(struct("pos", var("N"), intVal(200), intVal(45)), struct("attribute", term("label"), var("N"), term("type:Goat"))),
+//                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("type:Goat"))),
+//
+//                //Shows the cabbage image
+//                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/cabbage.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
+//                clause(struct("pos", var("N"), intVal(350), intVal(5)), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
+//                clause(struct("dimensions", var("N"), intVal(128), intVal(128)), struct("attribute", term("label"), var("N"), term("type:Cabbage"))),
+//
+//                //Shows the boat image
+//                clause(struct("image", var("N"), struct(FileUtils.fromResources("demo/images/boat.png").getAbsolutePath())), struct("attribute", term("label"), var("N"), term("type:Boat"))),
+//                clause(struct("pos", var("N"), intVal(400), intVal(220)), struct("attribute", term("label"), var("N"), term("type:Boat"))),
+//                clause(struct("dimensions", var("N"), intVal(450), intVal(190)), struct("attribute", term("label"), var("N"), term("type:Boat"))),
+//
+//                //Shows the river image
+//                struct("background-image", struct(FileUtils.fromResources("demo/images/river.png").getAbsolutePath()))
+//        );
+//        Solver solver = new Solver();
+//        SolveResults results = solver.solve(graph, terms);
+//        Document svg = SvgDocumentGenerator.generate(results.getVisMap().values());
+//        SvgDocumentGenerator.writeDocument(svg, "demo4.svg");
+//    }
 }

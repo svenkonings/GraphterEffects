@@ -56,27 +56,27 @@ public class ASCLibrary extends GraphLibrary {
             sb.append("edge(\"").append(n.getSourceNode().getId()).append("\", \"").append(n.getTargetNode().getId()).append("\").\n");
             sb.append("edge(\"").append(n.getSourceNode().getId()).append("\", \"").append(n.getTargetNode().getId()).append("\", \"").append(n.getId()).append("\").\n");
         }
-        sb.append("undirected(X) :- graph(X), undirectedsecond(X).\n");
-        sb.append("undirected(X) :- edge(X), undirectedsecond(X).\n");
-        sb.append("directed(X) :- graph(X), directedsecond(X).\n");
-        sb.append("directed(X) :- edge(X), directedsecond(X).\n");
-        sb.append("mixed(X) :- graph(X), mixedsecond(X).\n");
-        sb.append("edgecount(X, Y) :- graph(X), edgecountsecond(X, Y).\n");
-        sb.append("nodecount(X, Y) :- graph(X), nodecountsecond(X, Y).\n");
-        sb.append("componentcount(X, Y) :- graph(X), componentcountsecond(X, Y).\n");
-        sb.append("attributecount(X, Y) :- graph(X), attributecountsecond(X, Y).\n");
-        sb.append("attributecount(X, Y) :- node(X), attributecountsecond(X, Y).\n");
-        sb.append("attributecount(X, Y) :- edge(X), attributecountsecond(X, Y).\n");
-        sb.append("singlegraph(X) :- graph(X), singlegraphsecond(X).\n");
-        sb.append("multigraph(X) :- graph(X), multigraphsecond(X).\n");
-        sb.append("isconnected(X) :- componentcount(X, 0) ; componentcount(X, 1).\n");
-        sb.append("degree(X, Y) :- node(X), degreesecond(X, Y).\n");
-        sb.append("indegree(X, Y) :- node(X), indegreesecond(X, Y).\n");
-        sb.append("outdegree(X, Y) :- node(X), outdegreesecond(X, Y).\n");
-        sb.append("neighbourcount(X, Y) :- node(X), neighbourcountsecond(X, Y).\n");
-        sb.append("attribute(X, Y, Z) :- graph(X), attributesecond(X, Y, Z).\n");
-        sb.append("attribute(X, Y, Z) :- node(X), attributesecond(X, Y, Z).\n");
-        sb.append("attribute(X, Y, Z) :- edge(X), attributesecond(X, Y, Z).\n");
+        sb.append("undirected(X) :- graph(X), undirectedSecond(X).\n");
+        sb.append("undirected(X) :- edge(X), undirectedSecond(X).\n");
+        sb.append("directed(X) :- graph(X), directedSecond(X).\n");
+        sb.append("directed(X) :- edge(X), directedSecond(X).\n");
+        sb.append("mixed(X) :- graph(X), mixedSecond(X).\n");
+        sb.append("edgeCount(X, Y) :- graph(X), edgeCountSecond(X, Y).\n");
+        sb.append("nodeCount(X, Y) :- graph(X), nodeCountSecond(X, Y).\n");
+        sb.append("componentCount(X, Y) :- graph(X), componentCountSecond(X, Y).\n");
+        sb.append("attributeCount(X, Y) :- graph(X), attributeCountSecond(X, Y).\n");
+        sb.append("attributeCount(X, Y) :- node(X), attributeCountSecond(X, Y).\n");
+        sb.append("attributeCount(X, Y) :- edge(X), attributeCountSecond(X, Y).\n");
+        sb.append("singlegraph(X) :- graph(X), singlegraphSecond(X).\n");
+        sb.append("multigraph(X) :- graph(X), multigraphSecond(X).\n");
+        sb.append("isConnected(X) :- componentCount(X, 0) ; componentCount(X, 1).\n");
+        sb.append("degree(X, Y) :- node(X), degreeSecond(X, Y).\n");
+        sb.append("indegree(X, Y) :- node(X), indegreeSecond(X, Y).\n");
+        sb.append("outdegree(X, Y) :- node(X), outdegreeSecond(X, Y).\n");
+        sb.append("neighbourCount(X, Y) :- node(X), neighbourCountSecond(X, Y).\n");
+        sb.append("attribute(X, Y, Z) :- graph(X), attributeSecond(X, Y, Z).\n");
+        sb.append("attribute(X, Y, Z) :- node(X), attributeSecond(X, Y, Z).\n");
+        sb.append("attribute(X, Y, Z) :- edge(X), attributeSecond(X, Y, Z).\n");
         sb.append("label(X, Y) :- node(X), attribute(X, \"label\", Y).\n");
         sb.append("label(X, Y) :- graph(X), attribute(X, \"label\", Y).\n");
         sb.append("label(X, Y) :- edge(X), attribute(X, \"label\", Y).\n");
@@ -86,12 +86,12 @@ public class ASCLibrary extends GraphLibrary {
         sb.append("type(X, Y) :- node(X), attribute(X, \"type\", Y).\n");
         sb.append("type(X, Y) :- graph(X), attribute(X, \"type\", Y).\n");
         sb.append("type(X, Y) :- edge(X), attribute(X, \"type\", Y).\n");
-        sb.append("incomponent(X, Y) :- node(X), incomponentsecond(X, Y).\n");
-        sb.append("inmst(X) :- edge(X), inmstsecond(X).\n");
-        sb.append("inshortestpath(X,Y,Z) :- edge(X), node(Y), node(Z), inshortestpathsecond(X,Y,Z).\n");
-        sb.append("index(X,Y) :- node(X), indexsecond(X,Y).\n");
-        sb.append("index(X,Y) :- edge(X), indexsecond(X,Y).\n");
-        sb.append("index(X,Y) :- graph(X), indexsecond(X,Y).\n");
+        sb.append("inComponent(X, Y) :- node(X), inComponentSecond(X, Y).\n");
+        sb.append("inMST(X) :- edge(X), inMSTSecond(X).\n");
+        sb.append("inShortestPath(X,Y,Z) :- edge(X), node(Y), node(Z), inShortestPathSecond(X,Y,Z).\n");
+        sb.append("index(X,Y) :- node(X), indexSecond(X,Y).\n");
+        sb.append("index(X,Y) :- edge(X), indexSecond(X,Y).\n");
+        sb.append("index(X,Y) :- graph(X), indexSecond(X,Y).\n");
         return sb.toString();
     }
 
@@ -101,7 +101,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given object is directed.
      */
-    public boolean directedsecond_1(Term ID) {
+    public boolean directedSecond_1(Term ID) {
         return bool((Struct) ID.getTerm(), GraphUtils::isDirectedGeneral, false, true, true);
     }
 
@@ -111,7 +111,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given object is undirected.
      */
-    public boolean undirectedsecond_1(Term ID) {
+    public boolean undirectedSecond_1(Term ID) {
         return bool((Struct) ID.getTerm(), GraphUtils::isUnDirectedGeneral, false, true, true);
     }
 
@@ -134,8 +134,8 @@ public class ASCLibrary extends GraphLibrary {
      * @param ID Identifier of the {@link Graph} element.
      * @return Whether the given {@link Graph} is undirected.
      */
-    public boolean mixedsecond_1(Term ID) {
-        return directedsecond_1(ID) == undirectedsecond_1(ID);
+    public boolean mixedSecond_1(Term ID) {
+        return directedSecond_1(ID) == undirectedSecond_1(ID);
     }
 
     /**
@@ -145,7 +145,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count {@link Edge} count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
-    public boolean edgecountsecond_2(Term ID, Term count) {
+    public boolean edgeCountSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> ((Graph) n).getEdgeCount(), false, false, true);
     }
 
@@ -155,7 +155,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param ID Identifier of the {@link Graph}.
      * @return Whether the {@link Graph} is a {@link SingleGraph}.
      */
-    public boolean singlegraphsecond_1(Term ID) {
+    public boolean singlegraphSecond_1(Term ID) {
         return bool((Struct) ID.getTerm(), n -> n instanceof SingleGraph, false, false, true);
     }
 
@@ -165,7 +165,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param ID Identifier of the {@link Graph}.
      * @return Whether the {@link Graph} is a {@link MultiGraph}.
      */
-    public boolean multigraphsecond_1(Term ID) {
+    public boolean multigraphSecond_1(Term ID) {
         return bool((Struct) ID.getTerm(), n -> n instanceof MultiGraph, false, false, true);
     }
 
@@ -176,7 +176,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count {@link Node} count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
-    public boolean nodecountsecond_2(Term ID, Term count) {
+    public boolean nodeCountSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> ((Graph) n).getNodeCount(), false, false, true);
     }
 
@@ -187,7 +187,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count Component count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
-    public boolean componentcountsecond_2(Term ID, Term count) {
+    public boolean componentCountSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> GraphUtils.ConnectedComponentsCount(((Graph) n)), false, false, true);
     }
 
@@ -198,7 +198,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count Attribute count of the {@link Graph}
      * @return Whether unification was possible or the given count was correct.
      */
-    public boolean attributecountsecond_2(Term ID, Term count) {
+    public boolean attributeCountSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, Element::getAttributeCount, true, true, true);
     }
 
@@ -209,7 +209,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count Degree of the {@link Node}
      * @return Whether unification was possible or the given degree was correct.
      */
-    public boolean degreesecond_2(Term ID, Term count) {
+    public boolean degreeSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getDegree(), true, false, false);
     }
 
@@ -220,7 +220,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count Indegree of the {@link Node}
      * @return Whether unification was possible or the given indegree was correct.
      */
-    public boolean indegreesecond_2(Term ID, Term count) {
+    public boolean indegreeSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getInDegree(), true, false, false);
     }
 
@@ -231,7 +231,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count Outdegree of the {@link Node}
      * @return Whether unification was possible or the given outdegree was correct.
      */
-    public boolean outdegreesecond_2(Term ID, Term count) {
+    public boolean outdegreeSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getOutDegree(), true, false, false);
     }
 
@@ -242,7 +242,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param count Number of neighbours the {@link Node} has.
      * @return Whether unification was possible or the given number was correct.
      */
-    public boolean neighbourcountsecond_2(Term ID, Term count) {
+    public boolean neighbourCountSecond_2(Term ID, Term count) {
         return numeric((Struct) ID.getTerm(), count, n -> GraphUtils.neighbourCount((Node) n), true, false, false);
     }
 
@@ -254,9 +254,9 @@ public class ASCLibrary extends GraphLibrary {
      * @param component Numeric identifier of the component this {@link Node} is in.
      * @return Whether unification was possible or the given component ID was correct.
      */
-    public boolean incomponentsecond_2(Term ID, Term component) {
+    public boolean inComponentSecond_2(Term ID, Term component) {
         GraphUtils.ConnectedComponentsCount(graph);
-        return attributesecond_3(ID, struct("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_"), component);
+        return attributeSecond_3(ID, struct("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_"), component);
     }
 
     private Dijkstra dijkstra;
@@ -269,7 +269,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param to   Target {@link Node} of the shortest path.
      * @return Whether the given {@link Edge} lies on the shortest path between the two {@link Node} objects.
      */
-    public boolean inshortestpathsecond_3(Term ID, Term from, Term to) {
+    public boolean inShortestPathSecond_3(Term ID, Term from, Term to) {
         if (dijkstra == null) {
             dijkstra = new Dijkstra(null, "_ATTRIBUTE_FOR_SHORTEST_PATH_", null);
             dijkstra.init(graph);
@@ -287,7 +287,7 @@ public class ASCLibrary extends GraphLibrary {
      * @return Whether the {@link Edge} is in the minimal spanning tree of the {@link Graph}.
      */
     @SuppressWarnings("SuspiciousMethodCalls")
-    public boolean inmstsecond_1(Term ID) {
+    public boolean inMSTSecond_1(Term ID) {
         try {
             return bool((Struct) ID.getTerm(), n -> GraphUtils.getMST(graph).contains(n), false, true, false);
         } catch (Exception | AssertionError e) {
@@ -306,7 +306,7 @@ public class ASCLibrary extends GraphLibrary {
      * @param index Index of the {@link Element}.
      * @return Whether the {@link Element} has the given index or unifies otherwise.
      */
-    public boolean indexsecond_2(Term ID, Term index) {
+    public boolean indexSecond_2(Term ID, Term index) {
         if (indexing == null) {
             indexing = new HashMap<>();
             List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));

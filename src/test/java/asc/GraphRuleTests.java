@@ -86,9 +86,9 @@ public class GraphRuleTests {
     }
 
     public static void graphIntegerInvariantsTest(TuProlog prolog, Graph graph) {
-        testPredicateValue(prolog, graph, "nodecount", graph.getId(), String.valueOf(graph.getNodeSet().size()));
-        testPredicateValue(prolog, graph, "edgecount", graph.getId(), String.valueOf(graph.getEdgeSet().size()));
-        testPredicateValue(prolog, graph, "attributecount", graph.getId(), String.valueOf(graph.getAttributeKeySet().size()));
+        testPredicateValue(prolog, graph, "nodeCount", graph.getId(), String.valueOf(graph.getNodeSet().size()));
+        testPredicateValue(prolog, graph, "edgeCount", graph.getId(), String.valueOf(graph.getEdgeSet().size()));
+        testPredicateValue(prolog, graph, "attributeCount", graph.getId(), String.valueOf(graph.getAttributeKeySet().size()));
     }
 
     public static void nodePropertiesTest(TuProlog prolog, Node node) {
@@ -99,8 +99,8 @@ public class GraphRuleTests {
         testPredicateValue(prolog, node, "degree", node.getId(), String.valueOf(node.getDegree()));
         testPredicateValue(prolog, node, "indegree", node.getId(), String.valueOf(node.getInDegree()));
         testPredicateValue(prolog, node, "outdegree", node.getId(), String.valueOf(node.getOutDegree()));
-        testPredicateValue(prolog, node, "attributecount", node.getId(), String.valueOf(node.getAttributeCount()));
-        testPredicateValue(prolog, node, "neighbourcount", node.getId(), String.valueOf(GraphUtils.neighbourCount(node)));
+        testPredicateValue(prolog, node, "attributeCount", node.getId(), String.valueOf(node.getAttributeCount()));
+        testPredicateValue(prolog, node, "neighbourCount", node.getId(), String.valueOf(GraphUtils.neighbourCount(node)));
     }
 
     public static void edgePropertiesTest(TuProlog prolog, Edge edge) {
@@ -110,6 +110,6 @@ public class GraphRuleTests {
     }
 
     public static void edgeIntegerInvariantsTest(TuProlog prolog, Edge edge) {
-        testPredicateValue(prolog, edge, "attributecount", edge.getId(), String.valueOf(edge.getAttributeCount()));
+        testPredicateValue(prolog, edge, "attributeCount", edge.getId(), String.valueOf(edge.getAttributeCount()));
     }
 }

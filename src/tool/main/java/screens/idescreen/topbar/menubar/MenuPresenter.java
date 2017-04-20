@@ -81,18 +81,21 @@ public class MenuPresenter implements Initializable {
 
     public void saveMenuItemPressed(ActionEvent actionEvent) {
         //IOManager.showSaveScriptPopup(Model.getInstance().getCodePaneTextArea().getText());
-        TabPane tabPane = (TabPane) (((BorderPane) (viewModel.getMainView())).getCenter());
+        TabPane tabPane = (TabPane) (((BorderPane)((StackPane) (viewModel.getMainView())).getChildren().get(0)).getCenter());
         Tab viewerTab = tabPane.getSelectionModel().getSelectedItem();
         String viewerTabID = viewerTab.getText();
+        if (viewerTabID.endsWith(" *")) {
+            viewerTabID = viewerTabID.substring(0, viewerTabID.length()-2);
+        }
 
-        if (viewerTabID.split("\\.")[1].equals("vis")){
+        if (viewerTabID.endsWith(".vis")){
             Path codePath = DocumentModel.getInstance().getGraafVisFilePath();
-
             String code = DocumentModel.getInstance().graafVisCode;
             List<String> codeList = new ArrayList<>();
             codeList.add(code);
             try {
                 Files.write(codePath, codeList, Charset.forName("UTF-8"));
+                DocumentModel.getInstance().loadGraafVisFile(codePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

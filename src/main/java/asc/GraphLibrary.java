@@ -34,6 +34,11 @@ public abstract class GraphLibrary extends Library {
         this.graph = graph;
     }
 
+    /**
+     * Returns a {@link GraphLibraryLoader} that returns an instance of this library.
+     *
+     * @return A {@link GraphLibraryLoader} that returns an instance of this library.
+     */
     public abstract GraphLibraryLoader getLoader();
 
     /**
@@ -53,7 +58,7 @@ public abstract class GraphLibrary extends Library {
      * @param value    Value of the attribute with that name.
      * @return Whether unification was possible.
      */
-    public boolean attributesecond_3(Term ID, Term attrname, Term value) {
+    public boolean attributeSecond_3(Term ID, Term attrname, Term value) {
         try {
             value = value.getTerm();
             String rname = StringUtils.removeQuotation(((Struct) attrname.getTerm()).getName());

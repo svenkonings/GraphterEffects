@@ -113,21 +113,21 @@ public class LibraryTest {
 
     @Test
     public void ComponentCount() throws Exception {
-        testSuccess(struct("isconnected", var("X")), digraph); // generation not supported
-        testSuccess(struct("isconnected", struct("#graph4.dot")), digraph);
-        testSuccess(struct("isconnected", var("X")), empty); //generation not supported
-        testSuccess(struct("isconnected", struct("#empty.dot")), empty);
+        testSuccess(struct("isConnected", var("X")), digraph); // generation not supported
+        testSuccess(struct("isConnected", struct("#graph4.dot")), digraph);
+        testSuccess(struct("isConnected", var("X")), empty); //generation not supported
+        testSuccess(struct("isConnected", struct("#empty.dot")), empty);
     }
 
     @Test
     public void AttributeCount() throws Exception {
-        testSuccess(struct("attributecount", struct("#graph5.dot"), intVal(0)), undigraph);
-        testSuccess(struct("attributecount", struct("#(e;a)"), intVal(1)), undigraph);
-        testSuccess(struct("attributecount", struct("#(e;d)"), intVal(2)), undigraph);
-        testSuccess(struct("attributecount", struct("#(e;b)"), intVal(3)), undigraph);
-        testSuccess(struct("attributecount", var("X"), intVal(3)), undigraph); //generation not supported
-        testFail(struct("attributecount", var("X"), intVal(4)), undigraph);
-        testSuccess(struct("attributecount", struct("#(e;b)"), var("X")), undigraph);
+        testSuccess(struct("attributeCount", struct("#graph5.dot"), intVal(0)), undigraph);
+        testSuccess(struct("attributeCount", struct("#(e;a)"), intVal(1)), undigraph);
+        testSuccess(struct("attributeCount", struct("#(e;d)"), intVal(2)), undigraph);
+        testSuccess(struct("attributeCount", struct("#(e;b)"), intVal(3)), undigraph);
+        testSuccess(struct("attributeCount", var("X"), intVal(3)), undigraph); //generation not supported
+        testFail(struct("attributeCount", var("X"), intVal(4)), undigraph);
+        testSuccess(struct("attributeCount", struct("#(e;b)"), var("X")), undigraph);
     }
 
     @Test
@@ -139,7 +139,7 @@ public class LibraryTest {
     @Test
     public void ComponentTest() throws Exception {
         GraphUtils.ConnectedComponentsCount(digraph);
-        SolveInfo res = asrcmap.get(digraph).getProlog().solve(and(struct("node", var("X")), struct("incomponent", var("X"), var("Y"))));
+        SolveInfo res = asrcmap.get(digraph).getProlog().solve(and(struct("node", var("X")), struct("inComponent", var("X"), var("Y"))));
         System.out.println(res);
 
         assertTrue(res.isSuccess());
