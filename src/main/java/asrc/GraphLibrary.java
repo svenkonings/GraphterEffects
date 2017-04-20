@@ -24,43 +24,13 @@ public abstract class GraphLibrary extends Library {
     /**
      * {@link Graph} on which predicates are performed.
      */
-    protected Graph graph;
-
-    private volatile Boolean allowSetGraph = true;
-
-    public Graph getGraph() {
-        return graph;
-    }
+    protected final Graph graph;
 
     public GraphLibrary(Graph graph) {
         this.graph = graph;
     }
 
     public abstract GraphLibraryLoader getLoader();
-
-    public void setGraph(Graph graph) {
-        synchronized (allowSetGraph) {
-            if (allowSetGraph) {
-                this.graph = graph;
-            } else {
-                throw new SolvingInProgressException();
-            }
-        }
-    }
-
-    @Override
-    public void onSolveBegin(Term term) {
-        synchronized (allowSetGraph) {
-            allowSetGraph = false;
-        }
-    }
-
-    @Override
-    public void onSolveEnd() {
-        synchronized (allowSetGraph) {
-            allowSetGraph = true;
-        }
-    }
 
     /**
      * Returns a Prolog theory to be added to the Prolog solver. Use an empty {@link String} if unwished for.

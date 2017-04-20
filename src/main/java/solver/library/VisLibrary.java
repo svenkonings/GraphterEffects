@@ -1,6 +1,8 @@
-package solver;
+package solver.library;
 
 import alice.tuprolog.Term;
+import solver.VisElem;
+import solver.VisMap;
 import utils.TriConsumer;
 
 import java.util.HashSet;
@@ -11,7 +13,7 @@ import java.util.function.BiConsumer;
 
 import static prolog.TuProlog.clause;
 
-public abstract class VisLibrary {
+public class VisLibrary {
 
     /** Terms to be added before querieing */
     protected final Set<Term> terms;
@@ -130,5 +132,7 @@ public abstract class VisLibrary {
      *
      * @param elem The given visualization element.
      */
-    public abstract void setDefaults(VisElem elem);
+    public void setDefaults(VisElem elem) {
+        // No defaults.
+    }
 }

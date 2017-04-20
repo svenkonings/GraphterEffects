@@ -1,4 +1,4 @@
-package solver;
+package solver.library;
 
 import alice.tuprolog.Term;
 import org.chocosolver.solver.Cause;
@@ -6,6 +6,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
+import solver.VisElem;
 import utils.FileUtils;
 import utils.QuadConsumer;
 import utils.TriConsumer;

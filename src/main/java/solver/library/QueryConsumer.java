@@ -1,6 +1,7 @@
-package solver;
+package solver.library;
 
 import alice.tuprolog.Term;
+import solver.VisMap;
 
 import java.util.List;
 import java.util.Map;

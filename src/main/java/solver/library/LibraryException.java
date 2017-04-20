@@ -1,4 +1,4 @@
-package solver;
+package solver.library;
 
 /**
  * An exception for consequences.

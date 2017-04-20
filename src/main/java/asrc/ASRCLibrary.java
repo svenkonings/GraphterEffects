@@ -30,7 +30,7 @@ public class ASRCLibrary extends GraphLibrary {
 
     @Override
     public GraphLibraryLoader getLoader() {
-        return null;
+        return ASRCLibrary::new;
     }
 
     /**
