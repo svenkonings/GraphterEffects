@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/meteoorkip/GraphterEffects.svg?branch=master)](https://travis-ci.org/meteoorkip/GraphterEffects)
+
 # Graphter Effects
 ### introducing Graafvis
 Current graph visualization solutions lack the functionality to easily create rich visualizations
