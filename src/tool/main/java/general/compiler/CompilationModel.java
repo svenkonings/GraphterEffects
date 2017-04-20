@@ -65,7 +65,7 @@ public class CompilationModel extends Observable {
     public void addObserverToCompilation(Observer observer){
         compilation.addObserver(observer);
         lock.lock();
-        if (this.countObservers() == compilation.countObservers()){
+        if (this.countObservers() + 1 == compilation.countObservers()){
             allObserversAdded.signal();
         }
         lock.unlock();
