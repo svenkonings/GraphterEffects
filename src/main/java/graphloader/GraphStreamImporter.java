@@ -36,6 +36,7 @@ final class GraphStreamImporter {
 
     /**
      * Reads a {@link Graph} from a {@link File}.
+     *
      * @param file {@link File} to read from.
      * @return A {@link Graph} containing the graph represented in the file.
      * @throws IOException Thrown when the file could not be read.

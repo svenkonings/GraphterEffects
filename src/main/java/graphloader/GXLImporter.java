@@ -50,7 +50,8 @@ final class GXLImporter {
 
     /**
      * Reads a {@link File} in GXL format into a {@link Graph}.
-     * @param file {@link File} to read into a {@link Graph}.
+     *
+     * @param file      {@link File} to read into a {@link Graph}.
      * @param addPrefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
      * @return {@link Graph} containing the graph represented in the file.
      * @throws IOException  Thrown when the file could not be read.
@@ -62,7 +63,8 @@ final class GXLImporter {
 
     /**
      * Reads a file in GXL format into a {@link Graph}.
-     * @param path Path to the file to read into a {@link Graph}.
+     *
+     * @param path      Path to the file to read into a {@link Graph}.
      * @param addPrefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
      * @return {@link Graph} containing the graph represented in the file.
      * @throws IOException  Thrown when the file could not be read.
@@ -92,7 +94,7 @@ final class GXLImporter {
     /**
      * Reads a file in GXL format into a {@link Graph}.
      *
-     * @param path           Path to the file to read into a {@link Graph}.
+     * @param path      Path to the file to read into a {@link Graph}.
      * @param addprefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
      * @return {@link Graph} containing the graph represented in the file.
      * @throws IOException  Thrown when the file could not be read.

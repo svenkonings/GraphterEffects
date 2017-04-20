@@ -28,6 +28,7 @@ public final class Importer {
 
     /**
      * Reads a {@link Graph} from a variety of formats.
+     *
      * @param file {@link File} from which to read the Graph
      * @return A {@link Graph} read from the file.
      * @throws IOException  Thrown when the File could not be read.
@@ -39,7 +40,8 @@ public final class Importer {
 
     /**
      * Reads a {@link Graph} from a variety of formats.
-     * @param file File from which to read the Graph
+     *
+     * @param file             File from which to read the Graph
      * @param addIllegalPrefix <tt>true</tt> if underscores should be added to the IDs in the graph.
      * @return A {@link Graph} read from the file.
      * @throws IOException  Thrown when the File could not be read.
