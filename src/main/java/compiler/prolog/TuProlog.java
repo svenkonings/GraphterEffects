@@ -124,6 +124,18 @@ public class TuProlog {
     }
 
     /**
+     * Creates a {@link Struct} with the given name and terms. A {@link Struct} without terms is atomic.
+     * If terms is null, it will return a {@link Struct} without terms.
+     *
+     * @param name  The given name
+     * @param terms The given terms.
+     * @return The {@link Struct}.
+     */
+    public static Struct safeStruct(String name, Term... terms) {
+        return (terms == null) ? new Struct(name) : new Struct(name, terms);
+    }
+
+    /**
      * Creates a clause {@link Struct} with the given head and body.
      *
      * @param head The given head.
@@ -135,12 +147,41 @@ public class TuProlog {
     }
 
     /**
+     * Creates a clause {@link Term} with the given head and body, if the body is not null.
+     * If the body is null, it will return the head {@link Term}.
+     *
+     * @param head The given head.
+     * @param body The given body.
+     * @return The {@link Term}.
+     */
+    public static Term safeClause(Term head, Term body) {
+        return (body == null) ? head : new Struct(":-", head, body);
+    }
+
+    /**
      * Creates a concatenation of and clauses with the given terms.
      *
      * @param terms The given term.
      * @return The resulting {@link Struct}.
      */
     public static Struct and(Term... terms) {
+        return concatTerms(",", terms);
+    }
+
+    /**
+     * Creates a concatenation of and clauses with the given terms.
+     * If there are no terms, it will return an empty {@link Struct}.
+     * If there is one terms, it will return that one {@link Term}.
+     *
+     * @param terms The given term.
+     * @return The resulting {@link Term}.
+     */
+    public static Term safeAnd(Term... terms) {
+        if (terms.length == 0) {
+            return new Struct();
+        } else if (terms.length == 1) {
+            return terms[0];
+        }
         return concatTerms(",", terms);
     }
 
