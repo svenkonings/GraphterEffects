@@ -8,9 +8,8 @@ import utils.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotEquals;
 
 public final class GXLImporterTest {
 
@@ -30,7 +29,6 @@ public final class GXLImporterTest {
         assertEquals("\"type:testtype\"",g.getNode("#node1").getAttribute("label"));
         assertNotEquals("type:testtype",g.getNode("#node1").getAttribute("label"));
         assertEquals(g.getNode("#node1").getAttribute("label"), "\"type:testtype\"");
-        assertEquals(g.getNode("#node2").getAttribute("flag"), "\"testflag\"");
         //assertEquals(g.getNode("#node1").getAttribute("type"), "\"testtype\"");
     }
 
