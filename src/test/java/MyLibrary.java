@@ -3,14 +3,19 @@ import alice.tuprolog.Term;
 import asrc.GraphLibrary;
 import asrc.GraphLibraryLoader;
 import org.graphstream.graph.Edge;
+import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import utils.GraphUtils;
 
 public class MyLibrary extends GraphLibrary {
 
+    public MyLibrary(Graph graph) {
+        super(graph);
+    }
+
     @Override
     public GraphLibraryLoader getLoader() {
-        return null;
+        return MyLibrary::new;
     }
 
     @Override

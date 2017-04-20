@@ -20,13 +20,13 @@ public class Tutorial {
         Solver solver = new Solver();
         try {
             //Compiles Graafvis
-            List<Term> terms = compiler.compile("triangle(X,Y,Z) -> shape(X,ellipse).");
+            List<Term> terms = compiler.compile("graphLibrary(mylibrary).\ntriangle(X,Y,Z) -> shape(X,ellipse).");
 
             //Loads a graph from a file
             Graph graph = Importer.graphFromFile("mygraph.dot");
 
-            //Adds libraries
-            solver.putGraphLibrary("mylibrary", new MyLibrary());
+            //add a library using its string key, and the constructor of the library class
+            solver.putGraphLibraryLoader("mylibrary", MyLibrary::new);
 
             //Solves for visualization elements
             VisMap map = solver.solve(graph, terms);
@@ -56,6 +56,7 @@ public class Tutorial {
             //Thrown when the graph file could not be read.
             e.printStackTrace();
         } catch (SolveException e) {
+            //thrown when no ss
             e.printStackTrace();
         }
     }
