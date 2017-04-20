@@ -25,8 +25,8 @@ clause: (antecedent=aTermExpr ARROW)? consequence=cTermSeries EOL;
 /* Antecedent */
 aTerm: NOT aTerm                                                                                                        #notAntecedent
      | functor (PAR_OPEN arguments=aTermSeries? PAR_CLOSE)?                                                             #compoundAntecedent
-//     | functor BRACE_OPEN (aMultiArg COMMA)* aMultiArg BRACE_CLOSE                                      #multiAndCompoundAntecedent
-//     | functor BRACE_OPEN (aMultiArg SEMICOLON)* aMultiArg BRACE_CLOSE                                  #multiOrCompoundAntecedent
+     | functor BRACE_OPEN (aMultiArg COMMA)* aMultiArg BRACE_CLOSE                                                      #multiAndCompoundAntecedent
+     | functor BRACE_OPEN (aMultiArg SEMICOLON)* aMultiArg BRACE_CLOSE                                                  #multiOrCompoundAntecedent
      | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
      | PAR_OPEN aTermExpr PAR_CLOSE                                                                                     #parAntecedent
      | variable=HID                                                                                                     #variableAntecedent
@@ -46,21 +46,21 @@ aTermExpr: aTermExpr COMMA aTermExpr
          | aTerm
          ;
 
-aMultiArg: aTermSeries
-         | PAR_OPEN aTermSeries? PAR_CLOSE
+aMultiArg: PAR_OPEN aTermSeries? PAR_CLOSE
+         | aTerm
          ;
 
 /* Consequence */
 cTerm: functor (PAR_OPEN arguments=cTermSeries? PAR_CLOSE)?                                                             #compoundConsequence
-//     | functor BRACE_OPEN (terms+=cMultiArg COMMA)* terms+=cMultiArg BRACE_CLOSE                                      #multiCompoundConsequence
+     | functor BRACE_OPEN (terms+=cMultiArg COMMA)* terms+=cMultiArg BRACE_CLOSE                                        #multiCompoundConsequence
      | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | STRING                                                                                                           #stringConsequence
      | NUMBER                                                                                                           #numberConsequence
      ;
 
-cMultiArg : cTerm
-          | PAR_OPEN cTermSeries? PAR_CLOSE
+cMultiArg : PAR_OPEN cTermSeries? PAR_CLOSE
+          | cTerm
           ;
 
 cTermSeries: (cTerm COMMA)* cTerm ;
