@@ -6,21 +6,24 @@ import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisParser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 /**
  * Makes sure blacklisted functors are not used in consequences. Blacklists functors that are generated from labels.
  */
-class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> { // TODO -- standard prolog predicates blacklisten + graph library predicates
+class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
 
     /** Set of functors that are RHS blacklisted by default */
     private static final HashSet<String> DEFAULT_BLACKLIST = new HashSet<>();
     static {
-        DEFAULT_BLACKLIST.add("node"); // TODO -- make reference to constants
+        DEFAULT_BLACKLIST.add("node");
         DEFAULT_BLACKLIST.add("edge");
         DEFAULT_BLACKLIST.add("label");
         DEFAULT_BLACKLIST.add("attribute");
-        DEFAULT_BLACKLIST.add("not"); // TODO -- update list
+        DEFAULT_BLACKLIST.add("not");
+        DEFAULT_BLACKLIST.add("inmst");
+        DEFAULT_BLACKLIST.add("inshortestpath");
     }
 
     /** Set of functors that cannot be used in consequences */
@@ -38,6 +41,16 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> { // TODO -- standa
     void reset() {
         consequenceBlackList.clear();
         consequenceBlackList.addAll(DEFAULT_BLACKLIST);
+    }
+
+    /** Add a predicate to the blacklist */
+    void blacklist(String functor) {
+        this.consequenceBlackList.add(functor);
+    }
+
+    /** Add all predicates to the blacklist */
+    void blacklistAll(Collection<String> predicates) {
+        this.consequenceBlackList.addAll(predicates);
     }
 
     /*
@@ -97,8 +110,8 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> { // TODO -- standa
     @Override
     public Void visitMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx) {
         blacklistCheck(ctx.functor());
-        for (GraafvisParser.CMultiTermContext term : ctx.terms) {
-            visitCMultiTerm(term);
+        for (GraafvisParser.CMultiArgContext arg : ctx.args) {
+            visitCMultiArg(arg);
         }
         return null;
     }

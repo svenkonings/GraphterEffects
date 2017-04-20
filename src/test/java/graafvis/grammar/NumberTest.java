@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static graafvis.grammar.TestUtil.*;
 
@@ -30,11 +31,10 @@ public class NumberTest {
     static {
         INVALID_NUMBER_SAMPLES.add("a");
         INVALID_NUMBER_SAMPLES.add("-");
-        INVALID_NUMBER_SAMPLES.add("0.1.1");
         INVALID_NUMBER_SAMPLES.add("--1");
-        INVALID_NUMBER_SAMPLES.add("1a");
+        INVALID_NUMBER_SAMPLES.add("a1");
         INVALID_NUMBER_SAMPLES.add(".1");
-        INVALID_NUMBER_SAMPLES.add("0-1");
+        INVALID_NUMBER_SAMPLES.add(".-1");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class NumberTest {
     private static void testValidAntecedentNumber(String sample) {
         GraafvisParser parser = getGraafvisParserFor(sample);
         ParseTree ctx = parser.aTerm();
-        Assert.assertTrue(ctx instanceof GraafvisParser.NumberAntecedentContext);
+        Assert.assertTrue(isAntecedentNumber(ctx));
         assertHasNoErrors(parser);
 
     }
@@ -61,26 +61,34 @@ public class NumberTest {
     private static void testInvalidAntecedentNumber(String sample) {
         GraafvisParser parser = getGraafvisParserFor(sample);
         ParseTree ctx = parser.aTerm();
-
-        if (ctx instanceof GraafvisParser.NumberAntecedentContext) {
+        if (isAntecedentNumber(ctx)) {
             assertHasErrors(parser);
         }
+
     }
 
     private static void testValidConsequenceNumber(String sample) {
         GraafvisParser parser = getGraafvisParserFor(sample);
         ParseTree ctx = parser.cTerm();
-        Assert.assertTrue(ctx instanceof GraafvisParser.NumberConsequenceContext);
+        Assert.assertTrue(isConsequenceNumber(ctx));
         assertHasNoErrors(parser);
     }
 
     private static void testInvalidConsequenceNumber(String sample) {
         GraafvisParser parser = getGraafvisParserFor(sample);
         ParseTree ctx = parser.cTerm();
-        assertHasErrors(parser);
-        Assert.assertFalse(ctx instanceof GraafvisParser.NumberConsequenceContext);
+        if (isConsequenceNumber(ctx)) {
+            assertHasErrors(parser);
+        }
     }
 
+    private static boolean isAntecedentNumber(ParseTree tree) {
+        return tree.getClass().toString().equals("class graafvis.grammar.GraafvisParser$NumberAntecedentContext");
+    }
+
+    private static boolean isConsequenceNumber(ParseTree tree) {
+        return tree.getClass().toString().equals("class graafvis.grammar.GraafvisParser$NumberConsequenceContext");
+    }
 
 
 }
