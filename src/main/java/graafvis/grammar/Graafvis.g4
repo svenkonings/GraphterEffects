@@ -20,14 +20,14 @@ edgeLabelGen: EDGE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
-clause: (antecedent=aTermExpr ARROW)? consequence=cTermSeries EOL;
+clause: (antecedent=aTermExpr ARROW)? consequence=cArgSeries EOL;
 
 /* Antecedent */
 aTerm: NOT aTerm                                                                                                        #notAntecedent
-     | functor (PAR_OPEN arguments=aTermSeries? PAR_CLOSE)?                                                             #compoundAntecedent
+     | functor (PAR_OPEN arguments=aArgSeries? PAR_CLOSE)?                                                              #compoundAntecedent
      | functor BRACE_OPEN (args+=aMultiArg COMMA)* args+=aMultiArg BRACE_CLOSE                                          #multiAndCompoundAntecedent
      | functor BRACE_OPEN (args+=aMultiArg SEMICOLON)* args+=aMultiArg BRACE_CLOSE                                      #multiOrCompoundAntecedent
-     | BRACKET_OPEN (aTermSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listAntecedent
+     | BRACKET_OPEN (aArgSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listAntecedent
      | PAR_OPEN aTermExpr PAR_CLOSE                                                                                     #parAntecedent
      | variable=HID                                                                                                     #variableAntecedent
      | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
@@ -35,10 +35,10 @@ aTerm: NOT aTerm                                                                
      | NUMBER                                                                                                           #numberAntecedent
      ;
 
-aTermSeries: aTermSeries SEMICOLON aTermSeries
-           | aTermSeries COMMA aTermSeries
-           | aTerm
-           ;
+aArgSeries: args+=orSeries (COMMA args+=orSeries)*;
+
+orSeries : aTerm (SEMICOLON aTerm)*;
+
 
 aTermExpr: aTermExpr COMMA aTermExpr
          | aTermExpr SEMICOLON aTermExpr
@@ -46,24 +46,24 @@ aTermExpr: aTermExpr COMMA aTermExpr
          | aTerm
          ;
 
-aMultiArg: PAR_OPEN aTermSeries? PAR_CLOSE
+aMultiArg: PAR_OPEN aArgSeries? PAR_CLOSE
          | aTerm
          ;
 
 /* Consequence */
-cTerm: functor (PAR_OPEN arguments=cTermSeries? PAR_CLOSE)?                                                             #compoundConsequence
+cTerm: functor (PAR_OPEN arguments=cArgSeries? PAR_CLOSE)?                                                              #compoundConsequence
      | functor BRACE_OPEN (args+=cMultiArg COMMA)* args+=cMultiArg BRACE_CLOSE                                          #multiCompoundConsequence
-     | BRACKET_OPEN (cTermSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                              #listConsequence
+     | BRACKET_OPEN (cArgSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listConsequence
      | variable=HID                                                                                                     #variableConsequence
      | STRING                                                                                                           #stringConsequence
      | NUMBER                                                                                                           #numberConsequence
      ;
 
-cMultiArg : PAR_OPEN cTermSeries? PAR_CLOSE
+cMultiArg : PAR_OPEN cArgSeries? PAR_CLOSE
           | cTerm
           ;
 
-cTermSeries: (terms+=cTerm COMMA)* terms+=cTerm ;
+cArgSeries: (terms+=cTerm COMMA)* terms+=cTerm ;
 
 /* Functors */
 functor: ID                                                                                                             #idFunctor
