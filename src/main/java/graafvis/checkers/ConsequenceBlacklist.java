@@ -88,7 +88,7 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     /** Visit the consequence of a clause */
     @Override
     public Void visitClause(GraafvisParser.ClauseContext ctx) {
-        return visit(ctx.cTermSeries());
+        return visit(ctx.cArgSeries());
     }
 
     /*
@@ -99,8 +99,8 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
     @Override
     public Void visitCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx) {
         blacklistCheck(ctx.functor());
-        if (ctx.cTermSeries() != null) {
-            return visitCTermSeries(ctx.cTermSeries());
+        if (ctx.cArgSeries() != null) {
+            return visitCArgSeries(ctx.cArgSeries());
         } else {
             return null;
         }
