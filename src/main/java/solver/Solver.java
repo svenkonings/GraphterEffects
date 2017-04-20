@@ -120,7 +120,7 @@ public class Solver {
     }
 
     private Set<GraphLibrary> getGraphLibraries(TuProlog prolog, Graph graph) {
-        Set<GraphLibrary> libraries = new HashSet<>();
+        Set<GraphLibrary> libraries = new LinkedHashSet<>();
         libraries.add(defaultGraphLibraryLoader.getInstance(graph));
         prolog.solve("graphLibrary(X)").stream()
                 .map(map -> map.get("X"))
@@ -131,7 +131,7 @@ public class Solver {
     }
 
     private Set<VisLibrary> getVisLibraries(TuProlog prolog) {
-        Set<VisLibrary> libraries = new HashSet<>();
+        Set<VisLibrary> libraries = new LinkedHashSet<>();
         libraries.add(defaultVisLibrary);
         prolog.solve("visLibrary(X)").stream()
                 .map(map -> map.get("X"))
