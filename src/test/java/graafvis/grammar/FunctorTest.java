@@ -4,9 +4,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static graafvis.grammar.TestUtil.assertHasErrors;
-import static graafvis.grammar.TestUtil.assertHasNoErrors;
-import static graafvis.grammar.TestUtil.getGraafvisParserFor;
+import static graafvis.grammar.TestUtil.*;
 
 /**
  *
@@ -37,6 +35,7 @@ public class FunctorTest {
 
     @Test
     public void runTest() {
+        writeTitleInLog("Functor test");
         for (String sample : VALID_FUNCTOR_SAMPLES) {
             testValidSample(sample);
         }
