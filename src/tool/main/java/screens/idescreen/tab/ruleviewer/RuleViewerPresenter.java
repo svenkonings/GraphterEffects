@@ -55,7 +55,7 @@ public class RuleViewerPresenter implements Initializable {
         headColumn.setPrefWidth(200);
         tailColumn.setCellValueFactory(cellData -> cellData.getValue().tail);
         tailColumn.prefWidthProperty().bind(rulesTable.widthProperty().subtract(headColumn.widthProperty()));
-        loadContent(CompilationModel.getInstance().getCompilation().getSolveResults().getProlog());
+        loadContent(CompilationModel.getInstance().getCompilation().getProlog());
     }
 
     public void loadContent(TuProlog tuProlog) {
@@ -64,15 +64,15 @@ public class RuleViewerPresenter implements Initializable {
             Term term = it.next();
             term.getTerm();
             String head = ((Struct) term).getArg(0).toString();
-            String tail = "";
+            StringBuilder tail = new StringBuilder();
             if (((Struct) term).getArity() - 1 <= 1) {
-                tail += ((Struct) term).getArg(1);
+                tail.append(((Struct) term).getArg(1));
             }
             for (int i = 2; i <= ((Struct) term).getArity() - 1; i++) {
-                tail += ((Struct) term).getArg(i);
+                tail.append(((Struct) term).getArg(i));
             }
 
-            TableTerm tableTerm = new TableTerm(head,tail);
+            TableTerm tableTerm = new TableTerm(head, tail.toString());
             rulesTable.getItems().add(tableTerm);
 
         }

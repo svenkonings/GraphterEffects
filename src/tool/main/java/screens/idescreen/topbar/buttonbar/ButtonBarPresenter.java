@@ -117,23 +117,17 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
         graphComboBox.setContextMenu(generateGraphContextMenu());
         graphComboBox.setOnMouseClicked(
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        if (event.getButton() == MouseButton.PRIMARY) {
-                            if (!choiceBoxFilled) {
-                                IOManager.showLoadGraphsPopup(false);
-                            }
+                event -> {
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        if (!choiceBoxFilled) {
+                            IOManager.showLoadGraphsPopup(false);
                         }
                     }
                 }
         );
-        graphComboBox.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    event.consume();
-                }
+        graphComboBox.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                event.consume();
             }
         });
 
@@ -239,30 +233,24 @@ public class ButtonBarPresenter implements Initializable, Observer {
         MenuItem showAsImage = new MenuItem("Show Default Visualization");
         MenuItem showAsText = new MenuItem("Show File");
         contextMenu.getItems().addAll(showAsImage, showAsText);
-        showAsImage.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
-                CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
-                new Thread(compilerRunnable).start();
-            }
+        showAsImage.setOnAction(event -> {
+            Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
+            CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
+            new Thread(compilerRunnable).start();
         });
-        showAsText.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
-                String graphAsString = "";
-                try {
-                    graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                TabPane centralTabPane = (TabPane) ((BorderPane) (((AnchorPane) splitPane.getParent()).getParent().getParent()).getParent()).getCenter();
-                SimpleViewerView simpleViewerView = new SimpleViewerView();
-                SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
-                simpleViewerPresenter.loadContent(selectedGraphPath.getFileName().toString(), graphAsString);
-                centralTabPane.getTabs().add(new Tab(selectedGraphPath.getFileName().toString(), simpleViewerView.getView()));
+        showAsText.setOnAction(event -> {
+            Path selectedGraphPath = DocumentModel.getInstance().getSelectedGraph();
+            String graphAsString = "";
+            try {
+                graphAsString = FileUtils.readFromFile(selectedGraphPath.toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            TabPane centralTabPane = (TabPane) ((BorderPane) (splitPane.getParent().getParent().getParent()).getParent()).getCenter();
+            SimpleViewerView simpleViewerView = new SimpleViewerView();
+            SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
+            simpleViewerPresenter.loadContent(selectedGraphPath.getFileName().toString(), graphAsString);
+            centralTabPane.getTabs().add(new Tab(selectedGraphPath.getFileName().toString(), simpleViewerView.getView()));
         });
         return contextMenu;
     }
@@ -288,7 +276,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         String codeOnScreen = DocumentModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
         Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
-            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.GRAPHCONVERTED)).start();
+            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.PROLOGLOADED)).start();
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box

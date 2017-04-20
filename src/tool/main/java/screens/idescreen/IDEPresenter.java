@@ -170,7 +170,7 @@ public class IDEPresenter implements Initializable, Observer {
                     //TODO LOGGING: System.out.println("debug compilation started");
                     CompilationModel.getInstance().addObserverToCompilation(this);
                     break;
-                case GRAPHCONVERTED:
+                case PROLOGLOADED:
                     //TODO LOGGING: System.out.println("Graph converted");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getMaxProgress() == compilationProgress) {
