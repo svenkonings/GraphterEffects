@@ -24,7 +24,7 @@ clause: (antecedent=aTermExpr ARROW)? consequence=cArgSeries EOL;
 
 /* Antecedent */
 aTerm: NOT aTerm                                                                                                        #notAntecedent
-     | functor (PAR_OPEN arguments=aArgSeries? PAR_CLOSE)?                                                              #compoundAntecedent
+     | functor (PAR_OPEN args=aArgSeries? PAR_CLOSE)?                                                                   #compoundAntecedent
      | functor BRACE_OPEN (args+=aMultiArg COMMA)* args+=aMultiArg BRACE_CLOSE                                          #multiAndCompoundAntecedent
      | functor BRACE_OPEN (args+=aMultiArg SEMICOLON)* args+=aMultiArg BRACE_CLOSE                                      #multiOrCompoundAntecedent
      | BRACKET_OPEN (aArgSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listAntecedent
@@ -51,7 +51,7 @@ aMultiArg: PAR_OPEN aArgSeries? PAR_CLOSE
          ;
 
 /* Consequence */
-cTerm: functor (PAR_OPEN arguments=cArgSeries? PAR_CLOSE)?                                                              #compoundConsequence
+cTerm: functor (PAR_OPEN args=cArgSeries? PAR_CLOSE)?                                                                   #compoundConsequence
      | functor BRACE_OPEN (args+=cMultiArg COMMA)* args+=cMultiArg BRACE_CLOSE                                          #multiCompoundConsequence
      | BRACKET_OPEN (cArgSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listConsequence
      | variable=HID                                                                                                     #variableConsequence
