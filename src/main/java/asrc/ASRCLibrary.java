@@ -3,12 +3,17 @@ package asrc;
 
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import prolog.TuProlog;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
+import prolog.TuProlog;
 import utils.GraphUtils;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static prolog.TuProlog.struct;
 
@@ -18,6 +23,15 @@ import static prolog.TuProlog.struct;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ASRCLibrary extends GraphLibrary {
+
+    public ASRCLibrary(Graph graph) {
+        super(graph);
+    }
+
+    @Override
+    public GraphLibraryLoader getLoader() {
+        return null;
+    }
 
     /**
      * Returns the Prolog Theory associated with this library. Contains generative predicates ({@link Graph}/{@link Edge}/{@link Node}) as well as functional predicates.
@@ -97,6 +111,7 @@ public class ASRCLibrary extends GraphLibrary {
     @SuppressWarnings("SameReturnValue")
     public boolean println_1(Term ignore) {
         TuProlog.log(ignore.getTerm().toString());
+        System.out.println(ignore.getTerm().toString());
         return true;
     }
 
@@ -252,6 +267,26 @@ public class ASRCLibrary extends GraphLibrary {
             e.printStackTrace();
             return false;
         }
+    }
+
+
+    private Map<Element, Integer> indexing;
+
+    /**
+     * Returns whether a {@link Element} has the given index or unifies otherwise.
+     * @param ID Identifier of the {@link Element}.
+     * @param index Index of the {@link Element}.
+     * @return Whether the {@link Element} has the given index or unifies otherwise.
+     */
+    public boolean index_2(Term ID, Term index) {
+        if (indexing ==null) {
+            indexing = new HashMap<>();
+            List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
+            for (int i = 0; i < elems.size(); i++) {
+                indexing.put(elems.get(i), i);
+            }
+        }
+        return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
     }
 
 

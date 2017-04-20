@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 /**
  * The constraint solver.
  */
+@SuppressWarnings("WeakerAccess")
 public class Solver {
 
     private final GraphLibrary defaultGraphLibrary;

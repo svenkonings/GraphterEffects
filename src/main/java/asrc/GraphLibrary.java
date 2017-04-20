@@ -2,7 +2,11 @@ package asrc;
 
 
 import alice.tuprolog.*;
-import org.graphstream.graph.*;
+import exceptions.SolvingInProgressException;
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.Element;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import utils.GraphUtils;
 import utils.StringUtils;
 
@@ -22,12 +26,40 @@ public abstract class GraphLibrary extends Library {
      */
     protected Graph graph;
 
+    private volatile Boolean allowSetGraph = true;
+
     public Graph getGraph() {
         return graph;
     }
 
-    public void setGraph(Graph graph) {
+    public GraphLibrary(Graph graph) {
         this.graph = graph;
+    }
+
+    public abstract GraphLibraryLoader getLoader();
+
+    public void setGraph(Graph graph) {
+        synchronized (allowSetGraph) {
+            if (allowSetGraph) {
+                this.graph = graph;
+            } else {
+                throw new SolvingInProgressException();
+            }
+        }
+    }
+
+    @Override
+    public void onSolveBegin(Term term) {
+        synchronized (allowSetGraph) {
+            allowSetGraph = false;
+        }
+    }
+
+    @Override
+    public void onSolveEnd() {
+        synchronized (allowSetGraph) {
+            allowSetGraph = true;
+        }
     }
 
     /**
