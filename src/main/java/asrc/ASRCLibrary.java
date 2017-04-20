@@ -24,6 +24,10 @@ import static prolog.TuProlog.struct;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ASRCLibrary extends GraphLibrary {
 
+    /**
+     * Creates a new ASRCLibrary that retrieves information from a given {@link Graph}.
+     * @param graph Given {@code Graph}
+     */
     public ASRCLibrary(Graph graph) {
         super(graph);
     }

@@ -14,6 +14,7 @@ import solver.library.LibraryException;
 import solver.library.VisLibrary;
 import utils.TermUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,29 +80,36 @@ public class Solver {
         return visLibraries.remove(name);
     }
 
+    public SolveResults solve(Collection<Term> terms) throws InvalidTheoryException {
+        return solve(null, terms);
+    }
+
     /**
+     * FIXME
      * Solves the constraints and returns a {@link List} of visualization elements.
      *
      * @return The {@link List} of visualization elements.
      */
-    public VisMap solve(Graph graph, List<Term> terms) throws InvalidTheoryException, SolveException {
+    public SolveResults solve(Graph graph, Collection<Term> terms) throws InvalidTheoryException {
         TuProlog prolog = new TuProlog(terms);
 
-        GraphLibrary defaultGraphLibrary = defaultGraphLibraryLoader.getInstance(graph);
-        List<GraphLibrary> graphLibraries = prolog.solve("graphLibrary(X)").stream()
-                .map(map -> map.get("X"))
-                .map(TermUtils::stripQuotes)
-                .map(name -> getGraphLibrary(name, graph))
-                .collect(Collectors.toList());
+        if (graph != null) {
+            GraphLibrary defaultGraphLibrary = defaultGraphLibraryLoader.getInstance(graph);
+            List<GraphLibrary> graphLibraries = prolog.solve("graphLibrary(X)").stream()
+                    .map(map -> map.get("X"))
+                    .map(TermUtils::stripQuotes)
+                    .map(name -> getGraphLibrary(name, graph))
+                    .collect(Collectors.toList());
+
+            loadGraphLibrary(prolog, defaultGraphLibrary);
+            graphLibraries.forEach(library -> loadGraphLibrary(prolog, library));
+        }
 
         List<VisLibrary> visLibraries = prolog.solve("visLibrary(X)").stream()
                 .map(map -> map.get("X"))
                 .map(TermUtils::stripQuotes)
                 .map(this::getVisLibrary)
                 .collect(Collectors.toList());
-
-        loadGraphLibrary(prolog, defaultGraphLibrary);
-        graphLibraries.forEach(library -> loadGraphLibrary(prolog, library));
 
         loadVisLibrary(prolog, defaultVisLibrary);
         visLibraries.forEach(library -> loadVisLibrary(prolog, library));
@@ -116,10 +124,7 @@ public class Solver {
         visLibraries.forEach(library -> setVisLibraryDefaults(visMap, library));
 
         boolean succes = model.getSolver().solve();
-        if (!succes) {
-            throw new SolveException(visMap, "No solution found");
-        }
-        return visMap;
+        return new SolveResults(succes, prolog, model, visMap);
     }
 
     private static void loadGraphLibrary(TuProlog prolog, GraphLibrary library) {

@@ -33,23 +33,17 @@ public class LibraryTest {
     public void init() throws Exception {
         diengine = new TuProlog();
         digraph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph4.dot"));
-        ASRCLibrary diLibrary = new ASRCLibrary();
-        diLibrary.setGraph(digraph);
-        diengine.loadLibrary(diLibrary);
+        diengine.loadLibrary(new ASRCLibrary(digraph));
         asrcmap.put(digraph, diengine);
 
         undiengine = new TuProlog();
         undigraph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph5.dot"));
-        ASRCLibrary undiLibrary = new ASRCLibrary();
-        undiLibrary.setGraph(undigraph);
-        undiengine.loadLibrary(undiLibrary);
+        undiengine.loadLibrary(new ASRCLibrary(undigraph));
         asrcmap.put(undigraph, undiengine);
 
         emptyengine = new TuProlog();
         empty = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/empty.dot"));
-        ASRCLibrary emptyLibrary = new ASRCLibrary();
-        emptyLibrary.setGraph(empty);
-        emptyengine.loadLibrary(emptyLibrary);
+        emptyengine.loadLibrary(new ASRCLibrary(empty));
         asrcmap.put(empty, emptyengine);
     }
 

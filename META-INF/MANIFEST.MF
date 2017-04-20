@@ -9,5 +9,5 @@ Class-Path: lib\gs-core-1.3.jar lib\hamcrest-core-1.3.jar lib\choco-sa
  .3.jar lib\antlr4-runtime-4.6.jar lib\junit-4.12.jar lib\bcprov-jdk14
  -138.jar lib\dom4j-1.6.1.jar lib\choco-solver-4.0.2.jar lib\trove4j-3
  .0.3.jar
-Main-Class: Main
+Main-Class: GraphterEffects
 

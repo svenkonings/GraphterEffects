@@ -4,7 +4,6 @@ import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import prolog.TuProlog;
-import exceptions.UnknownGraphTypeException;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -21,12 +20,10 @@ import static utils.TestUtils.*;
 
 public class GraphRuleTests {
 
-    public static TuProlog generateGraphProlog(Graph graph) throws UnknownGraphTypeException, InvalidTheoryException {
+    public static TuProlog generateGraphProlog(Graph graph) throws InvalidTheoryException {
         TuProlog prolog = new TuProlog();
-        ASRCLibrary library = new ASRCLibrary();
-        library.setGraph(graph);
         try {
-            prolog.loadLibrary(library);
+            prolog.loadLibrary(new ASRCLibrary(graph));
         } catch (InvalidLibraryException e) {
             e.printStackTrace();
         }

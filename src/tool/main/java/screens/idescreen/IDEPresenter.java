@@ -125,7 +125,7 @@ public class IDEPresenter implements Initializable, Observer {
     public static Tab createVisElemViewerTab(){
         VisElemViewerView visElemViewerView = new VisElemViewerView();
         VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
-        visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getVisMap());
+        visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getSolveResults().getVisMap());
         //((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
         //((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
         String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];

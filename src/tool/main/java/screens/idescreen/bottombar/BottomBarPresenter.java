@@ -87,9 +87,9 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 compilationResultTitledPane.setExpanded(true);
                 break;
             case SOLVED:
-                String measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
-                int nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
-                int nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+                String measures = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getSolver().getMeasures().toString();
+                int nbVars = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
+                int nbConstraints = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
 
                 compilationResultTextArea.appendText("Constraints solved:\n");
                 compilationResultTextArea.appendText("Variables : " + nbVars + "\n");
@@ -104,9 +104,9 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 compilationResultTextArea.appendText(CompilationModel.getInstance().getCompilation().getException().toString());
                 break;
             case NOSOLUTION:
-                measures = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getSolver().getMeasures().toString();
-                nbVars = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
-                nbConstraints = CompilationModel.getInstance().getCompilation().getVisMap().getModel().getNbVars();
+                measures = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getSolver().getMeasures().toString();
+                nbVars = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
+                nbConstraints = CompilationModel.getInstance().getCompilation().getSolveResults().getModel().getNbVars();
 
                 compilationResultTextArea.appendText("No solution found:\n");
                 compilationResultTextArea.appendText("Constraints solved:\n");

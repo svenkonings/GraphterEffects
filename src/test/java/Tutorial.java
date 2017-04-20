@@ -5,9 +5,8 @@ import graphloader.Importer;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
-import solver.SolveException;
+import solver.SolveResults;
 import solver.Solver;
-import solver.VisMap;
 import svg.SvgDocumentGenerator;
 
 import java.io.IOException;
@@ -29,10 +28,10 @@ public class Tutorial {
             solver.putGraphLibraryLoader("mylibrary", MyLibrary::new);
 
             //Solves for visualization elements
-            VisMap map = solver.solve(graph, terms);
+            SolveResults results = solver.solve(graph, terms);
 
             //Yields a Dom4j Document that can be edited as a tree structure.
-            Document svgDocument = SvgDocumentGenerator.generate(map.values());
+            Document svgDocument = SvgDocumentGenerator.generate(results.getVisMap().values());
 
             //Converts the Document to XML (and thus SVG)
             String svgString = svgDocument.asXML();
@@ -54,9 +53,6 @@ public class Tutorial {
             e.printStackTrace();
         } catch (IOException e) {
             //Thrown when the graph file could not be read.
-            e.printStackTrace();
-        } catch (SolveException e) {
-            //thrown when no ss
             e.printStackTrace();
         }
     }

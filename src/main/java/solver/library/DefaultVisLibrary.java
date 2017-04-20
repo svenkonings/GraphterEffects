@@ -171,16 +171,22 @@ public class DefaultVisLibrary extends VisLibrary {
         putQuery("shape(Elem, Shape)", elementQuery((elem, values) -> {
             String shape = termToString(values.get("Shape"));
             switch (shape) {
+                case "ellipse":
+                    shapeConstraints(elem, 2);
+                    break;
+                case "rectangle":
+                    shapeConstraints(elem, 1);
+                    break;
                 case "circle":
+                    symmetricShapeConstraints(elem, 2);
+                    break;
                 case "square":
-                    symmetricShapeConstraints(elem);
+                    symmetricShapeConstraints(elem, 1);
                     break;
                 default:
-                    shapeConstraints(elem);
-                    break;
+                    throw new LibraryException("Unknown shape: %s", shape);
             }
             elem.setValue("type", shape);
-            shapeConstraints(elem);
         }));
         putQuery("line(Elem, FromElem, ToElem)", lineQuery((line, fromElem, toElem, values) ->
                 lineConstraints(line, fromElem, toElem)
@@ -194,12 +200,12 @@ public class DefaultVisLibrary extends VisLibrary {
         putQuery("image(Elem, Path)", elementQuery((elem, values) -> {
             setImage(elem, values);
             elem.set("type", "image");
-            shapeConstraints(elem);
+            shapeConstraints(elem, 1);
         }));
         putQuery("text(Elem, Text)", elementQuery((elem, values) -> {
             elem.setValue("type", "text");
             elem.setValue("text", stripQuotes(values.get("Text")));
-            shapeConstraints(elem);
+            shapeConstraints(elem, 1);
         }));
 
         // Global visualizations
@@ -391,17 +397,9 @@ public class DefaultVisLibrary extends VisLibrary {
      *
      * @param elem The given visualization element.
      */
-    public static void shapeConstraints(VisElem elem) {
-        try {
-            elem.getVar("width").updateLowerBound(0, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new LibraryException("Couldn't update width");
-        }
-        try {
-            elem.getVar("height").updateLowerBound(0, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new LibraryException("Couldn't update height");
-        }
+    public static void shapeConstraints(VisElem elem, int minSize) {
+        updateLowerBound(elem, "width", minSize);
+        updateLowerBound(elem, "height", minSize);
 
         elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
         elem.setVar("radiusY", elem.getVar("height").div(2).intVar());
@@ -420,12 +418,8 @@ public class DefaultVisLibrary extends VisLibrary {
      *
      * @param elem The given visualization element.
      */
-    public static void symmetricShapeConstraints(VisElem elem) {
-        try {
-            elem.getVar("size").updateLowerBound(0, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new LibraryException("Couldn't update size");
-        }
+    public static void symmetricShapeConstraints(VisElem elem, int minSize) {
+        updateLowerBound(elem, "size", minSize);
         elem.setVar("width", elem.getVar("size"));
         elem.setVar("height", elem.getVar("size"));
 
@@ -470,7 +464,7 @@ public class DefaultVisLibrary extends VisLibrary {
     public void setDefaults(VisElem elem) {
         if (!elem.hasValue("type")) {
             elem.setValue("type", "ellipse");
-            shapeConstraints(elem);
+            shapeConstraints(elem, 2);
         }
         if (!elem.hasVar("z")) {
             switch (elem.getValue("type")) {
@@ -485,6 +479,16 @@ public class DefaultVisLibrary extends VisLibrary {
                     break;
 
             }
+        }
+    }
+
+    public static void updateLowerBound(VisElem elem, String varName, int lb) {
+        IntVar var = elem.getVar(varName);
+        try {
+            var.updateLowerBound(lb, Cause.Null);
+        } catch (ContradictionException e) {
+            throw new LibraryException("Couldn't apply the lower bound %d of %s.%s with bounds[%d, %d]",
+                    lb, elem.getKey(), varName, var.getLB(), var.getUB());
         }
     }
 }
