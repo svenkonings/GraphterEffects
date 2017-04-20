@@ -152,6 +152,7 @@ public class MenuBarPresenter implements Initializable {
         SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
         simpleViewerPresenter.loadContent(selectedGraphName, graphAsString);
         centralTabPane.getTabs().add(new Tab(selectedGraphName, simpleViewerView.getView()));
+        centralTabPane.getSelectionModel().select(centralTabPane.getTabs().size()-1);
     }
 
     public void undoChangesMenutemPressed(ActionEvent actionEvent) {

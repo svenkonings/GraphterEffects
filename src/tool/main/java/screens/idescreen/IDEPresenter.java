@@ -146,12 +146,14 @@ public class IDEPresenter implements Initializable, Observer {
                         FileModel.getInstance().setGraafvisChangesSaved(true);
                         Tab codeTab = createGraafvisEditorTab();
                         tabPane.getTabs().set(0, codeTab);
+                        tabPane.getSelectionModel().select(0);
                         break;
 
                     case SVGGENERATED:
                         Platform.runLater(() -> {
                             Tab svgViewerTab = createSVGViewerTab((String) arguments.get(1));
                             tabPane.getTabs().add(svgViewerTab);
+                            tabPane.getSelectionModel().select(tabPane.getTabs().size()-1);
                         });
                         break;
                 }
@@ -173,7 +175,8 @@ public class IDEPresenter implements Initializable, Observer {
                     //TODO LOGGING: System.out.println("Graph converted");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getTargetProgress() == compilationProgress) {
-                        Platform.runLater(() -> tabPane.getTabs().add(createRuleViewerTab()));
+                        Platform.runLater(() -> {tabPane.getTabs().add(createRuleViewerTab());
+                            tabPane.getSelectionModel().select(tabPane.getTabs().size()-1);});
                     }
                     break;
                 case GRAAFVISCOMPILED:
@@ -183,7 +186,8 @@ public class IDEPresenter implements Initializable, Observer {
                     //TODO: LOGGING System.out.println("Logic solved");
                     if (CompilationModel.getInstance().getCompilation().isDebug() &&
                             CompilationModel.getInstance().getCompilation().getTargetProgress() == compilationProgress){
-                        Platform.runLater(() -> tabPane.getTabs().add(createVisElemViewerTab()));
+                        Platform.runLater(() -> {tabPane.getTabs().add(createVisElemViewerTab());
+                            tabPane.getSelectionModel().select(tabPane.getTabs().size()-1);});
                     }
                     break;
                 case SVGGENERATED:

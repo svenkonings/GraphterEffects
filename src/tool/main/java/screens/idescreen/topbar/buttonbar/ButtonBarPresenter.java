@@ -244,6 +244,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
             SimpleViewerPresenter simpleViewerPresenter = (SimpleViewerPresenter) simpleViewerView.getPresenter();
             simpleViewerPresenter.loadContent(selectedGraphPath.getFileName().toString(), graphAsString);
             centralTabPane.getTabs().add(new Tab(selectedGraphPath.getFileName().toString(), simpleViewerView.getView()));
+            centralTabPane.getSelectionModel().select(centralTabPane.getTabs().size()-1);
         });
         return contextMenu;
     }
