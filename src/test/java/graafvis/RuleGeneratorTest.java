@@ -30,9 +30,15 @@ public class RuleGeneratorTest {
         singleAssert("shape([X,Y], square).",
                 struct("shape", list(var("X"), var("Y")), struct("square"))
         );
+        singleAssert("shape([], square).",
+                struct("shape", list(), struct("square"))
+        );
         // Nested list
         singleAssert("shape([X,[3, \"wolf\"]], square).",
                 struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square"))
+        );
+        singleAssert("shape([X,[3, \"wolf\", []]], square).",
+                struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""), list())), struct("square"))
         );
         // TODO head & tail lists
         // TODO Find way to test wildcards
@@ -54,7 +60,6 @@ public class RuleGeneratorTest {
                 clause(struct("r", var("X")), and(struct("p", var("X")), struct("q", var("X")))),
                 clause(struct("s", var("X")), and(struct("p", var("X")), struct("q", var("X"))))
         );
-        // TODO Lists
         singleAssert("node(X), node(Y), edge(X, Y) -> shape([X,Y], line).",
                 clause(
                         struct("shape", list(var("X"), var("Y")), struct("line")),
@@ -109,6 +114,22 @@ public class RuleGeneratorTest {
                 clause(struct("r", var("X")), and(struct("p", var("X")), struct(TUP_NOT, struct("q", var("X")))))
         );
 
+        // List
+        singleAssert("p([X,Y]) -> r.", clause(struct("r"), struct("p", list(var("X"), var("Y")))));
+        // arg1: list, arg2: constant
+        singleAssert("shape([X,Y], square) -> r.",
+                clause(struct("r"), struct("shape", list(var("X"), var("Y")), struct("square")))
+        );
+        singleAssert("shape([], square) -> r.",
+                clause(struct("r"), struct("shape", list(), struct("square")))
+        );
+        // Nested list
+        singleAssert("shape([X,[3, \"wolf\"]], square) -> r.",
+                clause(struct("r"), struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square")))
+        );
+        singleAssert("shape([X,[3, \"wolf\", []]], square) -> r.",
+                clause(struct("r"), struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""), list())), struct("square")))
+        );
     }
 
     @Test

@@ -177,6 +177,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         // TODO null checks
         // TODO meerdere heads
         if (ctx.aArgSeries() == null) {
+            System.out.println("ooh, aargseries null!");
             return new Struct();
         }
         return list(visitAggregate(ctx.aArgSeries().args));
@@ -226,6 +227,24 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     @Override public Term visitMultiCompoundConsequence(MultiCompoundConsequenceContext ctx) {
         return safeAnd(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
+    }
+
+    @Override public Term visitListConsequence(ListConsequenceContext ctx) {
+        // HEAD & TAIL
+        /*
+        [a] = '.'(a,[])
+        [a,b] = '.'(a,'.'(b,[]))
+        [a,b|c] = '.'(a,'.'(b,c))
+        There can be only one | in a list, and no commas after it.
+         */
+        // Struct
+        // TODO null checks
+        // TODO meerdere heads
+        if (ctx.cArgSeries() == null) {
+            System.out.println("ooh, cargseries null!");
+            return new Struct();
+        }
+        return list(visitAggregate(ctx.cArgSeries().args));
     }
 
     @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {
