@@ -100,8 +100,8 @@ public class Solver {
                 .map(this::getVisLibrary)
                 .collect(Collectors.toList());
 
-        loadGraphLibrary(prolog, graph, defaultGraphLibrary);
-        graphLibraries.forEach(library -> loadGraphLibrary(prolog, graph, library));
+        loadGraphLibrary(prolog, defaultGraphLibrary);
+        graphLibraries.forEach(library -> loadGraphLibrary(prolog, library));
 
         loadVisLibrary(prolog, defaultVisLibrary);
         visLibraries.forEach(library -> loadVisLibrary(prolog, library));
@@ -122,8 +122,7 @@ public class Solver {
         return visMap;
     }
 
-    private static void loadGraphLibrary(TuProlog prolog, Graph graph, GraphLibrary library) {
-        library.setGraph(graph);
+    private static void loadGraphLibrary(TuProlog prolog, GraphLibrary library) {
         try {
             prolog.loadLibrary(library);
         } catch (InvalidLibraryException e) {
