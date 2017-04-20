@@ -129,8 +129,9 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     @Override public Term visitClause(ClauseContext ctx) {
         Term antecedent = (ctx.antecedent == null) ? null : visit(ctx.antecedent);
-        for (CTermTopLevelContext cTerm : ctx.consequence.terms) {
+        for (CTermContext cTerm : ctx.consequence.terms) {
             if (cTerm instanceof MultiCompoundConsequenceContext) {
+                // TODO werkt dit wel?
                 aggregateVisitMultiTerms(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).terms);
             }
             addClause(visit(cTerm), antecedent);
@@ -144,20 +145,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- ANTECEDENT ---
 
-    @Override public Term visitParAntecedent(ParAntecedentContext ctx) {
-        return visit(ctx.aTerm());
-    }
-
-    @Override public Term visitAndAntecedent(AndAntecedentContext ctx) {
-        return struct(TUP_AND, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
-    }
-
     @Override public Term visitOrAntecedent(OrAntecedentContext ctx) {
-        return struct(TUP_OR, visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
+        return or(visit(ctx.aTerm(0)), visit(ctx.aTerm(1)));
     }
 
     @Override public Term visitNotAntecedent(NotAntecedentContext ctx) {
-        return struct(TUP_NOT, visit(ctx.aTermTopLevel()));
+        return struct(TUP_NOT, visit(ctx.aTerm()));
     }
 
     @Override public Term visitCompoundAntecedent(CompoundAntecedentContext ctx) {
@@ -172,6 +165,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return or(aggregateVisitMultiTerms(ctx.functor(), ctx.terms));
     }
 
+    @Override public Term visitParAntecedent(ParAntecedentContext ctx) {
+        return visit(ctx.aTermSeries());
+    }
+
 //    @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
 //        // HEAD & TAIL
 //        /*
@@ -183,7 +180,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 //        // Struct
 //        // TODO null checks
 //        // TODO meerdere heads
-//        return struct(TUP_LIST, list(aggregateVisit(ctx.aTermSeries().aTerm())), visit(ctx.aTerm()));
+//        return struct(TUP_LIST, list(visitAggregate(ctx.aTermSeries().aTerm())), visit(ctx.aTerm()));
 //    }
 
     @Override public Term visitVariableAntecedent(VariableAntecedentContext ctx) {
@@ -202,11 +199,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return number(ctx.getText());
     }
 
-    // --- CONSEQUENCE ---
-
-    @Override public Term visitAndConsequence(AndConsequenceContext ctx) {
-        return struct(TUP_AND, visit(ctx.cTerm(0)), visit(ctx.cTerm(1)));
+    @Override public Term visitATermSeries(ATermSeriesContext ctx) {
+        return safeAnd(visitAggregate(ctx.terms));
     }
+
+    // --- CONSEQUENCE ---
 
     @Override public Term visitCompoundConsequence(CompoundConsequenceContext ctx) {
         return visitCompound(ctx.functor(), ctx.cTermSeries());
@@ -236,7 +233,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      **********************/
 
     // --- Return one term for multiple visits ---
-    public Term[] aggregateVisit(List<? extends ParseTree> ctxs) {
+    public Term[] visitAggregate(List<? extends ParseTree> ctxs) {
         // TODO check for null: [] en p()
         if (ctxs == null) {
             return new Term[0];
@@ -269,11 +266,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         int n = multiTerms.size();
         Term[] results = new Term[n];
         for (int i = 0; i < n; i++) {
-            results[i] = struct(getFunctor(functor), aggregateVisit(getListFromMultiTerms(multiTerms.get(i))));
+            results[i] = safeStruct(getFunctor(functor), visitAggregate(getListFromMultiTerms(multiTerms.get(i))));
 //            if (multiTerm instanceof ATermSeriesContext) {
 //                // p{(X, Y), (A), (B, c, "hi")}
 //                System.out.println("AVMT Termtuple: " + multiTerms.get(i).getText());
-//                results[i] = struct(getFunctor(functor), aggregateVisit(((ATermSeriesContext) multiTerm).terms));
+//                results[i] = struct(getFunctor(functor), visitAggregate(((ATermSeriesContext) multiTerm).terms));
 //            } else {
 //                // p{a, B, "hi", [a,b,c,d]}
 //                System.out.println("AVMT Term: " + multiTerms.get(i).getText());
@@ -290,9 +287,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         } else {
             // Regular predicate, f.e. p(X), p(X,Y,Z), p()
             List<? extends ParseTree> terms = getListFromTermSeries(termSeries);
-            return struct(getFunctor(functor), aggregateVisit(terms)); // TODO geen agg in geval van enkele term?
+            return struct(getFunctor(functor), visitAggregate(terms));
         }
-        // TODO mogelijk deel verplaatsen naar TermTuple
     }
 
     // --- Casts to allow for generic methods ---
@@ -309,21 +305,38 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         if (termContainer instanceof AMultiTermContext) {
             // MultiTerm in antecedent
             AMultiTermContext tc = (AMultiTermContext) termContainer;
-            // Without parenthesis
-            if (tc.aTermTopLevel() != null) {
-                return inList(tc.aTermTopLevel());
+            ParseTree aTerm = tc.aTerm();
+            // No terms: empty parenthesis
+            if (aTerm == null) {
+                return null;
             }
-            // With parenthesis (probably contains multiple terms)
-            return tc.aTermSeries().terms;
+            // Terms available
+            // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
+            if (aTerm instanceof ATermSeriesContext) {
+                return ((ATermSeriesContext) aTerm).terms;
+            }
+            // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
+            return inList(tc.aTerm());
         }
         // MultiTerm in consequence
         CMultiTermContext tc = (CMultiTermContext) termContainer;
-        // Without parenthesis
-        if (tc.cTermTopLevel() != null) {
-            return inList(tc.cTermTopLevel());
+        // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
+        if (tc.cTermSeries() != null) {
+            return tc.cTermSeries().terms;
         }
-        // With parenthesis (probably contains multiple terms)
-        return tc.cTermSeries().terms;
+        // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
+        if (tc.cTerm() != null) {
+            return inList(tc.cTerm());
+        }
+        // No terms: empty parenthesis
+        return null;
+//        CMultiTermContext tc = (CMultiTermContext) termContainer;
+//        // Without parenthesis
+//        if (tc.cTermTopLevel() != null) {
+//            return inList(tc.cTermTopLevel());
+//        }
+//        // With parenthesis (probably contains multiple terms)
+//        return tc.cTermSeries().terms;
     }
 
     // --- String building ---
@@ -340,8 +353,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // --- Update logic model ---
 
     private void addClause(Term head, Term body) {
-        Term term = (body == null) ? head : clause(head, body);
-        result.add(term);
+//        Term term = (body == null) ? head : clause(head, body);
+        result.add(safeClause(head, body)); // TODO check is safe is needed
     }
 
     // --- Getters & setters ---
