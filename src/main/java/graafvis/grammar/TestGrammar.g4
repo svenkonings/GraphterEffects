@@ -41,7 +41,7 @@ aTerm: aTerm SEMICOLON aTerm                                                    
 aTermSeries: (terms+=aTerm COMMA)* terms+=aTerm;
 
 aMultiTerm: aTerm
-          | PAR_OPEN PAR_CLOSE
+          | PAR_OPEN aTermSeries? PAR_CLOSE
           ;
 
 /* Consequence */
