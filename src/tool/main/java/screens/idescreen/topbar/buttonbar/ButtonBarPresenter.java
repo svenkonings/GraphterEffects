@@ -223,6 +223,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     private ContextMenu generateGraphContextMenu(){
         final ContextMenu contextMenu = new ContextMenu();
+        if (graphComboBox.getSelectionModel().getSelectedItem() == null) {
+            return null;
+        }
         MenuItem showAsImage = new MenuItem("Show Default Visualization");
         MenuItem showAsText = new MenuItem("Show File");
         contextMenu.getItems().addAll(showAsImage, showAsText);
