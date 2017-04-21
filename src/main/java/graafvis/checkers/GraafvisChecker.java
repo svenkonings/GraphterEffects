@@ -13,7 +13,12 @@ public class GraafvisChecker extends GraafvisBaseVisitor<Void> {
     private final VariableUsageCheck variableUsageCheck = new VariableUsageCheck();
     private final SingletonVariablesCheck singletonVariablesCheck = new SingletonVariablesCheck();
 
-    /** Run all checkers on the parsed Graafvis code */
+    /**
+     * Run all checkers on the parsed Graafvis code
+     *
+     * @param program   A parsed Graafvis program
+     * @return          The result obtained by all checkers
+     */
     public CheckerResult check(GraafvisParser.ProgramContext program) {
         /* Reset checkers for next usage */
         reset();
