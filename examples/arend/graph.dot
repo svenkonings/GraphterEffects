@@ -1,8 +1,0 @@
-//A simple undirected graph
-graph graphname {
-    a -- b -- c;
-    b -- d;
-    e;
-    f -- g;
-    h -- j;
-}
