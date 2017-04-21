@@ -1,3 +1,5 @@
+package examples;
+
 import alice.tuprolog.Term;
 import graafvis.GraafvisCompiler;
 import graphloader.Importer;

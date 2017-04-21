@@ -2,19 +2,17 @@ package screens.idescreen.topbar.buttonbar;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import general.ViewModel;
-import general.generation.GenerationProgress;
-import general.generation.GeneratorRunnable;
-import general.generation.GeneratorUtils;
 import general.files.FileModel;
 import general.files.FileModelChange;
 import general.files.IOManager;
+import general.generation.GenerationProgress;
+import general.generation.GeneratorRunnable;
+import general.generation.GeneratorUtils;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -82,6 +80,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
                             // Since the ListView reuses cells, we need to get the item first, before making changes.
                             String item = getItem();
                             FileModel.getInstance().removeGraph(item);
+                            if (graphComboBox.getSelectionModel().getSelectedItem()==null) {
+                                System.out.println(1);
+                            }
                             //if (isSelected()) {
                             //graphComboBox.getSelectionModel().select(null);
                             //}
@@ -113,12 +114,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
         });
 
         graphComboBox.setContextMenu(generateGraphContextMenu());
-        graphComboBox.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-            @Override
-            public void handle(ContextMenuEvent event) {
-                if (graphComboBox.getSelectionModel().getSelectedItem()==null) {
-                    graphComboBox.getContextMenu().hide();
-                }
+        graphComboBox.setOnContextMenuRequested(event -> {
+            if (graphComboBox.getSelectionModel().getSelectedItem()==null) {
+                graphComboBox.getContextMenu().hide();
             }
         });
         graphComboBox.setOnMouseClicked(
@@ -136,8 +134,11 @@ public class ButtonBarPresenter implements Initializable, Observer {
             }
         });
 
-        graphComboBox.setOnAction(event -> FileModel.getInstance().setSelectedGraph(
-                graphComboBox.getSelectionModel().getSelectedItem().toString()));
+        graphComboBox.setOnAction(event -> {
+            if (graphComboBox.getSelectionModel().getSelectedItem()!=null) {
+                FileModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
+            }
+        });
 
 
         for (int i = graphComboBox.getItems().size()-1; i >= 0; i++){
@@ -213,10 +214,12 @@ public class ButtonBarPresenter implements Initializable, Observer {
                 }
 
                 graphComboBox.getSelectionModel().select(indexSelected);
-                FileModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
 
                 if(graphComboBox.getItems().size() == 0){
+                    FileModel.getInstance().setSelectedGraph(null);
                     choiceBoxFilled = false;
+                } else {
+                    FileModel.getInstance().setSelectedGraph(graphComboBox.getSelectionModel().getSelectedItem().toString());
                 }
                 compileButton.setDisable(!choiceBoxFilled);
                 debugButton.setDisable(!choiceBoxFilled);

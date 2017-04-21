@@ -1,3 +1,5 @@
+package examples;
+
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
 import asc.GraphLibrary;

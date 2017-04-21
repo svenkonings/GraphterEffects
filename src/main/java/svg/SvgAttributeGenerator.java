@@ -106,7 +106,7 @@ public class SvgAttributeGenerator {
      * @param visElem The given visualization element.
      * @param parent  The given parent SVG element.
      */
-    public void generate(VisElem visElem, Element parent) {
+    public Element generate(VisElem visElem, Element parent) {
         Element element = parent.addElement(name);
         visElem.getValues().forEach((key, value) -> {
             if (mappings.containsKey(key)) {
@@ -114,5 +114,6 @@ public class SvgAttributeGenerator {
             }
         });
         defaults.forEach(consumer -> consumer.accept(element));
+        return element;
     }
 }

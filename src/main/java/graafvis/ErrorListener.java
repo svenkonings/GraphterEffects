@@ -18,10 +18,12 @@ public class ErrorListener extends BaseErrorListener {
      */
     private final List<VisError> errors;
 
+    /** Create a new error listener */
     public ErrorListener() {
         this.errors = new ArrayList<>();
     }
 
+    /** Captures and stores the syntax error */
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer,
                             Object offendingSymbol, int line, int charPositionInLine,
@@ -37,7 +39,7 @@ public class ErrorListener extends BaseErrorListener {
     }
 
     /**
-     * Returns the (possibly empty) list of graafvis.errors collected by the listener.
+     * Returns the (possibly empty) list of errors collected by the listener.
      */
     public List<VisError> getErrors() {
         return this.errors;
