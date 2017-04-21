@@ -15,7 +15,7 @@ public final class GraphUtilsTest {
 
     @Test
     public void testChangeIDs() throws IOException, SAXException {
-        Graph gfirst = Importer.graphFromFile(FileUtils.fromResources("dgs/graph1.dgs"));
+        Graph gfirst = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/dgs/graph1.dgs"));
         Graph gsecond = GraphUtils.changeIDs(gfirst);
 
         //attributes unchanged
@@ -28,7 +28,7 @@ public final class GraphUtilsTest {
 
     @Test
     public void testChangeIDs2() throws IOException, SAXException {
-        Graph gfirst = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        Graph gfirst = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/gxl/test.gxl"));
         Graph gsecond = GraphUtils.changeIDs(gfirst);
 
         //attributes unchanged

@@ -22,7 +22,7 @@ public final class AbstractSyntaxConverterWLIB {
 
     @Test
     public void convertToRulesGraph1() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph1.dot"));
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
@@ -31,7 +31,7 @@ public final class AbstractSyntaxConverterWLIB {
 
     @Test
     public void convertToRulesGraph2() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph2.dot"));
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
@@ -40,7 +40,7 @@ public final class AbstractSyntaxConverterWLIB {
 
     @Test
     public void convertToRulesGraph3() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph3.dot"));
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
@@ -49,7 +49,7 @@ public final class AbstractSyntaxConverterWLIB {
 
     @Test
     public void convertToRulesGraph5() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/gxl/test.gxl"));
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
@@ -59,25 +59,25 @@ public final class AbstractSyntaxConverterWLIB {
 
     @Test
     public void TestMST2() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph1.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph1.dot"));
         MSTTest(graph);
     }
 
     @Test
     public void TestMST3() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph2.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph2.dot"));
         MSTTest(graph);
     }
 
     @Test
     public void TestMST4() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph3.dot"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph3.dot"));
         MSTTest(graph);
     }
 
     @Test
     public void TestMST5() throws Exception {
-        Graph graph = Importer.graphFromFile(FileUtils.fromResources("gxl/test.gxl"));
+        Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/gxl/test.gxl"));
         MSTTest(graph);
     }
 

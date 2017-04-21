@@ -15,17 +15,17 @@ public final class GXLImporterTest {
 
     @Test
     public void GPLWithoutError() throws IOException, SAXException {
-        testFromFolder("groovegraphs");
+        testFromFolder("library/strange_graphs/groovegraphs");
     }
 
     @Test
     public void GXLWithoutError() throws IOException, SAXException {
-        testFromFolder("gxl");
+        testFromFolder("library/strange_graphs/gxl");
     }
 
     @Test
     public void GrooveGXL() throws IOException, SAXException {
-        Graph g = Importer.graphFromFile(FileUtils.fromResources("gxl/typicalgroove.gxl"), true);
+        Graph g = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/gxl/typicalgroove.gxl"), true);
         assertEquals("\"type:testtype\"",g.getNode("#node1").getAttribute("label"));
         assertNotEquals("type:testtype",g.getNode("#node1").getAttribute("label"));
         assertEquals(g.getNode("#node1").getAttribute("label"), "\"type:testtype\"");

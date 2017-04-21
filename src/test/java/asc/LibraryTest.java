@@ -32,17 +32,17 @@ public class LibraryTest {
     @Before
     public void init() throws Exception {
         diengine = new TuProlog();
-        digraph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph4.dot"));
+        digraph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph4.dot"));
         diengine.loadLibrary(new ASCLibrary(digraph));
         asrcmap.put(digraph, diengine);
 
         undiengine = new TuProlog();
-        undigraph = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/graph5.dot"));
+        undigraph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph5.dot"));
         undiengine.loadLibrary(new ASCLibrary(undigraph));
         asrcmap.put(undigraph, undiengine);
 
         emptyengine = new TuProlog();
-        empty = Importer.graphFromFile(FileUtils.fromResources("asrc_testgraphs/empty.dot"));
+        empty = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/empty.dot"));
         emptyengine.loadLibrary(new ASCLibrary(empty));
         asrcmap.put(empty, emptyengine);
     }
