@@ -6,7 +6,7 @@
 
     <groupId>org.graphtereffects</groupId>
     <artifactId>GraphterEffects</artifactId>
-    <version>0.1</version>
+    <version>1.0</version>
 
     <build>
         <plugins>
