@@ -1,4 +1,4 @@
-package general.compiler;
+package general.generation;
 
 import general.files.FileModel;
 import general.files.IOManager;
@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompilerUtils {
+public class GeneratorUtils {
 
     /**
      * Save a vis document in the temp folder.
@@ -22,8 +22,8 @@ public class CompilerUtils {
      */
     public static Path saveAsTempScript(String filename, String code){
         //noinspection ResultOfMethodCallIgnored
-        new File("/temp/compiler").mkdirs();
-        Path tempFilePath = Paths.get("/temp/compiler",filename);
+        new File("/temp/generated").mkdirs();
+        Path tempFilePath = Paths.get("/temp/generated",filename);
         try {
             IOManager.saveVIS(tempFilePath,code);
             return tempFilePath;
@@ -50,9 +50,9 @@ public class CompilerUtils {
         svgxmltext.add(svgxml);
 
         //noinspection ResultOfMethodCallIgnored
-        new File("temp/compiled/").mkdirs();
+        new File("temp/generated/").mkdirs();
 
-        Path file = Paths.get("temp/compiled/",svgDocument.getName() + ".svg");
+        Path file = Paths.get("temp/generated/",svgDocument.getName() + ".svg");
         try {
             Files.write(file, svgxmltext, Charset.forName("UTF-8"));
             FileModel.getInstance().addGeneratedSVG(file);

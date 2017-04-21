@@ -1,8 +1,8 @@
 package screens.idescreen;
 
 import general.ViewModel;
-import general.compiler.CompilationModel;
-import general.compiler.CompilationProgress;
+import general.generation.GenerationModel;
+import general.generation.GenerationProgress;
 import general.files.FileModel;
 import general.files.FileModelChange;
 import general.files.IOManager;
@@ -54,7 +54,7 @@ public class IDEPresenter implements Initializable, Observer {
         bind();
 
         FileModel.getInstance().addObserver(this);
-        CompilationModel.getInstance().addObserver(this);
+        GenerationModel.getInstance().addObserver(this);
 
     }
 
@@ -117,7 +117,7 @@ public class IDEPresenter implements Initializable, Observer {
         RuleViewerView ruleViewerView = new RuleViewerView();
         //((StackPane) ruleViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
         //((StackPane) ruleViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-        String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+        String graphName = GenerationModel.getInstance().getGeneration().getGraphFile().getFileName().toString().split("\\.")[0];
 
         return new Tab("Rules " + graphName, ruleViewerView.getView());
     }
@@ -125,10 +125,10 @@ public class IDEPresenter implements Initializable, Observer {
     public static Tab createVisElemViewerTab(){
         VisElemViewerView visElemViewerView = new VisElemViewerView();
         VisElemViewerPresenter visElemViewerPresenter = (VisElemViewerPresenter) visElemViewerView.getPresenter();
-        visElemViewerPresenter.loadContent(CompilationModel.getInstance().getCompilation().getSolveResults().getVisMap());
+        visElemViewerPresenter.loadContent(GenerationModel.getInstance().getGeneration().getSolveResults().getVisMap());
         //((StackPane) visElemViewerView.getView()).prefWidthProperty().bind(tabPane.widthProperty());
         //((StackPane) visElemViewerView.getView()).prefHeightProperty().bind(tabPane.heightProperty());
-        String graphName = CompilationModel.getInstance().getCompilation().getGraphFile().getFileName().toString().split("\\.")[0];
+        String graphName = GenerationModel.getInstance().getGeneration().getGraphFile().getFileName().toString().split("\\.")[0];
 
         return new Tab("Vis Elems " + graphName,visElemViewerView.getView());
     }
@@ -160,21 +160,21 @@ public class IDEPresenter implements Initializable, Observer {
             }
         }
 
-        else if (arg instanceof CompilationProgress){
-            CompilationProgress compilationProgress = (CompilationProgress) arg;
-            switch (compilationProgress) {
-                case NORMALCOMPILATIONSTARTED:
+        else if (arg instanceof GenerationProgress){
+            GenerationProgress generationProgress = (GenerationProgress) arg;
+            switch (generationProgress) {
+                case NORMALGENERATIONSTARTED:
                     //TODO LOGGING: System.out.println("compilation started");
-                    CompilationModel.getInstance().addObserverToCompilation(this);
+                    GenerationModel.getInstance().addObserverToGeneration(this);
                     break;
-                case DEBUGCOMPILATIONSTARTED:
+                case DEBUGGENERATIONSTARTED:
                     //TODO LOGGING: System.out.println("debug compilation started");
-                    CompilationModel.getInstance().addObserverToCompilation(this);
+                    GenerationModel.getInstance().addObserverToGeneration(this);
                     break;
                 case PROLOGLOADED:
                     //TODO LOGGING: System.out.println("Graph converted");
-                    if (CompilationModel.getInstance().getCompilation().isDebug() &&
-                            CompilationModel.getInstance().getCompilation().getTargetProgress() == compilationProgress) {
+                    if (GenerationModel.getInstance().getGeneration().isDebug() &&
+                            GenerationModel.getInstance().getGeneration().getTargetProgress() == generationProgress) {
                         Platform.runLater(() -> {tabPane.getTabs().add(createRuleViewerTab());
                             tabPane.getSelectionModel().select(tabPane.getTabs().size()-1);});
                     }
@@ -184,8 +184,8 @@ public class IDEPresenter implements Initializable, Observer {
                     break;
                 case SOLVED:
                     //TODO: LOGGING System.out.println("Logic solved");
-                    if (CompilationModel.getInstance().getCompilation().isDebug() &&
-                            CompilationModel.getInstance().getCompilation().getTargetProgress() == compilationProgress){
+                    if (GenerationModel.getInstance().getGeneration().isDebug() &&
+                            GenerationModel.getInstance().getGeneration().getTargetProgress() == generationProgress){
                         Platform.runLater(() -> {tabPane.getTabs().add(createVisElemViewerTab());
                             tabPane.getSelectionModel().select(tabPane.getTabs().size()-1);});
                     }
@@ -193,8 +193,8 @@ public class IDEPresenter implements Initializable, Observer {
                 case SVGGENERATED:
                     //TODO: LOGGING System.out.println("SVG generated");
                     break;
-                case COMPILATIONFINISHED:
-                    //TODO: LOGGING System.out.println("Compilation complete");
+                case GENERATIONFINISHED:
+                    //TODO: LOGGING System.out.println("Generation complete");
                     break;
                 case ERROROCCURED:
                     //TODO: Show error screen

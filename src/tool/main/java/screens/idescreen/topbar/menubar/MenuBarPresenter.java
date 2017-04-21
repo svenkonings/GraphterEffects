@@ -1,7 +1,7 @@
 package screens.idescreen.topbar.menubar;
 
 import general.ViewModel;
-import general.compiler.CompilerRunnable;
+import general.generation.GeneratorRunnable;
 import general.files.FileModel;
 import general.files.IOManager;
 import javafx.event.ActionEvent;
@@ -129,8 +129,8 @@ public class MenuBarPresenter implements Initializable {
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
         String selectedGraphName = comboBox.getSelectionModel().getSelectedItem().toString();
         Path selectedGraphPath = FileModel.getInstance().getGraphPathMap().get(selectedGraphName);
-        CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
-        new Thread(compilerRunnable).start();
+        GeneratorRunnable generatorRunnable = new GeneratorRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
+        new Thread(generatorRunnable).start();
     }
 
     public void graphAsTextMenuItemPressed(ActionEvent actionEvent) {

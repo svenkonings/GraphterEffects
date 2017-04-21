@@ -20,13 +20,7 @@ public class RootPresenter implements Initializable {
 
         rootPane.setPrefHeight(350);
         viewModel.setMainView(rootPane);
-        //rootPane.centerProperty().bind(viewModel.mainViewProperty());
-        //rootPane.widthProperty().isEqualTo(1000,0);
-        //rootPane.widthProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
-        //StartView view = new StartView();
-        //viewModel.setMainView(view.getView());
 
-        //rootPane.widthProperty().isEqualTo(rootPane.getScene().getWindow().getWidth(), 0);
     }
 
     public void loadIDE() {

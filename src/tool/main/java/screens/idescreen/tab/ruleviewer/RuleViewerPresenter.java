@@ -2,7 +2,7 @@ package screens.idescreen.tab.ruleviewer;
 
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import general.compiler.CompilationModel;
+import general.generation.GenerationModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -53,7 +53,7 @@ public class RuleViewerPresenter implements Initializable {
         headColumn.setPrefWidth(200);
         tailColumn.setCellValueFactory(cellData -> cellData.getValue().tail);
         tailColumn.prefWidthProperty().bind(rulesTable.widthProperty().subtract(headColumn.widthProperty()));
-        loadContent(CompilationModel.getInstance().getCompilation().getProlog());
+        loadContent(GenerationModel.getInstance().getGeneration().getProlog());
     }
 
     public void loadContent(TuProlog tuProlog) {

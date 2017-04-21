@@ -56,7 +56,7 @@ public class App extends Application{
 
         //Preparing the files.
         //noinspection ResultOfMethodCallIgnored
-        new File("temp/compiled").mkdirs();
+        new File("temp/generated").mkdirs();
         FileModel.getInstance().newGraafVisFile();
 
         ((RootPresenter) rootView.getPresenter()).loadIDE();

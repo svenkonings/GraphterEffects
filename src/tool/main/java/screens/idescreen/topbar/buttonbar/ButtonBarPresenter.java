@@ -2,9 +2,9 @@ package screens.idescreen.topbar.buttonbar;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import general.ViewModel;
-import general.compiler.CompilationProgress;
-import general.compiler.CompilerRunnable;
-import general.compiler.CompilerUtils;
+import general.generation.GenerationProgress;
+import general.generation.GeneratorRunnable;
+import general.generation.GeneratorUtils;
 import general.files.FileModel;
 import general.files.FileModelChange;
 import general.files.IOManager;
@@ -161,9 +161,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
             Path scriptFilePath = FileModel.getInstance().getGraafVisFilePath();
 
             String codeOnScreen = FileModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
-            Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(), codeOnScreen);
+            Path tempFilePath = GeneratorUtils.saveAsTempScript(scriptFilePath.getFileName().toString(), codeOnScreen);
             try {
-                new Thread(new CompilerRunnable(tempFilePath, graphFilePath)).start();
+                new Thread(new GeneratorRunnable(tempFilePath, graphFilePath)).start();
             } catch (Exception e) {
                 e.printStackTrace();
                 //TODO: Handle exceptions by showing them in an error box
@@ -228,8 +228,8 @@ public class ButtonBarPresenter implements Initializable, Observer {
         contextMenu.getItems().addAll(showAsImage, showAsText);
         showAsImage.setOnAction(event -> {
             Path selectedGraphPath = FileModel.getInstance().getSelectedGraph();
-            CompilerRunnable compilerRunnable = new CompilerRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
-            new Thread(compilerRunnable).start();
+            GeneratorRunnable generatorRunnable = new GeneratorRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
+            new Thread(generatorRunnable).start();
         });
         showAsText.setOnAction(event -> {
             Path selectedGraphPath = FileModel.getInstance().getSelectedGraph();
@@ -254,9 +254,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
         Path scriptFilePath = FileModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = FileModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
-        Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
+        Path tempFilePath = GeneratorUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
-            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.SOLVED)).start();
+            new Thread(new GeneratorRunnable(tempFilePath,graphFilePath, GenerationProgress.SOLVED)).start();
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box
@@ -268,9 +268,9 @@ public class ButtonBarPresenter implements Initializable, Observer {
         Path scriptFilePath = FileModel.getInstance().getGraafVisFilePath();
 
         String codeOnScreen = FileModel.getInstance().graafVisCode; //This way the user doesn't have to save it's code first
-        Path tempFilePath = CompilerUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
+        Path tempFilePath = GeneratorUtils.saveAsTempScript(scriptFilePath.getFileName().toString(),codeOnScreen);
         try {
-            new Thread(new CompilerRunnable(tempFilePath,graphFilePath, CompilationProgress.PROLOGLOADED)).start();
+            new Thread(new GeneratorRunnable(tempFilePath,graphFilePath, GenerationProgress.PROLOGLOADED)).start();
         } catch (Exception e){
             e.printStackTrace();
             //TODO: Handle exceptions by showing them in an error box
