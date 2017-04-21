@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import screens.idescreen.about.AboutView;
+import screens.idescreen.bottombar.BottomBarPresenter;
 import screens.idescreen.tab.simpleviewer.SimpleViewerPresenter;
 import screens.idescreen.tab.simpleviewer.SimpleViewerView;
 import utils.FileUtils;
@@ -127,6 +128,10 @@ public class MenuBarPresenter implements Initializable {
         SplitPane topBar = (SplitPane) centralBorder.getTop();
         ButtonBar buttonBar = (ButtonBar) ((SplitPane) ((AnchorPane) topBar.getItems().get(1)).getChildren().get(0)).getItems().get(1);
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
+        if (comboBox.getSelectionModel().getSelectedItem()==null) {
+            BottomBarPresenter.addText("No graph selected.");
+            return;
+        }
         String selectedGraphName = comboBox.getSelectionModel().getSelectedItem().toString();
         Path selectedGraphPath = FileModel.getInstance().getGraphPathMap().get(selectedGraphName);
         GeneratorRunnable generatorRunnable = new GeneratorRunnable(Paths.get("defaultvisualization.vis"), selectedGraphPath);
@@ -138,6 +143,10 @@ public class MenuBarPresenter implements Initializable {
         SplitPane topBar = (SplitPane) centralBorder.getTop();
         ButtonBar buttonBar = (ButtonBar) ((SplitPane) ((AnchorPane) topBar.getItems().get(1)).getChildren().get(0)).getItems().get(1);
         ComboBox comboBox = (ComboBox) buttonBar.getButtons().get(0);
+        if (comboBox.getSelectionModel().getSelectedItem()==null) {
+            BottomBarPresenter.addText("No graph selected.");
+            return;
+        }
         String selectedGraphName = comboBox.getSelectionModel().getSelectedItem().toString();
 
         Path selectedGraphPath = FileModel.getInstance().getGraphPathMap().get(selectedGraphName);

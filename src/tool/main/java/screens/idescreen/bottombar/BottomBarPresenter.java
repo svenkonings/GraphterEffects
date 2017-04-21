@@ -29,8 +29,12 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
     public TextArea generationResultTextArea;
     public boolean maximized;
 
+
+    private static BottomBarPresenter instance;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        instance = this;
         generationResultTitledPane.prefWidthProperty().bind(viewModel.getMainView().getScene().widthProperty());
 
         generationResultTitledPane.setPrefHeight(25);
@@ -135,10 +139,8 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
         }
     }
 
-    @Override
-    public void textAdded(String added) {
-        Platform.runLater(() -> generationResultTextArea.appendText(added + "\n"));
-
+    public static void addText(String added) {
+        Platform.runLater(() -> Platform.runLater(() -> instance.compilationResultTextArea.appendText(added + "\n")));
     }
 
     public void expandButtonPressed(ActionEvent actionEvent) {
@@ -153,5 +155,10 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 expandButton.setText("Maximize");
             }
         }
+    }
+
+    @Override
+    public void textAdded(String added) {
+        addText(added);
     }
 }
