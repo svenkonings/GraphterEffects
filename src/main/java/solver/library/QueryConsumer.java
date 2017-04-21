@@ -9,8 +9,9 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /**
- * Represents a {@link BiConsumer} that receives a {@link VisMap} and the {@link prolog.TuProlog} result (see
- * {@link prolog.TuProlog#solve(Term)}.
+ * Represents a {@link BiConsumer} that receives a {@link VisMap} and the {@link prolog.TuProlog} result (see {@link
+ * prolog.TuProlog#solve(Term)}. This consumer is ussually used to modify the visualization elements in the {@link
+ * VisMap} based the results.
  */
 @FunctionalInterface
 public interface QueryConsumer extends BiConsumer<VisMap, List<Map<String, Term>>> {

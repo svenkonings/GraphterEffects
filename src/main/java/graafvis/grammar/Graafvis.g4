@@ -35,21 +35,24 @@ aTerm: NOT aTerm                                                                
      | NUMBER                                                                                                           #numberAntecedent
      ;
 
+/** A series of antecedent terms separated by commas. Commas do not represent 'and' here and bind stronger than 'or'/';' */
 aArgSeries: args+=orSeries (COMMA args+=orSeries)*;
-
 orSeries: args+=aTerm (SEMICOLON args+=aTerm)*;
 
+/** A logical expression where commas (representing 'and' operators) bind stronger than semicolons (representing 'or').
+    Order of operations can be manipulated by using parentheses*/
 aTermExpr: aTermExpr COMMA aTermExpr                                                                                    #andExpressionAntecedent
          | aTermExpr SEMICOLON aTermExpr                                                                                #orExpressionAntecedent
          | PAR_OPEN aTermExpr PAR_CLOSE                                                                                 #parExpressionAntecedent
          | aTerm                                                                                                        #termExpressionAntecedent
          ;
 
+/** A multi compound term argument can either be a series of arguments, or a single term */
 aMultiArg: PAR_OPEN aArgSeries? PAR_CLOSE
          | aTerm
          ;
 
-/* Consequence */
+/* Consequence terms (are fundementally different from antecedent terms in possible functionalities) */
 cTerm: functor (PAR_OPEN args=cArgSeries? PAR_CLOSE)?                                                                   #compoundConsequence
      | functor BRACE_OPEN (args+=cMultiArg COMMA)* args+=cMultiArg BRACE_CLOSE                                          #multiCompoundConsequence
      | BRACKET_OPEN (cArgSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listConsequence
@@ -58,13 +61,15 @@ cTerm: functor (PAR_OPEN args=cArgSeries? PAR_CLOSE)?                           
      | NUMBER                                                                                                           #numberConsequence
      ;
 
+/** Consequence term series separated by commas */
 cArgSeries: (args+=cTerm COMMA)* args+=cTerm ;
 
+/** A multi compound term argument can either be a series of arguments, or a single term */
 cMultiArg : PAR_OPEN cArgSeries? PAR_CLOSE
           | cTerm
           ;
 
-/* Functors */
+/* Functor types */
 functor: ID                                                                                                             #idFunctor
        | INFIX_ID                                                                                                       #infixFunctor
        ;
