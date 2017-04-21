@@ -85,7 +85,6 @@ public class VideoLibraryExample {
         // Create a new element generator
         SvgElementGenerator elementGenerator = new SvgElementGenerator();
 
-
         // Add the attribute generator to the element generator
         elementGenerator.setGenerator("video", createForeignGenerator());
 

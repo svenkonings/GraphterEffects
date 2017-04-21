@@ -5,10 +5,7 @@ import solver.VisElem;
 import solver.VisMap;
 import utils.TriConsumer;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -29,7 +26,7 @@ import static prolog.TuProlog.clause;
 public class VisLibrary {
 
     /** Terms to be added before querieing */
-    protected final Set<Term> terms;
+    protected final List<Term> terms;
 
     /** Mapping from query to {@link QueryConsumer}. */
     protected final Map<String, QueryConsumer> queries;
@@ -42,7 +39,7 @@ public class VisLibrary {
      * nothing.
      */
     public VisLibrary() {
-        this.terms = new HashSet<>();
+        this.terms = new ArrayList<>();
         this.queries = new LinkedHashMap<>();
         this.elemConsumer = elem -> {
             // Do nothing.
@@ -54,7 +51,7 @@ public class VisLibrary {
      *
      * @return The set of terms.
      */
-    public Set<Term> getTerms() {
+    public List<Term> getTerms() {
         return terms;
     }
 
