@@ -99,11 +99,8 @@ public class GeneratorRunnable implements Runnable, Observer {
                     generation.generateSVG();
                 }
             }
-        } catch (IOException | SAXException e) {
+        } catch (Exception e) {
             generation.setException(e);
-        } catch (GraafvisCompiler.CheckerException | GraafvisCompiler.SyntaxException e) {
-            generation.setException(e);
-
         }
     }
 

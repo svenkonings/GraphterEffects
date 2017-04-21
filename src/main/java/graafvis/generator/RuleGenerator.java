@@ -7,7 +7,10 @@ import graafvis.grammar.GraafvisParser;
 import graafvis.grammar.GraafvisParser.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
+import utils.StringUtils;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -92,6 +95,21 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     /*******************
      --- Tree walker ---
      *******************/
+
+    @Override public Term visitImportVis(ImportVisContext ctx) {
+        String filename = StringUtils.removeQuotation(ctx.STRING().getText());
+        Lexer lexer;
+        try {
+            lexer = new GraafvisLexer(new ANTLRFileStream(filename));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        TokenStream tokens = new CommonTokenStream(lexer);
+        GraafvisParser parser = new GraafvisParser(tokens);
+        GraafvisParser.ProgramContext programContext = parser.program();
+        programContext.accept(this);
+        return null;
+    }
 
     @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
         for (LabelContext label : ctx.label()) {
