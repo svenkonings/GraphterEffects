@@ -66,5 +66,4 @@ public class ConsequenceBlacklistTest {
         return blacklist.getErrors();
     }
 
-
 }

@@ -47,169 +47,187 @@ public interface GraafvisVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitClause(GraafvisParser.ClauseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#antecedent}.
+	 * Visit a parse tree produced by the {@code notAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAntecedent(GraafvisParser.AntecedentContext ctx);
+	T visitNotAntecedent(GraafvisParser.NotAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code pfNot}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Visit a parse tree produced by the {@code compoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPfNot(GraafvisParser.PfNotContext ctx);
+	T visitCompoundAntecedent(GraafvisParser.CompoundAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code pfLit}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Visit a parse tree produced by the {@code multiAndCompoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPfLit(GraafvisParser.PfLitContext ctx);
+	T visitMultiAndCompoundAntecedent(GraafvisParser.MultiAndCompoundAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code pfAnd}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Visit a parse tree produced by the {@code multiOrCompoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPfAnd(GraafvisParser.PfAndContext ctx);
+	T visitMultiOrCompoundAntecedent(GraafvisParser.MultiOrCompoundAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code pfOr}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Visit a parse tree produced by the {@code listAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPfOr(GraafvisParser.PfOrContext ctx);
+	T visitListAntecedent(GraafvisParser.ListAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code pfNest}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Visit a parse tree produced by the {@code parAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPfNest(GraafvisParser.PfNestContext ctx);
+	T visitParAntecedent(GraafvisParser.ParAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#consequence}.
+	 * Visit a parse tree produced by the {@code variableAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConsequence(GraafvisParser.ConsequenceContext ctx);
+	T visitVariableAntecedent(GraafvisParser.VariableAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code atomLiteral}
-	 * labeled alternative in {@link GraafvisParser#literal}.
+	 * Visit a parse tree produced by the {@code wildcardAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAtomLiteral(GraafvisParser.AtomLiteralContext ctx);
+	T visitWildcardAntecedent(GraafvisParser.WildcardAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code multiAtomLiteral}
-	 * labeled alternative in {@link GraafvisParser#literal}.
+	 * Visit a parse tree produced by the {@code stringAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx);
+	T visitStringAntecedent(GraafvisParser.StringAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#atom}.
+	 * Visit a parse tree produced by the {@code numberAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAtom(GraafvisParser.AtomContext ctx);
+	T visitNumberAntecedent(GraafvisParser.NumberAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code multiAnd}
-	 * labeled alternative in {@link GraafvisParser#multiAtom}.
+	 * Visit a parse tree produced by {@link GraafvisParser#aArgSeries}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMultiAnd(GraafvisParser.MultiAndContext ctx);
+	T visitAArgSeries(GraafvisParser.AArgSeriesContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code multiOr}
-	 * labeled alternative in {@link GraafvisParser#multiAtom}.
+	 * Visit a parse tree produced by {@link GraafvisParser#orSeries}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMultiOr(GraafvisParser.MultiOrContext ctx);
+	T visitOrSeries(GraafvisParser.OrSeriesContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#multiTerm}.
+	 * Visit a parse tree produced by the {@code andExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMultiTerm(GraafvisParser.MultiTermContext ctx);
+	T visitAndExpressionAntecedent(GraafvisParser.AndExpressionAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#termTuple}.
+	 * Visit a parse tree produced by the {@code parExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermTuple(GraafvisParser.TermTupleContext ctx);
+	T visitParExpressionAntecedent(GraafvisParser.ParExpressionAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#predicate}.
+	 * Visit a parse tree produced by the {@code termExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPredicate(GraafvisParser.PredicateContext ctx);
+	T visitTermExpressionAntecedent(GraafvisParser.TermExpressionAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termVar}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by the {@code orExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermVar(GraafvisParser.TermVarContext ctx);
+	T visitOrExpressionAntecedent(GraafvisParser.OrExpressionAntecedentContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termAtom}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by {@link GraafvisParser#aMultiArg}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermAtom(GraafvisParser.TermAtomContext ctx);
+	T visitAMultiArg(GraafvisParser.AMultiArgContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termWildcard}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by the {@code compoundConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermWildcard(GraafvisParser.TermWildcardContext ctx);
+	T visitCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termString}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by the {@code multiCompoundConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermString(GraafvisParser.TermStringContext ctx);
+	T visitMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termNumber}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by the {@code listConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermNumber(GraafvisParser.TermNumberContext ctx);
+	T visitListConsequence(GraafvisParser.ListConsequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termID}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by the {@code variableConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermID(GraafvisParser.TermIDContext ctx);
+	T visitVariableConsequence(GraafvisParser.VariableConsequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termList}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Visit a parse tree produced by the {@code stringConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermList(GraafvisParser.TermListContext ctx);
+	T visitStringConsequence(GraafvisParser.StringConsequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#variable}.
+	 * Visit a parse tree produced by the {@code numberConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVariable(GraafvisParser.VariableContext ctx);
+	T visitNumberConsequence(GraafvisParser.NumberConsequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#andOp}.
+	 * Visit a parse tree produced by {@link GraafvisParser#cArgSeries}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAndOp(GraafvisParser.AndOpContext ctx);
+	T visitCArgSeries(GraafvisParser.CArgSeriesContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GraafvisParser#orOp}.
+	 * Visit a parse tree produced by {@link GraafvisParser#cMultiArg}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOrOp(GraafvisParser.OrOpContext ctx);
+	T visitCMultiArg(GraafvisParser.CMultiArgContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code idFunctor}
+	 * labeled alternative in {@link GraafvisParser#functor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdFunctor(GraafvisParser.IdFunctorContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code infixFunctor}
+	 * labeled alternative in {@link GraafvisParser#functor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInfixFunctor(GraafvisParser.InfixFunctorContext ctx);
 }

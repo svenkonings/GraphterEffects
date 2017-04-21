@@ -22,18 +22,17 @@ public class GraafvisParser extends Parser {
 		GE=15, LE=16, COMMA=17, SEMICOLON=18, OR=19, AND=20, NOT=21, PLUS=22, 
 		MINUS=23, MULT=24, DIV=25, POW=26, MOD=27, UNDERSCORE=28, TRUE=29, FALSE=30, 
 		IMPORT_TOKEN=31, NODE_LABEL_TOKEN=32, EDGE_LABEL_TOKEN=33, RENAME_TOKEN=34, 
-		STRING=35, NUMBER=36, ID=37, HID=38, WS=39, BLOCKCOMMENT=40, LINECOMMENT=41;
+		STRING=35, NUMBER=36, ID=37, HID=38, INFIX_ID=39, WS=40, BLOCKCOMMENT=41, 
+		LINECOMMENT=42;
 	public static final int
 		RULE_program = 0, RULE_importVis = 1, RULE_nodeLabelGen = 2, RULE_edgeLabelGen = 3, 
-		RULE_label = 4, RULE_clause = 5, RULE_antecedent = 6, RULE_propositionalFormula = 7, 
-		RULE_consequence = 8, RULE_literal = 9, RULE_atom = 10, RULE_multiAtom = 11, 
-		RULE_multiTerm = 12, RULE_termTuple = 13, RULE_predicate = 14, RULE_term = 15, 
-		RULE_variable = 16, RULE_andOp = 17, RULE_orOp = 18;
+		RULE_label = 4, RULE_clause = 5, RULE_aTerm = 6, RULE_aArgSeries = 7, 
+		RULE_orSeries = 8, RULE_aTermExpr = 9, RULE_aMultiArg = 10, RULE_cTerm = 11, 
+		RULE_cArgSeries = 12, RULE_cMultiArg = 13, RULE_functor = 14;
 	public static final String[] ruleNames = {
 		"program", "importVis", "nodeLabelGen", "edgeLabelGen", "label", "clause", 
-		"antecedent", "propositionalFormula", "consequence", "literal", "atom", 
-		"multiAtom", "multiTerm", "termTuple", "predicate", "term", "variable", 
-		"andOp", "orOp"
+		"aTerm", "aArgSeries", "orSeries", "aTermExpr", "aMultiArg", "cTerm", 
+		"cArgSeries", "cMultiArg", "functor"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
@@ -48,7 +47,7 @@ public class GraafvisParser extends Parser {
 		"LT", "GE", "LE", "COMMA", "SEMICOLON", "OR", "AND", "NOT", "PLUS", "MINUS", 
 		"MULT", "DIV", "POW", "MOD", "UNDERSCORE", "TRUE", "FALSE", "IMPORT_TOKEN", 
 		"NODE_LABEL_TOKEN", "EDGE_LABEL_TOKEN", "RENAME_TOKEN", "STRING", "NUMBER", 
-		"ID", "HID", "WS", "BLOCKCOMMENT", "LINECOMMENT"
+		"ID", "HID", "INFIX_ID", "WS", "BLOCKCOMMENT", "LINECOMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -145,55 +144,55 @@ public class GraafvisParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(41);
+			setState(33);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==IMPORT_TOKEN) {
 				{
 				{
-				setState(38);
+				setState(30);
 				importVis();
 				}
 				}
-				setState(43);
+				setState(35);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(45);
+			setState(37);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==NODE_LABEL_TOKEN) {
 				{
-				setState(44);
+				setState(36);
 				nodeLabelGen();
 				}
 			}
 
-			setState(48);
+			setState(40);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==EDGE_LABEL_TOKEN) {
 				{
-				setState(47);
+				setState(39);
 				edgeLabelGen();
 				}
 			}
 
-			setState(53);
+			setState(45);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PAR_OPEN) | (1L << NOT) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PAR_OPEN) | (1L << BRACKET_OPEN) | (1L << NOT) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
 				{
 				{
-				setState(50);
+				setState(42);
 				clause();
 				}
 				}
-				setState(55);
+				setState(47);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(56);
+			setState(48);
 			match(EOF);
 			}
 		}
@@ -237,11 +236,11 @@ public class GraafvisParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(58);
+			setState(50);
 			match(IMPORT_TOKEN);
-			setState(59);
+			setState(51);
 			match(STRING);
-			setState(60);
+			setState(52);
 			match(EOL);
 			}
 		}
@@ -257,15 +256,17 @@ public class GraafvisParser extends Parser {
 	}
 
 	public static class NodeLabelGenContext extends ParserRuleContext {
+		public LabelContext label;
+		public List<LabelContext> labels = new ArrayList<LabelContext>();
 		public TerminalNode NODE_LABEL_TOKEN() { return getToken(GraafvisParser.NODE_LABEL_TOKEN, 0); }
 		public TerminalNode COLON() { return getToken(GraafvisParser.COLON, 0); }
+		public TerminalNode EOL() { return getToken(GraafvisParser.EOL, 0); }
 		public List<LabelContext> label() {
 			return getRuleContexts(LabelContext.class);
 		}
 		public LabelContext label(int i) {
 			return getRuleContext(LabelContext.class,i);
 		}
-		public TerminalNode EOL() { return getToken(GraafvisParser.EOL, 0); }
 		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
 		public TerminalNode COMMA(int i) {
 			return getToken(GraafvisParser.COMMA, i);
@@ -296,29 +297,31 @@ public class GraafvisParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(62);
+			setState(54);
 			match(NODE_LABEL_TOKEN);
-			setState(63);
+			setState(55);
 			match(COLON);
-			setState(64);
-			label();
-			setState(69);
+			setState(56);
+			((NodeLabelGenContext)_localctx).label = label();
+			((NodeLabelGenContext)_localctx).labels.add(((NodeLabelGenContext)_localctx).label);
+			setState(61);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(65);
+				setState(57);
 				match(COMMA);
-				setState(66);
-				label();
+				setState(58);
+				((NodeLabelGenContext)_localctx).label = label();
+				((NodeLabelGenContext)_localctx).labels.add(((NodeLabelGenContext)_localctx).label);
 				}
 				}
-				setState(71);
+				setState(63);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(72);
+			setState(64);
 			match(EOL);
 			}
 		}
@@ -334,15 +337,17 @@ public class GraafvisParser extends Parser {
 	}
 
 	public static class EdgeLabelGenContext extends ParserRuleContext {
+		public LabelContext label;
+		public List<LabelContext> labels = new ArrayList<LabelContext>();
 		public TerminalNode EDGE_LABEL_TOKEN() { return getToken(GraafvisParser.EDGE_LABEL_TOKEN, 0); }
 		public TerminalNode COLON() { return getToken(GraafvisParser.COLON, 0); }
+		public TerminalNode EOL() { return getToken(GraafvisParser.EOL, 0); }
 		public List<LabelContext> label() {
 			return getRuleContexts(LabelContext.class);
 		}
 		public LabelContext label(int i) {
 			return getRuleContext(LabelContext.class,i);
 		}
-		public TerminalNode EOL() { return getToken(GraafvisParser.EOL, 0); }
 		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
 		public TerminalNode COMMA(int i) {
 			return getToken(GraafvisParser.COMMA, i);
@@ -373,29 +378,31 @@ public class GraafvisParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(74);
+			setState(66);
 			match(EDGE_LABEL_TOKEN);
-			setState(75);
+			setState(67);
 			match(COLON);
-			setState(76);
-			label();
-			setState(81);
+			setState(68);
+			((EdgeLabelGenContext)_localctx).label = label();
+			((EdgeLabelGenContext)_localctx).labels.add(((EdgeLabelGenContext)_localctx).label);
+			setState(73);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(77);
+				setState(69);
 				match(COMMA);
-				setState(78);
-				label();
+				setState(70);
+				((EdgeLabelGenContext)_localctx).label = label();
+				((EdgeLabelGenContext)_localctx).labels.add(((EdgeLabelGenContext)_localctx).label);
 				}
 				}
-				setState(83);
+				setState(75);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(84);
+			setState(76);
 			match(EOL);
 			}
 		}
@@ -440,16 +447,16 @@ public class GraafvisParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(86);
+			setState(78);
 			match(STRING);
-			setState(89);
+			setState(81);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==RENAME_TOKEN) {
 				{
-				setState(87);
+				setState(79);
 				match(RENAME_TOKEN);
-				setState(88);
+				setState(80);
 				match(ID);
 				}
 			}
@@ -468,14 +475,16 @@ public class GraafvisParser extends Parser {
 	}
 
 	public static class ClauseContext extends ParserRuleContext {
-		public ConsequenceContext consequence() {
-			return getRuleContext(ConsequenceContext.class,0);
-		}
+		public ATermExprContext antecedent;
+		public CArgSeriesContext consequence;
 		public TerminalNode EOL() { return getToken(GraafvisParser.EOL, 0); }
-		public AntecedentContext antecedent() {
-			return getRuleContext(AntecedentContext.class,0);
+		public CArgSeriesContext cArgSeries() {
+			return getRuleContext(CArgSeriesContext.class,0);
 		}
 		public TerminalNode ARROW() { return getToken(GraafvisParser.ARROW, 0); }
+		public ATermExprContext aTermExpr() {
+			return getRuleContext(ATermExprContext.class,0);
+		}
 		public ClauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -501,21 +510,21 @@ public class GraafvisParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(94);
+			setState(86);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				{
-				setState(91);
-				antecedent();
-				setState(92);
+				setState(83);
+				((ClauseContext)_localctx).antecedent = aTermExpr(0);
+				setState(84);
 				match(ARROW);
 				}
 				break;
 			}
-			setState(96);
-			consequence();
-			setState(97);
+			setState(88);
+			((ClauseContext)_localctx).consequence = cArgSeries();
+			setState(89);
 			match(EOL);
 			}
 		}
@@ -530,37 +539,456 @@ public class GraafvisParser extends Parser {
 		return _localctx;
 	}
 
-	public static class AntecedentContext extends ParserRuleContext {
-		public PropositionalFormulaContext propositionalFormula() {
-			return getRuleContext(PropositionalFormulaContext.class,0);
-		}
-		public AntecedentContext(ParserRuleContext parent, int invokingState) {
+	public static class ATermContext extends ParserRuleContext {
+		public ATermContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_antecedent; }
+		@Override public int getRuleIndex() { return RULE_aTerm; }
+	 
+		public ATermContext() { }
+		public void copyFrom(ATermContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class WildcardAntecedentContext extends ATermContext {
+		public Token wildcard;
+		public TerminalNode UNDERSCORE() { return getToken(GraafvisParser.UNDERSCORE, 0); }
+		public WildcardAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAntecedent(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterWildcardAntecedent(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAntecedent(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitWildcardAntecedent(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAntecedent(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitWildcardAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ListAntecedentContext extends ATermContext {
+		public List<TerminalNode> BRACKET_OPEN() { return getTokens(GraafvisParser.BRACKET_OPEN); }
+		public TerminalNode BRACKET_OPEN(int i) {
+			return getToken(GraafvisParser.BRACKET_OPEN, i);
+		}
+		public List<TerminalNode> BRACKET_CLOSE() { return getTokens(GraafvisParser.BRACKET_CLOSE); }
+		public TerminalNode BRACKET_CLOSE(int i) {
+			return getToken(GraafvisParser.BRACKET_CLOSE, i);
+		}
+		public AArgSeriesContext aArgSeries() {
+			return getRuleContext(AArgSeriesContext.class,0);
+		}
+		public TerminalNode VBAR() { return getToken(GraafvisParser.VBAR, 0); }
+		public ATermContext aTerm() {
+			return getRuleContext(ATermContext.class,0);
+		}
+		public ListAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterListAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitListAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitListAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class NumberAntecedentContext extends ATermContext {
+		public TerminalNode NUMBER() { return getToken(GraafvisParser.NUMBER, 0); }
+		public NumberAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterNumberAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitNumberAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitNumberAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class MultiAndCompoundAntecedentContext extends ATermContext {
+		public AMultiArgContext aMultiArg;
+		public List<AMultiArgContext> args = new ArrayList<AMultiArgContext>();
+		public FunctorContext functor() {
+			return getRuleContext(FunctorContext.class,0);
+		}
+		public TerminalNode BRACE_OPEN() { return getToken(GraafvisParser.BRACE_OPEN, 0); }
+		public TerminalNode BRACE_CLOSE() { return getToken(GraafvisParser.BRACE_CLOSE, 0); }
+		public List<AMultiArgContext> aMultiArg() {
+			return getRuleContexts(AMultiArgContext.class);
+		}
+		public AMultiArgContext aMultiArg(int i) {
+			return getRuleContext(AMultiArgContext.class,i);
+		}
+		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(GraafvisParser.COMMA, i);
+		}
+		public MultiAndCompoundAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiAndCompoundAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiAndCompoundAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiAndCompoundAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class VariableAntecedentContext extends ATermContext {
+		public Token variable;
+		public TerminalNode HID() { return getToken(GraafvisParser.HID, 0); }
+		public VariableAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterVariableAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitVariableAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitVariableAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class NotAntecedentContext extends ATermContext {
+		public TerminalNode NOT() { return getToken(GraafvisParser.NOT, 0); }
+		public ATermContext aTerm() {
+			return getRuleContext(ATermContext.class,0);
+		}
+		public NotAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterNotAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitNotAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitNotAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class MultiOrCompoundAntecedentContext extends ATermContext {
+		public AMultiArgContext aMultiArg;
+		public List<AMultiArgContext> args = new ArrayList<AMultiArgContext>();
+		public FunctorContext functor() {
+			return getRuleContext(FunctorContext.class,0);
+		}
+		public TerminalNode BRACE_OPEN() { return getToken(GraafvisParser.BRACE_OPEN, 0); }
+		public TerminalNode BRACE_CLOSE() { return getToken(GraafvisParser.BRACE_CLOSE, 0); }
+		public List<AMultiArgContext> aMultiArg() {
+			return getRuleContexts(AMultiArgContext.class);
+		}
+		public AMultiArgContext aMultiArg(int i) {
+			return getRuleContext(AMultiArgContext.class,i);
+		}
+		public List<TerminalNode> SEMICOLON() { return getTokens(GraafvisParser.SEMICOLON); }
+		public TerminalNode SEMICOLON(int i) {
+			return getToken(GraafvisParser.SEMICOLON, i);
+		}
+		public MultiOrCompoundAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiOrCompoundAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiOrCompoundAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiOrCompoundAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ParAntecedentContext extends ATermContext {
+		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
+		public ATermExprContext aTermExpr() {
+			return getRuleContext(ATermExprContext.class,0);
+		}
+		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
+		public ParAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterParAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitParAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitParAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CompoundAntecedentContext extends ATermContext {
+		public AArgSeriesContext args;
+		public FunctorContext functor() {
+			return getRuleContext(FunctorContext.class,0);
+		}
+		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
+		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
+		public AArgSeriesContext aArgSeries() {
+			return getRuleContext(AArgSeriesContext.class,0);
+		}
+		public CompoundAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterCompoundAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitCompoundAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitCompoundAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class StringAntecedentContext extends ATermContext {
+		public TerminalNode STRING() { return getToken(GraafvisParser.STRING, 0); }
+		public StringAntecedentContext(ATermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterStringAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitStringAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitStringAntecedent(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final AntecedentContext antecedent() throws RecognitionException {
-		AntecedentContext _localctx = new AntecedentContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_antecedent);
+	public final ATermContext aTerm() throws RecognitionException {
+		ATermContext _localctx = new ATermContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_aTerm);
+		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(99);
-			propositionalFormula(0);
+			int _alt;
+			setState(148);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
+			case 1:
+				_localctx = new NotAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(91);
+				match(NOT);
+				setState(92);
+				aTerm();
+				}
+				break;
+			case 2:
+				_localctx = new CompoundAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(93);
+				functor();
+				setState(99);
+				_errHandler.sync(this);
+				switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
+				case 1:
+					{
+					setState(94);
+					match(PAR_OPEN);
+					setState(96);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PAR_OPEN) | (1L << BRACKET_OPEN) | (1L << NOT) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+						{
+						setState(95);
+						((CompoundAntecedentContext)_localctx).args = aArgSeries();
+						}
+					}
+
+					setState(98);
+					match(PAR_CLOSE);
+					}
+					break;
+				}
+				}
+				break;
+			case 3:
+				_localctx = new MultiAndCompoundAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(101);
+				functor();
+				setState(102);
+				match(BRACE_OPEN);
+				setState(108);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
+				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						setState(103);
+						((MultiAndCompoundAntecedentContext)_localctx).aMultiArg = aMultiArg();
+						((MultiAndCompoundAntecedentContext)_localctx).args.add(((MultiAndCompoundAntecedentContext)_localctx).aMultiArg);
+						setState(104);
+						match(COMMA);
+						}
+						} 
+					}
+					setState(110);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
+				}
+				setState(111);
+				((MultiAndCompoundAntecedentContext)_localctx).aMultiArg = aMultiArg();
+				((MultiAndCompoundAntecedentContext)_localctx).args.add(((MultiAndCompoundAntecedentContext)_localctx).aMultiArg);
+				setState(112);
+				match(BRACE_CLOSE);
+				}
+				break;
+			case 4:
+				_localctx = new MultiOrCompoundAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(114);
+				functor();
+				setState(115);
+				match(BRACE_OPEN);
+				setState(121);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
+				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						setState(116);
+						((MultiOrCompoundAntecedentContext)_localctx).aMultiArg = aMultiArg();
+						((MultiOrCompoundAntecedentContext)_localctx).args.add(((MultiOrCompoundAntecedentContext)_localctx).aMultiArg);
+						setState(117);
+						match(SEMICOLON);
+						}
+						} 
+					}
+					setState(123);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
+				}
+				setState(124);
+				((MultiOrCompoundAntecedentContext)_localctx).aMultiArg = aMultiArg();
+				((MultiOrCompoundAntecedentContext)_localctx).args.add(((MultiOrCompoundAntecedentContext)_localctx).aMultiArg);
+				setState(125);
+				match(BRACE_CLOSE);
+				}
+				break;
+			case 5:
+				_localctx = new ListAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(127);
+				match(BRACKET_OPEN);
+				setState(137);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PAR_OPEN) | (1L << BRACKET_OPEN) | (1L << NOT) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+					{
+					setState(128);
+					aArgSeries();
+					setState(135);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if (_la==VBAR) {
+						{
+						setState(129);
+						match(VBAR);
+						setState(130);
+						match(BRACKET_OPEN);
+						setState(132);
+						_errHandler.sync(this);
+						_la = _input.LA(1);
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PAR_OPEN) | (1L << BRACKET_OPEN) | (1L << NOT) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+							{
+							setState(131);
+							aTerm();
+							}
+						}
+
+						setState(134);
+						match(BRACKET_CLOSE);
+						}
+					}
+
+					}
+				}
+
+				setState(139);
+				match(BRACKET_CLOSE);
+				}
+				break;
+			case 6:
+				_localctx = new ParAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(140);
+				match(PAR_OPEN);
+				setState(141);
+				aTermExpr(0);
+				setState(142);
+				match(PAR_CLOSE);
+				}
+				break;
+			case 7:
+				_localctx = new VariableAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(144);
+				((VariableAntecedentContext)_localctx).variable = match(HID);
+				}
+				break;
+			case 8:
+				_localctx = new WildcardAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(145);
+				((WildcardAntecedentContext)_localctx).wildcard = match(UNDERSCORE);
+				}
+				break;
+			case 9:
+				_localctx = new StringAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 9);
+				{
+				setState(146);
+				match(STRING);
+				}
+				break;
+			case 10:
+				_localctx = new NumberAntecedentContext(_localctx);
+				enterOuterAlt(_localctx, 10);
+				{
+				setState(147);
+				match(NUMBER);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -574,225 +1002,332 @@ public class GraafvisParser extends Parser {
 		return _localctx;
 	}
 
-	public static class PropositionalFormulaContext extends ParserRuleContext {
-		public PropositionalFormulaContext(ParserRuleContext parent, int invokingState) {
+	public static class AArgSeriesContext extends ParserRuleContext {
+		public OrSeriesContext orSeries;
+		public List<OrSeriesContext> args = new ArrayList<OrSeriesContext>();
+		public List<OrSeriesContext> orSeries() {
+			return getRuleContexts(OrSeriesContext.class);
+		}
+		public OrSeriesContext orSeries(int i) {
+			return getRuleContext(OrSeriesContext.class,i);
+		}
+		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(GraafvisParser.COMMA, i);
+		}
+		public AArgSeriesContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_propositionalFormula; }
+		@Override public int getRuleIndex() { return RULE_aArgSeries; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAArgSeries(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAArgSeries(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAArgSeries(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final AArgSeriesContext aArgSeries() throws RecognitionException {
+		AArgSeriesContext _localctx = new AArgSeriesContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_aArgSeries);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(150);
+			((AArgSeriesContext)_localctx).orSeries = orSeries();
+			((AArgSeriesContext)_localctx).args.add(((AArgSeriesContext)_localctx).orSeries);
+			setState(155);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==COMMA) {
+				{
+				{
+				setState(151);
+				match(COMMA);
+				setState(152);
+				((AArgSeriesContext)_localctx).orSeries = orSeries();
+				((AArgSeriesContext)_localctx).args.add(((AArgSeriesContext)_localctx).orSeries);
+				}
+				}
+				setState(157);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class OrSeriesContext extends ParserRuleContext {
+		public ATermContext aTerm;
+		public List<ATermContext> args = new ArrayList<ATermContext>();
+		public List<ATermContext> aTerm() {
+			return getRuleContexts(ATermContext.class);
+		}
+		public ATermContext aTerm(int i) {
+			return getRuleContext(ATermContext.class,i);
+		}
+		public List<TerminalNode> SEMICOLON() { return getTokens(GraafvisParser.SEMICOLON); }
+		public TerminalNode SEMICOLON(int i) {
+			return getToken(GraafvisParser.SEMICOLON, i);
+		}
+		public OrSeriesContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_orSeries; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterOrSeries(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitOrSeries(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitOrSeries(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final OrSeriesContext orSeries() throws RecognitionException {
+		OrSeriesContext _localctx = new OrSeriesContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_orSeries);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(158);
+			((OrSeriesContext)_localctx).aTerm = aTerm();
+			((OrSeriesContext)_localctx).args.add(((OrSeriesContext)_localctx).aTerm);
+			setState(163);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==SEMICOLON) {
+				{
+				{
+				setState(159);
+				match(SEMICOLON);
+				setState(160);
+				((OrSeriesContext)_localctx).aTerm = aTerm();
+				((OrSeriesContext)_localctx).args.add(((OrSeriesContext)_localctx).aTerm);
+				}
+				}
+				setState(165);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ATermExprContext extends ParserRuleContext {
+		public ATermExprContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_aTermExpr; }
 	 
-		public PropositionalFormulaContext() { }
-		public void copyFrom(PropositionalFormulaContext ctx) {
+		public ATermExprContext() { }
+		public void copyFrom(ATermExprContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class PfNotContext extends PropositionalFormulaContext {
-		public TerminalNode NOT() { return getToken(GraafvisParser.NOT, 0); }
-		public PropositionalFormulaContext propositionalFormula() {
-			return getRuleContext(PropositionalFormulaContext.class,0);
+	public static class AndExpressionAntecedentContext extends ATermExprContext {
+		public List<ATermExprContext> aTermExpr() {
+			return getRuleContexts(ATermExprContext.class);
 		}
-		public PfNotContext(PropositionalFormulaContext ctx) { copyFrom(ctx); }
+		public ATermExprContext aTermExpr(int i) {
+			return getRuleContext(ATermExprContext.class,i);
+		}
+		public TerminalNode COMMA() { return getToken(GraafvisParser.COMMA, 0); }
+		public AndExpressionAntecedentContext(ATermExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterPfNot(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAndExpressionAntecedent(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitPfNot(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAndExpressionAntecedent(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitPfNot(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAndExpressionAntecedent(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class PfLitContext extends PropositionalFormulaContext {
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
-		}
-		public PfLitContext(PropositionalFormulaContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterPfLit(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitPfLit(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitPfLit(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class PfAndContext extends PropositionalFormulaContext {
-		public List<PropositionalFormulaContext> propositionalFormula() {
-			return getRuleContexts(PropositionalFormulaContext.class);
-		}
-		public PropositionalFormulaContext propositionalFormula(int i) {
-			return getRuleContext(PropositionalFormulaContext.class,i);
-		}
-		public AndOpContext andOp() {
-			return getRuleContext(AndOpContext.class,0);
-		}
-		public PfAndContext(PropositionalFormulaContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterPfAnd(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitPfAnd(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitPfAnd(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class PfOrContext extends PropositionalFormulaContext {
-		public List<PropositionalFormulaContext> propositionalFormula() {
-			return getRuleContexts(PropositionalFormulaContext.class);
-		}
-		public PropositionalFormulaContext propositionalFormula(int i) {
-			return getRuleContext(PropositionalFormulaContext.class,i);
-		}
-		public OrOpContext orOp() {
-			return getRuleContext(OrOpContext.class,0);
-		}
-		public PfOrContext(PropositionalFormulaContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterPfOr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitPfOr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitPfOr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class PfNestContext extends PropositionalFormulaContext {
+	public static class ParExpressionAntecedentContext extends ATermExprContext {
 		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
-		public PropositionalFormulaContext propositionalFormula() {
-			return getRuleContext(PropositionalFormulaContext.class,0);
+		public ATermExprContext aTermExpr() {
+			return getRuleContext(ATermExprContext.class,0);
 		}
 		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
-		public PfNestContext(PropositionalFormulaContext ctx) { copyFrom(ctx); }
+		public ParExpressionAntecedentContext(ATermExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterPfNest(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterParExpressionAntecedent(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitPfNest(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitParExpressionAntecedent(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitPfNest(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitParExpressionAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class TermExpressionAntecedentContext extends ATermExprContext {
+		public ATermContext aTerm() {
+			return getRuleContext(ATermContext.class,0);
+		}
+		public TermExpressionAntecedentContext(ATermExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermExpressionAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermExpressionAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermExpressionAntecedent(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class OrExpressionAntecedentContext extends ATermExprContext {
+		public List<ATermExprContext> aTermExpr() {
+			return getRuleContexts(ATermExprContext.class);
+		}
+		public ATermExprContext aTermExpr(int i) {
+			return getRuleContext(ATermExprContext.class,i);
+		}
+		public TerminalNode SEMICOLON() { return getToken(GraafvisParser.SEMICOLON, 0); }
+		public OrExpressionAntecedentContext(ATermExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterOrExpressionAntecedent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitOrExpressionAntecedent(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitOrExpressionAntecedent(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final PropositionalFormulaContext propositionalFormula() throws RecognitionException {
-		return propositionalFormula(0);
+	public final ATermExprContext aTermExpr() throws RecognitionException {
+		return aTermExpr(0);
 	}
 
-	private PropositionalFormulaContext propositionalFormula(int _p) throws RecognitionException {
+	private ATermExprContext aTermExpr(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		PropositionalFormulaContext _localctx = new PropositionalFormulaContext(_ctx, _parentState);
-		PropositionalFormulaContext _prevctx = _localctx;
-		int _startState = 14;
-		enterRecursionRule(_localctx, 14, RULE_propositionalFormula, _p);
+		ATermExprContext _localctx = new ATermExprContext(_ctx, _parentState);
+		ATermExprContext _prevctx = _localctx;
+		int _startState = 18;
+		enterRecursionRule(_localctx, 18, RULE_aTermExpr, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(109);
+			setState(172);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case NOT:
+			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
+			case 1:
 				{
-				_localctx = new PfNotContext(_localctx);
+				_localctx = new ParExpressionAntecedentContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(102);
-				match(NOT);
-				setState(103);
-				propositionalFormula(5);
-				}
-				break;
-			case PAR_OPEN:
-				{
-				_localctx = new PfNestContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(104);
+				setState(167);
 				match(PAR_OPEN);
-				setState(105);
-				propositionalFormula(0);
-				setState(106);
+				setState(168);
+				aTermExpr(0);
+				setState(169);
 				match(PAR_CLOSE);
 				}
 				break;
-			case ID:
+			case 2:
 				{
-				_localctx = new PfLitContext(_localctx);
+				_localctx = new TermExpressionAntecedentContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(108);
-				literal();
+				setState(171);
+				aTerm();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(121);
+			setState(182);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(119);
+					setState(180);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
 					case 1:
 						{
-						_localctx = new PfAndContext(new PropositionalFormulaContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_propositionalFormula);
-						setState(111);
+						_localctx = new AndExpressionAntecedentContext(new ATermExprContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_aTermExpr);
+						setState(174);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(112);
-						andOp();
-						setState(113);
-						propositionalFormula(5);
+						setState(175);
+						match(COMMA);
+						setState(176);
+						aTermExpr(5);
 						}
 						break;
 					case 2:
 						{
-						_localctx = new PfOrContext(new PropositionalFormulaContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_propositionalFormula);
-						setState(115);
+						_localctx = new OrExpressionAntecedentContext(new ATermExprContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_aTermExpr);
+						setState(177);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(116);
-						orOp();
-						setState(117);
-						propositionalFormula(4);
+						setState(178);
+						match(SEMICOLON);
+						setState(179);
+						aTermExpr(4);
 						}
 						break;
 					}
 					} 
 				}
-				setState(123);
+				setState(184);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
 			}
 			}
 		}
@@ -807,147 +1342,66 @@ public class GraafvisParser extends Parser {
 		return _localctx;
 	}
 
-	public static class ConsequenceContext extends ParserRuleContext {
-		public List<LiteralContext> literal() {
-			return getRuleContexts(LiteralContext.class);
+	public static class AMultiArgContext extends ParserRuleContext {
+		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
+		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
+		public AArgSeriesContext aArgSeries() {
+			return getRuleContext(AArgSeriesContext.class,0);
 		}
-		public LiteralContext literal(int i) {
-			return getRuleContext(LiteralContext.class,i);
+		public ATermContext aTerm() {
+			return getRuleContext(ATermContext.class,0);
 		}
-		public List<AndOpContext> andOp() {
-			return getRuleContexts(AndOpContext.class);
-		}
-		public AndOpContext andOp(int i) {
-			return getRuleContext(AndOpContext.class,i);
-		}
-		public ConsequenceContext(ParserRuleContext parent, int invokingState) {
+		public AMultiArgContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_consequence; }
+		@Override public int getRuleIndex() { return RULE_aMultiArg; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterConsequence(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAMultiArg(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitConsequence(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAMultiArg(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitConsequence(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAMultiArg(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final ConsequenceContext consequence() throws RecognitionException {
-		ConsequenceContext _localctx = new ConsequenceContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_consequence);
+	public final AMultiArgContext aMultiArg() throws RecognitionException {
+		AMultiArgContext _localctx = new AMultiArgContext(_ctx, getState());
+		enterRule(_localctx, 20, RULE_aMultiArg);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(124);
-			literal();
-			setState(130);
+			setState(191);
 			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==COMMA || _la==AND) {
-				{
-				{
-				setState(125);
-				andOp();
-				setState(126);
-				literal();
-				}
-				}
-				setState(132);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class LiteralContext extends ParserRuleContext {
-		public LiteralContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_literal; }
-	 
-		public LiteralContext() { }
-		public void copyFrom(LiteralContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class MultiAtomLiteralContext extends LiteralContext {
-		public MultiAtomContext multiAtom() {
-			return getRuleContext(MultiAtomContext.class,0);
-		}
-		public MultiAtomLiteralContext(LiteralContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiAtomLiteral(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiAtomLiteral(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiAtomLiteral(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class AtomLiteralContext extends LiteralContext {
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
-		}
-		public AtomLiteralContext(LiteralContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAtomLiteral(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAtomLiteral(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAtomLiteral(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final LiteralContext literal() throws RecognitionException {
-		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_literal);
-		try {
-			setState(135);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,22,_ctx) ) {
 			case 1:
-				_localctx = new AtomLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(133);
-				atom();
+				setState(185);
+				match(PAR_OPEN);
+				setState(187);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PAR_OPEN) | (1L << BRACKET_OPEN) | (1L << NOT) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+					{
+					setState(186);
+					aArgSeries();
+					}
+				}
+
+				setState(189);
+				match(PAR_CLOSE);
 				}
 				break;
 			case 2:
-				_localctx = new MultiAtomLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(134);
-				multiAtom();
+				setState(190);
+				aTerm();
 				}
 				break;
 			}
@@ -963,207 +1417,298 @@ public class GraafvisParser extends Parser {
 		return _localctx;
 	}
 
-	public static class AtomContext extends ParserRuleContext {
-		public PredicateContext predicate() {
-			return getRuleContext(PredicateContext.class,0);
-		}
-		public TermTupleContext termTuple() {
-			return getRuleContext(TermTupleContext.class,0);
-		}
-		public AtomContext(ParserRuleContext parent, int invokingState) {
+	public static class CTermContext extends ParserRuleContext {
+		public CTermContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_atom; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAtom(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAtom(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final AtomContext atom() throws RecognitionException {
-		AtomContext _localctx = new AtomContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_atom);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(137);
-			predicate();
-			setState(139);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,13,_ctx) ) {
-			case 1:
-				{
-				setState(138);
-				termTuple();
-				}
-				break;
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class MultiAtomContext extends ParserRuleContext {
-		public MultiAtomContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_multiAtom; }
+		@Override public int getRuleIndex() { return RULE_cTerm; }
 	 
-		public MultiAtomContext() { }
-		public void copyFrom(MultiAtomContext ctx) {
+		public CTermContext() { }
+		public void copyFrom(CTermContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class MultiAndContext extends MultiAtomContext {
-		public PredicateContext predicate() {
-			return getRuleContext(PredicateContext.class,0);
+	public static class MultiCompoundConsequenceContext extends CTermContext {
+		public CMultiArgContext cMultiArg;
+		public List<CMultiArgContext> args = new ArrayList<CMultiArgContext>();
+		public FunctorContext functor() {
+			return getRuleContext(FunctorContext.class,0);
 		}
 		public TerminalNode BRACE_OPEN() { return getToken(GraafvisParser.BRACE_OPEN, 0); }
-		public List<MultiTermContext> multiTerm() {
-			return getRuleContexts(MultiTermContext.class);
-		}
-		public MultiTermContext multiTerm(int i) {
-			return getRuleContext(MultiTermContext.class,i);
-		}
 		public TerminalNode BRACE_CLOSE() { return getToken(GraafvisParser.BRACE_CLOSE, 0); }
-		public List<AndOpContext> andOp() {
-			return getRuleContexts(AndOpContext.class);
+		public List<CMultiArgContext> cMultiArg() {
+			return getRuleContexts(CMultiArgContext.class);
 		}
-		public AndOpContext andOp(int i) {
-			return getRuleContext(AndOpContext.class,i);
+		public CMultiArgContext cMultiArg(int i) {
+			return getRuleContext(CMultiArgContext.class,i);
 		}
-		public MultiAndContext(MultiAtomContext ctx) { copyFrom(ctx); }
+		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(GraafvisParser.COMMA, i);
+		}
+		public MultiCompoundConsequenceContext(CTermContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiAnd(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiCompoundConsequence(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiAnd(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiCompoundConsequence(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiAnd(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiCompoundConsequence(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class MultiOrContext extends MultiAtomContext {
-		public PredicateContext predicate() {
-			return getRuleContext(PredicateContext.class,0);
-		}
-		public TerminalNode BRACE_OPEN() { return getToken(GraafvisParser.BRACE_OPEN, 0); }
-		public List<MultiTermContext> multiTerm() {
-			return getRuleContexts(MultiTermContext.class);
-		}
-		public MultiTermContext multiTerm(int i) {
-			return getRuleContext(MultiTermContext.class,i);
-		}
-		public TerminalNode BRACE_CLOSE() { return getToken(GraafvisParser.BRACE_CLOSE, 0); }
-		public List<OrOpContext> orOp() {
-			return getRuleContexts(OrOpContext.class);
-		}
-		public OrOpContext orOp(int i) {
-			return getRuleContext(OrOpContext.class,i);
-		}
-		public MultiOrContext(MultiAtomContext ctx) { copyFrom(ctx); }
+	public static class StringConsequenceContext extends CTermContext {
+		public TerminalNode STRING() { return getToken(GraafvisParser.STRING, 0); }
+		public StringConsequenceContext(CTermContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiOr(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterStringConsequence(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiOr(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitStringConsequence(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiOr(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitStringConsequence(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class NumberConsequenceContext extends CTermContext {
+		public TerminalNode NUMBER() { return getToken(GraafvisParser.NUMBER, 0); }
+		public NumberConsequenceContext(CTermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterNumberConsequence(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitNumberConsequence(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitNumberConsequence(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ListConsequenceContext extends CTermContext {
+		public List<TerminalNode> BRACKET_OPEN() { return getTokens(GraafvisParser.BRACKET_OPEN); }
+		public TerminalNode BRACKET_OPEN(int i) {
+			return getToken(GraafvisParser.BRACKET_OPEN, i);
+		}
+		public List<TerminalNode> BRACKET_CLOSE() { return getTokens(GraafvisParser.BRACKET_CLOSE); }
+		public TerminalNode BRACKET_CLOSE(int i) {
+			return getToken(GraafvisParser.BRACKET_CLOSE, i);
+		}
+		public CArgSeriesContext cArgSeries() {
+			return getRuleContext(CArgSeriesContext.class,0);
+		}
+		public TerminalNode VBAR() { return getToken(GraafvisParser.VBAR, 0); }
+		public CTermContext cTerm() {
+			return getRuleContext(CTermContext.class,0);
+		}
+		public ListConsequenceContext(CTermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterListConsequence(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitListConsequence(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitListConsequence(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class VariableConsequenceContext extends CTermContext {
+		public Token variable;
+		public TerminalNode HID() { return getToken(GraafvisParser.HID, 0); }
+		public VariableConsequenceContext(CTermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterVariableConsequence(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitVariableConsequence(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitVariableConsequence(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CompoundConsequenceContext extends CTermContext {
+		public CArgSeriesContext args;
+		public FunctorContext functor() {
+			return getRuleContext(FunctorContext.class,0);
+		}
+		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
+		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
+		public CArgSeriesContext cArgSeries() {
+			return getRuleContext(CArgSeriesContext.class,0);
+		}
+		public CompoundConsequenceContext(CTermContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterCompoundConsequence(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitCompoundConsequence(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitCompoundConsequence(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final MultiAtomContext multiAtom() throws RecognitionException {
-		MultiAtomContext _localctx = new MultiAtomContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_multiAtom);
+	public final CTermContext cTerm() throws RecognitionException {
+		CTermContext _localctx = new CTermContext(_ctx, getState());
+		enterRule(_localctx, 22, RULE_cTerm);
 		int _la;
 		try {
-			setState(167);
+			int _alt;
+			setState(230);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,29,_ctx) ) {
 			case 1:
-				_localctx = new MultiAndContext(_localctx);
+				_localctx = new CompoundConsequenceContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(141);
-				predicate();
-				setState(142);
-				match(BRACE_OPEN);
-				setState(143);
-				multiTerm();
-				setState(149);
+				setState(193);
+				functor();
+				setState(199);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==COMMA || _la==AND) {
+				if (_la==PAR_OPEN) {
 					{
-					{
-					setState(144);
-					andOp();
-					setState(145);
-					multiTerm();
-					}
-					}
-					setState(151);
+					setState(194);
+					match(PAR_OPEN);
+					setState(196);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BRACKET_OPEN) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+						{
+						setState(195);
+						((CompoundConsequenceContext)_localctx).args = cArgSeries();
+						}
+					}
+
+					setState(198);
+					match(PAR_CLOSE);
+					}
 				}
-				setState(152);
-				match(BRACE_CLOSE);
+
 				}
 				break;
 			case 2:
-				_localctx = new MultiOrContext(_localctx);
+				_localctx = new MultiCompoundConsequenceContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(154);
-				predicate();
-				setState(155);
+				setState(201);
+				functor();
+				setState(202);
 				match(BRACE_OPEN);
-				setState(156);
-				multiTerm();
-				setState(162);
+				setState(208);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
+				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						setState(203);
+						((MultiCompoundConsequenceContext)_localctx).cMultiArg = cMultiArg();
+						((MultiCompoundConsequenceContext)_localctx).args.add(((MultiCompoundConsequenceContext)_localctx).cMultiArg);
+						setState(204);
+						match(COMMA);
+						}
+						} 
+					}
+					setState(210);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
+				}
+				setState(211);
+				((MultiCompoundConsequenceContext)_localctx).cMultiArg = cMultiArg();
+				((MultiCompoundConsequenceContext)_localctx).args.add(((MultiCompoundConsequenceContext)_localctx).cMultiArg);
+				setState(212);
+				match(BRACE_CLOSE);
+				}
+				break;
+			case 3:
+				_localctx = new ListConsequenceContext(_localctx);
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(214);
+				match(BRACKET_OPEN);
+				setState(224);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==SEMICOLON || _la==OR) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BRACKET_OPEN) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
 					{
-					{
-					setState(157);
-					orOp();
-					setState(158);
-					multiTerm();
-					}
-					}
-					setState(164);
+					setState(215);
+					cArgSeries();
+					setState(222);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
+					if (_la==VBAR) {
+						{
+						setState(216);
+						match(VBAR);
+						setState(217);
+						match(BRACKET_OPEN);
+						setState(219);
+						_errHandler.sync(this);
+						_la = _input.LA(1);
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BRACKET_OPEN) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+							{
+							setState(218);
+							cTerm();
+							}
+						}
+
+						setState(221);
+						match(BRACKET_CLOSE);
+						}
+					}
+
+					}
 				}
-				setState(165);
-				match(BRACE_CLOSE);
+
+				setState(226);
+				match(BRACKET_CLOSE);
+				}
+				break;
+			case 4:
+				_localctx = new VariableConsequenceContext(_localctx);
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(227);
+				((VariableConsequenceContext)_localctx).variable = match(HID);
+				}
+				break;
+			case 5:
+				_localctx = new StringConsequenceContext(_localctx);
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(228);
+				match(STRING);
+				}
+				break;
+			case 6:
+				_localctx = new NumberConsequenceContext(_localctx);
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(229);
+				match(NUMBER);
 				}
 				break;
 			}
@@ -1179,56 +1724,145 @@ public class GraafvisParser extends Parser {
 		return _localctx;
 	}
 
-	public static class MultiTermContext extends ParserRuleContext {
-		public TermContext term() {
-			return getRuleContext(TermContext.class,0);
+	public static class CArgSeriesContext extends ParserRuleContext {
+		public CTermContext cTerm;
+		public List<CTermContext> args = new ArrayList<CTermContext>();
+		public List<CTermContext> cTerm() {
+			return getRuleContexts(CTermContext.class);
 		}
-		public TermTupleContext termTuple() {
-			return getRuleContext(TermTupleContext.class,0);
+		public CTermContext cTerm(int i) {
+			return getRuleContext(CTermContext.class,i);
 		}
-		public MultiTermContext(ParserRuleContext parent, int invokingState) {
+		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(GraafvisParser.COMMA, i);
+		}
+		public CArgSeriesContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_multiTerm; }
+		@Override public int getRuleIndex() { return RULE_cArgSeries; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterMultiTerm(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterCArgSeries(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitMultiTerm(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitCArgSeries(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitMultiTerm(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitCArgSeries(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final MultiTermContext multiTerm() throws RecognitionException {
-		MultiTermContext _localctx = new MultiTermContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_multiTerm);
+	public final CArgSeriesContext cArgSeries() throws RecognitionException {
+		CArgSeriesContext _localctx = new CArgSeriesContext(_ctx, getState());
+		enterRule(_localctx, 24, RULE_cArgSeries);
 		try {
-			setState(171);
+			int _alt;
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(237);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					{
+					{
+					setState(232);
+					((CArgSeriesContext)_localctx).cTerm = cTerm();
+					((CArgSeriesContext)_localctx).args.add(((CArgSeriesContext)_localctx).cTerm);
+					setState(233);
+					match(COMMA);
+					}
+					} 
+				}
+				setState(239);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
+			}
+			setState(240);
+			((CArgSeriesContext)_localctx).cTerm = cTerm();
+			((CArgSeriesContext)_localctx).args.add(((CArgSeriesContext)_localctx).cTerm);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class CMultiArgContext extends ParserRuleContext {
+		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
+		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
+		public CArgSeriesContext cArgSeries() {
+			return getRuleContext(CArgSeriesContext.class,0);
+		}
+		public CTermContext cTerm() {
+			return getRuleContext(CTermContext.class,0);
+		}
+		public CMultiArgContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_cMultiArg; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterCMultiArg(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitCMultiArg(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitCMultiArg(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final CMultiArgContext cMultiArg() throws RecognitionException {
+		CMultiArgContext _localctx = new CMultiArgContext(_ctx, getState());
+		enterRule(_localctx, 26, RULE_cMultiArg);
+		int _la;
+		try {
+			setState(248);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
+			case PAR_OPEN:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(242);
+				match(PAR_OPEN);
+				setState(244);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BRACKET_OPEN) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID) | (1L << INFIX_ID))) != 0)) {
+					{
+					setState(243);
+					cArgSeries();
+					}
+				}
+
+				setState(246);
+				match(PAR_CLOSE);
+				}
+				break;
 			case BRACKET_OPEN:
-			case UNDERSCORE:
 			case STRING:
 			case NUMBER:
 			case ID:
 			case HID:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(169);
-				term();
-				}
-				break;
-			case PAR_OPEN:
+			case INFIX_ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(170);
-				termTuple();
+				setState(247);
+				cTerm();
 				}
 				break;
 			default:
@@ -1246,543 +1880,77 @@ public class GraafvisParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TermTupleContext extends ParserRuleContext {
-		public TerminalNode PAR_OPEN() { return getToken(GraafvisParser.PAR_OPEN, 0); }
-		public TerminalNode PAR_CLOSE() { return getToken(GraafvisParser.PAR_CLOSE, 0); }
-		public List<TermContext> term() {
-			return getRuleContexts(TermContext.class);
-		}
-		public TermContext term(int i) {
-			return getRuleContext(TermContext.class,i);
-		}
-		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
-		public TerminalNode COMMA(int i) {
-			return getToken(GraafvisParser.COMMA, i);
-		}
-		public TermTupleContext(ParserRuleContext parent, int invokingState) {
+	public static class FunctorContext extends ParserRuleContext {
+		public FunctorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_termTuple; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermTuple(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermTuple(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermTuple(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final TermTupleContext termTuple() throws RecognitionException {
-		TermTupleContext _localctx = new TermTupleContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_termTuple);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(173);
-			match(PAR_OPEN);
-			setState(182);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BRACKET_OPEN) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID))) != 0)) {
-				{
-				setState(174);
-				term();
-				setState(179);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				while (_la==COMMA) {
-					{
-					{
-					setState(175);
-					match(COMMA);
-					setState(176);
-					term();
-					}
-					}
-					setState(181);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-				}
-				}
-			}
-
-			setState(184);
-			match(PAR_CLOSE);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class PredicateContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(GraafvisParser.ID, 0); }
-		public PredicateContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_predicate; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterPredicate(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitPredicate(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitPredicate(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final PredicateContext predicate() throws RecognitionException {
-		PredicateContext _localctx = new PredicateContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_predicate);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(186);
-			match(ID);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class TermContext extends ParserRuleContext {
-		public TermContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_term; }
+		@Override public int getRuleIndex() { return RULE_functor; }
 	 
-		public TermContext() { }
-		public void copyFrom(TermContext ctx) {
+		public FunctorContext() { }
+		public void copyFrom(FunctorContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class TermListContext extends TermContext {
-		public TerminalNode BRACKET_OPEN() { return getToken(GraafvisParser.BRACKET_OPEN, 0); }
-		public TerminalNode BRACKET_CLOSE() { return getToken(GraafvisParser.BRACKET_CLOSE, 0); }
-		public List<TermContext> term() {
-			return getRuleContexts(TermContext.class);
-		}
-		public TermContext term(int i) {
-			return getRuleContext(TermContext.class,i);
-		}
-		public List<TerminalNode> COMMA() { return getTokens(GraafvisParser.COMMA); }
-		public TerminalNode COMMA(int i) {
-			return getToken(GraafvisParser.COMMA, i);
-		}
-		public TerminalNode VBAR() { return getToken(GraafvisParser.VBAR, 0); }
-		public TermListContext(TermContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermList(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermList(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermList(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class TermIDContext extends TermContext {
+	public static class IdFunctorContext extends FunctorContext {
 		public TerminalNode ID() { return getToken(GraafvisParser.ID, 0); }
-		public TermIDContext(TermContext ctx) { copyFrom(ctx); }
+		public IdFunctorContext(FunctorContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermID(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterIdFunctor(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermID(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitIdFunctor(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermID(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitIdFunctor(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class TermStringContext extends TermContext {
-		public TerminalNode STRING() { return getToken(GraafvisParser.STRING, 0); }
-		public TermStringContext(TermContext ctx) { copyFrom(ctx); }
+	public static class InfixFunctorContext extends FunctorContext {
+		public TerminalNode INFIX_ID() { return getToken(GraafvisParser.INFIX_ID, 0); }
+		public InfixFunctorContext(FunctorContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermString(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterInfixFunctor(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermString(this);
+			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitInfixFunctor(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermString(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class TermWildcardContext extends TermContext {
-		public TerminalNode UNDERSCORE() { return getToken(GraafvisParser.UNDERSCORE, 0); }
-		public TermWildcardContext(TermContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermWildcard(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermWildcard(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermWildcard(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class TermNumberContext extends TermContext {
-		public TerminalNode NUMBER() { return getToken(GraafvisParser.NUMBER, 0); }
-		public TermNumberContext(TermContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermNumber(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermNumber(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermNumber(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class TermAtomContext extends TermContext {
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
-		}
-		public TermAtomContext(TermContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermAtom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermAtom(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermAtom(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class TermVarContext extends TermContext {
-		public VariableContext variable() {
-			return getRuleContext(VariableContext.class,0);
-		}
-		public TermVarContext(TermContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterTermVar(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitTermVar(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitTermVar(this);
+			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitInfixFunctor(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final TermContext term() throws RecognitionException {
-		TermContext _localctx = new TermContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_term);
-		int _la;
+	public final FunctorContext functor() throws RecognitionException {
+		FunctorContext _localctx = new FunctorContext(_ctx, getState());
+		enterRule(_localctx, 28, RULE_functor);
 		try {
-			setState(217);
+			setState(252);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,24,_ctx) ) {
-			case 1:
-				_localctx = new TermVarContext(_localctx);
+			switch (_input.LA(1)) {
+			case ID:
+				_localctx = new IdFunctorContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(188);
-				variable();
-				}
-				break;
-			case 2:
-				_localctx = new TermAtomContext(_localctx);
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(189);
-				atom();
-				}
-				break;
-			case 3:
-				_localctx = new TermWildcardContext(_localctx);
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(190);
-				match(UNDERSCORE);
-				}
-				break;
-			case 4:
-				_localctx = new TermStringContext(_localctx);
-				enterOuterAlt(_localctx, 4);
-				{
-				setState(191);
-				match(STRING);
-				}
-				break;
-			case 5:
-				_localctx = new TermNumberContext(_localctx);
-				enterOuterAlt(_localctx, 5);
-				{
-				setState(192);
-				match(NUMBER);
-				}
-				break;
-			case 6:
-				_localctx = new TermIDContext(_localctx);
-				enterOuterAlt(_localctx, 6);
-				{
-				setState(193);
+				setState(250);
 				match(ID);
 				}
 				break;
-			case 7:
-				_localctx = new TermListContext(_localctx);
-				enterOuterAlt(_localctx, 7);
+			case INFIX_ID:
+				_localctx = new InfixFunctorContext(_localctx);
+				enterOuterAlt(_localctx, 2);
 				{
-				setState(194);
-				match(BRACKET_OPEN);
-				setState(214);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BRACKET_OPEN) | (1L << UNDERSCORE) | (1L << STRING) | (1L << NUMBER) | (1L << ID) | (1L << HID))) != 0)) {
-					{
-					setState(195);
-					term();
-					setState(200);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					while (_la==COMMA) {
-						{
-						{
-						setState(196);
-						match(COMMA);
-						setState(197);
-						term();
-						}
-						}
-						setState(202);
-						_errHandler.sync(this);
-						_la = _input.LA(1);
-					}
-					setState(212);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					if (_la==VBAR) {
-						{
-						setState(203);
-						match(VBAR);
-						setState(204);
-						term();
-						setState(209);
-						_errHandler.sync(this);
-						_la = _input.LA(1);
-						while (_la==COMMA) {
-							{
-							{
-							setState(205);
-							match(COMMA);
-							setState(206);
-							term();
-							}
-							}
-							setState(211);
-							_errHandler.sync(this);
-							_la = _input.LA(1);
-						}
-						}
-					}
-
-					}
-				}
-
-				setState(216);
-				match(BRACKET_CLOSE);
+				setState(251);
+				match(INFIX_ID);
 				}
 				break;
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class VariableContext extends ParserRuleContext {
-		public TerminalNode HID() { return getToken(GraafvisParser.HID, 0); }
-		public VariableContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_variable; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterVariable(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitVariable(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitVariable(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final VariableContext variable() throws RecognitionException {
-		VariableContext _localctx = new VariableContext(_ctx, getState());
-		enterRule(_localctx, 32, RULE_variable);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(219);
-			match(HID);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class AndOpContext extends ParserRuleContext {
-		public TerminalNode COMMA() { return getToken(GraafvisParser.COMMA, 0); }
-		public TerminalNode AND() { return getToken(GraafvisParser.AND, 0); }
-		public AndOpContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_andOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterAndOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitAndOp(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitAndOp(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final AndOpContext andOp() throws RecognitionException {
-		AndOpContext _localctx = new AndOpContext(_ctx, getState());
-		enterRule(_localctx, 34, RULE_andOp);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(221);
-			_la = _input.LA(1);
-			if ( !(_la==COMMA || _la==AND) ) {
-			_errHandler.recoverInline(this);
-			}
-			else {
-				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-				_errHandler.reportMatch(this);
-				consume();
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class OrOpContext extends ParserRuleContext {
-		public TerminalNode SEMICOLON() { return getToken(GraafvisParser.SEMICOLON, 0); }
-		public TerminalNode OR() { return getToken(GraafvisParser.OR, 0); }
-		public OrOpContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_orOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).enterOrOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof GraafvisListener ) ((GraafvisListener)listener).exitOrOp(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof GraafvisVisitor ) return ((GraafvisVisitor<? extends T>)visitor).visitOrOp(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final OrOpContext orOp() throws RecognitionException {
-		OrOpContext _localctx = new OrOpContext(_ctx, getState());
-		enterRule(_localctx, 36, RULE_orOp);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(223);
-			_la = _input.LA(1);
-			if ( !(_la==SEMICOLON || _la==OR) ) {
-			_errHandler.recoverInline(this);
-			}
-			else {
-				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-				_errHandler.reportMatch(this);
-				consume();
-			}
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1798,12 +1966,12 @@ public class GraafvisParser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 7:
-			return propositionalFormula_sempred((PropositionalFormulaContext)_localctx, predIndex);
+		case 9:
+			return aTermExpr_sempred((ATermExprContext)_localctx, predIndex);
 		}
 		return true;
 	}
-	private boolean propositionalFormula_sempred(PropositionalFormulaContext _localctx, int predIndex) {
+	private boolean aTermExpr_sempred(ATermExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
 			return precpred(_ctx, 4);
@@ -1814,79 +1982,94 @@ public class GraafvisParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3+\u00e4\4\2\t\2\4"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3,\u0101\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
-		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
-		"\4\23\t\23\4\24\t\24\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\5\2\60\n\2\3\2\5"+
-		"\2\63\n\2\3\2\7\2\66\n\2\f\2\16\29\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3"+
-		"\4\3\4\3\4\3\4\7\4F\n\4\f\4\16\4I\13\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\7\5"+
-		"R\n\5\f\5\16\5U\13\5\3\5\3\5\3\6\3\6\3\6\5\6\\\n\6\3\7\3\7\3\7\5\7a\n"+
-		"\7\3\7\3\7\3\7\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\5\tp\n\t\3\t\3"+
-		"\t\3\t\3\t\3\t\3\t\3\t\3\t\7\tz\n\t\f\t\16\t}\13\t\3\n\3\n\3\n\3\n\7\n"+
-		"\u0083\n\n\f\n\16\n\u0086\13\n\3\13\3\13\5\13\u008a\n\13\3\f\3\f\5\f\u008e"+
-		"\n\f\3\r\3\r\3\r\3\r\3\r\3\r\7\r\u0096\n\r\f\r\16\r\u0099\13\r\3\r\3\r"+
-		"\3\r\3\r\3\r\3\r\3\r\3\r\7\r\u00a3\n\r\f\r\16\r\u00a6\13\r\3\r\3\r\5\r"+
-		"\u00aa\n\r\3\16\3\16\5\16\u00ae\n\16\3\17\3\17\3\17\3\17\7\17\u00b4\n"+
-		"\17\f\17\16\17\u00b7\13\17\5\17\u00b9\n\17\3\17\3\17\3\20\3\20\3\21\3"+
-		"\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\7\21\u00c9\n\21\f\21\16\21"+
-		"\u00cc\13\21\3\21\3\21\3\21\3\21\7\21\u00d2\n\21\f\21\16\21\u00d5\13\21"+
-		"\5\21\u00d7\n\21\5\21\u00d9\n\21\3\21\5\21\u00dc\n\21\3\22\3\22\3\23\3"+
-		"\23\3\24\3\24\3\24\2\3\20\25\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \""+
-		"$&\2\4\4\2\23\23\26\26\3\2\24\25\u00ef\2+\3\2\2\2\4<\3\2\2\2\6@\3\2\2"+
-		"\2\bL\3\2\2\2\nX\3\2\2\2\f`\3\2\2\2\16e\3\2\2\2\20o\3\2\2\2\22~\3\2\2"+
-		"\2\24\u0089\3\2\2\2\26\u008b\3\2\2\2\30\u00a9\3\2\2\2\32\u00ad\3\2\2\2"+
-		"\34\u00af\3\2\2\2\36\u00bc\3\2\2\2 \u00db\3\2\2\2\"\u00dd\3\2\2\2$\u00df"+
-		"\3\2\2\2&\u00e1\3\2\2\2(*\5\4\3\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2"+
-		"\2\2,/\3\2\2\2-+\3\2\2\2.\60\5\6\4\2/.\3\2\2\2/\60\3\2\2\2\60\62\3\2\2"+
-		"\2\61\63\5\b\5\2\62\61\3\2\2\2\62\63\3\2\2\2\63\67\3\2\2\2\64\66\5\f\7"+
-		"\2\65\64\3\2\2\2\669\3\2\2\2\67\65\3\2\2\2\678\3\2\2\28:\3\2\2\29\67\3"+
-		"\2\2\2:;\7\2\2\3;\3\3\2\2\2<=\7!\2\2=>\7%\2\2>?\7\5\2\2?\5\3\2\2\2@A\7"+
-		"\"\2\2AB\7\4\2\2BG\5\n\6\2CD\7\23\2\2DF\5\n\6\2EC\3\2\2\2FI\3\2\2\2GE"+
-		"\3\2\2\2GH\3\2\2\2HJ\3\2\2\2IG\3\2\2\2JK\7\5\2\2K\7\3\2\2\2LM\7#\2\2M"+
-		"N\7\4\2\2NS\5\n\6\2OP\7\23\2\2PR\5\n\6\2QO\3\2\2\2RU\3\2\2\2SQ\3\2\2\2"+
-		"ST\3\2\2\2TV\3\2\2\2US\3\2\2\2VW\7\5\2\2W\t\3\2\2\2X[\7%\2\2YZ\7$\2\2"+
-		"Z\\\7\'\2\2[Y\3\2\2\2[\\\3\2\2\2\\\13\3\2\2\2]^\5\16\b\2^_\7\3\2\2_a\3"+
-		"\2\2\2`]\3\2\2\2`a\3\2\2\2ab\3\2\2\2bc\5\22\n\2cd\7\5\2\2d\r\3\2\2\2e"+
-		"f\5\20\t\2f\17\3\2\2\2gh\b\t\1\2hi\7\27\2\2ip\5\20\t\7jk\7\6\2\2kl\5\20"+
-		"\t\2lm\7\7\2\2mp\3\2\2\2np\5\24\13\2og\3\2\2\2oj\3\2\2\2on\3\2\2\2p{\3"+
-		"\2\2\2qr\f\6\2\2rs\5$\23\2st\5\20\t\7tz\3\2\2\2uv\f\5\2\2vw\5&\24\2wx"+
-		"\5\20\t\6xz\3\2\2\2yq\3\2\2\2yu\3\2\2\2z}\3\2\2\2{y\3\2\2\2{|\3\2\2\2"+
-		"|\21\3\2\2\2}{\3\2\2\2~\u0084\5\24\13\2\177\u0080\5$\23\2\u0080\u0081"+
-		"\5\24\13\2\u0081\u0083\3\2\2\2\u0082\177\3\2\2\2\u0083\u0086\3\2\2\2\u0084"+
-		"\u0082\3\2\2\2\u0084\u0085\3\2\2\2\u0085\23\3\2\2\2\u0086\u0084\3\2\2"+
-		"\2\u0087\u008a\5\26\f\2\u0088\u008a\5\30\r\2\u0089\u0087\3\2\2\2\u0089"+
-		"\u0088\3\2\2\2\u008a\25\3\2\2\2\u008b\u008d\5\36\20\2\u008c\u008e\5\34"+
-		"\17\2\u008d\u008c\3\2\2\2\u008d\u008e\3\2\2\2\u008e\27\3\2\2\2\u008f\u0090"+
-		"\5\36\20\2\u0090\u0091\7\b\2\2\u0091\u0097\5\32\16\2\u0092\u0093\5$\23"+
-		"\2\u0093\u0094\5\32\16\2\u0094\u0096\3\2\2\2\u0095\u0092\3\2\2\2\u0096"+
-		"\u0099\3\2\2\2\u0097\u0095\3\2\2\2\u0097\u0098\3\2\2\2\u0098\u009a\3\2"+
-		"\2\2\u0099\u0097\3\2\2\2\u009a\u009b\7\t\2\2\u009b\u00aa\3\2\2\2\u009c"+
-		"\u009d\5\36\20\2\u009d\u009e\7\b\2\2\u009e\u00a4\5\32\16\2\u009f\u00a0"+
-		"\5&\24\2\u00a0\u00a1\5\32\16\2\u00a1\u00a3\3\2\2\2\u00a2\u009f\3\2\2\2"+
-		"\u00a3\u00a6\3\2\2\2\u00a4\u00a2\3\2\2\2\u00a4\u00a5\3\2\2\2\u00a5\u00a7"+
-		"\3\2\2\2\u00a6\u00a4\3\2\2\2\u00a7\u00a8\7\t\2\2\u00a8\u00aa\3\2\2\2\u00a9"+
-		"\u008f\3\2\2\2\u00a9\u009c\3\2\2\2\u00aa\31\3\2\2\2\u00ab\u00ae\5 \21"+
-		"\2\u00ac\u00ae\5\34\17\2\u00ad\u00ab\3\2\2\2\u00ad\u00ac\3\2\2\2\u00ae"+
-		"\33\3\2\2\2\u00af\u00b8\7\6\2\2\u00b0\u00b5\5 \21\2\u00b1\u00b2\7\23\2"+
-		"\2\u00b2\u00b4\5 \21\2\u00b3\u00b1\3\2\2\2\u00b4\u00b7\3\2\2\2\u00b5\u00b3"+
-		"\3\2\2\2\u00b5\u00b6\3\2\2\2\u00b6\u00b9\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b8"+
-		"\u00b0\3\2\2\2\u00b8\u00b9\3\2\2\2\u00b9\u00ba\3\2\2\2\u00ba\u00bb\7\7"+
-		"\2\2\u00bb\35\3\2\2\2\u00bc\u00bd\7\'\2\2\u00bd\37\3\2\2\2\u00be\u00dc"+
-		"\5\"\22\2\u00bf\u00dc\5\26\f\2\u00c0\u00dc\7\36\2\2\u00c1\u00dc\7%\2\2"+
-		"\u00c2\u00dc\7&\2\2\u00c3\u00dc\7\'\2\2\u00c4\u00d8\7\n\2\2\u00c5\u00ca"+
-		"\5 \21\2\u00c6\u00c7\7\23\2\2\u00c7\u00c9\5 \21\2\u00c8\u00c6\3\2\2\2"+
-		"\u00c9\u00cc\3\2\2\2\u00ca\u00c8\3\2\2\2\u00ca\u00cb\3\2\2\2\u00cb\u00d6"+
-		"\3\2\2\2\u00cc\u00ca\3\2\2\2\u00cd\u00ce\7\f\2\2\u00ce\u00d3\5 \21\2\u00cf"+
-		"\u00d0\7\23\2\2\u00d0\u00d2\5 \21\2\u00d1\u00cf\3\2\2\2\u00d2\u00d5\3"+
-		"\2\2\2\u00d3\u00d1\3\2\2\2\u00d3\u00d4\3\2\2\2\u00d4\u00d7\3\2\2\2\u00d5"+
-		"\u00d3\3\2\2\2\u00d6\u00cd\3\2\2\2\u00d6\u00d7\3\2\2\2\u00d7\u00d9\3\2"+
-		"\2\2\u00d8\u00c5\3\2\2\2\u00d8\u00d9\3\2\2\2\u00d9\u00da\3\2\2\2\u00da"+
-		"\u00dc\7\13\2\2\u00db\u00be\3\2\2\2\u00db\u00bf\3\2\2\2\u00db\u00c0\3"+
-		"\2\2\2\u00db\u00c1\3\2\2\2\u00db\u00c2\3\2\2\2\u00db\u00c3\3\2\2\2\u00db"+
-		"\u00c4\3\2\2\2\u00dc!\3\2\2\2\u00dd\u00de\7(\2\2\u00de#\3\2\2\2\u00df"+
-		"\u00e0\t\2\2\2\u00e0%\3\2\2\2\u00e1\u00e2\t\3\2\2\u00e2\'\3\2\2\2\33+"+
-		"/\62\67GS[`oy{\u0084\u0089\u008d\u0097\u00a4\u00a9\u00ad\u00b5\u00b8\u00ca"+
-		"\u00d3\u00d6\u00d8\u00db";
+		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\7\2\"\n\2\f\2\16"+
+		"\2%\13\2\3\2\5\2(\n\2\3\2\5\2+\n\2\3\2\7\2.\n\2\f\2\16\2\61\13\2\3\2\3"+
+		"\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\7\4>\n\4\f\4\16\4A\13\4\3\4\3\4"+
+		"\3\5\3\5\3\5\3\5\3\5\7\5J\n\5\f\5\16\5M\13\5\3\5\3\5\3\6\3\6\3\6\5\6T"+
+		"\n\6\3\7\3\7\3\7\5\7Y\n\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\5\bc\n\b\3\b"+
+		"\5\bf\n\b\3\b\3\b\3\b\3\b\3\b\7\bm\n\b\f\b\16\bp\13\b\3\b\3\b\3\b\3\b"+
+		"\3\b\3\b\3\b\3\b\7\bz\n\b\f\b\16\b}\13\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3"+
+		"\b\5\b\u0087\n\b\3\b\5\b\u008a\n\b\5\b\u008c\n\b\3\b\3\b\3\b\3\b\3\b\3"+
+		"\b\3\b\3\b\3\b\5\b\u0097\n\b\3\t\3\t\3\t\7\t\u009c\n\t\f\t\16\t\u009f"+
+		"\13\t\3\n\3\n\3\n\7\n\u00a4\n\n\f\n\16\n\u00a7\13\n\3\13\3\13\3\13\3\13"+
+		"\3\13\3\13\5\13\u00af\n\13\3\13\3\13\3\13\3\13\3\13\3\13\7\13\u00b7\n"+
+		"\13\f\13\16\13\u00ba\13\13\3\f\3\f\5\f\u00be\n\f\3\f\3\f\5\f\u00c2\n\f"+
+		"\3\r\3\r\3\r\5\r\u00c7\n\r\3\r\5\r\u00ca\n\r\3\r\3\r\3\r\3\r\3\r\7\r\u00d1"+
+		"\n\r\f\r\16\r\u00d4\13\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00de\n\r"+
+		"\3\r\5\r\u00e1\n\r\5\r\u00e3\n\r\3\r\3\r\3\r\3\r\5\r\u00e9\n\r\3\16\3"+
+		"\16\3\16\7\16\u00ee\n\16\f\16\16\16\u00f1\13\16\3\16\3\16\3\17\3\17\5"+
+		"\17\u00f7\n\17\3\17\3\17\5\17\u00fb\n\17\3\20\3\20\5\20\u00ff\n\20\3\20"+
+		"\2\3\24\21\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36\2\2\u011f\2#\3\2\2\2"+
+		"\4\64\3\2\2\2\68\3\2\2\2\bD\3\2\2\2\nP\3\2\2\2\fX\3\2\2\2\16\u0096\3\2"+
+		"\2\2\20\u0098\3\2\2\2\22\u00a0\3\2\2\2\24\u00ae\3\2\2\2\26\u00c1\3\2\2"+
+		"\2\30\u00e8\3\2\2\2\32\u00ef\3\2\2\2\34\u00fa\3\2\2\2\36\u00fe\3\2\2\2"+
+		" \"\5\4\3\2! \3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$\'\3\2\2\2%#\3\2"+
+		"\2\2&(\5\6\4\2\'&\3\2\2\2\'(\3\2\2\2(*\3\2\2\2)+\5\b\5\2*)\3\2\2\2*+\3"+
+		"\2\2\2+/\3\2\2\2,.\5\f\7\2-,\3\2\2\2.\61\3\2\2\2/-\3\2\2\2/\60\3\2\2\2"+
+		"\60\62\3\2\2\2\61/\3\2\2\2\62\63\7\2\2\3\63\3\3\2\2\2\64\65\7!\2\2\65"+
+		"\66\7%\2\2\66\67\7\5\2\2\67\5\3\2\2\289\7\"\2\29:\7\4\2\2:?\5\n\6\2;<"+
+		"\7\23\2\2<>\5\n\6\2=;\3\2\2\2>A\3\2\2\2?=\3\2\2\2?@\3\2\2\2@B\3\2\2\2"+
+		"A?\3\2\2\2BC\7\5\2\2C\7\3\2\2\2DE\7#\2\2EF\7\4\2\2FK\5\n\6\2GH\7\23\2"+
+		"\2HJ\5\n\6\2IG\3\2\2\2JM\3\2\2\2KI\3\2\2\2KL\3\2\2\2LN\3\2\2\2MK\3\2\2"+
+		"\2NO\7\5\2\2O\t\3\2\2\2PS\7%\2\2QR\7$\2\2RT\7\'\2\2SQ\3\2\2\2ST\3\2\2"+
+		"\2T\13\3\2\2\2UV\5\24\13\2VW\7\3\2\2WY\3\2\2\2XU\3\2\2\2XY\3\2\2\2YZ\3"+
+		"\2\2\2Z[\5\32\16\2[\\\7\5\2\2\\\r\3\2\2\2]^\7\27\2\2^\u0097\5\16\b\2_"+
+		"e\5\36\20\2`b\7\6\2\2ac\5\20\t\2ba\3\2\2\2bc\3\2\2\2cd\3\2\2\2df\7\7\2"+
+		"\2e`\3\2\2\2ef\3\2\2\2f\u0097\3\2\2\2gh\5\36\20\2hn\7\b\2\2ij\5\26\f\2"+
+		"jk\7\23\2\2km\3\2\2\2li\3\2\2\2mp\3\2\2\2nl\3\2\2\2no\3\2\2\2oq\3\2\2"+
+		"\2pn\3\2\2\2qr\5\26\f\2rs\7\t\2\2s\u0097\3\2\2\2tu\5\36\20\2u{\7\b\2\2"+
+		"vw\5\26\f\2wx\7\24\2\2xz\3\2\2\2yv\3\2\2\2z}\3\2\2\2{y\3\2\2\2{|\3\2\2"+
+		"\2|~\3\2\2\2}{\3\2\2\2~\177\5\26\f\2\177\u0080\7\t\2\2\u0080\u0097\3\2"+
+		"\2\2\u0081\u008b\7\n\2\2\u0082\u0089\5\20\t\2\u0083\u0084\7\f\2\2\u0084"+
+		"\u0086\7\n\2\2\u0085\u0087\5\16\b\2\u0086\u0085\3\2\2\2\u0086\u0087\3"+
+		"\2\2\2\u0087\u0088\3\2\2\2\u0088\u008a\7\13\2\2\u0089\u0083\3\2\2\2\u0089"+
+		"\u008a\3\2\2\2\u008a\u008c\3\2\2\2\u008b\u0082\3\2\2\2\u008b\u008c\3\2"+
+		"\2\2\u008c\u008d\3\2\2\2\u008d\u0097\7\13\2\2\u008e\u008f\7\6\2\2\u008f"+
+		"\u0090\5\24\13\2\u0090\u0091\7\7\2\2\u0091\u0097\3\2\2\2\u0092\u0097\7"+
+		"(\2\2\u0093\u0097\7\36\2\2\u0094\u0097\7%\2\2\u0095\u0097\7&\2\2\u0096"+
+		"]\3\2\2\2\u0096_\3\2\2\2\u0096g\3\2\2\2\u0096t\3\2\2\2\u0096\u0081\3\2"+
+		"\2\2\u0096\u008e\3\2\2\2\u0096\u0092\3\2\2\2\u0096\u0093\3\2\2\2\u0096"+
+		"\u0094\3\2\2\2\u0096\u0095\3\2\2\2\u0097\17\3\2\2\2\u0098\u009d\5\22\n"+
+		"\2\u0099\u009a\7\23\2\2\u009a\u009c\5\22\n\2\u009b\u0099\3\2\2\2\u009c"+
+		"\u009f\3\2\2\2\u009d\u009b\3\2\2\2\u009d\u009e\3\2\2\2\u009e\21\3\2\2"+
+		"\2\u009f\u009d\3\2\2\2\u00a0\u00a5\5\16\b\2\u00a1\u00a2\7\24\2\2\u00a2"+
+		"\u00a4\5\16\b\2\u00a3\u00a1\3\2\2\2\u00a4\u00a7\3\2\2\2\u00a5\u00a3\3"+
+		"\2\2\2\u00a5\u00a6\3\2\2\2\u00a6\23\3\2\2\2\u00a7\u00a5\3\2\2\2\u00a8"+
+		"\u00a9\b\13\1\2\u00a9\u00aa\7\6\2\2\u00aa\u00ab\5\24\13\2\u00ab\u00ac"+
+		"\7\7\2\2\u00ac\u00af\3\2\2\2\u00ad\u00af\5\16\b\2\u00ae\u00a8\3\2\2\2"+
+		"\u00ae\u00ad\3\2\2\2\u00af\u00b8\3\2\2\2\u00b0\u00b1\f\6\2\2\u00b1\u00b2"+
+		"\7\23\2\2\u00b2\u00b7\5\24\13\7\u00b3\u00b4\f\5\2\2\u00b4\u00b5\7\24\2"+
+		"\2\u00b5\u00b7\5\24\13\6\u00b6\u00b0\3\2\2\2\u00b6\u00b3\3\2\2\2\u00b7"+
+		"\u00ba\3\2\2\2\u00b8\u00b6\3\2\2\2\u00b8\u00b9\3\2\2\2\u00b9\25\3\2\2"+
+		"\2\u00ba\u00b8\3\2\2\2\u00bb\u00bd\7\6\2\2\u00bc\u00be\5\20\t\2\u00bd"+
+		"\u00bc\3\2\2\2\u00bd\u00be\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf\u00c2\7\7"+
+		"\2\2\u00c0\u00c2\5\16\b\2\u00c1\u00bb\3\2\2\2\u00c1\u00c0\3\2\2\2\u00c2"+
+		"\27\3\2\2\2\u00c3\u00c9\5\36\20\2\u00c4\u00c6\7\6\2\2\u00c5\u00c7\5\32"+
+		"\16\2\u00c6\u00c5\3\2\2\2\u00c6\u00c7\3\2\2\2\u00c7\u00c8\3\2\2\2\u00c8"+
+		"\u00ca\7\7\2\2\u00c9\u00c4\3\2\2\2\u00c9\u00ca\3\2\2\2\u00ca\u00e9\3\2"+
+		"\2\2\u00cb\u00cc\5\36\20\2\u00cc\u00d2\7\b\2\2\u00cd\u00ce\5\34\17\2\u00ce"+
+		"\u00cf\7\23\2\2\u00cf\u00d1\3\2\2\2\u00d0\u00cd\3\2\2\2\u00d1\u00d4\3"+
+		"\2\2\2\u00d2\u00d0\3\2\2\2\u00d2\u00d3\3\2\2\2\u00d3\u00d5\3\2\2\2\u00d4"+
+		"\u00d2\3\2\2\2\u00d5\u00d6\5\34\17\2\u00d6\u00d7\7\t\2\2\u00d7\u00e9\3"+
+		"\2\2\2\u00d8\u00e2\7\n\2\2\u00d9\u00e0\5\32\16\2\u00da\u00db\7\f\2\2\u00db"+
+		"\u00dd\7\n\2\2\u00dc\u00de\5\30\r\2\u00dd\u00dc\3\2\2\2\u00dd\u00de\3"+
+		"\2\2\2\u00de\u00df\3\2\2\2\u00df\u00e1\7\13\2\2\u00e0\u00da\3\2\2\2\u00e0"+
+		"\u00e1\3\2\2\2\u00e1\u00e3\3\2\2\2\u00e2\u00d9\3\2\2\2\u00e2\u00e3\3\2"+
+		"\2\2\u00e3\u00e4\3\2\2\2\u00e4\u00e9\7\13\2\2\u00e5\u00e9\7(\2\2\u00e6"+
+		"\u00e9\7%\2\2\u00e7\u00e9\7&\2\2\u00e8\u00c3\3\2\2\2\u00e8\u00cb\3\2\2"+
+		"\2\u00e8\u00d8\3\2\2\2\u00e8\u00e5\3\2\2\2\u00e8\u00e6\3\2\2\2\u00e8\u00e7"+
+		"\3\2\2\2\u00e9\31\3\2\2\2\u00ea\u00eb\5\30\r\2\u00eb\u00ec\7\23\2\2\u00ec"+
+		"\u00ee\3\2\2\2\u00ed\u00ea\3\2\2\2\u00ee\u00f1\3\2\2\2\u00ef\u00ed\3\2"+
+		"\2\2\u00ef\u00f0\3\2\2\2\u00f0\u00f2\3\2\2\2\u00f1\u00ef\3\2\2\2\u00f2"+
+		"\u00f3\5\30\r\2\u00f3\33\3\2\2\2\u00f4\u00f6\7\6\2\2\u00f5\u00f7\5\32"+
+		"\16\2\u00f6\u00f5\3\2\2\2\u00f6\u00f7\3\2\2\2\u00f7\u00f8\3\2\2\2\u00f8"+
+		"\u00fb\7\7\2\2\u00f9\u00fb\5\30\r\2\u00fa\u00f4\3\2\2\2\u00fa\u00f9\3"+
+		"\2\2\2\u00fb\35\3\2\2\2\u00fc\u00ff\7\'\2\2\u00fd\u00ff\7)\2\2\u00fe\u00fc"+
+		"\3\2\2\2\u00fe\u00fd\3\2\2\2\u00ff\37\3\2\2\2$#\'*/?KSXben{\u0086\u0089"+
+		"\u008b\u0096\u009d\u00a5\u00ae\u00b6\u00b8\u00bd\u00c1\u00c6\u00c9\u00d2"+
+		"\u00dd\u00e0\u00e2\u00e8\u00ef\u00f6\u00fa\u00fe";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

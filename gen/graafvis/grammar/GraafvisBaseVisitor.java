@@ -59,173 +59,187 @@ public class GraafvisBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAntecedent(GraafvisParser.AntecedentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNotAntecedent(GraafvisParser.NotAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPfNot(GraafvisParser.PfNotContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCompoundAntecedent(GraafvisParser.CompoundAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPfLit(GraafvisParser.PfLitContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMultiAndCompoundAntecedent(GraafvisParser.MultiAndCompoundAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPfAnd(GraafvisParser.PfAndContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMultiOrCompoundAntecedent(GraafvisParser.MultiOrCompoundAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPfOr(GraafvisParser.PfOrContext ctx) { return visitChildren(ctx); }
+	@Override public T visitListAntecedent(GraafvisParser.ListAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPfNest(GraafvisParser.PfNestContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParAntecedent(GraafvisParser.ParAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitConsequence(GraafvisParser.ConsequenceContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVariableAntecedent(GraafvisParser.VariableAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) { return visitChildren(ctx); }
+	@Override public T visitWildcardAntecedent(GraafvisParser.WildcardAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) { return visitChildren(ctx); }
+	@Override public T visitStringAntecedent(GraafvisParser.StringAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAtom(GraafvisParser.AtomContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNumberAntecedent(GraafvisParser.NumberAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMultiAnd(GraafvisParser.MultiAndContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAArgSeries(GraafvisParser.AArgSeriesContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMultiOr(GraafvisParser.MultiOrContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOrSeries(GraafvisParser.OrSeriesContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMultiTerm(GraafvisParser.MultiTermContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAndExpressionAntecedent(GraafvisParser.AndExpressionAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermTuple(GraafvisParser.TermTupleContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParExpressionAntecedent(GraafvisParser.ParExpressionAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPredicate(GraafvisParser.PredicateContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTermExpressionAntecedent(GraafvisParser.TermExpressionAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermVar(GraafvisParser.TermVarContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOrExpressionAntecedent(GraafvisParser.OrExpressionAntecedentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermAtom(GraafvisParser.TermAtomContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAMultiArg(GraafvisParser.AMultiArgContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermWildcard(GraafvisParser.TermWildcardContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermString(GraafvisParser.TermStringContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermNumber(GraafvisParser.TermNumberContext ctx) { return visitChildren(ctx); }
+	@Override public T visitListConsequence(GraafvisParser.ListConsequenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermID(GraafvisParser.TermIDContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVariableConsequence(GraafvisParser.VariableConsequenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermList(GraafvisParser.TermListContext ctx) { return visitChildren(ctx); }
+	@Override public T visitStringConsequence(GraafvisParser.StringConsequenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVariable(GraafvisParser.VariableContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNumberConsequence(GraafvisParser.NumberConsequenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAndOp(GraafvisParser.AndOpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCArgSeries(GraafvisParser.CArgSeriesContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitOrOp(GraafvisParser.OrOpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCMultiArg(GraafvisParser.CMultiArgContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIdFunctor(GraafvisParser.IdFunctorContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitInfixFunctor(GraafvisParser.InfixFunctorContext ctx) { return visitChildren(ctx); }
 }

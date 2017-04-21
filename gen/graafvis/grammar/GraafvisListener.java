@@ -68,285 +68,317 @@ public interface GraafvisListener extends ParseTreeListener {
 	 */
 	void exitClause(GraafvisParser.ClauseContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#antecedent}.
+	 * Enter a parse tree produced by the {@code notAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterAntecedent(GraafvisParser.AntecedentContext ctx);
+	void enterNotAntecedent(GraafvisParser.NotAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#antecedent}.
+	 * Exit a parse tree produced by the {@code notAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitAntecedent(GraafvisParser.AntecedentContext ctx);
+	void exitNotAntecedent(GraafvisParser.NotAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code pfNot}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Enter a parse tree produced by the {@code compoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterPfNot(GraafvisParser.PfNotContext ctx);
+	void enterCompoundAntecedent(GraafvisParser.CompoundAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code pfNot}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Exit a parse tree produced by the {@code compoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitPfNot(GraafvisParser.PfNotContext ctx);
+	void exitCompoundAntecedent(GraafvisParser.CompoundAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code pfLit}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Enter a parse tree produced by the {@code multiAndCompoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterPfLit(GraafvisParser.PfLitContext ctx);
+	void enterMultiAndCompoundAntecedent(GraafvisParser.MultiAndCompoundAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code pfLit}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Exit a parse tree produced by the {@code multiAndCompoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitPfLit(GraafvisParser.PfLitContext ctx);
+	void exitMultiAndCompoundAntecedent(GraafvisParser.MultiAndCompoundAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code pfAnd}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Enter a parse tree produced by the {@code multiOrCompoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterPfAnd(GraafvisParser.PfAndContext ctx);
+	void enterMultiOrCompoundAntecedent(GraafvisParser.MultiOrCompoundAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code pfAnd}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Exit a parse tree produced by the {@code multiOrCompoundAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitPfAnd(GraafvisParser.PfAndContext ctx);
+	void exitMultiOrCompoundAntecedent(GraafvisParser.MultiOrCompoundAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code pfOr}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Enter a parse tree produced by the {@code listAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterPfOr(GraafvisParser.PfOrContext ctx);
+	void enterListAntecedent(GraafvisParser.ListAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code pfOr}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Exit a parse tree produced by the {@code listAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitPfOr(GraafvisParser.PfOrContext ctx);
+	void exitListAntecedent(GraafvisParser.ListAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code pfNest}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Enter a parse tree produced by the {@code parAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterPfNest(GraafvisParser.PfNestContext ctx);
+	void enterParAntecedent(GraafvisParser.ParAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code pfNest}
-	 * labeled alternative in {@link GraafvisParser#propositionalFormula}.
+	 * Exit a parse tree produced by the {@code parAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitPfNest(GraafvisParser.PfNestContext ctx);
+	void exitParAntecedent(GraafvisParser.ParAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#consequence}.
+	 * Enter a parse tree produced by the {@code variableAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterConsequence(GraafvisParser.ConsequenceContext ctx);
+	void enterVariableAntecedent(GraafvisParser.VariableAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#consequence}.
+	 * Exit a parse tree produced by the {@code variableAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitConsequence(GraafvisParser.ConsequenceContext ctx);
+	void exitVariableAntecedent(GraafvisParser.VariableAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code atomLiteral}
-	 * labeled alternative in {@link GraafvisParser#literal}.
+	 * Enter a parse tree produced by the {@code wildcardAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterAtomLiteral(GraafvisParser.AtomLiteralContext ctx);
+	void enterWildcardAntecedent(GraafvisParser.WildcardAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code atomLiteral}
-	 * labeled alternative in {@link GraafvisParser#literal}.
+	 * Exit a parse tree produced by the {@code wildcardAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitAtomLiteral(GraafvisParser.AtomLiteralContext ctx);
+	void exitWildcardAntecedent(GraafvisParser.WildcardAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code multiAtomLiteral}
-	 * labeled alternative in {@link GraafvisParser#literal}.
+	 * Enter a parse tree produced by the {@code stringAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx);
+	void enterStringAntecedent(GraafvisParser.StringAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code multiAtomLiteral}
-	 * labeled alternative in {@link GraafvisParser#literal}.
+	 * Exit a parse tree produced by the {@code stringAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx);
+	void exitStringAntecedent(GraafvisParser.StringAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#atom}.
+	 * Enter a parse tree produced by the {@code numberAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterAtom(GraafvisParser.AtomContext ctx);
+	void enterNumberAntecedent(GraafvisParser.NumberAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#atom}.
+	 * Exit a parse tree produced by the {@code numberAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitAtom(GraafvisParser.AtomContext ctx);
+	void exitNumberAntecedent(GraafvisParser.NumberAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code multiAnd}
-	 * labeled alternative in {@link GraafvisParser#multiAtom}.
+	 * Enter a parse tree produced by {@link GraafvisParser#aArgSeries}.
 	 * @param ctx the parse tree
 	 */
-	void enterMultiAnd(GraafvisParser.MultiAndContext ctx);
+	void enterAArgSeries(GraafvisParser.AArgSeriesContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code multiAnd}
-	 * labeled alternative in {@link GraafvisParser#multiAtom}.
+	 * Exit a parse tree produced by {@link GraafvisParser#aArgSeries}.
 	 * @param ctx the parse tree
 	 */
-	void exitMultiAnd(GraafvisParser.MultiAndContext ctx);
+	void exitAArgSeries(GraafvisParser.AArgSeriesContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code multiOr}
-	 * labeled alternative in {@link GraafvisParser#multiAtom}.
+	 * Enter a parse tree produced by {@link GraafvisParser#orSeries}.
 	 * @param ctx the parse tree
 	 */
-	void enterMultiOr(GraafvisParser.MultiOrContext ctx);
+	void enterOrSeries(GraafvisParser.OrSeriesContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code multiOr}
-	 * labeled alternative in {@link GraafvisParser#multiAtom}.
+	 * Exit a parse tree produced by {@link GraafvisParser#orSeries}.
 	 * @param ctx the parse tree
 	 */
-	void exitMultiOr(GraafvisParser.MultiOrContext ctx);
+	void exitOrSeries(GraafvisParser.OrSeriesContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#multiTerm}.
+	 * Enter a parse tree produced by the {@code andExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterMultiTerm(GraafvisParser.MultiTermContext ctx);
+	void enterAndExpressionAntecedent(GraafvisParser.AndExpressionAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#multiTerm}.
+	 * Exit a parse tree produced by the {@code andExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitMultiTerm(GraafvisParser.MultiTermContext ctx);
+	void exitAndExpressionAntecedent(GraafvisParser.AndExpressionAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#termTuple}.
+	 * Enter a parse tree produced by the {@code parExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermTuple(GraafvisParser.TermTupleContext ctx);
+	void enterParExpressionAntecedent(GraafvisParser.ParExpressionAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#termTuple}.
+	 * Exit a parse tree produced by the {@code parExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermTuple(GraafvisParser.TermTupleContext ctx);
+	void exitParExpressionAntecedent(GraafvisParser.ParExpressionAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#predicate}.
+	 * Enter a parse tree produced by the {@code termExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterPredicate(GraafvisParser.PredicateContext ctx);
+	void enterTermExpressionAntecedent(GraafvisParser.TermExpressionAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#predicate}.
+	 * Exit a parse tree produced by the {@code termExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitPredicate(GraafvisParser.PredicateContext ctx);
+	void exitTermExpressionAntecedent(GraafvisParser.TermExpressionAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termVar}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by the {@code orExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermVar(GraafvisParser.TermVarContext ctx);
+	void enterOrExpressionAntecedent(GraafvisParser.OrExpressionAntecedentContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termVar}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by the {@code orExpressionAntecedent}
+	 * labeled alternative in {@link GraafvisParser#aTermExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermVar(GraafvisParser.TermVarContext ctx);
+	void exitOrExpressionAntecedent(GraafvisParser.OrExpressionAntecedentContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termAtom}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by {@link GraafvisParser#aMultiArg}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermAtom(GraafvisParser.TermAtomContext ctx);
+	void enterAMultiArg(GraafvisParser.AMultiArgContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termAtom}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by {@link GraafvisParser#aMultiArg}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermAtom(GraafvisParser.TermAtomContext ctx);
+	void exitAMultiArg(GraafvisParser.AMultiArgContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termWildcard}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by the {@code compoundConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermWildcard(GraafvisParser.TermWildcardContext ctx);
+	void enterCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termWildcard}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by the {@code compoundConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermWildcard(GraafvisParser.TermWildcardContext ctx);
+	void exitCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termString}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by the {@code multiCompoundConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermString(GraafvisParser.TermStringContext ctx);
+	void enterMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termString}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by the {@code multiCompoundConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermString(GraafvisParser.TermStringContext ctx);
+	void exitMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termNumber}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by the {@code listConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermNumber(GraafvisParser.TermNumberContext ctx);
+	void enterListConsequence(GraafvisParser.ListConsequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termNumber}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by the {@code listConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermNumber(GraafvisParser.TermNumberContext ctx);
+	void exitListConsequence(GraafvisParser.ListConsequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termID}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by the {@code variableConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermID(GraafvisParser.TermIDContext ctx);
+	void enterVariableConsequence(GraafvisParser.VariableConsequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termID}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by the {@code variableConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermID(GraafvisParser.TermIDContext ctx);
+	void exitVariableConsequence(GraafvisParser.VariableConsequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code termList}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Enter a parse tree produced by the {@code stringConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermList(GraafvisParser.TermListContext ctx);
+	void enterStringConsequence(GraafvisParser.StringConsequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code termList}
-	 * labeled alternative in {@link GraafvisParser#term}.
+	 * Exit a parse tree produced by the {@code stringConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermList(GraafvisParser.TermListContext ctx);
+	void exitStringConsequence(GraafvisParser.StringConsequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#variable}.
+	 * Enter a parse tree produced by the {@code numberConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void enterVariable(GraafvisParser.VariableContext ctx);
+	void enterNumberConsequence(GraafvisParser.NumberConsequenceContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#variable}.
+	 * Exit a parse tree produced by the {@code numberConsequence}
+	 * labeled alternative in {@link GraafvisParser#cTerm}.
 	 * @param ctx the parse tree
 	 */
-	void exitVariable(GraafvisParser.VariableContext ctx);
+	void exitNumberConsequence(GraafvisParser.NumberConsequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#andOp}.
+	 * Enter a parse tree produced by {@link GraafvisParser#cArgSeries}.
 	 * @param ctx the parse tree
 	 */
-	void enterAndOp(GraafvisParser.AndOpContext ctx);
+	void enterCArgSeries(GraafvisParser.CArgSeriesContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#andOp}.
+	 * Exit a parse tree produced by {@link GraafvisParser#cArgSeries}.
 	 * @param ctx the parse tree
 	 */
-	void exitAndOp(GraafvisParser.AndOpContext ctx);
+	void exitCArgSeries(GraafvisParser.CArgSeriesContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GraafvisParser#orOp}.
+	 * Enter a parse tree produced by {@link GraafvisParser#cMultiArg}.
 	 * @param ctx the parse tree
 	 */
-	void enterOrOp(GraafvisParser.OrOpContext ctx);
+	void enterCMultiArg(GraafvisParser.CMultiArgContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GraafvisParser#orOp}.
+	 * Exit a parse tree produced by {@link GraafvisParser#cMultiArg}.
 	 * @param ctx the parse tree
 	 */
-	void exitOrOp(GraafvisParser.OrOpContext ctx);
+	void exitCMultiArg(GraafvisParser.CMultiArgContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code idFunctor}
+	 * labeled alternative in {@link GraafvisParser#functor}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdFunctor(GraafvisParser.IdFunctorContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code idFunctor}
+	 * labeled alternative in {@link GraafvisParser#functor}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdFunctor(GraafvisParser.IdFunctorContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code infixFunctor}
+	 * labeled alternative in {@link GraafvisParser#functor}.
+	 * @param ctx the parse tree
+	 */
+	void enterInfixFunctor(GraafvisParser.InfixFunctorContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code infixFunctor}
+	 * labeled alternative in {@link GraafvisParser#functor}.
+	 * @param ctx the parse tree
+	 */
+	void exitInfixFunctor(GraafvisParser.InfixFunctorContext ctx);
 }

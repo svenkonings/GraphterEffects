@@ -1,6 +1,7 @@
 package graafvis.checkers;
 
 import graafvis.ErrorListener;
+import graafvis.errors.InvalidFunctorGenerationError;
 import graafvis.errors.VisError;
 import graafvis.grammar.GraafvisBaseVisitor;
 import graafvis.grammar.GraafvisLexer;
@@ -13,17 +14,16 @@ import org.antlr.v4.runtime.TokenStream;
 import java.util.ArrayList;
 
 /**
- * Checks if the label strings in predicate generation statements are suitable for predicate generation
- * (so "node labels: "Wolf"." would fail this check, as predicates cannot be named "Wolf").
+ * Checks whether the specified labels in label generation statements can actually be converted to functors
  */
 class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
 
     /** List of errors obtained during the checking phase */
-    private final ArrayList<VisError> errors;
+    private final ArrayList<VisError> errors = new ArrayList<>();
 
-    /** Create a new label generation check */
-    LabelGenerationCheck() {
-        errors = new ArrayList<>();
+    /** Reset checker for new usage */
+    void reset() {
+        errors.clear();
     }
 
     /*
@@ -45,30 +45,31 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
     /** Checks if a label can be generated */
     @Override
     public Void visitLabel(GraafvisParser.LabelContext ctx) {
-
         if (ctx.RENAME_TOKEN() == null) {
             String labelString = ctx.STRING().getText();
         /* Remove quotation marks */
-            String predicateToGenerate = labelString.substring(1, labelString.length() - 1);
+            String functorToGenerate = labelString.substring(1, labelString.length() - 1);
 
-        /* Parse predicate for correctness */
-            CharStream stream = new ANTLRInputStream(predicateToGenerate);
+        /* Parse functor for correctness */
+            CharStream stream = new ANTLRInputStream(functorToGenerate);
             GraafvisLexer lexer = new GraafvisLexer(stream);
             TokenStream tokenStream = new CommonTokenStream(lexer);
             GraafvisParser parser = new GraafvisParser(tokenStream);
             ErrorListener errorListener = new ErrorListener();
 
-        /* Make sure parse graafvis.errors are captured */
+        /* Make sure parse graafvis errors are captured */
             lexer.removeErrorListeners();
             lexer.addErrorListener(errorListener);
             parser.removeErrorListeners();
             parser.addErrorListener(errorListener);
 
-        /* Parse the predicate */
-            parser.predicate();
-
-        /* Check for graafvis.errors */
-            this.errors.addAll(errorListener.getErrors());
+        /* Parse the functor */
+            GraafvisParser.FunctorContext functor = parser.functor();
+            if (errorListener.hasErrors()) {
+                int line = functor.getStart().getLine();
+                int column = functor.getStart().getCharPositionInLine();
+                this.errors.add(new InvalidFunctorGenerationError(line, column, functorToGenerate));
+            }
         }
         return null;
     }
@@ -77,7 +78,7 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
      * Getters
      */
 
-    public ArrayList<VisError> getErrors() {
+    ArrayList<VisError> getErrors() {
         return errors;
     }
 

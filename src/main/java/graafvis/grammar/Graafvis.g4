@@ -2,74 +2,69 @@ grammar Graafvis;
 
 import GraafvisVocab;
 
-/* A Graafvis script consists out of a list of imports, label predicate generation and a list of clauses */
+/* A Graafvis script consists out of a list of imports, label functor generation and a list of clauses */
 program: importVis*
          nodeLabelGen?
          edgeLabelGen?
          clause*
          EOF;
 
-// TODO? java predicates import
-
-/** Import another vis file. The .vis is implied. */
-importVis: IMPORT_TOKEN STRING EOL;            // TODO
+/* Import another vis file. The .vis is implied. */
+importVis: IMPORT_TOKEN STRING EOL;
 
 /* Specify which labels should have generated identifiers for predicates and constants */
-nodeLabelGen: NODE_LABEL_TOKEN COLON label (COMMA label)* EOL;
-edgeLabelGen: EDGE_LABEL_TOKEN COLON label (COMMA label)* EOL;
+nodeLabelGen: NODE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
+edgeLabelGen: EDGE_LABEL_TOKEN COLON labels+=label (COMMA labels+=label)* EOL;
 
 /* Define and rename a label */
 label: STRING (RENAME_TOKEN ID)?;
 
 /* Implicative clauses */
-clause: (antecedent ARROW)? consequence EOL;
+clause: (antecedent=aTermExpr ARROW)? consequence=cArgSeries EOL;
 
-antecedent: propositionalFormula;
+/* Antecedent */
+aTerm: NOT aTerm                                                                                                        #notAntecedent
+     | functor (PAR_OPEN args=aArgSeries? PAR_CLOSE)?                                                                   #compoundAntecedent
+     | functor BRACE_OPEN (args+=aMultiArg COMMA)* args+=aMultiArg BRACE_CLOSE                                          #multiAndCompoundAntecedent
+     | functor BRACE_OPEN (args+=aMultiArg SEMICOLON)* args+=aMultiArg BRACE_CLOSE                                      #multiOrCompoundAntecedent
+     | BRACKET_OPEN (aArgSeries (VBAR BRACKET_OPEN aTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listAntecedent
+     | PAR_OPEN aTermExpr PAR_CLOSE                                                                                     #parAntecedent
+     | variable=HID                                                                                                     #variableAntecedent
+     | wildcard=UNDERSCORE                                                                                              #wildcardAntecedent
+     | STRING                                                                                                           #stringAntecedent
+     | NUMBER                                                                                                           #numberAntecedent
+     ;
 
-propositionalFormula: NOT propositionalFormula                           # pfNot
-                    | propositionalFormula andOp propositionalFormula    # pfAnd
-                    | propositionalFormula orOp propositionalFormula     # pfOr
-                    | PAR_OPEN propositionalFormula PAR_CLOSE            # pfNest
-                    | literal                                            # pfLit
-                    ;
+aArgSeries: args+=orSeries (COMMA args+=orSeries)*;
 
-consequence: literal (andOp literal)*;
+orSeries: args+=aTerm (SEMICOLON args+=aTerm)*;
 
-/* Literals are atomic formulas or boolean expressions*/
-literal: atom                                   # atomLiteral
-       | multiAtom                              # multiAtomLiteral
-       ;
-
-/* Atoms are predicates applied to a tuple of terms */
-atom: predicate termTuple?;
-
-/* Language feature to apply one predicate to multiple tuples of terms */
-multiAtom: predicate BRACE_OPEN multiTerm (andOp multiTerm)* BRACE_CLOSE    # multiAnd
-         | predicate BRACE_OPEN multiTerm (orOp multiTerm)* BRACE_CLOSE     # multiOr
+aTermExpr: aTermExpr COMMA aTermExpr                                                                                    #andExpressionAntecedent
+         | aTermExpr SEMICOLON aTermExpr                                                                                #orExpressionAntecedent
+         | PAR_OPEN aTermExpr PAR_CLOSE                                                                                 #parExpressionAntecedent
+         | aTerm                                                                                                        #termExpressionAntecedent
          ;
 
-/* A term in the multiAtom: either a term of a termTuple */
-multiTerm: term | termTuple;
+aMultiArg: PAR_OPEN aArgSeries? PAR_CLOSE
+         | aTerm
+         ;
 
-/* A tuple of terms */
-termTuple: PAR_OPEN (term (COMMA term)*)? PAR_CLOSE;
+/* Consequence */
+cTerm: functor (PAR_OPEN args=cArgSeries? PAR_CLOSE)?                                                                   #compoundConsequence
+     | functor BRACE_OPEN (args+=cMultiArg COMMA)* args+=cMultiArg BRACE_CLOSE                                          #multiCompoundConsequence
+     | BRACKET_OPEN (cArgSeries (VBAR BRACKET_OPEN cTerm? BRACKET_CLOSE)?)? BRACKET_CLOSE                               #listConsequence
+     | variable=HID                                                                                                     #variableConsequence
+     | STRING                                                                                                           #stringConsequence
+     | NUMBER                                                                                                           #numberConsequence
+     ;
 
-/* Predicates start with lowercase letter */
-predicate: ID;
+cArgSeries: (args+=cTerm COMMA)* args+=cTerm ;
 
-/* Terms are either ground terms, free variables, underscores or a list of more terms */
-term: variable                                                                      # termVar
-    | atom                                                                          # termAtom   // TODO test nested atoms, idk if/how they work
-    | UNDERSCORE                                                                    # termWildcard
-    | STRING                                                                        # termString
-    | NUMBER                                                                        # termNumber
-    | ID                                                                            # termID
-    | BRACKET_OPEN (term (COMMA term)* (VBAR term (COMMA term)*)?)? BRACKET_CLOSE   # termList
-    ;
+cMultiArg : PAR_OPEN cArgSeries? PAR_CLOSE
+          | cTerm
+          ;
 
-/* Variables start with uppercase letter */
-variable: HID;
-
-/* Operators */
-andOp: COMMA | AND;
-orOp: SEMICOLON | OR;
+/* Functors */
+functor: ID                                                                                                             #idFunctor
+       | INFIX_ID                                                                                                       #infixFunctor
+       ;

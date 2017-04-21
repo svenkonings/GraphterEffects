@@ -88,301 +88,325 @@ public class GraafvisBaseListener implements GraafvisListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAntecedent(GraafvisParser.AntecedentContext ctx) { }
+	@Override public void enterNotAntecedent(GraafvisParser.NotAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAntecedent(GraafvisParser.AntecedentContext ctx) { }
+	@Override public void exitNotAntecedent(GraafvisParser.NotAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPfNot(GraafvisParser.PfNotContext ctx) { }
+	@Override public void enterCompoundAntecedent(GraafvisParser.CompoundAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPfNot(GraafvisParser.PfNotContext ctx) { }
+	@Override public void exitCompoundAntecedent(GraafvisParser.CompoundAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPfLit(GraafvisParser.PfLitContext ctx) { }
+	@Override public void enterMultiAndCompoundAntecedent(GraafvisParser.MultiAndCompoundAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPfLit(GraafvisParser.PfLitContext ctx) { }
+	@Override public void exitMultiAndCompoundAntecedent(GraafvisParser.MultiAndCompoundAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPfAnd(GraafvisParser.PfAndContext ctx) { }
+	@Override public void enterMultiOrCompoundAntecedent(GraafvisParser.MultiOrCompoundAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPfAnd(GraafvisParser.PfAndContext ctx) { }
+	@Override public void exitMultiOrCompoundAntecedent(GraafvisParser.MultiOrCompoundAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPfOr(GraafvisParser.PfOrContext ctx) { }
+	@Override public void enterListAntecedent(GraafvisParser.ListAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPfOr(GraafvisParser.PfOrContext ctx) { }
+	@Override public void exitListAntecedent(GraafvisParser.ListAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPfNest(GraafvisParser.PfNestContext ctx) { }
+	@Override public void enterParAntecedent(GraafvisParser.ParAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPfNest(GraafvisParser.PfNestContext ctx) { }
+	@Override public void exitParAntecedent(GraafvisParser.ParAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConsequence(GraafvisParser.ConsequenceContext ctx) { }
+	@Override public void enterVariableAntecedent(GraafvisParser.VariableAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConsequence(GraafvisParser.ConsequenceContext ctx) { }
+	@Override public void exitVariableAntecedent(GraafvisParser.VariableAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAtomLiteral(GraafvisParser.AtomLiteralContext ctx) { }
+	@Override public void enterWildcardAntecedent(GraafvisParser.WildcardAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAtomLiteral(GraafvisParser.AtomLiteralContext ctx) { }
+	@Override public void exitWildcardAntecedent(GraafvisParser.WildcardAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) { }
+	@Override public void enterStringAntecedent(GraafvisParser.StringAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMultiAtomLiteral(GraafvisParser.MultiAtomLiteralContext ctx) { }
+	@Override public void exitStringAntecedent(GraafvisParser.StringAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAtom(GraafvisParser.AtomContext ctx) { }
+	@Override public void enterNumberAntecedent(GraafvisParser.NumberAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAtom(GraafvisParser.AtomContext ctx) { }
+	@Override public void exitNumberAntecedent(GraafvisParser.NumberAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMultiAnd(GraafvisParser.MultiAndContext ctx) { }
+	@Override public void enterAArgSeries(GraafvisParser.AArgSeriesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMultiAnd(GraafvisParser.MultiAndContext ctx) { }
+	@Override public void exitAArgSeries(GraafvisParser.AArgSeriesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMultiOr(GraafvisParser.MultiOrContext ctx) { }
+	@Override public void enterOrSeries(GraafvisParser.OrSeriesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMultiOr(GraafvisParser.MultiOrContext ctx) { }
+	@Override public void exitOrSeries(GraafvisParser.OrSeriesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMultiTerm(GraafvisParser.MultiTermContext ctx) { }
+	@Override public void enterAndExpressionAntecedent(GraafvisParser.AndExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMultiTerm(GraafvisParser.MultiTermContext ctx) { }
+	@Override public void exitAndExpressionAntecedent(GraafvisParser.AndExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermTuple(GraafvisParser.TermTupleContext ctx) { }
+	@Override public void enterParExpressionAntecedent(GraafvisParser.ParExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermTuple(GraafvisParser.TermTupleContext ctx) { }
+	@Override public void exitParExpressionAntecedent(GraafvisParser.ParExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPredicate(GraafvisParser.PredicateContext ctx) { }
+	@Override public void enterTermExpressionAntecedent(GraafvisParser.TermExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPredicate(GraafvisParser.PredicateContext ctx) { }
+	@Override public void exitTermExpressionAntecedent(GraafvisParser.TermExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermVar(GraafvisParser.TermVarContext ctx) { }
+	@Override public void enterOrExpressionAntecedent(GraafvisParser.OrExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermVar(GraafvisParser.TermVarContext ctx) { }
+	@Override public void exitOrExpressionAntecedent(GraafvisParser.OrExpressionAntecedentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermAtom(GraafvisParser.TermAtomContext ctx) { }
+	@Override public void enterAMultiArg(GraafvisParser.AMultiArgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermAtom(GraafvisParser.TermAtomContext ctx) { }
+	@Override public void exitAMultiArg(GraafvisParser.AMultiArgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermWildcard(GraafvisParser.TermWildcardContext ctx) { }
+	@Override public void enterCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermWildcard(GraafvisParser.TermWildcardContext ctx) { }
+	@Override public void exitCompoundConsequence(GraafvisParser.CompoundConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermString(GraafvisParser.TermStringContext ctx) { }
+	@Override public void enterMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermString(GraafvisParser.TermStringContext ctx) { }
+	@Override public void exitMultiCompoundConsequence(GraafvisParser.MultiCompoundConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermNumber(GraafvisParser.TermNumberContext ctx) { }
+	@Override public void enterListConsequence(GraafvisParser.ListConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermNumber(GraafvisParser.TermNumberContext ctx) { }
+	@Override public void exitListConsequence(GraafvisParser.ListConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermID(GraafvisParser.TermIDContext ctx) { }
+	@Override public void enterVariableConsequence(GraafvisParser.VariableConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermID(GraafvisParser.TermIDContext ctx) { }
+	@Override public void exitVariableConsequence(GraafvisParser.VariableConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermList(GraafvisParser.TermListContext ctx) { }
+	@Override public void enterStringConsequence(GraafvisParser.StringConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermList(GraafvisParser.TermListContext ctx) { }
+	@Override public void exitStringConsequence(GraafvisParser.StringConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVariable(GraafvisParser.VariableContext ctx) { }
+	@Override public void enterNumberConsequence(GraafvisParser.NumberConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVariable(GraafvisParser.VariableContext ctx) { }
+	@Override public void exitNumberConsequence(GraafvisParser.NumberConsequenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAndOp(GraafvisParser.AndOpContext ctx) { }
+	@Override public void enterCArgSeries(GraafvisParser.CArgSeriesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAndOp(GraafvisParser.AndOpContext ctx) { }
+	@Override public void exitCArgSeries(GraafvisParser.CArgSeriesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOrOp(GraafvisParser.OrOpContext ctx) { }
+	@Override public void enterCMultiArg(GraafvisParser.CMultiArgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOrOp(GraafvisParser.OrOpContext ctx) { }
+	@Override public void exitCMultiArg(GraafvisParser.CMultiArgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdFunctor(GraafvisParser.IdFunctorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdFunctor(GraafvisParser.IdFunctorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInfixFunctor(GraafvisParser.InfixFunctorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInfixFunctor(GraafvisParser.InfixFunctorContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
