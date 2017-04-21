@@ -28,7 +28,7 @@ public class GraafVisEditorPresenter implements Initializable {
     private CodeArea codeArea;
 
     private static final String[] KEYWORDS = new String[] {
-            "as", "(edge|graph|node)\\s*(labels)","eval"
+            "as", "(edge|node)\\s*(labels)","eval","not","consult","println"
     };
 
     //Interesting for pre-defined things with a meaning

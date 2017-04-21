@@ -20,7 +20,7 @@
     -fx-font-weight: bold;
 }
 .brace {
-    -fx-fill: teal;
+    -fx-fill: #ff231a;
     -fx-font-weight: bold;
 }
 .string {

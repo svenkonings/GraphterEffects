@@ -1,9 +1,5 @@
 package general.generation;
 
-import graafvis.GraafvisCompiler;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Observable;
@@ -11,7 +7,6 @@ import java.util.Observer;
 
 /**
  * Generation Runnable
- * <p>
  * <P>This runnable is reponsible for executing the generation.
  * When runned it will create a new (debug) {@link Generation} and will
  * excecute the different generation methods on the {@link Generation}, e.g:{@link Generation#compileGraafVis()}
