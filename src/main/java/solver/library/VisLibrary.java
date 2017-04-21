@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static prolog.TuProlog.clause;
 
@@ -21,9 +22,18 @@ public class VisLibrary {
     /** Mapping from query to {@link QueryConsumer}. */
     protected final Map<String, QueryConsumer> queries;
 
+    /** Used to set default values after all the consequences have been applied. */
+    protected Consumer<VisElem> defaults;
+
+    /**
+     * Create a new VisLibrary with an empty set of terms, an empty mapping and a defaults consumer that does nothing.
+     */
     public VisLibrary() {
         this.terms = new HashSet<>();
         this.queries = new LinkedHashMap<>();
+        this.defaults = elem -> {
+            // Do nothing.
+        };
     }
 
     public Set<Term> getTerms() {
@@ -81,6 +91,14 @@ public class VisLibrary {
         return queries.remove(query.replaceAll("\\s+", ""));
     }
 
+    public Consumer<VisElem> getDefaults() {
+        return defaults;
+    }
+
+    public void setDefaults(Consumer<VisElem> defaults) {
+        this.defaults = defaults;
+    }
+
     /**
      * Creates a {@link QueryConsumer} that calls the given {@link BiConsumer} for every result of the solved query. The
      * {@link BiConsumer} receives the mapping of visualization elements and a {@link Map} of the results.
@@ -124,15 +142,5 @@ public class VisLibrary {
             }
             consumer.accept(elem1, elem2, values);
         });
-    }
-
-    /**
-     * Should be called before {@link org.chocosolver.solver.Solver#solve}. Sets the default visualization element type
-     * (including the associated constraints), provided it doesn't already exist.
-     *
-     * @param elem The given visualization element.
-     */
-    public void setDefaults(VisElem elem) {
-        // No defaults.
     }
 }

@@ -1,10 +1,15 @@
 package solver.library;
 
 /**
- * An exception for consequences.
+ * An exception thrown when something goes wrong in one of the libraries.
  */
 public class LibraryException extends RuntimeException {
 
+    /**
+     * Creates the exception with the given cause.
+     *
+     * @param cause The given cause.
+     */
     public LibraryException(Throwable cause) {
         super(cause);
     }

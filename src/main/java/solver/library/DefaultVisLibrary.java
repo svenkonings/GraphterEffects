@@ -28,6 +28,26 @@ public class DefaultVisLibrary extends VisLibrary {
         super();
         setDefaultClauses();
         setDefaultQueries();
+        setDefaults(elem -> {
+            if (!elem.hasValue("type")) {
+                elem.setValue("type", "ellipse");
+                shapeConstraints(elem, 2);
+            }
+            if (!elem.hasVar("z")) {
+                switch (elem.getValue("type")) {
+                    case "line":
+                        elem.setVar("z", -1);
+                        break;
+                    case "text":
+                        elem.setVar("z", 1);
+                        break;
+                    default:
+                        elem.setVar("z", 0);
+                        break;
+
+                }
+            }
+        });
     }
 
     private void setDefaultClauses() {
@@ -461,28 +481,6 @@ public class DefaultVisLibrary extends VisLibrary {
         line.setVar("minY", line.getVar("y1").min(line.getVar("y2")).intVar());
         line.setVar("centerY", line.getVar("y1").add(line.getVar("y2")).div(2).intVar());
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
-    }
-
-    @Override
-    public void setDefaults(VisElem elem) {
-        if (!elem.hasValue("type")) {
-            elem.setValue("type", "ellipse");
-            shapeConstraints(elem, 2);
-        }
-        if (!elem.hasVar("z")) {
-            switch (elem.getValue("type")) {
-                case "line":
-                    elem.setVar("z", -1);
-                    break;
-                case "text":
-                    elem.setVar("z", 1);
-                    break;
-                default:
-                    elem.setVar("z", 0);
-                    break;
-
-            }
-        }
     }
 
     public static void updateLowerBound(VisElem elem, String varName, int lb) {

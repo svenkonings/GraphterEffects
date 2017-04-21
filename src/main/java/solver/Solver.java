@@ -21,10 +21,16 @@ import java.util.*;
  */
 @SuppressWarnings("WeakerAccess")
 public class Solver {
+    /** The loader for the default graph library. */
     private final GraphLibraryLoader defaultGraphLibraryLoader;
+
+    /** The mapping of names to library loaders. */
     private final Map<String, GraphLibraryLoader> graphLibraryLoaders;
 
+    /** The default visualization library. */
     private final VisLibrary defaultVisLibrary;
+
+    /** The mapping of names to visualization libraries. */
     private final Map<String, VisLibrary> visLibraries;
 
     /**
@@ -37,10 +43,24 @@ public class Solver {
         visLibraries = new HashMap<>();
     }
 
+    /**
+     * Add a new {@link GraphLibraryLoader} to the mapping with the given name.
+     *
+     * @param name   The given name.
+     * @param loader The given {@link GraphLibraryLoader}.
+     * @return The previous mapping, or null if there wasn't one.
+     */
     public GraphLibraryLoader putGraphLibraryLoader(String name, GraphLibraryLoader loader) {
         return graphLibraryLoaders.put(name, loader);
     }
 
+    /**
+     * Get the {@link GraphLibraryLoader} associated to the given name.
+     *
+     * @param name The given name.
+     * @return The {@link GraphLibraryLoader}.
+     * @throws LibraryException If the loader doesn't exist.
+     */
     public GraphLibraryLoader getGraphLibraryLoader(String name) {
         GraphLibraryLoader loader = graphLibraryLoaders.get(name);
         if (loader == null) {
@@ -49,18 +69,45 @@ public class Solver {
         return loader;
     }
 
+    /**
+     * Removes the {@link GraphLibraryLoader} associated to the given name.
+     *
+     * @param name The given name.
+     * @return The removed {@link GraphLibraryLoader}.
+     */
     public GraphLibraryLoader removeGraphLibraryLoader(String name) {
         return graphLibraryLoaders.remove(name);
     }
 
+    /**
+     * Get an instance of the {@link GraphLibrary} from the loader associated to the given name.
+     *
+     * @param name  The given name.
+     * @param graph The graph used for the instance of this {@link GraphLibrary}.
+     * @return The {@link GraphLibrary}.
+     */
     public GraphLibrary getGraphLibrary(String name, Graph graph) {
         return getGraphLibraryLoader(name).getInstance(graph);
     }
 
+    /**
+     * Add a new {@link VisLibrary} to the mapping with the given name.
+     *
+     * @param name    The given name.
+     * @param library The given {@link VisLibrary}.
+     * @return The previous mapping, or null if there wasn't one.
+     */
     public VisLibrary putVisLibrary(String name, VisLibrary library) {
         return visLibraries.put(name, library);
     }
 
+    /**
+     * Get the {@link VisLibrary} associated to the given name.
+     *
+     * @param name The given name.
+     * @return The {@link VisLibrary}.
+     * @throws LibraryException If the library doesn't exist.
+     */
     public VisLibrary getVisLibrary(String name) {
         VisLibrary library = visLibraries.get(name);
         if (library == null) {
@@ -69,15 +116,36 @@ public class Solver {
         return library;
     }
 
+    /**
+     * Removes the {@link VisLibrary} associated to the given name.
+     *
+     * @param name The given name.
+     * @return The removed {@link VisLibrary}.
+     */
     public VisLibrary removeVisLibrary(String name) {
         return visLibraries.remove(name);
     }
 
-    public TuProlog getProlog(Collection<Term> terms) {
-        return getProlog(null, terms);
+    /**
+     * Creates a {@link TuProlog} object with the given terms and loads all the visualition library imports specified
+     * in the terms.
+     *
+     * @param terms The given terms.
+     * @return The created {@link TuProlog} object.
+     */
+    public TuProlog loadProlog(Collection<Term> terms) {
+        return loadProlog(null, terms);
     }
 
-    public TuProlog getProlog(Graph graph, Collection<Term> terms) {
+    /**
+     * Creates a {@link TuProlog} object with the given terms and loads all the graph and visualization library imports
+     * specified in the terms.
+     *
+     * @param terms The given terms.
+     * @param graph The graph used for the {@link GraphLibrary}.
+     * @return The created {@link TuProlog} object.
+     */
+    public TuProlog loadProlog(Graph graph, Collection<Term> terms) {
         TuProlog prolog;
         try {
             prolog = new TuProlog(terms);
@@ -86,26 +154,34 @@ public class Solver {
         }
 
         if (graph != null) {
-            Set<GraphLibrary> graphLibraries = getGraphLibraries(prolog, graph);
-            graphLibraries.forEach(library -> loadGraphLibrary(prolog, library));
+            getGraphLibraries(prolog, graph).forEach(library -> loadGraphLibrary(prolog, library));
         }
         getVisLibraries(prolog).forEach(library -> loadVisLibrary(prolog, library));
         return prolog;
     }
 
+    /**
+     * Solves the constraints and returns the {@link SolveResults}.
+     *
+     * @return The {@link SolveResults}.
+     */
     public SolveResults solve(Collection<Term> terms) {
-        return solve(getProlog(terms));
-    }
-
-    public SolveResults solve(Graph graph, Collection<Term> terms) {
-        return solve(getProlog(graph, terms));
+        return solve(loadProlog(terms));
     }
 
     /**
-     * FIXME
-     * Solves the constraints and returns a {@link List} of visualization elements.
+     * Solves the constraints and returns the {@link SolveResults}.
      *
-     * @return The {@link List} of visualization elements.
+     * @return The {@link SolveResults}.
+     */
+    public SolveResults solve(Graph graph, Collection<Term> terms) {
+        return solve(loadProlog(graph, terms));
+    }
+
+    /**
+     * Solves the constraints and returns the {@link SolveResults}.
+     *
+     * @return The {@link SolveResults}.
      */
     public SolveResults solve(TuProlog prolog) {
         Model model = new Model();
@@ -119,6 +195,13 @@ public class Solver {
         return new SolveResults(succes, prolog, model, visMap);
     }
 
+    /**
+     * Get the set of {@link GraphLibrary}s that are imported in the theory of the given {@link TuProlog} object.
+     *
+     * @param prolog The given {@link TuProlog} object.
+     * @param graph  The graph used for the {@link GraphLibrary}.
+     * @return The set of {@link GraphLibrary}s.
+     */
     private Set<GraphLibrary> getGraphLibraries(TuProlog prolog, Graph graph) {
         Set<GraphLibrary> libraries = new LinkedHashSet<>();
         libraries.add(defaultGraphLibraryLoader.getInstance(graph));
@@ -130,6 +213,12 @@ public class Solver {
         return libraries;
     }
 
+    /**
+     * Get the set of {@link VisLibrary}s that are imported in the theory of the given {@link TuProlog} object.
+     *
+     * @param prolog The given {@link TuProlog} object.
+     * @return The set of {@link VisLibrary}s.
+     */
     private Set<VisLibrary> getVisLibraries(TuProlog prolog) {
         Set<VisLibrary> libraries = new LinkedHashSet<>();
         libraries.add(defaultVisLibrary);
@@ -141,6 +230,12 @@ public class Solver {
         return libraries;
     }
 
+    /**
+     * Load the given {@link GraphLibrary} in the given {@link TuProlog} object.
+     *
+     * @param prolog  The given {@link TuProlog} object.
+     * @param library The library to be loaded.
+     */
     private static void loadGraphLibrary(TuProlog prolog, GraphLibrary library) {
         try {
             prolog.loadLibrary(library);
@@ -149,6 +244,12 @@ public class Solver {
         }
     }
 
+    /**
+     * Load the term list of the {@link VisLibrary} in the given {@link TuProlog} object.
+     *
+     * @param prolog  The given {@link TuProlog} object.
+     * @param library The library containing the terms to be loaded.
+     */
     private static void loadVisLibrary(TuProlog prolog, VisLibrary library) {
         try {
             prolog.addTheory(library.getTerms().toArray(new Term[0]));
@@ -157,11 +258,24 @@ public class Solver {
         }
     }
 
+    /**
+     * Solve the queries of the mapping in the {@link VisLibrary} and apply the consequences.
+     *
+     * @param visMap  The mapping of visualization elements which is used while applying the consequences.
+     * @param prolog  The {@link TuProlog} object in which the queries are solved.
+     * @param library The given {@link VisLibrary}.
+     */
     private static void solveVisLibrary(VisMap visMap, TuProlog prolog, VisLibrary library) {
         library.getQueries().forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
     }
 
+    /**
+     * Calls the {@link VisLibrary#setDefaults(VisElem)} method of the given library for every visualization element.
+     *
+     * @param visMap  The given mapping containing the visualization elements.
+     * @param library The given library.
+     */
     private static void setVisLibraryDefaults(VisMap visMap, VisLibrary library) {
-        visMap.values().forEach(library::setDefaults);
+        visMap.values().forEach(elem -> library.getDefaults().accept(elem));
     }
 }

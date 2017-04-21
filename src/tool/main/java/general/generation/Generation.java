@@ -98,7 +98,7 @@ public class Generation extends Observable{
 
     public void loadProlog() {
         solver = new Solver();
-        prolog = solver.getProlog(graph, scriptTerms);
+        prolog = solver.loadProlog(graph, scriptTerms);
         setChanged();
         notifyObservers(GenerationProgress.PROLOGLOADED);
     }
