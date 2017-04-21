@@ -240,7 +240,9 @@ public class Solver {
         try {
             prolog.loadLibrary(library);
         } catch (InvalidLibraryException e) {
-            throw new LibraryException(e);
+            e.printStackTrace();
+            // FIXME: The library exception is sometimes also thrown by TuProlog when it's correctly loaded
+//            throw new LibraryException(e);
         }
     }
 
@@ -270,7 +272,7 @@ public class Solver {
     }
 
     /**
-     * Calls the {@link VisLibrary#setDefaults(VisElem)} method of the given library for every visualization element.
+     * Calls the {@link VisLibrary#getDefaults()} method of the given library for every visualization element.
      *
      * @param visMap  The given mapping containing the visualization elements.
      * @param library The given library.

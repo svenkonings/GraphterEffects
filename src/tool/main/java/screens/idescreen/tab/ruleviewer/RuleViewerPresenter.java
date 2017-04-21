@@ -57,15 +57,17 @@ public class RuleViewerPresenter implements Initializable {
 
     public void loadContent(TuProlog tuProlog, List<Term> scriptTerms) {
         this.tuProlog = tuProlog;
-        for (Term term: scriptTerms ) {
-            term.getTerm();
-            String head = ((Struct) term).getArg(0).toString();
+        for (Term term : scriptTerms) {
+            String head;
             StringBuilder tail = new StringBuilder();
-            if (((Struct) term).getArity() - 1 <= 1) {
-                tail.append(((Struct) term).getArg(1));
-            }
-            for (int i = 2; i <= ((Struct) term).getArity() - 1; i++) {
-                tail.append(((Struct) term).getArg(i));
+            if (term instanceof Struct && ((Struct) term).isClause()) {
+                Struct struct = (Struct) term;
+                head = struct.getArg(0).toString();
+                for (int i = 1; i < struct.getArity(); i++) {
+                    tail.append(struct.getArg(i).toString());
+                }
+            } else {
+                head = term.toString();
             }
 
             TableTerm tableTerm = new TableTerm(head, tail.toString());
@@ -82,7 +84,7 @@ public class RuleViewerPresenter implements Initializable {
             queryResultPane.maxHeightProperty().bind(visElemPane.heightProperty());
             List<Map<String, Term>> result = tuProlog.solve(queryArgumentsTextField.getText());
             int counter = 1;
-            if (result.isEmpty()){
+            if (result.isEmpty()) {
                 queryResultTextArea.appendText("False");
             }
             for (Map<String, Term> varResults : result) {
@@ -106,11 +108,11 @@ public class RuleViewerPresenter implements Initializable {
             this.tail = new SimpleStringProperty(tail);
         }
 
-        public String getHead(){
+        public String getHead() {
             return head.get();
         }
 
-        public String getTail(){
+        public String getTail() {
             return tail.get();
         }
 
