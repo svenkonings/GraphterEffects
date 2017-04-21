@@ -122,7 +122,7 @@ public class TuProlog {
     public static Struct listTail(Term tail, Term... terms) {
         List<Term> ts = new ArrayList<>(Arrays.asList(terms));
         ts.add(tail);
-        return concatTerms(".", ts.toArray(new Term[0]));
+        return nestTermsRight(".", ts.toArray(new Term[0]));
     }
 
     /**

@@ -20,81 +20,15 @@ import static prolog.TuProlog.*;
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     private List<Term> result;
 
-    public RuleGenerator() {
-        result = new ArrayList<>();
-    }
-
     public RuleGenerator(GraafvisParser.ProgramContext ctx) {
-        this();
+        result = new ArrayList<>();
         ctx.accept(this);
     }
-    /*****************
-     --- Calling  ---
-     *****************/
 
-    // --- Testing TU Prolog ---
 
-//    public static void tupTest() throws NoMoreSolutionException, InvalidTheoryException, NoSolutionException {
-//        Struct[] clauses = new Struct[]{
-//                new Struct("node", new Struct("a")),
-//                new Struct("node", new Struct("b")),
-//                new Struct("edge", new Struct("a"), new Struct("b")),
-//                new Struct("edge", new Struct("b"), new Struct("a")),
-//                new Struct("label", new Struct("a"), new Struct("\"wolf\""))
-//        };
-//        Struct prog = new Struct(clauses);
-//        query(prog, new Struct("node", new Var("X")));
-//        query(prog, new Struct("edge", new Var("X"), new Var("Y")));
-//        query(prog, new Struct("label", new Var("Y"), new Struct("\"wolf\"")));
-//        Struct q = new Struct(
-//                ",",
-//                new Struct("edge", new Var("X"), new Var("Y")),
-//                new Struct("label", new Var("X"), new Struct("\"wolf\""))
-//        );
-//        query(prog, q);
-//    }
-
-    // TODO Hier een test van maken, of niet?
-    public static void main(String[] args) throws NoMoreSolutionException, NoSolutionException, InvalidTheoryException {
-        query("p(aap).", struct("p", var("X")));
-        query("p(X), q(X) -> r(X). p(hond), q(hond), p(kat), q(konijn), r(muis).", struct("r", var("X")));
-    }
-
-    public static void query(String script, Struct query) throws InvalidTheoryException, NoSolutionException, NoMoreSolutionException {
-        List<Term> clauses = generate(script);
-        Struct prog = list(clauses.toArray(new Term[clauses.size()]));
-        System.out.println("\n> ?- " + query + "\n");
-        Prolog engine = new Prolog();
-        Theory t = new Theory(prog);
-        engine.addTheory(t);
-        SolveInfo info = engine.solve(query);
-        while (info.isSuccess()) { // taken from the previous example
-            System.out.println("Solution: " + info.getSolution() + "\nBindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
-    }
-
-    // --- Rule generation ---
-
-    public static List<Term> generate(String script) {
-//        System.out.println("\nParsing: " + script);
-        RuleGenerator rg = new RuleGenerator();
-        Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
-        TokenStream tokens = new CommonTokenStream(lexer);
-        GraafvisParser parser = new GraafvisParser(tokens);
-        ParseTree tree = parser.program();
-        tree.accept(rg);
-//        System.out.println(rg.getResult());
-        return rg.getResult();
-    }
-
-    /*******************
-     --- Tree walker ---
-     *******************/
+    /***************
+     --- Visitor ---
+     ***************/
 
     @Override public Term visitImportVis(ImportVisContext ctx) {
         String filename = StringUtils.removeQuotation(ctx.STRING().getText());
@@ -131,12 +65,10 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                     struct(dslName, var("X")),
                     and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
             );
-            // TODO is the edge object itself still the third argument?
             addClause(
                     struct(dslName, var("X"), var("Y")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
             );
-            // TODO is the edge object itself still the third argument?
             addClause(
                     struct(dslName, var("X"), var("Y"), var("Z")),
                     and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
@@ -149,17 +81,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         Term antecedent = (ctx.antecedent == null) ? null : visit(ctx.antecedent);
         for (CTermContext cTerm : ctx.consequence.args) {
             if (cTerm instanceof MultiCompoundConsequenceContext) {
-                // TODO werkt dit wel?
                 aggregateVisitMultiTerms(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
             }
             addClause(visit(cTerm), antecedent);
         }
         return null;
     }
-
-//    @Override public Term visitPfNest(PfNestContext ctx) {
-//        return visit(ctx.propositionalFormula()); // TODO is dit ok? want dat an deze eig weg
-//    }
 
     // --- ANTECEDENT ---
 
@@ -184,23 +111,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitListAntecedent(ListAntecedentContext ctx) {
-        // HEAD & TAIL
-        /*
-        [a] = '.'(a,[])
-        [a,b] = '.'(a,'.'(b,[]))
-        [a,b|c] = '.'(a,'.'(b,c))
-        There can be only one | in a list, and no commas after it.
-         */
-        // Struct
-        // TODO null checks
-        // TODO meerdere heads
-        if (ctx.aArgSeries() == null) {
-            return list();
-        }
-        if (ctx.aTerm() == null) {
-            return list(visitAggregate(ctx.aArgSeries().args));
-        }
-        return listTail(visit(ctx.aTerm()), visitAggregate(ctx.aArgSeries().args));
+        return visitList(ctx.aTerm(), ctx.aArgSeries());
     }
 
     @Override public Term visitVariableAntecedent(VariableAntecedentContext ctx) {
@@ -250,23 +161,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitListConsequence(ListConsequenceContext ctx) {
-        // HEAD & TAIL
-        /*
-        [a] = '.'(a,[])
-        [a,b] = '.'(a,'.'(b,[]))
-        [a,b|c] = '.'(a,'.'(b,c))
-        There can be only one | in a list, and no commas after it.
-         */
-        // Struct
-        // TODO null checks
-        // TODO meerdere heads
-        if (ctx.cArgSeries() == null) {
-            return list();
-        }
-        if (ctx.cTerm() == null) {
-            return list(visitAggregate(ctx.cArgSeries().args));
-        }
-        return listTail(list(visit(ctx.cTerm())), visitAggregate(ctx.cArgSeries().args));
+        return visitList(ctx.cTerm(), ctx.cArgSeries());
     }
 
     @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {
@@ -281,16 +176,46 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return number(ctx.getText());
     }
 
-    // ---------
-
 
     /**********************
      --- Helper methods ---
      **********************/
 
-    // --- Return one term for multiple visits ---
+    // --- Generic visits ---
+
+    public Term visitCompound(FunctorContext functor, ParseTree termSeries) {
+        if (termSeries == null) {
+            // Constant, f.e. p
+            return struct(getFunctor(functor));
+        } else {
+            // Regular predicate, f.e. p(X), p(X,Y,Z), p()
+            List<? extends ParseTree> terms = getListFromTermSeries(termSeries);
+            return struct(getFunctor(functor), visitAggregate(terms));
+        }
+    }
+
+    public Term visitList(ParseTree term, ParseTree series) {
+        List<? extends ParseTree> args;
+        // Empty list
+        if (series == null) {
+            return list();
+        }
+        if (series instanceof AArgSeriesContext) {
+            args = ((AArgSeriesContext) series).args;
+        } else {
+            args = ((CArgSeriesContext) series).args;
+        }
+        // List without tail
+        if (term == null) {
+            return list(visitAggregate(args));
+        }
+        // List with tail
+        return listTail(list(visit(term)), visitAggregate(args));
+    }
+
+    // --- Generic visits: Return one term for multiple visits ---
+
     public Term[] visitAggregate(List<? extends ParseTree> ctxs) {
-        // TODO check for null: [] en p()
         if (ctxs == null) {
             return new Term[0];
         }
@@ -312,18 +237,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return results;
     }
 
-    public Term visitCompound(FunctorContext functor, ParseTree termSeries) {
-        if (termSeries == null) {
-            // Constant, f.e. p
-            return struct(getFunctor(functor));
-        } else {
-            // Regular predicate, f.e. p(X), p(X,Y,Z), p()
-            List<? extends ParseTree> terms = getListFromTermSeries(termSeries);
-            return struct(getFunctor(functor), visitAggregate(terms));
-        }
-    }
-
-    // --- Casts to allow for generic methods ---
+    // --- Generic visits: casts ---
 
     public static List<? extends ParseTree> getListFromTermSeries(ParseTree termContainer) {
         if (termContainer instanceof AArgSeriesContext) {
@@ -378,8 +292,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // --- Update logic model ---
 
     private void addClause(Term head, Term body) {
-//        Term term = (body == null) ? head : clause(head, body);
-        result.add(safeClause(head, body)); // TODO check is safe is needed
+        result.add(safeClause(head, body));
     }
 
     // --- Getters & setters ---
