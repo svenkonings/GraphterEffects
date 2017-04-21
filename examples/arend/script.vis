@@ -1,6 +1,0 @@
-shape(a, rectangle).
-dimensions(a, 10, 10).
-shape(b, ellipse).
-dimensions(b, 10, 10).
-distance(a, b, 10).
-line(a, b).
