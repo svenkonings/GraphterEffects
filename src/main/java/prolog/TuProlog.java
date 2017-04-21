@@ -165,7 +165,7 @@ public class TuProlog {
      * @return The resulting {@link Struct}.
      */
     public static Struct and(Term... terms) {
-        return concatTerms(",", terms);
+        return nestTermsLeft(",", terms);
     }
 
     /**
@@ -182,7 +182,7 @@ public class TuProlog {
         } else if (terms.length == 1) {
             return terms[0];
         }
-        return concatTerms(",", terms);
+        return nestTermsLeft(",", terms);
     }
 
     /**
@@ -192,7 +192,7 @@ public class TuProlog {
      * @return The resulting {@link Struct}.
      */
     public static Struct or(Term... terms) {
-        return concatTerms(";", terms);
+        return nestTermsLeft(";", terms);
     }
 
     /**
@@ -209,7 +209,7 @@ public class TuProlog {
         } else if (terms.length == 1) {
             return terms[0];
         }
-        return concatTerms(";", terms);
+        return nestTermsLeft(";", terms);
     }
 
 
@@ -220,7 +220,7 @@ public class TuProlog {
      * @param terms The given terms.
      * @return The resulting {@link Struct}.
      */
-    public static Struct concatTerms(String name, Term... terms) {
+    public static Struct nestTermsLeft(String name, Term... terms) {
         Deque<Term> deque = new ArrayDeque<>(Arrays.asList(terms));
         while (deque.size() < 2) {
             deque.addLast(list());
@@ -231,6 +231,28 @@ public class TuProlog {
         while (!deque.isEmpty()) {
             Term term = deque.removeFirst();
             struct = struct(name, struct, term);
+        }
+        return struct;
+    }
+
+    /**
+     * Creates a concatenation of clauses with the given name and the given terms.
+     *
+     * @param name  The given name.
+     * @param terms The given terms.
+     * @return The resulting {@link Struct}.
+     */
+    public static Struct nestTermsRight(String name, Term... terms) {
+        Deque<Term> deque = new ArrayDeque<>(Arrays.asList(terms));
+        while (deque.size() < 2) {
+            deque.addLast(list());
+        }
+        Term term2 = deque.removeLast();
+        Term term1 = deque.removeLast();
+        Struct struct = struct(name, term1, term2);
+        while (!deque.isEmpty()) {
+            Term term = deque.removeLast();
+            struct = struct(name, term, struct);
         }
         return struct;
     }

@@ -189,7 +189,7 @@ public class Solver {
 
         Set<VisLibrary> visLibraries = getVisLibraries(prolog);
         visLibraries.forEach(library -> solveVisLibrary(visMap, prolog, library));
-        visLibraries.forEach(library -> setVisLibraryDefaults(visMap, library));
+        visLibraries.forEach(library -> applyVisLibraryConsumer(visMap, library));
 
         boolean succes = model.getSolver().solve();
         return new SolveResults(succes, prolog, model, visMap);
@@ -272,12 +272,13 @@ public class Solver {
     }
 
     /**
-     * Calls the {@link VisLibrary#applyDefaults(VisElem)} method of the given library for every visualization element.
+     * Calls the {@link VisLibrary#applyElemConsumer(VisElem)} method of the given library for every visualization
+     * element.
      *
      * @param visMap  The given mapping containing the visualization elements.
      * @param library The given library.
      */
-    private static void setVisLibraryDefaults(VisMap visMap, VisLibrary library) {
-        visMap.values().forEach(library::applyDefaults);
+    private static void applyVisLibraryConsumer(VisMap visMap, VisLibrary library) {
+        visMap.values().forEach(library::applyElemConsumer);
     }
 }
