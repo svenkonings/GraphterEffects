@@ -140,7 +140,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
     }
 
     public static void addText(String added) {
-        Platform.runLater(() -> Platform.runLater(() -> instance.compilationResultTextArea.appendText(added + "\n")));
+        Platform.runLater(() -> Platform.runLater(() -> instance.generationResultTextArea.appendText(added + "\n")));
     }
 
     public void expandButtonPressed(ActionEvent actionEvent) {
