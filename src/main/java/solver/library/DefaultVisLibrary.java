@@ -323,13 +323,7 @@ public class DefaultVisLibrary extends VisLibrary {
     }
 
     public static QueryConsumer equalsQuery(String varName) {
-        return elementPairQuery((elem1, elem2, values) -> {
-            if (elem1.hasVar(varName)) {
-                elem2.setVar(varName, elem1.getVar(varName));
-            } else {
-                elem1.setVar(varName, elem2.getVar(varName));
-            }
-        });
+        return elementPairQuery((elem1, elem2, values) -> setVar(elem1, varName, elem2, varName));
     }
 
     public static QueryConsumer relPosQuery(String varName1, String varName2, String op) {
@@ -442,9 +436,9 @@ public class DefaultVisLibrary extends VisLibrary {
      * @param elem The given visualization element.
      */
     public static void symmetricShapeConstraints(VisElem elem, int minSize) {
+        IntVar size = setVar(elem, "width", elem, "height");
+        elem.setVar("size", size);
         updateLowerBound(elem, "size", minSize);
-        elem.setVar("width", elem.getVar("size"));
-        elem.setVar("height", elem.getVar("size"));
 
         elem.setVar("radius", elem.getVar("size").div(2).intVar());
         elem.setVar("radiusX", elem.getVar("radius"));
@@ -483,12 +477,20 @@ public class DefaultVisLibrary extends VisLibrary {
         line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
     }
 
+    public static IntVar setVar(VisElem elem1, String varName1, VisElem elem2, String varName2) {
+        if (elem1.hasVar(varName1)) {
+            return elem2.setVar(varName2, elem1.getVar(varName1));
+        } else {
+            return elem1.setVar(varName1, elem2.getVar(varName2));
+        }
+    }
+
     public static void updateLowerBound(VisElem elem, String varName, int lb) {
         IntVar var = elem.getVar(varName);
         try {
             var.updateLowerBound(lb, Cause.Null);
         } catch (ContradictionException e) {
-            throw new LibraryException("Couldn't apply the lower bound %d of %s.%s with bounds[%d, %d]",
+            throw new LibraryException("Couldn't apply the minimum value %d to %s.%s with bounds[%d, %d]",
                     lb, elem.getKey(), varName, var.getLB(), var.getUB());
         }
     }
