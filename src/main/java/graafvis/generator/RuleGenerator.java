@@ -10,7 +10,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import utils.StringUtils;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,33 +44,62 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return null;
     }
 
+    /**
+     * Generates shorthand predicates to address nodes with specific labels, and immediately adds the clauses enabling
+     * these predicates.
+     *
+     * An example:
+     *      Line in Graafvis script:        node labels: "Wolf" as wolf.
+     *      Generates the hidden rule:      node(X), label(X, "Wolf") -> wolf(X).
+     *      Here, graphName is "\"Wolf\"" and scriptName is "wolf".
+     *
+     * @param ctx   the parse tree node
+     * @return      null
+     */
     @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
+        // Example: wolf
         for (LabelContext label : ctx.label()) {
-            String asName = label.STRING().getText();
-            String dslName = label.ID() == null ? removeOuterChars(asName) : label.ID().getText();
+            String graphName = label.STRING().getText();
+            String scriptName = label.ID() == null ? removeOuterChars(graphName) : label.ID().getText();
             addClause(
-                    struct(dslName, var("X")),
-                    and(struct("node", var("X")), struct("label", var("X"), struct(asName)))
+                    struct(scriptName, var("X")),
+                    and(struct("node", var("X")), struct("label", var("X"), struct(graphName)))
             );
         }
         return null;
     }
 
+    /**
+     * Generates shorthand predicates to address edges with specific labels, and immediately adds these clauses enabling
+     * these predicates.
+     *
+     * An example:
+     *      Line in Graafvis script:        edge labels: "Is friends with" as friends.
+     *      Generates the hidden rules:     edge(X), label(X, "Is friends with")        -> friends(X).
+     *                                      edge(X, Y, Z), label(Z, "Is friends with")  -> friends(X, Y).
+     *                                      edge(X, Y, Z), label(Z, "Is friends with")  -> friends(X, Y, Z).
+     *      Here, graphName is "\"Is friends with\"" and scriptName is "friends".
+     *
+     * @param ctx   the parse tree node
+     * @return      null
+     */
     @Override public Term visitEdgeLabelGen(EdgeLabelGenContext ctx) {
+        // Example: e
         for (LabelContext label : ctx.label()) {
-            String asName = label.STRING().getText();
-            String dslName = label.ID() == null ? removeOuterChars(asName) : label.ID().getText();
+            String graphName = label.STRING().getText();
+            String scriptName = label.ID() == null ? removeOuterChars(graphName) : label.ID().getText();
+            //
             addClause(
-                    struct(dslName, var("X")),
-                    and(struct("edge", var("X")), struct("label", var("X"), struct(asName)))
+                    struct(scriptName, var("X")),
+                    and(struct("edge", var("X")), struct("label", var("X"), struct(graphName)))
             );
             addClause(
-                    struct(dslName, var("X"), var("Y")),
-                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
+                    struct(scriptName, var("X"), var("Y")),
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(graphName)))
             );
             addClause(
-                    struct(dslName, var("X"), var("Y"), var("Z")),
-                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(asName)))
+                    struct(scriptName, var("X"), var("Y"), var("Z")),
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(graphName)))
             );
         }
         return null;
@@ -81,7 +109,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         Term antecedent = (ctx.antecedent == null) ? null : visit(ctx.antecedent);
         for (CTermContext cTerm : ctx.consequence.args) {
             if (cTerm instanceof MultiCompoundConsequenceContext) {
-                aggregateVisitMultiTerms(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
+                visitMultiArgs(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
             }
             addClause(visit(cTerm), antecedent);
         }
@@ -99,11 +127,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiAndCompoundAntecedent(MultiAndCompoundAntecedentContext ctx) {
-        return safeAnd(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
+        return safeAnd(visitMultiArgs(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitMultiOrCompoundAntecedent(MultiOrCompoundAntecedentContext ctx) {
-        return safeOr(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
+        return safeOr(visitMultiArgs(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitParAntecedent(ParAntecedentContext ctx) {
@@ -157,7 +185,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiCompoundConsequence(MultiCompoundConsequenceContext ctx) {
-        return safeAnd(aggregateVisitMultiTerms(ctx.functor(), ctx.args));
+        return safeAnd(visitMultiArgs(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitListConsequence(ListConsequenceContext ctx) {
@@ -177,44 +205,71 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
 
-    /**********************
-     --- Helper methods ---
-     **********************/
+    /********************************
+     --- Abstract visitor methods ---
+     ********************************/
 
-    // --- Generic visits ---
-
-    public Term visitCompound(FunctorContext functor, ParseTree termSeries) {
-        if (termSeries == null) {
-            // Constant, f.e. p
+    /**
+     * Visits a compound term, returning one {@link Term} given a functor and an arbitrary amount of arguments.
+     * Used for visiting {@link CompoundAntecedentContext} and {@link CompoundConsequenceContext}.
+     *
+     * @param functor   Given functor
+     * @param arguments Given arguments
+     * @return          Resulting {@link Term}
+     */
+    public Term visitCompound(FunctorContext functor, ParseTree arguments) {
+        if (arguments == null) {
+            // No parenthesis used: the compound term is an atom.
+            // Examples: p, q, `special%chars/{`.
             return struct(getFunctor(functor));
         } else {
-            // Regular predicate, f.e. p(X), p(X,Y,Z), p()
-            List<? extends ParseTree> terms = getListFromTermSeries(termSeries);
+            // Parenthesis used: the compound term can still be an atom in case of empty parenthesis.
+            // Example: p(X), p(X,Y,Z), p(), `,`(a, b).
+            List<? extends ParseTree> terms;
+            if (arguments instanceof AArgSeriesContext) {
+                // Antecedent
+                terms = ((AArgSeriesContext) arguments).args;
+            } else {
+                // Consequence
+                terms = ((CArgSeriesContext) arguments).args;
+            }
             return struct(getFunctor(functor), visitAggregate(terms));
         }
     }
 
-    public Term visitList(ParseTree term, ParseTree series) {
-        List<? extends ParseTree> args;
+    /**
+     * Visits a list, returning one {@link Term} given a possible list tail and an arbitrary amount of list elements.
+     * Used for visiting {@link ListAntecedentContext} and {@link ListConsequenceContext}.
+     *
+     * @param tail      Given list tail
+     * @param elements  Given list elements
+     * @return          Resulting {@link Term}
+     */
+    public Term visitList(ParseTree tail, ParseTree elements) {
         // Empty list
-        if (series == null) {
+        if (elements == null) {
             return list();
         }
-        if (series instanceof AArgSeriesContext) {
-            args = ((AArgSeriesContext) series).args;
+        List<? extends ParseTree> args;
+        if (elements instanceof AArgSeriesContext) {
+            args = ((AArgSeriesContext) elements).args;
         } else {
-            args = ((CArgSeriesContext) series).args;
+            args = ((CArgSeriesContext) elements).args;
         }
         // List without tail
-        if (term == null) {
+        if (tail == null) {
             return list(visitAggregate(args));
         }
         // List with tail
-        return listTail(list(visit(term)), visitAggregate(args));
+        return listTail(list(visit(tail)), visitAggregate(args));
     }
 
-    // --- Generic visits: Return one term for multiple visits ---
-
+    /**
+     * Visits multiple parse tree nodes and returns a result list as a {@link Term} list.
+     *
+     * @param ctxs  Given parse tree nodes
+     * @return      Resulting {@link Term} list
+     */
     public Term[] visitAggregate(List<? extends ParseTree> ctxs) {
         if (ctxs == null) {
             return new Term[0];
@@ -227,55 +282,84 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return terms;
     }
 
-    // Not checked for terms == null, as grammar prohibits p{}
-    public Term[] aggregateVisitMultiTerms(FunctorContext functor, List<? extends ParseTree> multiTerms) {
-        int n = multiTerms.size();
+    /**
+     * Visits the {@link ParseTree} multi arguments of a multi compound term, returning a {@link Term} list representing
+     * every generated regular compound term.
+     * Used for visiting {@link MultiAndCompoundAntecedentContext}, {@link MultiOrCompoundAntecedentContext} and
+     * {@link MultiCompoundConsequenceContext}.
+     *
+     * An example:
+     *      Line in Graafvis script:        p{a, (X,Y), ((a,b)), (), []}.
+     *      Generates the hidden rules:     p(a). p(X,Y). p((a,b)). p. p([]).
+     *
+     * N.B. using {@link prolog.TuProlog#safeStruct(String, Term...)} ensures that a multi argument which does not
+     * contain any arguments still generates a atom: the functor without arguments.
+     * N.B. there is no check ensuring multiArgs is not null, as the grammar prohibits using a multi compound without
+     * multi arguments. Example: p{} is not allowed.
+     *
+     *
+     * @param functor   Given functor
+     * @param multiArgs Given multi arguments
+     * @return
+     */
+    public Term[] visitMultiArgs(FunctorContext functor, List<? extends ParseTree> multiArgs) {
+        int n = multiArgs.size();
         Term[] results = new Term[n];
         for (int i = 0; i < n; i++) {
-            results[i] = safeStruct(getFunctor(functor), visitAggregate(getMultiArg(multiTerms.get(i))));
+            ParseTree multiArg = multiArgs.get(i);
+
+            // Casting
+            List<? extends ParseTree> args;
+            if (multiArg instanceof AMultiArgContext) {
+                // MultiTerm in antecedent
+                AMultiArgContext tc = (AMultiArgContext) multiArg;
+                if (tc.aArgSeries() != null) {
+                    // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
+                    args = tc.aArgSeries().args;
+                } else if (tc.aTerm() != null) {
+                    // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
+                    args = inList(tc.aTerm());
+                } else {
+                    // [Case 3] No terms: empty parenthesis
+                    args = null;
+                }
+            } else {
+                // MultiTerm in consequence
+                CMultiArgContext tc = (CMultiArgContext) multiArg;
+                if (tc.cArgSeries() != null) {
+                    // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
+                    args = tc.cArgSeries().args;
+                } else if (tc.cTerm() != null) {
+                    // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
+                    args = inList(tc.cTerm());
+                } else {
+                    // [Case 3] No terms: empty parenthesis
+                    args = null;
+                }
+            }
+
+            results[i] = safeStruct(getFunctor(functor), visitAggregate(args));
         }
         return results;
     }
 
-    // --- Generic visits: casts ---
 
-    public static List<? extends ParseTree> getListFromTermSeries(ParseTree termContainer) {
-        if (termContainer instanceof AArgSeriesContext) {
-            // Antecedent
-            return ((AArgSeriesContext) termContainer).args;
-        }
-        // Consequence
-        return ((CArgSeriesContext) termContainer).args;
+    /**********************
+     --- Helper methods ---
+     **********************/
+
+    // --- Updating & reading the rule generation model ---
+
+    private void addClause(Term head, Term body) {
+        result.add(safeClause(head, body));
     }
 
-    public static List<? extends ParseTree> getMultiArg(ParseTree termContainer) {
-        if (termContainer instanceof AMultiArgContext) {
-            // MultiTerm in antecedent
-            AMultiArgContext tc = (AMultiArgContext) termContainer;
-            // Terms available
-            // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
-            if (tc.aArgSeries() != null) {
-                return tc.aArgSeries().args;
-            }
-            // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
-            if (tc.aTerm() != null) {
-                return inList(tc.aTerm());
-            }
-            // [Case 3] No terms: empty parenthesis
-            return null;
-        }
-        // MultiTerm in consequence
-        CMultiArgContext tc = (CMultiArgContext) termContainer;
-        // [Case 1] With parenthesis: contains multiple arguments for the to be generated compound term
-        if (tc.cArgSeries() != null) {
-            return tc.cArgSeries().args;
-        }
-        // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
-        if (tc.cTerm() != null) {
-            return inList(tc.cTerm());
-        }
-        // [Case 3] No terms: empty parenthesis
-        return null;
+    public List<Term> getResult() {
+        return result;
+    }
+
+    public void setResult(List<Term> ts) {
+        this.result = ts;
     }
 
     // --- String building ---
@@ -287,22 +371,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     private static String removeOuterChars(String s) {
         return (s == null) ? s : s.substring(1, s.length() - 1);
-    }
-
-    // --- Update logic model ---
-
-    private void addClause(Term head, Term body) {
-        result.add(safeClause(head, body));
-    }
-
-    // --- Getters & setters ---
-
-    public List<Term> getResult() {
-        return result;
-    }
-
-    public void setResult(List<Term> ts) {
-        this.result = ts;
     }
 
     // --- Generic collection help ---

@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -27,11 +26,12 @@ public class RuleGeneratorTest {
     @Test
     public void testFacts() {
         singleAssert("p(X).", struct("p", var("X")));
+        singleAssert("`,`(a, b).", struct(",", struct("a"), struct("b")));
+        singleAssert("`%/{`(a, b, c).", struct("%/{", struct("a"), struct("b"), struct("c")));
         singleAssert("p(X,Y).", struct("p", var("X"), var("Y")));
         multAssert("p(X), p(Y).", struct("p", var("X")), struct("p", var("Y")));
         // List
         singleAssert("p([X,Y]).", struct("p", list(var("X"), var("Y"))));
-        // arg1: list, arg2: constant
         singleAssert("shape([X,Y], square).",
                 struct("shape", list(var("X"), var("Y")), struct("square"))
         );
@@ -54,6 +54,8 @@ public class RuleGeneratorTest {
     @Test
     public void testRules() {
         singleAssert("p(X) -> q(X).", clause(struct("q", var("X")), struct("p", var("X"))));
+        singleAssert("`,`(a, b) -> r.", clause(struct("r"), struct(",", struct("a"), struct("b"))));
+        singleAssert("`%/{`(a, b, c) -> r.", clause(struct("r"), struct("%/{", struct("a"), struct("b"), struct("c"))));
 
         // And
         singleAssert("p(X), q(X) -> r(X).",
@@ -100,7 +102,7 @@ public class RuleGeneratorTest {
                 )
         );
 
-        // Nest
+        // Nesting
         singleAssert("p(X), (q(X); r(X)) -> s(X).",
                 clause(
                         struct("s", var("X")),
@@ -129,7 +131,6 @@ public class RuleGeneratorTest {
 
         // List
         singleAssert("p([X,Y]) -> r.", clause(struct("r"), struct("p", list(var("X"), var("Y")))));
-        // arg1: list, arg2: constant
         singleAssert("shape([X,Y], square) -> r.",
                 clause(struct("r"), struct("shape", list(var("X"), var("Y")), struct("square")))
         );
@@ -221,7 +222,9 @@ public class RuleGeneratorTest {
     @Test
     public void testLabelGen() {
         // Node labels
-        // mom(X) :- node(X), label(X, "mom").
+        /* The following example yields the hidden clause:
+           mom(X) :- node(X), label(X, "mom").
+         */
         singleAssert("node labels: \"mom\".",
                 clause(
                         struct("mom", var("X")),
@@ -248,7 +251,8 @@ public class RuleGeneratorTest {
                 )
         );
         // Edge labels
-        /* on(X)        :- edge(X), label(X, "on").
+        /* The following example yields the hidden clauses:
+           on(X)        :- edge(X), label(X, "on").
            on(X,Y)      :- edge(X,Y,Z), label(Z, "on").
            on(X,Y,Z)    :- edge(X,Y,Z), label(Z, "on"). */
         multAssert("edge labels: \"on\".",
@@ -296,7 +300,7 @@ public class RuleGeneratorTest {
         assertEquals(Arrays.asList(ts), generate(s));
     }
 
-    // --- Calling rule generator ---
+    // --- Calling the rule generator ---
 
     public static List<Term> generate(String script) {
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
