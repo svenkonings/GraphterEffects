@@ -38,9 +38,9 @@ public class Solver {
      */
     public Solver() {
         defaultGraphLibraryLoader = ASCLibrary::new;
-        graphLibraryLoaders = new HashMap<>();
+        graphLibraryLoaders = new LinkedHashMap<>();
         defaultVisLibrary = new DefaultVisLibrary();
-        visLibraries = new HashMap<>();
+        visLibraries = new LinkedHashMap<>();
     }
 
     /**

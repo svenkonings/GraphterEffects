@@ -3,10 +3,7 @@ package svg;
 import solver.VisElem;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -33,7 +30,7 @@ public class SvgAttributeGenerator {
      */
     public SvgAttributeGenerator(String name) {
         this.name = name;
-        mappings = new HashMap<>();
+        mappings = new LinkedHashMap<>();
         defaults = new ArrayList<>();
     }
 

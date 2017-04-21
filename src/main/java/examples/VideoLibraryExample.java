@@ -24,7 +24,7 @@ public class VideoLibraryExample {
     public static void main(String[] args) throws GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, IOException {
         // Compile a simple demo script
         List<Term> terms = new GraafvisCompiler().compile("visLibrary(\"videoLibrary\")." +
-                "video(vid, \"https://archive.org/download/WebmVp8Vorbis/webmvp8_512kb.mp4\")." +
+                "video(vid, \"http://techslides.com/demos/sample-videos/small.mp4\")." +
                 "size(vid, 1000)."
         );
 

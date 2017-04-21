@@ -1,9 +1,9 @@
 package svg;
 
-import solver.VisElem;
 import org.dom4j.Element;
+import solver.VisElem;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -19,7 +19,7 @@ public class SvgElementGenerator {
      * Creates a new generator with the default mapping.
      */
     public SvgElementGenerator() {
-        generators = new HashMap<>();
+        generators = new LinkedHashMap<>();
         setDefaults();
     }
 

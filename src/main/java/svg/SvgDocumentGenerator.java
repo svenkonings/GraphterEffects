@@ -1,11 +1,11 @@
 package svg;
 
-import solver.VisElem;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import solver.VisElem;
 
 import java.io.FileWriter;
 import java.io.IOException;

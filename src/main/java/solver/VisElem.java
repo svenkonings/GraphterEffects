@@ -5,7 +5,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static utils.StringUtils.parseInt;
@@ -48,8 +48,8 @@ public class VisElem {
         this.model = model;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
-        this.values = new HashMap<>();
-        this.vars = new HashMap<>();
+        this.values = new LinkedHashMap<>();
+        this.vars = new LinkedHashMap<>();
     }
 
     /**
@@ -314,7 +314,7 @@ public class VisElem {
      * @return A map containting the name-value pairs.
      */
     public Map<String, String> getValues() {
-        Map<String, String> result = new HashMap<>(values);
+        Map<String, String> result = new LinkedHashMap<>(values);
         vars.forEach((name, var) -> {
             String value = varToValue(var);
             if (value != null) {
@@ -330,6 +330,6 @@ public class VisElem {
      * @return A map containing the name-variable pairs.
      */
     public Map<String, IntVar> getVars() {
-        return new HashMap<>(vars);
+        return new LinkedHashMap<>(vars);
     }
 }

@@ -28,7 +28,7 @@ public class VisMap {
      * @param model The given model.
      */
     public VisMap(Model model) {
-        this(model, new HashMap<>());
+        this(model, new LinkedHashMap<>());
     }
 
     /**
@@ -86,6 +86,7 @@ public class VisMap {
 
     /**
      * Get the default lower bound.
+     *
      * @return The lower bound.
      */
     public int getLowerBound() {
@@ -94,6 +95,7 @@ public class VisMap {
 
     /**
      * Get the default upper bound.
+     *
      * @return The upper bound.
      */
     public int getUpperBound() {
