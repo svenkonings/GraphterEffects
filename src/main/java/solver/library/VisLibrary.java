@@ -36,12 +36,26 @@ public class VisLibrary {
         };
     }
 
+    /**
+     * Get the set of terms associated with this library.
+     *
+     * @return The set of terms.
+     */
     public Set<Term> getTerms() {
         return terms;
     }
 
+    /**
+     * Get the set of terms associated with this library.
+     *
+     * @return The set of terms.
+     */
     public Map<String, QueryConsumer> getQueries() {
         return queries;
+    }
+
+    public void applyDefaults(VisElem elem) {
+        defaults.accept(elem);
     }
 
     public boolean addClause(Term head, Term body) {

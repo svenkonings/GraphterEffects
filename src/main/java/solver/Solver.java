@@ -272,12 +272,12 @@ public class Solver {
     }
 
     /**
-     * Calls the {@link VisLibrary#getDefaults()} method of the given library for every visualization element.
+     * Calls the {@link VisLibrary#applyDefaults(VisElem)} method of the given library for every visualization element.
      *
      * @param visMap  The given mapping containing the visualization elements.
      * @param library The given library.
      */
     private static void setVisLibraryDefaults(VisMap visMap, VisLibrary library) {
-        visMap.values().forEach(elem -> library.getDefaults().accept(elem));
+        visMap.values().forEach(library::applyDefaults);
     }
 }
