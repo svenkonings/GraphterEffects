@@ -6,7 +6,6 @@ fragment DIGIT: [0-9];
 
 ARROW: '->';
 COLON: ':';
-
 EOL: '.';
 
 PAR_OPEN: '(';
@@ -18,36 +17,14 @@ BRACKET_CLOSE: ']';
 
 VBAR: '|';
 
-/* Eq operators */
-EQ: '==';
-NQ: '!=';
-GT: '>';
-LT: '<';
-GE: '>=';
-LE: '<=';
-
-/* Booloperators */
-
 COMMA: ',';
 SEMICOLON: ';';
-OR: 'or';
-AND: 'and';
 
 NOT: 'not';
 
-/* Num operators */
-
-PLUS: '+';
 MINUS: '-';
-MULT: '*';
-DIV: '/';
-POW: '^';
-MOD: '%';
 
 UNDERSCORE: '_';
-
-TRUE: 'true';
-FALSE: 'false';
 
 IMPORT_TOKEN: 'consult';
 NODE_LABEL_TOKEN: 'node labels';
@@ -64,4 +41,4 @@ INFIX_ID: '`' ~'`'+ '`';
 
 WS:             [ \t\r\n]+              -> skip;
 BLOCKCOMMENT:   '/*' .*? '*/'           -> skip;
-LINECOMMENT:    '//' ~[\r\n]*           -> skip; // Double // otherwise only a /* is also deemed as a correct comment even though that is an unfinished block comment
+LINECOMMENT:    '//' ~[\r\n]*           -> skip;
