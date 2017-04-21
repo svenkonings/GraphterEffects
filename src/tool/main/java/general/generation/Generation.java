@@ -33,6 +33,7 @@ public class Generation extends Observable{
     private Path graphFile;
 
     private GenerationProgress targetProgress;
+
     private List<Term> scriptTerms;
     private Graph graph;
     private Solver solver;
@@ -194,6 +195,26 @@ public class Generation extends Observable{
 
     public Path getGraphFile() {
         return graphFile;
+    }
+
+    public Path getScriptFile() {
+        return scriptFile;
+    }
+
+    public List<Term> getScriptTerms() {
+        return scriptTerms;
+    }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public Solver getSolver() {
+        return solver;
+    }
+
+    public GraafvisCompiler getCompiler() {
+        return compiler;
     }
 
     public void abort() {

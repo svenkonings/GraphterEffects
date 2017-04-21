@@ -43,8 +43,15 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
         expandButton.setDisable(true);
 
         generationResultTitledPane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+
             if (newValue) {
-                generationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                double relativeValue = viewModel.sceneHeigthProperty().multiply(0.2).doubleValue();
+                int minimumValue = 100;
+                if (relativeValue < minimumValue) {
+                    generationResultTitledPane.setPrefHeight(minimumValue);
+                } else {
+                    generationResultTitledPane.setPrefHeight(relativeValue);
+                }
                 expandButton.setDisable(false);
             } else {
                 generationResultTitledPane.setPrefHeight(25);
@@ -58,8 +65,13 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 if (maximized){
                     generationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().subtract(65).doubleValue());
                 } else {
-                    generationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
-                    System.out.println(viewModel.sceneHeigthProperty().multiply(0.2).intValue());
+                    double relativeValue = viewModel.sceneHeigthProperty().multiply(0.2).doubleValue();
+                    int minimumValue = 100;
+                    if (relativeValue < minimumValue) {
+                        generationResultTitledPane.setPrefHeight(minimumValue);
+                    } else {
+                        generationResultTitledPane.setPrefHeight(relativeValue);
+                    }
                 }
             }
         });
@@ -150,7 +162,13 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 maximized = true;
                 expandButton.setText("Reduce");
             } else {
-                generationResultTitledPane.setPrefHeight(viewModel.sceneHeigthProperty().multiply(0.2).doubleValue());
+                double relativeValue = viewModel.sceneHeigthProperty().multiply(0.2).doubleValue();
+                int minimumValue = 100;
+                if (relativeValue < minimumValue) {
+                    generationResultTitledPane.setPrefHeight(minimumValue);
+                } else {
+                    generationResultTitledPane.setPrefHeight(relativeValue);
+                }
                 maximized = false;
                 expandButton.setText("Maximize");
             }

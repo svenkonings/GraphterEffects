@@ -17,7 +17,7 @@
     <ButtonBar prefHeight="40.0">
       <buttons>
          <ComboBox fx:id="graphComboBox" prefWidth="150.0" />
-          <Button fx:id="compileButton" maxWidth="60.0" minWidth="32.0" mnemonicParsing="false" onAction="#compileButtonPressed" prefHeight="25.0" prefWidth="60.0" text="Compile" />
+          <Button fx:id="compileButton" maxWidth="60.0" minWidth="32.0" mnemonicParsing="false" onAction="#compileButtonPressed" prefHeight="25.0" prefWidth="60.0" text="Generate" />
          <MenuButton fx:id="debugButton" mnemonicParsing="false" text="Debug">
            <items>
              <MenuItem mnemonicParsing="false" onAction="#generateRulesButtonPressed" text="Generate Rules" />
