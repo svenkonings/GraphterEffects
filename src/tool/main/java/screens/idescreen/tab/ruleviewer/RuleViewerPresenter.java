@@ -11,7 +11,6 @@ import javafx.scene.layout.StackPane;
 import prolog.TuProlog;
 
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -53,13 +52,12 @@ public class RuleViewerPresenter implements Initializable {
         headColumn.setPrefWidth(200);
         tailColumn.setCellValueFactory(cellData -> cellData.getValue().tail);
         tailColumn.prefWidthProperty().bind(rulesTable.widthProperty().subtract(headColumn.widthProperty()));
-        loadContent(GenerationModel.getInstance().getGeneration().getProlog());
+        loadContent(GenerationModel.getInstance().getGeneration().getProlog(), GenerationModel.getInstance().getGeneration().getScriptTerms());
     }
 
-    public void loadContent(TuProlog tuProlog) {
+    public void loadContent(TuProlog tuProlog, List<Term> scriptTerms) {
         this.tuProlog = tuProlog;
-        for (Iterator<? extends Term> it = tuProlog.getProlog().getTheory().iterator(tuProlog.getProlog()); it.hasNext(); ) {
-            Term term = it.next();
+        for (Term term: scriptTerms ) {
             term.getTerm();
             String head = ((Struct) term).getArg(0).toString();
             StringBuilder tail = new StringBuilder();
