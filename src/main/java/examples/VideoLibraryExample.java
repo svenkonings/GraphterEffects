@@ -92,6 +92,19 @@ public class VideoLibraryExample {
         return elementGenerator;
     }
 
+    private static SvgAttributeGenerator createForeignGenerator() {
+        // Create a new attribute generator that generates a <foreignObject> svg element
+        SvgAttributeGenerator attributeGenerator = new ForeignGenerator();
+
+        // Map the position attributes
+        attributeGenerator.setMapping("x1", "x");
+        attributeGenerator.setMapping("y1", "y");
+        attributeGenerator.setMapping("width", "width");
+        attributeGenerator.setMapping("height", "height");
+
+        return attributeGenerator;
+    }
+
     private static SvgAttributeGenerator createVideoGenerator() {
         // Create a new attribute generator that generates a <video> svg element
         SvgAttributeGenerator attributeGenerator = new SvgAttributeGenerator("video");
@@ -114,15 +127,8 @@ public class VideoLibraryExample {
         return attributeGenerator;
     }
 
-    private static SvgAttributeGenerator createForeignGenerator() {
-        SvgAttributeGenerator attributeGenerator = new ForeignGenerator();
-        attributeGenerator.setMapping("x1", "x");
-        attributeGenerator.setMapping("y1", "y");
-        attributeGenerator.setMapping("width", "width");
-        attributeGenerator.setMapping("height", "height");
-        return attributeGenerator;
-    }
-
+    // During the generation a sub element has to be generated,
+    // therefore the generate method has to be overridden
     private static class ForeignGenerator extends SvgAttributeGenerator {
         public ForeignGenerator() {
             super("foreignObject");
@@ -130,7 +136,10 @@ public class VideoLibraryExample {
 
         @Override
         public Element generate(VisElem visElem, Element parent) {
+            // Call the default generate method
             Element videoElem = super.generate(visElem, parent);
+
+            // Call the generate method of the video generator with the previously generated element as parent
             createVideoGenerator().generate(visElem, videoElem);
             return videoElem;
         }
