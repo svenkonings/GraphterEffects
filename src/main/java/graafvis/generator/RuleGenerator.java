@@ -15,10 +15,6 @@ import java.util.List;
 import static prolog.TuProlog.*;
 
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
-    public static final String TUP_AND = ",";
-    public static final String TUP_OR = ";";
-    public static final String TUP_NOT = "not";
-    public static final String TUP_LIST = ".";
     private List<Term> result;
 
     public RuleGenerator() {
@@ -150,7 +146,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     // --- ANTECEDENT ---
 
     @Override public Term visitNotAntecedent(NotAntecedentContext ctx) {
-        return struct(TUP_NOT, visit(ctx.aTerm()));
+        return not(visit(ctx.aTerm()));
     }
 
     @Override public Term visitCompoundAntecedent(CompoundAntecedentContext ctx) {
@@ -181,10 +177,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         // TODO null checks
         // TODO meerdere heads
         if (ctx.aArgSeries() == null) {
-            System.out.println("ooh, aargseries null!");
-            return new Struct();
+            return list();
         }
-        return list(visitAggregate(ctx.aArgSeries().args));
+        if (ctx.aTerm() == null) {
+            return list(visitAggregate(ctx.aArgSeries().args));
+        }
+        return listTail(visit(ctx.aTerm()), visitAggregate(ctx.aArgSeries().args));
     }
 
     @Override public Term visitVariableAntecedent(VariableAntecedentContext ctx) {
@@ -245,10 +243,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         // TODO null checks
         // TODO meerdere heads
         if (ctx.cArgSeries() == null) {
-            System.out.println("ooh, cargseries null!");
-            return new Struct();
+            return list();
         }
-        return list(visitAggregate(ctx.cArgSeries().args));
+        if (ctx.cTerm() == null) {
+            return list(visitAggregate(ctx.cArgSeries().args));
+        }
+        return listTail(list(visit(ctx.cTerm())), visitAggregate(ctx.cArgSeries().args));
     }
 
     @Override public Term visitVariableConsequence(VariableConsequenceContext ctx) {

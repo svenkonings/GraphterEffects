@@ -6,6 +6,7 @@ import alice.tuprolog.*;
 import alice.tuprolog.Long;
 import alice.tuprolog.Number;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -113,6 +114,18 @@ public class TuProlog {
     }
 
     /**
+     * Creates a list {@link Struct} from the given terms and tail. The list can be empty.
+     *
+     * @param terms The given terms.
+     * @return The {@link Struct}.
+     */
+    public static Struct listTail(Term tail, Term... terms) {
+        List<Term> ts = new ArrayList<>(Arrays.asList(terms));
+        ts.add(tail);
+        return concatTerms(".", ts.toArray(new Term[0]));
+    }
+
+    /**
      * Creates a {@link Struct} with the given name and terms. A {@link Struct} without terms is atomic.
      *
      * @param name  The given name
@@ -156,6 +169,16 @@ public class TuProlog {
      */
     public static Term safeClause(Term head, Term body) {
         return (body == null) ? head : new Struct(":-", head, body);
+    }
+
+    /**
+     * Negates the given term.
+     *
+     * @param term The given term.
+     * @return The resulting {@link Struct}.
+     */
+    public static Struct not(Term term) {
+        return struct("not", term);
     }
 
     /**

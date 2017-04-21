@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static prolog.TuProlog.*;
-import static graafvis.generator.RuleGenerator.TUP_NOT;
 import static graafvis.generator.RuleGenerator.generate;
 import static graafvis.generator.RuleGenerator.inList;
 import static org.junit.Assert.assertEquals;
@@ -18,7 +17,6 @@ public class RuleGeneratorTest {
         singleAssert("p(X).", struct("p", var("X")));
         singleAssert("p(X,Y).", struct("p", var("X"), var("Y")));
         multAssert("p(X), p(Y).", struct("p", var("X")), struct("p", var("Y")));
-        // TODO LISTS
         // List
         singleAssert("p([X,Y]).", struct("p", list(var("X"), var("Y"))));
         // arg1: list, arg2: constant
@@ -28,6 +26,11 @@ public class RuleGeneratorTest {
         singleAssert("shape([], square).",
                 struct("shape", list(), struct("square"))
         );
+        singleAssert("[].", list());
+        singleAssert("[a].", list(struct("a")));
+        singleAssert("[a,X].", list(struct("a"), var("X")));
+        Term.createTerm("[a,b|[c]]");
+        singleAssert("[a,b|[c]].", struct(".",struct("a"),struct(".", struct("b"), list(struct("c")))));
         // Nested list
         singleAssert("shape([X,[3, \"wolf\"]], square).",
                 struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square"))
@@ -100,13 +103,13 @@ public class RuleGeneratorTest {
         );
 
         // Not
-        singleAssert("not p(X) -> q(X).", clause(struct("q", var("X")), struct(TUP_NOT, struct("p", var("X")))));
-        singleAssert("not not p(X) -> q(X).", clause(struct("q", var("X")), struct(TUP_NOT, struct(TUP_NOT, struct("p", var("X"))))));
+        singleAssert("not p(X) -> q(X).", clause(struct("q", var("X")), not(struct("p", var("X")))));
+        singleAssert("not not p(X) -> q(X).", clause(struct("q", var("X")), not(not(struct("p", var("X"))))));
         singleAssert("not p(X), q(X) -> r(X).",
-                clause(struct("r", var("X")), and(struct(TUP_NOT, struct("p", var("X"))), struct("q", var("X"))))
+                clause(struct("r", var("X")), and(not(struct("p", var("X"))), struct("q", var("X"))))
         );
         singleAssert("p(X), not q(X) -> r(X).",
-                clause(struct("r", var("X")), and(struct("p", var("X")), struct(TUP_NOT, struct("q", var("X")))))
+                clause(struct("r", var("X")), and(struct("p", var("X")), not(struct("q", var("X")))))
         );
 
         // List
@@ -222,6 +225,7 @@ public class RuleGeneratorTest {
     public static void singleAssert(String s, Term t) {
         System.out.println(s);
         assertEquals(inList(t), generate(s));
+        System.out.println("\t" + t);
         System.out.println("\tSuccess!");
     }
 
