@@ -10,9 +10,11 @@ import general.files.FileModelChange;
 import general.files.IOManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -111,6 +113,14 @@ public class ButtonBarPresenter implements Initializable, Observer {
         });
 
         graphComboBox.setContextMenu(generateGraphContextMenu());
+        graphComboBox.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+            @Override
+            public void handle(ContextMenuEvent event) {
+                if (graphComboBox.getSelectionModel().getSelectedItem()==null) {
+                    graphComboBox.getContextMenu().hide();
+                }
+            }
+        });
         graphComboBox.setOnMouseClicked(
                 event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
@@ -223,9 +233,6 @@ public class ButtonBarPresenter implements Initializable, Observer {
 
     private ContextMenu generateGraphContextMenu(){
         final ContextMenu contextMenu = new ContextMenu();
-        if (graphComboBox.getSelectionModel().getSelectedItem() == null) {
-            return null;
-        }
         MenuItem showAsImage = new MenuItem("Show Default Visualization");
         MenuItem showAsText = new MenuItem("Show File");
         contextMenu.getItems().addAll(showAsImage, showAsText);
