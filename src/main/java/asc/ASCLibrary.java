@@ -92,6 +92,7 @@ public class ASCLibrary extends GraphLibrary {
         sb.append("index(X,Y) :- node(X), indexSecond(X,Y).\n");
         sb.append("index(X,Y) :- edge(X), indexSecond(X,Y).\n");
         sb.append("index(X,Y) :- graph(X), indexSecond(X,Y).\n");
+        sb.append("colour(X,Y) :- color(X,Y).");
         return sb.toString();
     }
 

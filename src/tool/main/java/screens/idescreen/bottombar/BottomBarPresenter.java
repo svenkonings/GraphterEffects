@@ -116,8 +116,7 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 Platform.runLater(() -> generationResultTextArea.appendText("SVG generated\n"));
                 break;
             case ERROROCCURED:
-                Platform.runLater(() -> generationResultTextArea.appendText(GenerationModel.getInstance().getGeneration().getException().toString() +
-                        GenerationModel.getInstance().getGeneration().getException().getMessage() + "\n"));
+                Platform.runLater(() -> generationResultTextArea.appendText(GenerationModel.getInstance().getGeneration().getException() + "\n"));
                 break;
             case NOSOLUTION:
                 measures = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getSolver().getMeasures().toString();
