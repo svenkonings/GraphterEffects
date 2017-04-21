@@ -11,8 +11,8 @@
          <image>
             <Image url="/icon_big.png" />
          </image></ImageView>
-      <Label layoutX="229.0" layoutY="314.0" text="Graphter Effects version 0.0.1" />
-      <Label layoutX="209.0" layoutY="331.0" text="Graphter Effects Library version 0.0.1" />
+      <Label layoutX="229.0" layoutY="314.0" text="Graphter Effects version 1.0.0" />
+      <Label layoutX="209.0" layoutY="331.0" text="Graphter Effects Library version 1.0.0" />
       <Label layoutX="192.0" layoutY="355.0" text="Graphter Effects &amp; Graafvis was created by:" />
       <Label layoutX="81.0" layoutY="372.0" text="Ron van Bree, Lindsay Kempen, Sven Konings, Hans van der Laan &amp; Pim van Leeuwen" />
       <Label layoutX="220.0" layoutY="389.0" text="Special thanks to: Arend Rensink" />
