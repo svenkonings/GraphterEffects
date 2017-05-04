@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/meteoorkip/GraphterEffects.svg?branch=master)](https://travis-ci.org/meteoorkip/GraphterEffects)
 
+The manual and the releases can be found here: [github.com/meteoorkip/GraphterEffects/releases](https://github.com/meteoorkip/GraphterEffects/releases)
+
 # Graphter Effects
 ### introducing Graafvis
 Current graph visualization solutions lack the functionality to easily create rich visualizations
