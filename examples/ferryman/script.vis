@@ -18,7 +18,7 @@ edge labels:
     "go".
 
 // Environment
-backgroundImage("examples/ferryman/images/sky.png").
+backgroundImage("examples/ferryman/images/river.png").
 
 shape(water, rectangle).
 colour(water, blue).
