@@ -29,10 +29,6 @@ public class DefaultVisLibrary extends VisLibrary {
         setDefaultClauses();
         setDefaultQueries();
         setElemConsumer(elem -> {
-            if (!elem.hasValue("type")) {
-                elem.setValue("type", "ellipse");
-                shapeConstraints(elem, 2);
-            }
             if (!elem.hasVar("z")) {
                 switch (elem.getValue("type")) {
                     case "line":

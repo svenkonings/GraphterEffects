@@ -38,7 +38,7 @@ public class SvgElementGenerator {
     private void setDefaults() {
         generators.put("rectangle", rectangle());
         generators.put("ellipse", ellipse());
-        generators.put("square", square());
+        generators.put("square", rectangle());
         generators.put("circle", circle());
         generators.put("line", line());
         generators.put("image", image());
@@ -131,15 +131,6 @@ public class SvgElementGenerator {
         attr.setMapping("centerY", "cy");
         attr.setMapping("radiusX", "rx");
         attr.setMapping("radiusY", "ry");
-        return attr;
-    }
-
-    public static SvgAttributeGenerator square() {
-        SvgAttributeGenerator attr = shape("rect");
-        attr.setMapping("x1", "x");
-        attr.setMapping("y1", "y");
-        attr.setMapping("width", "width");
-        attr.setMapping("height", "height");
         return attr;
     }
 
