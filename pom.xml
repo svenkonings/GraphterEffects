@@ -4,9 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.graphtereffects</groupId>
+    <groupId>com.github.graphtereffects</groupId>
     <artifactId>GraphterEffects</artifactId>
+    <packaging>jar</packaging>
     <version>1.0</version>
+    <name>Graphter Effects</name>
+    <url>https://rebrand.ly/graphtereffects</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/meteoorkip/GraphterEffects.git</connection>
+        <developerConnection>scm:git:https://github.com/meteoorkip/GraphterEffects.git</developerConnection>
+        <tag>master</tag>
+        <url>https://github.com/meteoorkip/GraphterEffects</url>
+    </scm>
 
     <repositories>
         <repository>
@@ -21,7 +39,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -97,8 +115,27 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -118,6 +155,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>it.unibo.alice.tuprolog</groupId>
+            <artifactId>tuprolog</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
             <version>4.6</version>
@@ -125,7 +167,7 @@
         <dependency>
             <groupId>org.choco-solver</groupId>
             <artifactId>choco-solver</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.graphstream</groupId>
@@ -143,20 +185,15 @@
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>alice</groupId>
-            <artifactId>tuprolog</artifactId>
-            <version>3.2.1</version>
-        </dependency>
-        <dependency>
             <groupId>net.sourceforge</groupId>
             <artifactId>gxl</artifactId>
             <version>0.92</version>
         </dependency>
         <dependency>
-            <groupId>com.airhacks</groupId>
-            <artifactId>afterburner.fx</artifactId>
-            <version>1.6.0</version>
-        </dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-transcoder</artifactId>
