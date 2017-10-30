@@ -9,6 +9,7 @@
     <packaging>jar</packaging>
     <version>1.0</version>
     <name>Graphter Effects</name>
+    <description>Grapther Effects is a library to generate visualizations from graphs using a logic programming language called "graafvis".</description>
     <url>https://rebrand.ly/graphtereffects</url>
 
     <licenses>
@@ -19,10 +20,27 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Ron van de Bree</name>
+        </developer>
+        <developer>
+            <name>Lindsay Kempen</name>
+        </developer>
+        <developer>
+            <name>Sven Konings</name>
+        </developer>
+        <developer>
+            <name>Hans van der Laan</name>
+        </developer>
+        <developer>
+            <name>Pim van Leeuwen</name>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:https://github.com/meteoorkip/GraphterEffects.git</connection>
         <developerConnection>scm:git:https://github.com/meteoorkip/GraphterEffects.git</developerConnection>
-        <tag>master</tag>
         <url>https://github.com/meteoorkip/GraphterEffects</url>
     </scm>
 
@@ -93,6 +111,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.0.0-M1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -101,9 +127,22 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>jar-no-fork</goal>
+                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
