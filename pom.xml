@@ -47,14 +47,6 @@
         <url>https://github.com/meteoorkip/GraphterEffects</url>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>project.local</id>
-            <name>project</name>
-            <url>file:${project.basedir}/mvn</url>
-        </repository>
-    </repositories>
-
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -221,11 +213,6 @@
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge</groupId>
-            <artifactId>gxl</artifactId>
-            <version>0.92</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
