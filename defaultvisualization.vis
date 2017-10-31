@@ -1,6 +1,0 @@
-//Node Layout
-node(X) -> shape(X,ellipse), size(X,10).
-node(X), node(Y) -> distance(X,Y,1).
-
-//Edge layout.
-edge(S,T) -> line(S,T).
