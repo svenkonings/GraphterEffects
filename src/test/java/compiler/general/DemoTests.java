@@ -1,19 +1,19 @@
 package compiler.general;
 
 import alice.tuprolog.Term;
-import graphloader.Importer;
+import com.github.meteoorkip.graphloader.Importer;
+import com.github.meteoorkip.solver.SolveResults;
+import com.github.meteoorkip.solver.Solver;
+import com.github.meteoorkip.svg.SvgDocumentGenerator;
+import com.github.meteoorkip.utils.FileUtils;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
-import solver.SolveResults;
-import solver.Solver;
-import svg.SvgDocumentGenerator;
-import utils.FileUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static prolog.TuProlog.*;
+import static com.github.meteoorkip.prolog.TuProlog.*;
 
 public final class DemoTests {
     @Test
