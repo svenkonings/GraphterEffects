@@ -150,7 +150,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>GraphterEffects</mainClass>
+                            <mainClass>com.github.meteoorkip.GraphterEffects</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
