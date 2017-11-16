@@ -1,4 +1,4 @@
-package compiler.general;
+package compiler.regression;
 
 import alice.tuprolog.Term;
 import com.github.meteoorkip.graphloader.Importer;

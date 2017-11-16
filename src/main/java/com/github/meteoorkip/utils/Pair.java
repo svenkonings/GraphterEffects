@@ -102,4 +102,15 @@ public class Pair<T, U> implements Iterable {
             return i - 1;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Pair){
+            Pair p = (Pair) o;
+            return t.equals(p.t) && u.equals(p.u);
+        } else {
+            return false;
+        }
+    }
+
 }
