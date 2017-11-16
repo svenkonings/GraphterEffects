@@ -2,7 +2,7 @@
 node(X) -> shape(X, ellipse), dimensions(X, 20, 20).
 
 //Make sure nodes do not overlap
-node(X),node(Y) -> distance(X,Y,">",10), distance(X,Y,"<",20).
+node(X),node(Y) -> distance(X,Y,">",10).
 
 //Show edges as lines
 edge(A,B,ID) -> line(ID,A,B).
