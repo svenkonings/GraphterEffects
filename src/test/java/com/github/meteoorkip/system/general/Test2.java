@@ -43,7 +43,7 @@ public final class Test2 {
 
     @Test
     public void test2() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
-        Source generated_xml = Input.fromString(new TestHelper().compileFile("regression/general/test2.vis", "library/simple_graphs/graph3.dot")).build();
+        Source generated_xml = Input.fromString(new TestHelper().compileFile("regression/general/test2.vis", "library/simple_graphs/graph6.dot")).build();
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
         //assert svgTestEngine.checkIfValidSVG();
 
