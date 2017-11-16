@@ -4,6 +4,7 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Term;
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graphloader.Importer;
+import com.github.meteoorkip.solver.ElementException;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
@@ -32,6 +33,9 @@ public class GraphterEffects {
         Solver solver = new Solver();
         SolveResults results = solver.solve(graph, terms);
         results.getModel().getSolver().printStatistics();
+        if (!results.isSucces()) {
+            throw new ElementException("Couldn't solve constraints");
+        }
         Document document = SvgDocumentGenerator.generate(results.getVisMap().values());
         SvgDocumentGenerator.writeDocument(document, args[2]);
     }

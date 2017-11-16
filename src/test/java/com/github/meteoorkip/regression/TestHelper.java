@@ -20,19 +20,23 @@ import java.util.List;
  */
 public class TestHelper {
 
-    public TestHelper(){
+    public TestHelper() {
 
     }
 
-    public String compileFile(String scriptName,String dotFileName) throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SAXException {
+    public String compileFile(String scriptName, String graphFileName) throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SAXException {
         GraafvisCompiler compiler = new GraafvisCompiler();
         Solver solver = new Solver();
         String script = new String(Files.readAllBytes(new File(this.getClass().getClassLoader().getResource(scriptName).getFile()).toPath()));
         List<Term> terms = compiler.compile(script);
 
-        Graph graph = Importer.graphFromFile(new File(this.getClass().getClassLoader().getResource(dotFileName).getFile()));
-
-        SolveResults results = solver.solve(graph, terms);
+        SolveResults results;
+        if (graphFileName != null) {
+            Graph graph = Importer.graphFromFile(new File(this.getClass().getClassLoader().getResource(graphFileName).getFile()));
+            results = solver.solve(graph, terms);
+        } else {
+            results = solver.solve(terms);
+        }
 
         Document document = SvgDocumentGenerator.generate(results.getVisMap().values());
         String svgString = document.asXML();

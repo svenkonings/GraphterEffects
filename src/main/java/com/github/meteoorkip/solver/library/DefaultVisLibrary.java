@@ -240,7 +240,7 @@ public class DefaultVisLibrary extends VisLibrary {
         }));
 
         /*
-          And then query predicates that use relavitve positioning
+          And then query predicates that use relative positioning
         */
         // Alignment
         putQuery("alignCenter    (Elem1, Elem2)", equalsQuery("centerX").andThen(equalsQuery("centerY")));
@@ -343,9 +343,15 @@ public class DefaultVisLibrary extends VisLibrary {
             int value = termToInt(values.get("Value"));
             Model model = var1.getModel();
             if (swap) {
-                model.arithm(var1.sub(var2).intVar(), op, value).post();
+                model.and(
+                        var1.ge(var2).decompose(),
+                        model.arithm(var1.sub(var2).intVar(), op, value)
+                ).post();
             } else {
-                model.arithm(var2.sub(var1).intVar(), op, value).post();
+                model.and(
+                        var2.ge(var1).decompose(),
+                        model.arithm(var2.sub(var1).intVar(), op, value)
+                ).post();
             }
         });
     }
@@ -387,14 +393,30 @@ public class DefaultVisLibrary extends VisLibrary {
             String op = stripQuotes(values.get("Operator"));
             int value = termToInt(values.get("Value"));
             Model model = elem1.getModel();
-            if (x) model.or(
-                    model.arithm(elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(), op, value),
-                    model.arithm(elem2.getVar("minX").sub(elem1.getVar("maxX")).intVar(), op, value)
-            ).post();
-            if (y) model.or(
-                    model.arithm(elem1.getVar("minY").sub(elem2.getVar("maxY")).intVar(), op, value),
-                    model.arithm(elem2.getVar("minY").sub(elem1.getVar("maxY")).intVar(), op, value)
-            ).post();
+            if (x) {
+                model.or(
+                        model.and(
+                                elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose(),
+                                model.arithm(elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(), op, value)
+                        ),
+                        model.and(
+                                elem2.getVar("minX").ge(elem1.getVar("maxX")).decompose(),
+                                model.arithm(elem2.getVar("minX").sub(elem1.getVar("maxX")).intVar(), op, value)
+                        )
+                ).post();
+            }
+            if (y) {
+                model.or(
+                        model.and(
+                                elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose(),
+                                model.arithm(elem1.getVar("minY").sub(elem2.getVar("maxY")).intVar(), op, value)
+                        ),
+                        model.and(
+                                elem2.getVar("minY").ge(elem1.getVar("maxY")).decompose(),
+                                model.arithm(elem2.getVar("minY").sub(elem1.getVar("maxY")).intVar(), op, value)
+                        )
+                ).post();
+            }
         });
     }
 
