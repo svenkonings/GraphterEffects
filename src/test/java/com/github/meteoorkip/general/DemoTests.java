@@ -1,4 +1,4 @@
-package compiler.general;
+package com.github.meteoorkip.general;
 
 import alice.tuprolog.Term;
 import com.github.meteoorkip.graphloader.Importer;
