@@ -1,4 +1,4 @@
-package com.github.meteoorkip.regression;
+package com.github.meteoorkip.system;
 
 import alice.tuprolog.Term;
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
