@@ -30,17 +30,21 @@ public class DefaultVisLibrary extends VisLibrary {
         setDefaultQueries();
         setElemConsumer(elem -> {
             if (!elem.hasVar("z")) {
-                switch (elem.getValue("type")) {
-                    case "line":
-                        elem.setVar("z", -1);
-                        break;
-                    case "text":
-                        elem.setVar("z", 1);
-                        break;
-                    default:
-                        elem.setVar("z", 0);
-                        break;
+                if (elem.getValue("type") == null) {
+                    elem.setVar("z", 0);
+                } else {
+                    switch (elem.getValue("type")) {
+                        case "line":
+                            elem.setVar("z", -1);
+                            break;
+                        case "text":
+                            elem.setVar("z", 1);
+                            break;
+                        default:
+                            elem.setVar("z", 0);
+                            break;
 
+                    }
                 }
             }
         });
