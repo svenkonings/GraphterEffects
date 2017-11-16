@@ -12,6 +12,10 @@ import org.xmlunit.builder.Input;
 import javax.xml.transform.Source;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public final class Test2 {
 
     @Test
@@ -20,7 +24,7 @@ public final class Test2 {
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
 
         int lineCount = svgTestEngine.getElementsCount(new SVGElementQuery("line"));
-        assert lineCount == 3;
+        assertEquals(3,lineCount);
 
         int greenEllipseCount = svgTestEngine.getElementsCount(new SVGElementQuery("ellipse",
                 new Triple<>("fill","=","green")
@@ -30,15 +34,15 @@ public final class Test2 {
         ));
 
 
-        assert greenEllipseCount == 3;
-        assert redEllipseCount == 1;
+        assertEquals(3,greenEllipseCount);
+        assertEquals(1,redEllipseCount);
 
-        assert !svgTestEngine.containsElement(new SVGElementQuery("ellipse",
+        assertFalse(svgTestEngine.containsElement(new SVGElementQuery("ellipse",
                 new Triple<>("fill","!=","red"),
                 new Triple<>("fill","!=","green")
-        ));
+        )));
 
-        assert svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),greenEllipseCount + redEllipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0);
+        assertTrue(svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),greenEllipseCount + redEllipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0));
     }
 
     @Test
@@ -60,17 +64,17 @@ public final class Test2 {
                 new Triple<>("fill","=","blue")
         ));
 
-        assert greenEllipseCount == 1;
-        assert redEllipseCount == 3;
-        assert blueEllipseCount == 1;
+        assertEquals(1,greenEllipseCount);
+        assertEquals(3,redEllipseCount);
+        assertEquals(1,blueEllipseCount);
 
-        assert !svgTestEngine.containsElement(new SVGElementQuery("ellipse",
+        assertFalse(svgTestEngine.containsElement(new SVGElementQuery("ellipse",
                 new Triple<>("fill","!=","red"),
                 new Triple<>("fill","!=","green"),
                 new Triple<>("fill","!=","blue")
-        ));
+        )));
 
-        assert svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),greenEllipseCount + redEllipseCount + blueEllipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0);
+        assertTrue(svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),greenEllipseCount + redEllipseCount + blueEllipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0));
     }
 
     @Test
@@ -80,18 +84,18 @@ public final class Test2 {
         //assert svgTestEngine.checkIfValidSVG();
 
         int lineCount = svgTestEngine.getElementsCount(new SVGElementQuery("line"));
-        assert lineCount == 3;
+        assertEquals(3,lineCount);
 
         int purpleEllipseCount = svgTestEngine.getElementsCount(new SVGElementQuery("ellipse",
                 new Triple<>("fill","=","purple")
         ));
 
-        assert purpleEllipseCount == 3;
+        assertEquals(3,purpleEllipseCount);
 
-        assert !svgTestEngine.containsElement(new SVGElementQuery("ellipse",
+        assertFalse(svgTestEngine.containsElement(new SVGElementQuery("ellipse",
                 new Triple<>("fill","!=","purple")
-        ));
+        )));
 
-       // assert svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0);
+       assertTrue(svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),purpleEllipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0));
     }
 }

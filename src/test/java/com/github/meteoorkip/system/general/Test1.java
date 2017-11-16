@@ -12,6 +12,9 @@ import org.xmlunit.builder.Input;
 import javax.xml.transform.Source;
 import java.io.*;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public final class Test1 {
 
     @Test
@@ -28,9 +31,9 @@ public final class Test1 {
                 new Triple<>("ry", "=", 5))
         );
 
-        assert ellipseCount == 4;
+        assertEquals(ellipseCount,4);
 
-        assert svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0);
+        assertTrue(svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0));
     }
 
     @Test
@@ -40,16 +43,16 @@ public final class Test1 {
         //assert svgTestEngine.checkIfValidSVG();
 
         int lineCount = svgTestEngine.getElementsCount(new SVGElementQuery("line"));
-        assert lineCount == 7;
+        assertEquals(7,lineCount);
 
         int ellipseCount = svgTestEngine.getElementsCount(new SVGElementQuery("ellipse",
                 new Triple<>("rx","=",5),
                 new Triple<>("ry", "=", 5))
         );
 
-        assert ellipseCount == 5;
+        assertEquals(5,ellipseCount);
 
-        assert svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0);
+        assertTrue(svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0));
     }
 
     @Test
@@ -59,15 +62,15 @@ public final class Test1 {
         //assert svgTestEngine.checkIfValidSVG();
 
         int lineCount = svgTestEngine.getElementsCount(new SVGElementQuery("line"));
-        assert lineCount == 3;
+        assertEquals(3,lineCount);
 
         int ellipseCount = svgTestEngine.getElementsCount(new SVGElementQuery("ellipse",
                 new Triple<>("rx","=",5),
                 new Triple<>("ry", "=", 5))
         );
 
-        assert ellipseCount == 3;
+        assertEquals(3,ellipseCount);
 
-        assert svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0);
+        assertTrue(svgTestEngine.indexOfElement(new SVGElementQuery("ellipse"),ellipseCount) > svgTestEngine.indexOfElement(new SVGElementQuery("line"),0));
     }
 }
