@@ -1,0 +1,20 @@
+//Show nodes as ellipses
+node(X) -> shape(X, ellipse), dimensions(X, 20, 20).
+
+//Make sure nodes do not overlap
+node(X),node(Y) -> distance(X,Y,">",10), distance(X,Y,"<",20).
+
+//Show edges as lines
+edge(A,B,ID) -> line(ID,A,B).
+
+//Colour nodes based on degree
+degree(X,1) -> colour(X,green).
+degree(X,2) -> colour(X,purple).
+degree(X,3) -> colour(X,red).
+degree(X,4) -> colour(X,blue).
+
+//Colour edges in minimal spanning tree
+inmst(ID) -> stroke(ID,purple).
+
+//Add degree as text in a node
+node(X), degree(X,D) -> text([X], D), dimensions([X],13,13), align(X,[X]), colour([X],white).
