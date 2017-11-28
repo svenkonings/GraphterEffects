@@ -1,14 +1,10 @@
-package com.github.meteoorkip.system.testing_feature_specific;
+package com.github.meteoorkip.system.testing;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
-import com.github.meteoorkip.system.SVGElementQuery;
-import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import org.junit.Test;
 import org.xml.sax.SAXException;
-import org.xmlunit.builder.Input;
 
-import javax.xml.transform.Source;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -18,6 +14,6 @@ public final class NoSolutionTest {
 
     @Test
     public void test1() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
-        assertFalse(new TestHelper().checkIfSolutionExists("regression/testing_feature_specific/nosolution.vis", "regression/testing_feature_specific/nosolution.dot"));
+        assertFalse(new TestHelper().checkIfSolutionExists("regression/testing/nosolution.vis", "regression/testing/nosolution.dot"));
     }
 }

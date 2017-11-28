@@ -11,7 +11,7 @@ public class TermUtilsTest {
     public void testTermToString() {
         assertEquals("a", TermUtils.termToString(struct("a")));
         assertEquals("b(X,Y)", TermUtils.termToString(struct("b", var("X"), var("Y"))));
-        assertEquals("\"test1\"", TermUtils.termToString(struct("\"test1\"")));
+        assertEquals("\"labeltest\"", TermUtils.termToString(struct("\"labeltest\"")));
         assertEquals("\"test2\"(X,Y)", TermUtils.termToString(struct("\"test2\"", var("X"), var("Y"))));
 //        assertEquals("\"_test_3\"", TermUtils.termToString(term("\"_test_3\"")));
         assertEquals("test_4", TermUtils.termToString(term("test_4")));

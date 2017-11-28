@@ -1,10 +1,8 @@
-package com.github.meteoorkip.system.testing_feature_specific;
+package com.github.meteoorkip.system.testing;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
-import com.github.meteoorkip.system.TestHelper;
-import com.github.meteoorkip.utils.Triple;
 import com.sun.org.apache.xerces.internal.dom.DeferredAttrNSImpl;
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -15,8 +13,6 @@ import javax.xml.transform.Source;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -27,7 +23,7 @@ public final class AttributeTest {
     @Test
     public void test1() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
         Source generated_xml = Input.fromString(new String(Files.readAllBytes(new File(this.getClass().getClassLoader()
-                .getResource("regression/testing_feature_specific/chessboard.svg").getFile()).toPath()))).build();
+                .getResource("regression/testing/chessboard.svg").getFile()).toPath()))).build();
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
 
         Iterable<Node> colored_squares = svgTestEngine.getAttributeValues(new SVGElementQuery("rect"),"fill");
