@@ -38,47 +38,64 @@ public class SVGTestEngine extends JAXPXPathEngine {
     /**
      * Checks if the svg document contains elements conforming to the given criteria defined
      * in the {@link SVGElementQuery}
-     * @param SVGElementQuery The query containing the criteria
+     * @param svgElementQuery The query containing the criteria
      * @return If the svg document conforms to the SVG DTD schema
      */
-    public boolean containsElement(SVGElementQuery SVGElementQuery) {
-        Iterable<Node> nodes = this.selectNodes(generateSVGElementXPathGetQuery(SVGElementQuery),source);
+    public boolean containsElement(SVGElementQuery svgElementQuery) {
+        Iterable<Node> nodes = this.selectNodes(generateSVGElementXPathGetQuery(svgElementQuery),source);
         return nodes.iterator().hasNext();
     }
 
     /**
      * Retrieves the elements conforming to the given criteria defined
      * in the {@link SVGElementQuery}
-     * @param SVGElementQuery The query containing the criteria
+     * @param svgElementQuery The query containing the criteria
      * @return The elements conforming to the given criteria
      */
-    public Iterable<Node> getElements(SVGElementQuery SVGElementQuery){
-        return this.selectNodes(generateSVGElementXPathGetQuery(SVGElementQuery),source);
+    public Iterable<Node> getElements(SVGElementQuery svgElementQuery){
+        return this.selectNodes(generateSVGElementXPathGetQuery(svgElementQuery),source);
     }
 
-    public int getElementsCount(SVGElementQuery SVGElementQuery){
+    /**
+     * Retrieves the attribute values conforming to the given criteria defined
+     * in the {@link SVGElementQuery} of the attribute given in attribute
+     * @param svgElementQuery The query containing the criteria the element containing the attribute must conform to
+     * @param attribute The attribute one wants the value of
+     * @return The elements conforming to the given criteria
+     */
+    public Iterable<Node> getAttributeValues(SVGElementQuery svgElementQuery, String attribute){
+        return this.selectNodes(generateSVGElementXpathAttributeGetValuesQuery(svgElementQuery,attribute),source);
+    }
+
+    /**
+     * Look up the amount of elements conforming to the given criteria defined
+     * in the {@link SVGElementQuery} of the attribute given in attribute
+     * @param svgElementQuery The query containing the criteria the element containing the attribute must conform to
+     * @return The elements conforming to the given criteria
+     */
+    public int getElementsCount(SVGElementQuery svgElementQuery){
         int i = 0;
-        for(Node node: this.selectNodes(generateSVGElementXPathGetQuery(SVGElementQuery),source)) {
+        for(Node node: this.selectNodes(generateSVGElementXPathGetQuery(svgElementQuery),source)) {
             i++;
         }
         return i;
     }
 
     /**
-     * Looks up the index of the first element conforming to the given criteria defined
-     * in the {@link SVGElementQuery}
-     * @param SVGElementQuery The query containing the criteria
+     * Looks up the index of the nth element conforming to the given criteria defined
+     * in the {@link SVGElementQuery} with n given in the occurence parameter.
+     * @param svgElementQuery The query containing the criteria
      * @return The index of the first element conforming to the given criteria
      */
-    public int indexOfElement(SVGElementQuery SVGElementQuery, int occurence){
-        String result = evaluate(generateSVGElementXPathIndexQuery(SVGElementQuery, occurence),source);
+    public int indexOfElement(SVGElementQuery svgElementQuery, int occurence){
+        String result = evaluate(generateSVGElementXPathIndexQuery(svgElementQuery, occurence),source);
         return Integer.valueOf(result);
     }
 
-    private String generateSVGElementXPathGetQuery(SVGElementQuery testSVGElement){
-        String query = "//*[name()='svg']/*[name()='" + testSVGElement.getType() + "'";
+    private String generateSVGElementXPathGetQuery(SVGElementQuery svgSVGElement){
+        String query = "//*[name()='svg']/*[name()='" + svgSVGElement.getType() + "'";
 
-        for (Triple<String,String,Object> attributeChecker : testSVGElement.getConditions()) {
+        for (Triple<String,String,Object> attributeChecker : svgSVGElement.getConditions()) {
             query += " and ";
             if (attributeChecker.getThird() instanceof String) {
                 query += "@" + attributeChecker.getFirst();
@@ -104,8 +121,13 @@ public class SVGTestEngine extends JAXPXPathEngine {
         return query;
     }
 
-    private String generateSVGElementXPathIndexQuery(SVGElementQuery testSVGElement, int occurence){
-        String query = "count(" + generateSVGElementXPathGetQuery(testSVGElement) + "[" + String.valueOf(occurence) + "]/preceding-sibling::*)";
+    private String generateSVGElementXPathIndexQuery(SVGElementQuery svgElementQuery, int occurence){
+        String query = "count(" + generateSVGElementXPathGetQuery(svgElementQuery) + "[" + String.valueOf(occurence) + "]/preceding-sibling::*)";
+        return query;
+    }
+
+    private String generateSVGElementXpathAttributeGetValuesQuery(SVGElementQuery svgElementQuery, String attribute){
+        String query = generateSVGElementXPathGetQuery(svgElementQuery) + "/@" + attribute;
         return query;
     }
 }
