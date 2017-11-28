@@ -1,7 +1,6 @@
 package com.github.meteoorkip.utils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,6 +37,21 @@ public final class FileUtils {
             throw new IOException("Resource file " + path + " not found.");
         }
         return new File(url.getFile());
+    }
+
+    /**
+     * Retrieves a file from the Resources folder of Graphter Effects. Also works from jar file.
+     * @param path Path that indicates the location of the file in question from the resource folder.
+     * @return The string contents of the file requested.
+
+     */
+    public static String fromResourcesAsString(String path) throws IOException {
+        InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream(path);
+        try {
+            return new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"));
+        } catch (NullPointerException e) {
+            throw new IOException("Resource not found: " + path);
+        }
     }
 
     /**
