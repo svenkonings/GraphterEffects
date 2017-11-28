@@ -25,9 +25,23 @@ public class TestHelper {
     }
 
     public String compileFile(String scriptName, String graphFileName) throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SAXException {
+        SolveResults results = solve(scriptName, graphFileName);
+        String svgString = null;
+        if(results.isSucces()) {
+            Document document = SvgDocumentGenerator.generate(results.getVisMap().values());
+            svgString = document.asXML();
+        }
+        return svgString;
+    }
+
+    public boolean checkIfSolutionExists(String scriptName, String graphFileName) throws SAXException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, IOException {
+        return this.solve(scriptName,graphFileName).isSucces();
+    }
+
+    private SolveResults solve(String scriptname, String graphFileName) throws GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, IOException, SAXException {
         GraafvisCompiler compiler = new GraafvisCompiler();
         Solver solver = new Solver();
-        String script = new String(Files.readAllBytes(new File(this.getClass().getClassLoader().getResource(scriptName).getFile()).toPath()));
+        String script = new String(Files.readAllBytes(new File(this.getClass().getClassLoader().getResource(scriptname).getFile()).toPath()));
         List<Term> terms = compiler.compile(script);
 
         SolveResults results;
@@ -37,10 +51,6 @@ public class TestHelper {
         } else {
             results = solver.solve(terms);
         }
-
-        Document document = SvgDocumentGenerator.generate(results.getVisMap().values());
-        String svgString = document.asXML();
-        return svgString;
-        //return Input.fromFile(new File(this.getClass().getResource("a.txt").getFile())).build();
+        return results;
     }
 }

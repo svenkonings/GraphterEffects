@@ -1,0 +1,2 @@
+node(X) -> shape(X,ellipse), size(X,10).
+node(X), node(Y) -> distance(X,Y,"=",10), distance(X,Y,"<",5).
