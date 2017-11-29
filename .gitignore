@@ -3,5 +3,5 @@
 /out/
 /target/
 /temp/
-*.svg
+/*.svg
 testLog.txt
