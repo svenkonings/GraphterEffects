@@ -55,7 +55,7 @@ public class DefaultVisLibrary extends VisLibrary {
                 struct("pos", var("Elem"), var("X"), var("Y"), var())
         );
         addClause(struct("zPos", var("Elem"), var("Z")),
-                struct("zPos", var("Elem"), var(), var(), var("Z"))
+                struct("pos", var("Elem"), var(), var(), var("Z"))
         );
         addClause(struct("xPos", var("Elem"), var("X")),
                 struct("pos", var("Elem"), var("X"), var())
