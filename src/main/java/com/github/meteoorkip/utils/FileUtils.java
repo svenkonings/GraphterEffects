@@ -46,8 +46,7 @@ public final class FileUtils {
 
      */
     public static String fromResourcesAsString(String path) throws IOException {
-        InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream(path);
-        try {
+        try (InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream(path)) {
             return new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"));
         } catch (NullPointerException e) {
             throw new IOException("Resource not found: " + path);
