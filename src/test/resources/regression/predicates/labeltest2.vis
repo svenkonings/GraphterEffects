@@ -1,0 +1,4 @@
+node(X) -> ellipse(X).
+node(X),label(X,L) -> text([X], L), dimensions([X],13,13), align(X,[X]), colour([X],white).
+edge(S,T) -> line(S,T).
+edge(X),label(X,L) -> text([X], L), dimensions([X],13,13), align(X,[X]), colour([X],white).
