@@ -75,6 +75,7 @@ public class SvgDocumentGenerator {
      */
     private static int max(Collection<VisElem> visElems, String name) {
         return visElems.stream()
+                .filter(visElem -> visElem.hasVar(name))
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
                 .max().orElse(0);
     }
@@ -88,6 +89,7 @@ public class SvgDocumentGenerator {
      */
     private static int min(Collection<VisElem> visElems, String name) {
         return visElems.stream()
+                .filter(visElem -> visElem.hasVar(name))
                 .mapToInt(visElem -> visElem.getVar(name).getValue())
                 .min().orElse(0);
     }
