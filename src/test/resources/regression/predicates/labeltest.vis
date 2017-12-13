@@ -1,2 +1,3 @@
 node(X) -> ellipse(X).
 node(X),label(X,L) -> text([X], L), dimensions([X],13,13), align(X,[X]), colour([X],white).
+graph(X),directed(X) -> text("directed-text", "directedgraph"), dimensions([X],13,13).

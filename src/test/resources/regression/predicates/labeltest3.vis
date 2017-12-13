@@ -1,0 +1,24 @@
+node(X) -> ellipse(X).
+node(X),label(X,L) -> text([X], L), dimensions([X],13,13), align(X,[X]), colour([X],white).
+graph(X),directed(X) -> text("directed-text", "directedgraph"), dimensions([X],13,13).
+graph(X),undirected(X) -> text("undirected-text", "undirectedgraph"), dimensions([X],13,13).
+graph(X),mixed(X) -> text("undirected-text", "undirectedgraph"), dimensions([X],13,13).
+graph(X),singlegraph(X) -> text("singlegraph-text", "singlegraph"), dimensions([X],13,13).
+graph(X),multigraph(X) -> text("multigraph-text", "multigraph"), dimensions([X],13,13).
+graph(X),attribute(X,K,V) -> text(K, V), dimensions([X],13,13).
+graph(X),isConnected(X) -> text("multigraph-text", "multigraph"), dimensions([X],13,13).
+graph(X),nodeCount(X,V) -> text("nodecount",V), dimensions([X],13,13).
+graph(X),edgeCount(X,V) -> text("edgecount",V), dimensions([X],13,13).
+graph(X),attributeCount(X,V) ->
+graph(X),componentCount(X,V) ->
+graph(X),index(X,V) ->
+
+node(X) -> ellipse(X).
+node(X),label(X,L) -> text([X], L), dimensions([X],13,13), align(X,[X]), colour([X],white).
+graph(X),directed(X) -> text("directed-text", "directedgraph"), dimensions("directed-text",13,13).
+graph(X),undirected(X) -> text("undirected-text", "undirectedgraph"), dimensions("undirected-text",13,13).
+graph(X),mixed(X) -> text("mixed-text", "mixedgraph"), dimensions("mixed-text",13,13).
+graph(X),singlegraph(X) -> text("singlegraph-text", "singlegraph"), dimensions("singlegraph-text",13,13).
+graph(X),multigraph(X) -> text("multigraph-text", "multigraph"), dimensions("multigraph-text",13,13).
+graph(X),isConnected(X) -> text("isConnected-text", "isconnected"), dimensions("isConnected-text",13,13).
+graph(X),attribute(X,K,V),append(K,V,N) -> text(K,N), dimensions(K,13,13).
