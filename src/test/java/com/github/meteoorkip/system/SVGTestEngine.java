@@ -98,9 +98,17 @@ public class SVGTestEngine extends JAXPXPathEngine {
         for (Triple<String,String,Object> attributeChecker : svgSVGElement.getConditions()) {
             query += " and ";
             if (attributeChecker.getThird() instanceof String) {
-                query += "@" + attributeChecker.getFirst();
+                if(attributeChecker.getFirst().endsWith("()")){
+                    query += attributeChecker.getFirst();
+                } else {
+                    query += "@" + attributeChecker.getFirst();
+                }
             } else if (attributeChecker.getThird() instanceof Integer) {
-                query += "number(@" + attributeChecker.getFirst() + ")";
+                if(attributeChecker.getFirst().endsWith("()")){
+                    query += attributeChecker.getFirst();
+                } else {
+                    query += "number(@" + attributeChecker.getFirst() + ")";
+                }
             } else {
                 throw new IllegalArgumentException("Attribute: " + attributeChecker.toString() + " has an unkown third type. \n" +
                         "the accepted types are 'String','int'");
@@ -130,4 +138,6 @@ public class SVGTestEngine extends JAXPXPathEngine {
         String query = generateSVGElementXPathGetQuery(svgElementQuery) + "/@" + attribute;
         return query;
     }
+
+  
 }
