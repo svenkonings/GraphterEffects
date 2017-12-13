@@ -1,0 +1,5 @@
+//A random network
+digraph {
+	a -> b;
+	a -> b;
+}

@@ -1,0 +1,13 @@
+graph(X) -> text("graph-text", "graph"), dimensions("graph-text",1,1).
+graph(X),directed(X) -> text("directed-text", "directed"), dimensions("directed-text",1,2).
+graph(X),undirected(X) -> text("undirected-text", "undirected"), dimensions("undirected-text",1,3).
+graph(X),mixed(X) -> text("mixed-text", "mixed"), dimensions("mixed-text",1,4).
+graph(X),singlegraph(X) -> text("singlegraph-text", "singlegraph"), dimensions("singlegraph-text",1,5).
+graph(X),multigraph(X) -> text("multigraph-text", "multigraph"), dimensions("multigraph-text",1,6).
+graph(X),isConnected(X) -> text("isConnected-text", "isconnected"), dimensions("isConnected-text",1,7).
+//graph(X),attribute(X,K,V),append(K,V,N) -> text(K,N), dimensions(K,1,8).
+graph(X),nodeCount(X,V) -> text("nodecount-text",V), dimensions("nodecount-text",1,9).
+graph(X),edgeCount(X,V) -> text("edgecount-text",V), dimensions("edgecount-text",1,10).
+graph(X),attributeCount(X,V) -> text("attributeCount-text",V), dimensions("attributeCount-text",1,11).
+graph(X),componentCount(X,V) -> text("componentCount-text",V), dimensions("componentCount-text",1,12).
+graph(X),index(X,V) -> text("index-text",V), dimensions("index-text",1,13).
