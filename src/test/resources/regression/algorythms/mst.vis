@@ -1,0 +1,10 @@
+//Node Layout
+node(X) -> shape(X,ellipse), size(X,10), text([X,textpart],X), alignCenter([X,textpart],X), dimensions([X,textpart],5,5).
+node(X), node(Y) -> distance(X,Y,1).
+
+
+//Edge layout.
+edge(S,T) -> line(S,T).
+
+//colour edge in mst
+edge(S,T,ID), inMST(ID) -> stroke([S,T],blue).

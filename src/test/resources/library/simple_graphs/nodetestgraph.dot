@@ -1,0 +1,18 @@
+//A random network
+digraph {
+
+    a[label="a"];
+    b[label="a", flag="b"];
+    c[type="c"];
+    d[animal="cat"];
+    e;
+
+	a -> b[label="4"];
+	a -> c[label="3",weight="3"];
+	c -> b[weight="8"];
+	c -> e;
+	e -> d;
+	e -> b;
+	e -> a;
+	e -> a;
+}

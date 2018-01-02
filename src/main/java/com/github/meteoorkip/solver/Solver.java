@@ -175,7 +175,8 @@ public class Solver {
      * @return The {@link SolveResults}.
      */
     public SolveResults solve(Graph graph, Collection<Term> terms) {
-        return solve(loadProlog(graph, terms));
+        TuProlog a = loadProlog(graph, terms);
+        return solve(a);
     }
 
     /**

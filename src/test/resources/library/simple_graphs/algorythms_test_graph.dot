@@ -1,0 +1,15 @@
+//A random network
+graph {
+    g [label=source];
+    d [label=target];
+	a -- g;
+    g -- b;
+	a -- c;
+	c -- b;
+	c -- e;
+	e -- d;
+	e -- b;
+	e -- a;
+    f -- d;
+    f -- a;
+}
