@@ -10,7 +10,7 @@ public class SingletonVariableWarning extends Warning {
     public SingletonVariableWarning(int row, int column, String variable) {
         super(row, column);
         this.variable = variable;
-        setMsg(String.format("Warning: Singleton variable %s found at line %d:%d.", variable, row, column));
+        setMsg(String.format("Singleton variable %s found at line %d:%d.", variable, row, column));
     }
 
     public String getVariable() {
