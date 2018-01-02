@@ -1,9 +1,17 @@
 [![Build Status](https://travis-ci.org/meteoorkip/GraphterEffects.svg?branch=master)](https://travis-ci.org/meteoorkip/GraphterEffects)
 
-The manual and the releases can be found here: [github.com/meteoorkip/GraphterEffects/releases](https://github.com/meteoorkip/GraphterEffects/releases)
+**This product is currently being further developed.
+The available version is an work-in-progress and not yet suited for regular use.**
+
+Graphter Effects consists of a tool, for people who want to use Graphter Effects on its own,
+and a Java library, for people who want to integrate Graphter Effects in their code.
+
+The manual and the releases can be found at:
+[github.com/meteoorkip/GraphterEffects/releases](https://github.com/meteoorkip/GraphterEffects/releases).
+
 
 # Graphter Effects
-### introducing Graafvis
+### Introducing Graafvis
 Current graph visualization solutions lack the functionality to easily create rich visualizations
 that intuitively show what these graphs represent. For the Design Project (TCS MOD11) we
 have created the library and tool Graphter Effects that can generate these customized
@@ -41,8 +49,8 @@ Using Prolog, the logic programming done in Graafvis is solved such that visuali
 ### Imperative
 When during the Prolog solving process graph information is required,
 it is retrieved at run time from the Prolog library using imperative Java code.
-### Contraint
-Numeric values such as position and dimensions are solved using Chocosolver:
+### Constraint
+Numeric values such as position and dimensions are solved using Choco solver:
 a constraint logic programming interface.
 
 The resulting visualization elements are afterwards bundled into an SVG file.

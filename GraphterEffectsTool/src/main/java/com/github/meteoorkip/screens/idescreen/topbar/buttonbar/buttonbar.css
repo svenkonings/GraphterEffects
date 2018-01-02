@@ -1,0 +1,12 @@
+.hyperlink{
+    -fx-underline: false;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+
+}
+.hyperlink:hover{
+    -fx-text-fill: #ffffff;
+}
+.hyperlink:visited{
+    -fx-underline: false;
+}

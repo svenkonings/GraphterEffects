@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="visElemPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.meteoorkip.screens.idescreen.viselemviewer.VisElemViewerPresenter">
+   <children>
+      <TitledPane fx:id="titledPane" alignment="CENTER_RIGHT" collapsible="false" contentDisplay="RIGHT">
+         <content>
+            <TreeView fx:id="visElemsView" />
+         </content>
+         <graphic>
+            <HBox prefHeight="22.0">
+               <children>
+                  <TextField fx:id="filterarguments" promptText="variables" />
+                  <Button fx:id="filterButton" mnemonicParsing="false" onAction="#filterButtonPressed" text="Filter" />
+               </children>
+            </HBox>
+         </graphic>
+      </TitledPane>
+   </children>
+</StackPane>

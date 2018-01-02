@@ -1,0 +1,48 @@
+.keyword {
+    -fx-fill: purple;
+    -fx-font-weight: bold;
+}
+.semicolon {
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+
+.predicate {
+    -fx-fill: #111bb2;
+    -fx-font-weight: bold;
+}
+
+.bracket {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: #ff231a;
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: blue;
+}
+
+.comment {
+	-fx-fill: cadetblue;
+
+}
+.variable {
+     -fx-fill: #ffa200;
+     -fx-font-weight: bold;
+}
+.dot {
+    -fx-fill: #ff00e8;
+    -fx-font-weight: bold;
+}
+.arrow {
+    -fx-fill: #ff00e8;
+    -fx-font-weight: bold;
+}
+
+
+

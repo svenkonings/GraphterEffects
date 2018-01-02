@@ -1,7 +1,9 @@
-/.idea/
-/bin/
-/out/
-/target/
-/temp/
-/*.svg
+.idea/
+bin/
+out/
+target/
+temp/
+*.iml
+*.svg
+!**/test/**/*.svg
 testLog.txt

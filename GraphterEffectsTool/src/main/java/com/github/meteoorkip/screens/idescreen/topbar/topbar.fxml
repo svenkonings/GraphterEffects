@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<SplitPane fx:id="splitPane" dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="com.github.meteoorkip.screens.idescreen.topbar.TopBarPresenter">
+  <items>
+    <AnchorPane fx:id="topAnchorPane" minHeight="0.0" minWidth="0.0" />
+    <AnchorPane fx:id="bottomAnchorPane" minHeight="0.0" minWidth="0.0" />
+  </items>
+</SplitPane>
