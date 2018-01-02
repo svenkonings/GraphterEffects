@@ -6,3 +6,6 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
+notifications:
+  email:
+    - graphterteam@gmail.com
