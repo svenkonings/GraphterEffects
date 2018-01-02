@@ -1,0 +1,11 @@
+//Node Layout
+node(X) -> shape(X,ellipse), size(X,10), text([X,textpart],X), alignCenter([X,textpart],X), dimensions([X,textpart],5,5).
+node(X), node(Y) -> distance(X,Y,1).
+
+
+//Edge layout.
+edge(S,T,E) -> line(E,S,T).
+
+label(X,"source") -> colour(X,red).
+label(X,"target") -> colour(X,blue).
+label(S,"source"), label(T,"target"), inShortestPath(E,S,T) -> stroke(E,green).

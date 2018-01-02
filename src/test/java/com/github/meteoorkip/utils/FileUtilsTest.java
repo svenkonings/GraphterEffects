@@ -16,11 +16,11 @@ public final class FileUtilsTest {
 
     @Test
     public void testReadStringFromFile() throws IOException {
-        assertEquals(FileUtils.readFromFile(FileUtils.fromResources("library/simple_graphs/graph1.dot")),
-                "//A simple undirected graph" + System.lineSeparator() +
-                "graph graphname {" + System.lineSeparator() +
-                "    a -- b -- c;" + System.lineSeparator() +
-                "    b -- d;" + System.lineSeparator() +
-                "}" + System.lineSeparator());
+        assertEquals(FileUtils.readFromFile(FileUtils.fromResources("library/simple_graphs/graph1.dot")).replaceAll("[\n\r]", ""),
+                "//A simple undirected graph"+
+                "graph graphname {" +
+                "    a -- b -- c;" +
+                "    b -- d;" +
+                "}");
     }
 }

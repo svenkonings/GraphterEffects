@@ -6,6 +6,7 @@ import com.github.meteoorkip.graphloader.Importer;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
+import com.github.meteoorkip.utils.FileUtils;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -41,7 +42,7 @@ public class TestHelper {
     private SolveResults solve(String scriptname, String graphFileName) throws GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, IOException, SAXException {
         GraafvisCompiler compiler = new GraafvisCompiler();
         Solver solver = new Solver();
-        String script = new String(Files.readAllBytes(new File(this.getClass().getClassLoader().getResource(scriptname).getFile()).toPath()));
+        String script = FileUtils.fromResourcesAsString(scriptname);
         List<Term> terms = compiler.compile(script);
 
         SolveResults results;
