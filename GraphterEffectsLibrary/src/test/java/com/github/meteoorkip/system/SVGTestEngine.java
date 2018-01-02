@@ -3,6 +3,7 @@ package com.github.meteoorkip.system;
 import com.github.meteoorkip.utils.Triple;
 import org.w3c.dom.Node;
 import org.xmlunit.util.Convert;
+import org.xmlunit.util.IterableNodeList;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.Validator;
 import org.xmlunit.xpath.JAXPXPathEngine;
@@ -14,6 +15,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -158,4 +161,16 @@ public class SVGTestEngine extends JAXPXPathEngine {
         str = str.replaceAll(">", ">\n").replaceAll("</","\n</");
         return str;
     }
+
+    public static Iterable<Node> filterOnValue(Iterable<Node> nodes, String regex){
+        LinkedList<Node> filteredNodes = new LinkedList<>();
+        for (Node node: nodes){
+            if (node.getTextContent().matches(regex)){
+                filteredNodes.add(node);
+            }
+        }
+        return filteredNodes;
+    }
+
+
 }

@@ -2,6 +2,15 @@
     -fx-fill: purple;
     -fx-font-weight: bold;
 }
+.error {
+    -rtfx-underline-color: red;
+
+    /* the width of the underline */
+    -rtfx-underline-width: 1;
+
+    /* the dash lengths: allows dot/dash style lines */
+    -rtfx-underline-dash-array: 1;
+}
 .semicolon {
     -fx-font-weight: bold;
 }
