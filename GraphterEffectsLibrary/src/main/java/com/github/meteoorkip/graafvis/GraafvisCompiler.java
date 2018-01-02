@@ -60,17 +60,30 @@ public class GraafvisCompiler {
         /* Check for syntax errors */
         if (errorListener.hasErrors()) {
             /* Can't compile -- add errors to list */
+            StringBuilder sb = new StringBuilder();
             errors.addAll(errorListener.getErrors());
-            throw new SyntaxException();
+            sb.append("TODO message for RON"); //TODO for RON
+            for (VisError error: errorListener.getErrors()) {
+                sb.append("\n" + "ERROR: " +  error.toString());
+            }
+            throw new SyntaxException(sb.toString());
         }
         /* Parsing successful, continue to checking phase */
         GraafvisChecker checker = new GraafvisChecker();
         CheckerResult checkerResult = checker.check(programContext);
         if (checkerResult.getErrors().size() > 0) {
             /* Checker found errors */
+            StringBuilder sb = new StringBuilder();
+            sb.append("TODO message for RON"); //TODO for RON
             errors.addAll(checkerResult.getErrors());
+            for (VisError error: checkerResult.getErrors()) {
+                sb.append("\n" + "ERROR: " + error.toString());
+            }
             warnings.addAll(checkerResult.getWarnings());
-            throw new CheckerException();
+            for (Warning warning: checkerResult.getWarnings()) {
+                sb.append("\n" + "WARNING: " + warning.toString());
+            }
+            throw new CheckerException(sb.toString());
         }
         warnings.addAll(checkerResult.getWarnings());
         /* Passed the checking phase, generate program */
@@ -89,11 +102,18 @@ public class GraafvisCompiler {
 
     /** An exception that is thrown when a syntax error has been found */
     public class SyntaxException extends Exception {
+        public SyntaxException(String message) {
+            super(message);
+        }
+
         /* One or more syntax errors occurred while parsing */
     }
 
     /** An exception that is thrown when a checker has found an error */
     public class CheckerException extends Exception {
+        public CheckerException(String message) {
+            super(message);
+        }
         /* One or more checker errors occurred */
     }
 

@@ -2,6 +2,7 @@ package com.github.meteoorkip.system;
 
 import com.github.meteoorkip.utils.Triple;
 import org.w3c.dom.Node;
+import org.xmlunit.util.Convert;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.Validator;
 import org.xmlunit.xpath.JAXPXPathEngine;
@@ -9,7 +10,12 @@ import org.xmlunit.xpath.JAXPXPathEngine;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathFactory;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class SVGTestEngine extends JAXPXPathEngine {
 
@@ -67,6 +73,7 @@ public class SVGTestEngine extends JAXPXPathEngine {
     public Iterable<Node> getAttributeValues(SVGElementQuery svgElementQuery, String attribute){
         return this.selectNodes(generateSVGElementXpathAttributeGetValuesQuery(svgElementQuery,attribute),source);
     }
+
     /**
      * Look up the amount of elements conforming to the given criteria defined
      * in the {@link SVGElementQuery} of the attribute given in attribute
@@ -129,8 +136,7 @@ public class SVGTestEngine extends JAXPXPathEngine {
     }
 
     private String generateSVGElementXPathIndexQuery(SVGElementQuery svgElementQuery, int occurence){
-        String query = "count(" + generateSVGElementXPathGetQuery(svgElementQuery) + "[" + String.valueOf(occurence) + "]/preceding-sibling::*)";
-        return query;
+        return "count(" + generateSVGElementXPathGetQuery(svgElementQuery) + "[" + String.valueOf(occurence) + "]/preceding-sibling::*)";
     }
 
     private String generateSVGElementXpathAttributeGetValuesQuery(SVGElementQuery svgElementQuery, String attribute){
@@ -145,5 +151,11 @@ public class SVGTestEngine extends JAXPXPathEngine {
         return query;
     }
 
-  
+    public String getSVGString() {
+        Reader reader = Convert.toInputSource(source).getCharacterStream();
+        Scanner scanner = new Scanner(reader).useDelimiter("\\A");
+        String str = scanner.hasNext() ? scanner.next() : "";
+        str = str.replaceAll(">", ">\n").replaceAll("</","\n</");
+        return str;
+    }
 }
