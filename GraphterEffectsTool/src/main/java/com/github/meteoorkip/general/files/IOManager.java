@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class IOManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select GraafVis Script");
 
-        fileChooser.setInitialDirectory(FileModel.getInstance().getDefaultDirectoryPath().toFile());
+        fileChooser.setInitialDirectory(FileModel.getCurrentDirectoryFile());
         //System.out.println((FileModel.getInstance().getLastSaveAndLoadPathGraafVis().toFile()));
 
         fileChooser.getExtensionFilters().add(visFilesFilter);
@@ -40,6 +40,7 @@ public class IOManager {
 
         File script = fileChooser.showOpenDialog(new Stage());
         if (script != null) {
+            FileModel.setCurrentDirectoryPath(script.getParentFile().getPath());
             FileModel.getInstance().loadGraafVisFile(script.toPath());
             //Path subpath = script.toPath().subpath(0, script.toPath().getNameCount()-1);
             //FileModel.getInstance().setLastSaveAndLoadPathGraafVis(subpath);
@@ -49,9 +50,9 @@ public class IOManager {
     public static void showLoadGraphsPopup(boolean replaceExistingFiles) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Graph(s)");
-        String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+        //FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
 //        path += "/tests";
-        fileChooser.setInitialDirectory(new File(path));
+        fileChooser.setInitialDirectory(FileModel.getCurrentDirectoryFile());
 
         fileChooser.getExtensionFilters().add(graphFilesFilter);
         fileChooser.getExtensionFilters().add(dotFilesFilter);
@@ -65,6 +66,7 @@ public class IOManager {
             for (File file: graphFileList){
                 graphPathList.add(file.toPath());
             }
+            FileModel.setCurrentDirectoryPath(graphFileList.get(graphFileList.size()-1).getParentFile().getPath());
             //FileModel.getInstance().setLastSaveAndLoadPathGraafVis(graphPathList.get(0).subpath(0,graphPathList.get(0).getNameCount()-1));
 
             if (replaceExistingFiles) {
@@ -81,7 +83,7 @@ public class IOManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save GraafVis Script");
         fileChooser.getExtensionFilters().add(visFilesFilter);
-        fileChooser.setInitialDirectory(FileModel.getInstance().getDefaultDirectoryPath().toFile());
+        fileChooser.setInitialDirectory(FileModel.getCurrentDirectoryFile());
         fileChooser.setInitialFileName(path.getFileName().toString());
         File fileLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
@@ -89,6 +91,7 @@ public class IOManager {
 
         try {
             if (fileLocation != null) {
+                FileModel.setCurrentDirectoryPath(fileLocation.getParentFile().getPath());
                 Files.write(fileLocation.toPath(), codeList, Charset.forName("UTF-8"));
                 FileModel.getInstance().loadGraafVisFile(fileLocation.toPath());///FileModel.getInstance().setLastSaveAndLoadPathGraafVis(path.subpath(0, path.getNameCount()-1));
             }
@@ -113,11 +116,14 @@ public class IOManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Generated Visualization");
         fileChooser.getExtensionFilters().add(svgFilesFilter);
-        fileChooser.setInitialDirectory(FileModel.getInstance().getDefaultDirectoryPath().toFile());
+        fileChooser.setInitialDirectory(FileModel.getCurrentDirectoryFile());
         fileChooser.setInitialFileName(svgPath.getFileName().toString());
         File saveLocation = fileChooser.showSaveDialog(new Stage());
         List<String> codeList = new ArrayList<>();
 
+        if (saveLocation != null) {
+            FileModel.setCurrentDirectoryPath(saveLocation.getParentFile().getPath());
+        }
 
         try {
             codeList.add(readFile(svgPath));

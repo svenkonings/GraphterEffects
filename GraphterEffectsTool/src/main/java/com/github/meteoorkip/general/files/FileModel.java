@@ -21,7 +21,8 @@ public class FileModel extends Observable{
     public String graafVisCode;
     private boolean changesSaved = true;
     private Path selectedGraph;
-    private final Path defaultDirectoryPath;
+    private final static String defaultDirectoryPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+    private static String currentDirectoryPath = defaultDirectoryPath;
 
     public Path getGraafVisFilePath() {
         return graafVisFilePath;
@@ -133,8 +134,12 @@ public class FileModel extends Observable{
         return selectedGraph;
     }
 
-    public Path getDefaultDirectoryPath() {
-        return defaultDirectoryPath;
+    public static void setCurrentDirectoryPath(String currentDirectoryPath) {
+        FileModel.currentDirectoryPath = currentDirectoryPath;
+    }
+
+    public static File getCurrentDirectoryFile() {
+        return Paths.get(currentDirectoryPath).toFile();
     }
 
     private static FileModel ourInstance = new FileModel();
@@ -142,10 +147,5 @@ public class FileModel extends Observable{
     public static FileModel getInstance() {
         return ourInstance;
     }
-
-    private FileModel() {
-        defaultDirectoryPath = Paths.get(FileSystemView.getFileSystemView().getDefaultDirectory().getPath());
-    }
-
 
 }
