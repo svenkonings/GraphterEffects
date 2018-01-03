@@ -49,12 +49,12 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     /**
      * Generates shorthand predicates to address nodes with specific labels, and immediately adds the clauses enabling
-     * these predicates.
+     * these predicates. If no renaming is specified, the original label name from the input graph will be used as
+     * functor.
      *
      * An example:
      *      Line in Graafvis script:        node labels: "Wolf" as wolf.
      *      Generates the hidden rule:      node(X), label(X, "Wolf") -> wolf(X).
-     *      Here, graphName is "\"Wolf\"" and scriptName is "wolf".
      *
      * @param ctx   the parse tree node
      * @return      null
@@ -62,11 +62,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     @Override public Term visitNodeLabelGen(NodeLabelGenContext ctx) {
         // Example: wolf
         for (LabelContext label : ctx.label()) {
-            String graphName = label.STRING().getText();
-            String scriptName = label.ID() == null ? removeOuterChars(graphName) : label.ID().getText();
+            String inputName = label.STRING().getText();
+            String scriptName = label.ID() == null ? removeOuterChars(inputName) : label.ID().getText();
             addClause(
                     struct(scriptName, var("X")),
-                    and(struct("node", var("X")), struct("label", var("X"), struct(graphName)))
+                    and(struct("node", var("X")), struct("label", var("X"), struct(inputName)))
             );
         }
         return null;
@@ -74,14 +74,14 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     /**
      * Generates shorthand predicates to address edges with specific labels, and immediately adds these clauses enabling
-     * these predicates.
+     * these predicates. If no renaming is specified, the original label name from the input graph will be used as
+     * functor.
      *
      * An example:
      *      Line in Graafvis script:        edge labels: "Is friends with" as friends.
      *      Generates the hidden rules:     edge(X), label(X, "Is friends with")        -> friends(X).
      *                                      edge(X, Y, Z), label(Z, "Is friends with")  -> friends(X, Y).
      *                                      edge(X, Y, Z), label(Z, "Is friends with")  -> friends(X, Y, Z).
-     *      Here, graphName is "\"Is friends with\"" and scriptName is "friends".
      *
      * @param ctx   the parse tree node
      * @return      null
@@ -89,20 +89,20 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     @Override public Term visitEdgeLabelGen(EdgeLabelGenContext ctx) {
         // Example: e
         for (LabelContext label : ctx.label()) {
-            String graphName = label.STRING().getText();
-            String scriptName = label.ID() == null ? removeOuterChars(graphName) : label.ID().getText();
+            String inputName = label.STRING().getText();
+            String scriptName = label.ID() == null ? removeOuterChars(inputName) : label.ID().getText();
             //
             addClause(
                     struct(scriptName, var("X")),
-                    and(struct("edge", var("X")), struct("label", var("X"), struct(graphName)))
+                    and(struct("edge", var("X")), struct("label", var("X"), struct(inputName)))
             );
             addClause(
                     struct(scriptName, var("X"), var("Y")),
-                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(graphName)))
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(inputName)))
             );
             addClause(
                     struct(scriptName, var("X"), var("Y"), var("Z")),
-                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(graphName)))
+                    and(struct("edge", var("X"), var("Y"), var("Z")), struct("label", var("Z"), struct(inputName)))
             );
         }
         return null;
@@ -286,8 +286,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     /**
-     * Visits the {@link ParseTree} multi arguments of a multi compound term, returning a {@link Term} list representing
-     * every generated regular compound term.
+     * Visits the {@link ParseTree} multi arguments of a multi compound term, returning a {@link List<Term>} containing
+     * every generated (singular) compound term.
      * Used for visiting {@link MultiAndCompoundAntecedentContext}, {@link MultiOrCompoundAntecedentContext} and
      * {@link MultiCompoundConsequenceContext}.
      *
@@ -295,8 +295,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      *      Line in Graafvis script:        p{a, (X,Y), ((a,b)), (), []}.
      *      Generates the hidden rules:     p(a). p(X,Y). p((a,b)). p. p([]).
      *
-     * N.B. using {@link com.github.meteoorkip.prolog.TuProlog#safeStruct(String, Term...)} ensures that a multi argument which does not
-     * contain any arguments still generates a atom: the functor without arguments.
+     * N.B. using {@link com.github.meteoorkip.prolog.TuProlog#safeStruct(String, Term...)} ensures that a multi
+     * argument which does not contain any arguments still generates an atom: the functor without arguments.
      * N.B. there is no check ensuring multiArgs is not null, as the grammar prohibits using a multi compound without
      * multi arguments. Example: p{} is not allowed.
      *
