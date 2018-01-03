@@ -22,16 +22,16 @@ import java.util.Set;
 
 public class GraphterEffects {
 
-    public static final String HELPSTRING = "Usage: java -jar GraphterEffects.jar <flags and arguments>.\n" +
-            "For example: java -jar GraphterEffects.jar \"C:/Documents/graph1.dot\" \"C:/Documents/viz.vis\" \"D:/Outputs/1.svg\"\n\n" +
-            "The order of arguments should be as follows:\n\n" +
-            "<path to graph file> <path to script file> <output svg path> \n\n" +
-            "Moreover, the following flags may be used anywhere in the call:\n" +
-            "--printresult(or -p)   An output svg parameter is no longer expected. Output is placed in the console.\n" +
-            "--nograph (or -n)      A graph parameter is no longer expected. No graph is considered.\n" +
-            "--help (or -h)         Shows this help screen. No parameters or other flags are expected.\n" +
-            "--version (or -v)      Shows the version number. No parameters or other flags are expected.\n" +
-            "--debuginfo (or -d)    Prints debug information to the console.\n\n" +
+    public static final String HELPSTRING = "Usage: java -jar GraphterEffects.jar <flags and arguments>." + System.lineSeparator() +
+            "For example: java -jar GraphterEffects.jar \"C:/Documents/graph1.dot\" \"C:/Documents/viz.vis\" \"D:/Outputs/1.svg\"" + System.lineSeparator() + System.lineSeparator() +
+            "The order of arguments should be as follows:" + System.lineSeparator() + System.lineSeparator() +
+            "<path to graph file> <path to script file> <output svg path> " + System.lineSeparator() + System.lineSeparator() +
+            "Moreover, the following flags may be used anywhere in the call:" + System.lineSeparator() +
+            "--printresult(or -p)   An output svg parameter is no longer expected. Output is placed in the console." + System.lineSeparator() +
+            "--nograph (or -n)      A graph parameter is no longer expected. No graph is considered." + System.lineSeparator() +
+            "--help (or -h)         Shows this help screen. No parameters or other flags are expected." + System.lineSeparator() +
+            "--version (or -v)      Shows the version number. No parameters or other flags are expected." + System.lineSeparator() +
+            "--debuginfo (or -d)    Prints debug information to the console." + System.lineSeparator() + System.lineSeparator() +
             "Flags may be concatenated. For example, -p -n means the same as -pn.";
 
     public static final String VERSIONSTRING = "1.0.0";

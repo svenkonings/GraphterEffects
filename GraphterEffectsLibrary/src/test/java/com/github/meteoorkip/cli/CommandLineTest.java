@@ -56,7 +56,7 @@ public class CommandLineTest {
     @Test
     public void testDebugInfo() throws Exception {
         String debuginfo = getString(new String[]{graphLoc, visLoc, svgLoc, "-d"});
-        assertTrue(debuginfo.contains("#graph1.dot\t{}\nNODES"));
+        assertTrue(debuginfo.contains("#graph1.dot\t{}"));
         assertTrue(debuginfo.contains(":-"));
         assertTrue(debuginfo.contains("** Choco"));
     }
@@ -75,7 +75,7 @@ public class CommandLineTest {
 
     @Test
     public void testPrintResult() throws Exception {
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        assertEquals(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "\n" +
                 "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"max-height:100%\" viewBox=\"0 0 43 43\">\n" +
                 "  <line x1=\"38\" y1=\"16\" x2=\"27\" y2=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
@@ -85,7 +85,7 @@ public class CommandLineTest {
                 "  <ellipse rx=\"5\" ry=\"5\" cx=\"27\" cy=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
                 "  <ellipse rx=\"5\" ry=\"5\" cx=\"5\" cy=\"38\" fill=\"white\" stroke=\"black\"/>\n" +
                 "  <ellipse rx=\"5\" ry=\"5\" cx=\"16\" cy=\"27\" fill=\"white\" stroke=\"black\"/>\n" +
-                "</svg>\n", getString(new String[]{graphLoc, visLoc, "-p"}));
+                "</svg>\n").replaceAll("[\r\n]",""), getString(new String[]{graphLoc, visLoc, "-p"}).replaceAll("[\r\n]",""));
     }
 
 
