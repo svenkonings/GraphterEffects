@@ -1,0 +1,7 @@
+attribute(X,Y,Z) -> text(X,"attribute").
+label(X,Y) -> text(X,"b").
+
+
+
+
+

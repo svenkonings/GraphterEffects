@@ -1,0 +1,7 @@
+//A random network
+digraph {
+	a -> b[a="a"];
+	a -> c[b="b"];
+	a -> d[label="labelT",flag="testflag"];
+
+}

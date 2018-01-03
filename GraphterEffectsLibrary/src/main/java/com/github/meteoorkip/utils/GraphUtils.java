@@ -313,4 +313,8 @@ public final class GraphUtils {
         }
         return res;
     }
+
+    public static Graph getEmptyGraph() {
+        return new MultiGraph("g");
+    }
 }

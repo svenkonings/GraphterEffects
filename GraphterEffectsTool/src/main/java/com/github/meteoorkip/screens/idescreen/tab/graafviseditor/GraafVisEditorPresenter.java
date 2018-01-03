@@ -34,7 +34,7 @@ public class GraafVisEditorPresenter implements Initializable {
     //Interesting for pre-defined things with a meaning
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
 
-
+    //private static final String ERROR_PATTERNS = "[,(,)+| ]";
     private static final String PAREN_PATTERN = "[()]";
     private static final String BRACE_PATTERN = "[{}]";
     private static final String BRACKET_PATTERN = "[\\[\\]]";
@@ -55,6 +55,7 @@ public class GraafVisEditorPresenter implements Initializable {
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+                   //+ "|(?<ERROR>" + ERROR_PATTERNS + ")"
                     + "|(?<PAREN>" + PAREN_PATTERN + ")"
                     + "|(?<BRACE>" + BRACE_PATTERN + ")"
                     + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
@@ -110,6 +111,7 @@ public class GraafVisEditorPresenter implements Initializable {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORD") != null ? "keyword" :
+                            //matcher.group("ERROR") != null ? "error" :
                             matcher.group("PAREN") != null ? "paren" :
                                     matcher.group("BRACE") != null ? "brace" :
                                             matcher.group("BRACKET") != null ? "bracket" :

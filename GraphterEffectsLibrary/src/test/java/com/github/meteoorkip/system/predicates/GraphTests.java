@@ -28,11 +28,11 @@ public final class GraphTests {
 
     @BeforeClass
     public static void setup() throws SAXException, GraafvisCompiler.SyntaxException, IOException, GraafvisCompiler.CheckerException {
-        generated_visualization1 = new TestHelper().compileFile("regression/system/predicates/graphtest/graphtest.vis", "regression/system/predicates/graphtest/graph1.dot");
+        generated_visualization1 = new TestHelper().compileFile("regression/predicates/graphtest/graphtest.vis", "regression/predicates/graphtest/graph1.dot");
         svgTestEngine1 = new SVGTestEngine(Input.fromString(generated_visualization1).build());
-        generated_visualization2 = new TestHelper().compileFile("regression/system/predicates/graphtest/graphtest.vis", "regression/system/predicates/graphtest/graph2.dot");
+        generated_visualization2 = new TestHelper().compileFile("regression/predicates/graphtest/graphtest.vis", "regression/predicates/graphtest/graph2.dot");
         svgTestEngine2 = new SVGTestEngine(Input.fromString(generated_visualization2).build());
-        generated_visualization3 = new TestHelper().compileFile("regression/system/predicates/graphtest/graphtest.vis", "regression/system/predicates/graphtest/graph3.dot");
+        generated_visualization3 = new TestHelper().compileFile("regression/predicates/graphtest/graphtest.vis", "regression/predicates/graphtest/graph3.dot");
         svgTestEngine3 = new SVGTestEngine(Input.fromString(generated_visualization3).build());
     }
 
