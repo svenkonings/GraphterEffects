@@ -9,6 +9,7 @@ import org.dom4j.io.XMLWriter;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Comparator;
 
@@ -112,5 +113,39 @@ public class SvgDocumentGenerator {
                 writer.close();
             }
         }
+    }
+
+
+    /**
+     * Write the given document to a String.
+     *
+     * @param document The given document.
+     */
+    public static String writeDocumentToString(Document document) {
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter writer = null;
+        StringWriter stringwriter = new StringWriter();
+        try {
+            writer = new XMLWriter(stringwriter, format);
+            try {
+                writer.write(document);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                stringwriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return stringwriter.toString();
     }
 }

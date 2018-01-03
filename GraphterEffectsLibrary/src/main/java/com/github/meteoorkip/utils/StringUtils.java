@@ -196,4 +196,10 @@ public final class StringUtils {
     }
 
 
+    public static String Chomp(String content) {
+        if (content.endsWith("\r\n")) {
+            return content.substring(0, content.length()-2);
+        }
+        return content.endsWith("\r|\n") ? content.substring(0, content.length()-1) : content;
+    }
 }
