@@ -1,0 +1,7 @@
+//A random network
+graph {
+    a -> c;
+    b -> d;
+    e -- f;
+    g -- h;
+}

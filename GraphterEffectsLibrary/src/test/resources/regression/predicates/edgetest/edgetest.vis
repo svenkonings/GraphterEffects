@@ -1,0 +1,36 @@
+//edge(ID)
+edge(ID),text_term(T,ID),text_concat("edgeID:",T,Rep) -> text([ID,0],Rep).
+
+//edge(S,T)
+edge(Source,Target),text_term(SText,Source),text_term(TText,Target),
+text_concat(SText,TText,Concat), text_concat("edgeST:",Concat,Rep) -> text([Concat,1],Rep).
+
+//edge(S,T,ID)
+edge(Source,Target,ID),text_term(SText,Source),text_term(TText,Target), text_term(IDText,ID),
+text_concat(SText,TText,Concat),text_concat(Concat,IDText,Concat2),text_concat("edgeSTID:",Concat2,Rep) -> text([Concat2,2],Rep).
+
+//attribute(ID,Name,Value)
+edge(ID), attribute(ID,Name,Value),text_concat(Name,Value,NVConcat),text_concat("attribute:",NVConcat,Rep)  -> text([ID,3],Rep).
+
+//flag(ID,Name)
+edge(ID),flag(ID,Name), text_concat("flag:",Name,Rep)  -> text([ID,4],Rep).
+
+//type(ID,Name)
+edge(ID),type(ID,Name), text_concat("type:",Name,Rep)  -> text([ID,5],Rep).
+
+//label(ID,Value)
+edge(ID), label(ID,Value), text_concat("label:",Value,Rep)  -> text([ID,6],Rep).
+
+//directed(ID)
+edge(ID), directed(ID), text_concat("directed:",ID,Rep) -> text([ID,7],Rep).
+
+//undirected(ID)
+edge(ID), undirected(ID), text_concat("undirected:",ID,Rep) -> text([ID,8],Rep).
+
+//attributeCount(ID,Value)
+edge(ID), attributeCount(ID,Value),text_term(IDText,ID),text_term(VText,Value), text_concat(IDText,VText,Concat), text_concat("attributeCount:",Concat,Rep) -> text([ID,9],Rep).
+
+//index(ID,Value) Note: text_term is necessary for the value because the value is an integer
+edge(ID), index(ID,Value),text_term(IDText,ID),text_term(VText,Value), text_concat(IDText,VText,Concat), text_concat("index:",Concat,Rep) -> text([ID,10],Rep).
+
+
