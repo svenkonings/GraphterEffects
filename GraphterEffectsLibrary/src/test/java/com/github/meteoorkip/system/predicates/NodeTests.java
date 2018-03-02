@@ -47,6 +47,6 @@ public class NodeTests {
 
 
     private int textcount(String text) {
-        return svgTestEngine.getElementsCount(new SVGElementQuery("text", new Triple<>("text()","=",text)));
+        return svgTestEngine.getElementsCount(new SVGElementQuery("body", new Triple<>("text()","=",text)));
     }
 }

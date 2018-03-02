@@ -103,7 +103,7 @@ public class SVGTestEngine extends JAXPXPathEngine {
     }
 
     private String generateSVGElementXPathGetQuery(SVGElementQuery svgSVGElement){
-        String query = "//*[name()='svg']/*[name()='" + svgSVGElement.getType() + "'";
+        String query = "//*[name()='" + svgSVGElement.getType() + "'";
 
         for (Triple<String,String,Object> attributeChecker : svgSVGElement.getConditions()) {
             query += " and ";

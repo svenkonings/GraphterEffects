@@ -58,81 +58,81 @@ public final class EdgeTests {
 
     @Test
     public void edgeTest() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
-        SVGElementQuery testQuery = new SVGElementQuery("text");
-        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"edgeID.*");
+        SVGElementQuery testQuery = new SVGElementQuery("body");
+        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"edgeID.*");
         assertEquals(3,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes2 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("text")), "\"edgeID.*");
+        Iterable<Node> nodes2 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("body")), "\"edgeID.*");
         assertEquals(3,nodes2.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes3 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("text")), "\"edgeID.*");
+        Iterable<Node> nodes3 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("body")), "\"edgeID.*");
         assertEquals(4,nodes3.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine4.getElements(new SVGElementQuery("text")), "\"edgeID.*");
+        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine4.getElements(new SVGElementQuery("body")), "\"edgeID.*");
         assertEquals(3,nodes4.spliterator().getExactSizeIfKnown());
     }
 
     @Test @Ignore//TODO: Broken test!!!
     public void attributeTest(){
-        assertTrue(svgTestEngine1.containsElement(new SVGElementQuery("text", new Triple<>("text()","=","attribute"))));
+        assertTrue(svgTestEngine1.containsElement(new SVGElementQuery("body", new Triple<>("text()","=","attribute"))));
     }
 
     @Test @Ignore
     public void flagTest(){
-        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"flag.*");
+        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"flag.*");
         assertEquals(0,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"flag.*");
+        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"flag.*");
         assertEquals(1,nodes4.spliterator().getExactSizeIfKnown());
     }
 
     @Test @Ignore
     public void labelTest(){
-        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"label.*");
+        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"label.*");
         assertEquals(0,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"label.*");
+        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"label.*");
         assertEquals(1,nodes4.spliterator().getExactSizeIfKnown());
     }
 
     @Test
     public void directedTest(){
-        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"directed.*");
+        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"directed.*");
         assertEquals(0,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes2 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("text")), "\"directed.*");
+        Iterable<Node> nodes2 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("body")), "\"directed.*");
         assertEquals(3,nodes2.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes3 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("text")), "\"directed.*");
+        Iterable<Node> nodes3 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("body")), "\"directed.*");
         assertEquals(2,nodes3.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine4.getElements(new SVGElementQuery("text")), "\"directed.*");
+        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine4.getElements(new SVGElementQuery("body")), "\"directed.*");
         assertEquals(3,nodes4.spliterator().getExactSizeIfKnown());
     }
 
     @Test
     public void undirectedTest(){
-        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"undirected.*");
+        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"undirected.*");
         assertEquals(3,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes2 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("text")), "\"undirected.*");
+        Iterable<Node> nodes2 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("body")), "\"undirected.*");
         assertEquals(0,nodes2.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes3 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("text")), "\"undirected.*");
+        Iterable<Node> nodes3 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("body")), "\"undirected.*");
         assertEquals(2,nodes3.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine4.getElements(new SVGElementQuery("text")), "\"undirected.*");
+        Iterable<Node> nodes4 = SVGTestEngine.filterOnValue(svgTestEngine4.getElements(new SVGElementQuery("body")), "\"undirected.*");
         assertEquals(0,nodes4.spliterator().getExactSizeIfKnown());
     }
 
     @Test @Ignore
     public void attributeCountTest(){
-        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"attributeCount.*0.*");
+        Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"attributeCount.*0.*");
         assertEquals(3,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes41 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("text")), "\"attributeCount.*1.*");
+        Iterable<Node> nodes41 = SVGTestEngine.filterOnValue(svgTestEngine2.getElements(new SVGElementQuery("body")), "\"attributeCount.*1.*");
         assertEquals(2,nodes1.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes42 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("text")), "\"attributeCount.*2");
+        Iterable<Node> nodes42 = SVGTestEngine.filterOnValue(svgTestEngine3.getElements(new SVGElementQuery("body")), "\"attributeCount.*2");
         assertEquals(1,nodes1.spliterator().getExactSizeIfKnown());
     }
 
     @Test
     public void indexTest(){
-        Iterable<Node> nodes11 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"index.*0");
+        Iterable<Node> nodes11 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*0");
         assertEquals(1,nodes11.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes12 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"index.*1");
+        Iterable<Node> nodes12 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*1");
         assertEquals(1,nodes12.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes13 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"index.*2");
+        Iterable<Node> nodes13 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*2");
         assertEquals(1,nodes13.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes14 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("text")), "\"index.*3");
+        Iterable<Node> nodes14 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*3");
         assertEquals(0,nodes14.spliterator().getExactSizeIfKnown());
     }
 

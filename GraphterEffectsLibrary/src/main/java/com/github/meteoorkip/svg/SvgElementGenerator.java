@@ -5,6 +5,7 @@ import org.dom4j.Element;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Generates SVG elements from visualization elements.
@@ -207,14 +208,29 @@ public class SvgElementGenerator {
     }
 
     public static SvgAttributeGenerator text() {
-        SvgAttributeGenerator attr = element("text");
+        SvgAttributeGenerator attr = element("foreignObject");
         attr.setMapping("x1", "x");
         attr.setMapping("y1", "y");
-        attr.setMapping("width", "textLength");
-        attr.setMapping("height", "font-size");
-        attr.setMapping("text", Element::addText);
-        attr.addDefault("alignment-baseline", "hanging");
-        attr.addDefault("lengthAdjust", "spacingAndGlyphs");
+        attr.setMapping("width", textStyleConsumer("width"));
+        attr.setMapping("height", textStyleConsumer("height"));
+        attr.setMapping("text", (element, value) -> element.addElement("body").setText(value));
         return attr;
+    }
+
+    private static BiConsumer<Element, String> textStyleConsumer(String property) {
+        return (element, value) -> {
+            element.addAttribute(property, value);
+            Element style = element.element("style");
+            if (style == null) {
+                style = element.addElement("style");
+            }
+            if (style.getText().isEmpty()) {
+                style.setText("body { word-break: break-all; " + property + ": " + value + "px; }");
+            } else {
+                String oldStyle = style.getText();
+                String newStyle = oldStyle.substring(0, oldStyle.lastIndexOf('}')) + property + ": " + value + "px; }";
+                style.setText(newStyle);
+            }
+        };
     }
 }
