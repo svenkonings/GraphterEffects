@@ -1,0 +1,4 @@
+pos(a, 0, 0).
+size(a, 400).
+fontSize(a, 40).
+text(a, "A long line of text to test the text wrapping, this line should be long enough to invoke a wrap (this makes me hungry :)").

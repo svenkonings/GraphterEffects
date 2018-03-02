@@ -211,15 +211,16 @@ public class SvgElementGenerator {
         SvgAttributeGenerator attr = element("foreignObject");
         attr.setMapping("x1", "x");
         attr.setMapping("y1", "y");
-        attr.setMapping("width", textStyleConsumer("width"));
-        attr.setMapping("height", textStyleConsumer("height"));
+        attr.setMapping("width", textStyleConsumer("width", true));
+        attr.setMapping("height", textStyleConsumer("height", true));
+        attr.setMapping("fontSize", textStyleConsumer("font-size", false));
         attr.setMapping("text", (element, value) -> element.addElement("body").setText(value));
         return attr;
     }
 
-    private static BiConsumer<Element, String> textStyleConsumer(String property) {
+    private static BiConsumer<Element, String> textStyleConsumer(String property, boolean addToRoot) {
         return (element, value) -> {
-            element.addAttribute(property, value);
+            if (addToRoot) element.addAttribute(property, value);
             Element style = element.element("style");
             if (style == null) {
                 style = element.addElement("style");

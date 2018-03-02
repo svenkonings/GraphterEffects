@@ -187,6 +187,9 @@ public class DefaultVisLibrary extends VisLibrary {
         putQuery("sameWidth (Elem1, Elem2)", equalsQuery("width"));
         putQuery("sameHeight(Elem1, Elem2)", equalsQuery("height"));
 
+        // Fonts
+        putQuery("fontSize(Elem, Size)", attrQuery("fontSize", "Size"));
+
         /*
           Then query predicates that set the relative position constraints
         */
