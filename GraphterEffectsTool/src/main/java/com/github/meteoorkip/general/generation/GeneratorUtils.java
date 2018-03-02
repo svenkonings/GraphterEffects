@@ -23,7 +23,8 @@ public class GeneratorUtils {
     public static Path saveAsTempScript(String filename, String code){
         //noinspection ResultOfMethodCallIgnored
         new File("/temp/generated").mkdirs();
-        Path tempFilePath = Paths.get("/temp/generated",filename);
+
+        Path tempFilePath = Paths.get(System.getProperty("user.dir") +"/temp/generated",filename);
         try {
             IOManager.saveVIS(tempFilePath,code);
             return tempFilePath;
