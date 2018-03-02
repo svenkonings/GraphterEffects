@@ -21,9 +21,10 @@ import java.util.List;
  */
 public class TestHelper {
 
-    public TestHelper() {
+    private String script;
+    private Graph graph;
 
-    }
+    public TestHelper() {}
 
     public String compileFile(String scriptName, String graphFileName) throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SAXException {
         SolveResults results = solve(scriptName, graphFileName);
@@ -42,16 +43,24 @@ public class TestHelper {
     private SolveResults solve(String scriptname, String graphFileName) throws GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, IOException, SAXException {
         GraafvisCompiler compiler = new GraafvisCompiler();
         Solver solver = new Solver();
-        String script = FileUtils.fromResourcesAsString(scriptname);
+        script = FileUtils.fromResourcesAsString(scriptname);
         List<Term> terms = compiler.compile(script);
 
         SolveResults results;
         if (graphFileName != null) {
-            Graph graph = Importer.graphFromFile(new File(this.getClass().getClassLoader().getResource(graphFileName).getFile()));
+            graph = Importer.graphFromFile(new File(this.getClass().getClassLoader().getResource(graphFileName).getFile()));
             results = solver.solve(graph, terms);
         } else {
             results = solver.solve(terms);
         }
         return results;
+    }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public String getScript() {
+        return script;
     }
 }

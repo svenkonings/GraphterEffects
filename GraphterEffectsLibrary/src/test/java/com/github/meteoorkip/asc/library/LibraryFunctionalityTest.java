@@ -1,7 +1,8 @@
-package com.github.meteoorkip.asc;
+package com.github.meteoorkip.asc.library;
 
 import alice.tuprolog.SolveInfo;
 import alice.tuprolog.Term;
+import com.github.meteoorkip.asc.ASCLibrary;
 import com.github.meteoorkip.graphloader.Importer;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.FileUtils;
@@ -17,7 +18,7 @@ import static com.github.meteoorkip.prolog.TuProlog.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class LibraryTest {
+public class LibraryFunctionalityTest {
 
     TuProlog diengine;
     TuProlog undiengine;
@@ -139,8 +140,6 @@ public class LibraryTest {
     public void ComponentTest() throws Exception {
         GraphUtils.ConnectedComponentsCount(digraph);
         SolveInfo res = asrcmap.get(digraph).getProlog().solve(and(struct("node", var("X")), struct("inComponent", var("X"), var("Y"))));
-        System.out.println(res);
-
         assertTrue(res.isSuccess());
     }
 }

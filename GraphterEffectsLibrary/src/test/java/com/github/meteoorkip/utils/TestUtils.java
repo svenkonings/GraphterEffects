@@ -57,15 +57,18 @@ public final class TestUtils {
         element.getAttributeKeySet().forEach(
                 attributeKey -> {
 
-                    List<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", struct(element.getId()), struct(attributeKey), var("Value"))));
+                    List<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", struct(element.getId()), struct("\"" + attributeKey + "\""), var("Value"))));
                     String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
                     if (StringUtils.isDouble(StringUtils.removeQuotation(expectedValue)) || expectedValue.contains("[")) {
                         return;
                     }
                     try {
                         assert answerContains(answers, "Value", expectedValue) || ((Struct) answers.get(0).get("Value")).getName().equals(expectedValue);
-                    } catch (Exception | AssertionError e) {
+                    } catch (Exception e) {
+                        e.printStackTrace();
                         assert false;
+                    } catch (AssertionError e) {
+                        throw new AssertionError(answers + " does not contain " + expectedValue);
                     }
                 }
         );

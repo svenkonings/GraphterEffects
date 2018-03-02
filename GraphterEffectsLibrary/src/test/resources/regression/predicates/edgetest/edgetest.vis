@@ -10,7 +10,7 @@ edge(Source,Target,ID),text_term(SText,Source),text_term(TText,Target), text_ter
 text_concat(SText,TText,Concat),text_concat(Concat,IDText,Concat2),text_concat("edgeSTID:",Concat2,Rep) -> text([Concat2,2],Rep).
 
 //attribute(ID,Name,Value)
-edge(ID), attribute(ID,Name,Value),text_concat(Name,Value,NVConcat),text_concat("attribute:",NVConcat,Rep)  -> text([ID,3],Rep).
+edge(ID), attribute(ID,Name,Value),text_concat(Name,Value,NVConcat),text_concat("attribute:",NVConcat,Rep), text_concat(ID,Name, Secid)  -> text([Secid,3],Rep).
 
 //flag(ID,Name)
 edge(ID),flag(ID,Name), text_concat("flag:",Name,Rep)  -> text([ID,4],Rep).

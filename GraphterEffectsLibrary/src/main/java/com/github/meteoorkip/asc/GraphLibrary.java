@@ -51,49 +51,6 @@ public abstract class GraphLibrary extends Library {
 
 
     /**
-     * Method used to retrieve any attribute from an {@link Element}, or to check their value.
-     *
-     * @param ID       ID of the element with an attribute.
-     * @param attrname Name of the attribute.
-     * @param value    Value of the attribute with that name.
-     * @return Whether unification was possible.
-     */
-    public boolean attributeSecond_3(Term ID, Term attrname, Term value) {
-        try {
-            value = value.getTerm();
-            String rname = StringUtils.removeQuotation(((Struct) attrname.getTerm()).getName());
-            String rstringvalue = value instanceof Struct ? ((Struct) value.getTerm()).getName() : null;
-            int rintvalue = value instanceof Int ? ((Int) value).intValue() : 0;
-            Element rID = GraphUtils.getByID(graph, ((Struct) ID.getTerm()).getName());
-
-            if (!rID.hasAttribute(rname)) {
-                return false;
-            }
-            if (value instanceof Struct) {
-                Object res = rID.getAttribute(rname);
-                if (res instanceof String) {
-                    return res.equals(rstringvalue);
-                }
-                return rID.getAttribute(rname).equals(rstringvalue);
-            } else if (value instanceof Var) {
-                Object atvalue = rID.getAttribute(rname);
-                if (atvalue instanceof Double && (Double) atvalue == Math.floor((Double) atvalue)) {
-                    value.unify(getEngine(), intVal((int) ((Double) atvalue).doubleValue()));
-                } else {
-                    value.unify(getEngine(), struct(StringUtils.ObjectToString(rID.getAttribute(rname))));
-                }
-                return true;
-
-            } else if (value instanceof Int) {
-                return rID.getNumber(rname) == (double) rintvalue;
-            }
-            return false;
-        } catch (Exception | AssertionError e) {
-            return false;
-        }
-    }
-
-    /**
      * Method used for predicates with two arguments of which the second is a numeric property.
      *
      * @param ID           ID of the element with the numeric property.
@@ -105,7 +62,8 @@ public abstract class GraphLibrary extends Library {
      * @return Whether unification was possible.
      */
     protected boolean numeric(Struct ID, Term numericValue, GetNumber numberGetter, boolean nodes, boolean edges, boolean graphs) {
-        Element gotten = GraphUtils.getByID(graph, ID.getName());
+        String name = ID.getName();
+        Element gotten = GraphUtils.getByID(graph, name);
         if (!nodes && gotten instanceof Node) {
             return false;
         }

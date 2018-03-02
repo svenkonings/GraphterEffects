@@ -1,17 +1,12 @@
 package com.github.meteoorkip.system.predicates;
 
-import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import com.github.meteoorkip.utils.Triple;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,9 +18,9 @@ public class NodeTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        generated_visualization1 = new TestHelper().compileFile("regression/predicates/nodetest.vis", "library/simple_graphs/nodetestgraph.dot");
+        TestHelper testhelper = new TestHelper();
+        generated_visualization1 = testhelper.compileFile("regression/predicates/nodetest.vis", "library/simple_graphs/nodetestgraph.dot");
         svgTestEngine = new SVGTestEngine(Input.fromString(generated_visualization1).build());
-        System.out.println(svgTestEngine.getSVGString());
     }
 
     @Test

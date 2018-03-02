@@ -1,21 +1,12 @@
 package com.github.meteoorkip.system.testing;
 
-import com.github.meteoorkip.system.SVGElementQuery;
-import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
-import com.github.meteoorkip.utils.Triple;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xmlunit.builder.Input;
-
-import javax.xml.transform.Source;
-
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
 
 public class InvalidLibraryExceptionTest {
 
