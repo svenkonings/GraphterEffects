@@ -119,21 +119,12 @@ public class ASCLibrary extends GraphLibrary {
             sb.append("indegree(X, Y) :- node(X), indegreeSecond(X, Y).\n");
             sb.append("outdegree(X, Y) :- node(X), outdegreeSecond(X, Y).\n");
             sb.append("neighbourCount(X, Y) :- node(X), neighbourCountSecond(X, Y).\n");
-            sb.append("label(X, Y) :- node(X), attribute(X, '\"label\"', Y).\n");
-            sb.append("label(X, Y) :- graph(X), attribute(X, '\"label\"', Y).\n");
-            sb.append("label(X, Y) :- edge(X), attribute(X, '\"label\"', Y).\n");
-            sb.append("flag(X, Y) :- node(X), attribute(X, '\"flag\"', Y).\n");
-            sb.append("flag(X, Y) :- graph(X), attribute(X, '\"flag\"', Y).\n");
-            sb.append("flag(X, Y) :- edge(X), attribute(X, '\"flag\"', Y).\n");
-            sb.append("type(X, Y) :- node(X), attribute(X, '\"type\"', Y).\n");
-            sb.append("type(X, Y) :- graph(X), attribute(X, '\"type\"', Y).\n");
-            sb.append("type(X, Y) :- edge(X), attribute(X, '\"type\"', Y).\n");
+            sb.append("label(X, Y) :- attribute(X, '\"label\"', Y).\n");
+            sb.append("flag(X, Y) :- attribute(X, '\"flag\"', Y).\n");
+            sb.append("type(X, Y) :- attribute(X, '\"type\"', Y).\n");
             sb.append("inComponent(X, Y) :- node(X), inComponentSecond(X, Y).\n");
             sb.append("inMST(X) :- edge(X), inMSTSecond(X).\n");
             sb.append("inShortestPath(X,Y,Z) :- edge(X), node(Y), node(Z), inShortestPathSecond(X,Y,Z).\n");
-            sb.append("index(X,Y) :- node(X), indexSecond(X,Y).\n");
-            sb.append("index(X,Y) :- edge(X), indexSecond(X,Y).\n");
-            sb.append("index(X,Y) :- graph(X), indexSecond(X,Y).\n");
             sb.append("colour(X,Y) :- color(X,Y).");
             return sb.toString();
         } catch (Exception e) {
@@ -342,28 +333,4 @@ public class ASCLibrary extends GraphLibrary {
             return false;
         }
     }
-
-
-    private Map<Element, Integer> indexing;
-
-    /**
-     * Returns whether a {@link Element} has the given index or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Element}.
-     * @param index Index of the {@link Element}.
-     * @return Whether the {@link Element} has the given index or unifies otherwise.
-     */
-    public boolean indexSecond_2(Term ID, Term index) {
-        if (indexing == null) {
-            indexing = new HashMap<>();
-            List<Element> elems = new LinkedList<>(GraphUtils.elements(graph, true, true, true));
-            elems.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
-            for (int i = 0; i < elems.size(); i++) {
-                indexing.put(elems.get(i), i);
-            }
-        }
-        return numeric((Struct) ID.getTerm(), index, n -> indexing.get(n), true, true, true);
-    }
-
-
 }

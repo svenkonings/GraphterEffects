@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 public final class EdgeTests {
 
     private static String generatedVisualizationBrokenAttribute;
-    //private static SVGTestEngine svgTestEngineBrokenAttribute;
 
     private static String generated_visualization1;
     private static SVGTestEngine svgTestEngine1;
@@ -50,8 +49,6 @@ public final class EdgeTests {
             generatedVisualizationBrokenAttribute = new TestHelper().compileFile("regression/predicates/edgetest/brokenattribute.vis", "regression/predicates/edgetest/brokenattribute.dot");
         } catch (ElementException e) {
             return;
-        } catch (Exception e) {
-            System.out.println();
         }
         fail();
     }
@@ -124,16 +121,16 @@ public final class EdgeTests {
         assertEquals(1,nodes1.spliterator().getExactSizeIfKnown());
     }
 
-    @Test
-    public void indexTest(){
-        Iterable<Node> nodes11 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*0");
-        assertEquals(1,nodes11.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes12 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*1");
-        assertEquals(1,nodes12.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes13 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*2");
-        assertEquals(1,nodes13.spliterator().getExactSizeIfKnown());
-        Iterable<Node> nodes14 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*3");
-        assertEquals(0,nodes14.spliterator().getExactSizeIfKnown());
-    }
+//    @Test
+//    public void indexTest(){
+//        Iterable<Node> nodes11 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*0");
+//        assertEquals(1,nodes11.spliterator().getExactSizeIfKnown());
+//        Iterable<Node> nodes12 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*1");
+//        assertEquals(1,nodes12.spliterator().getExactSizeIfKnown());
+//        Iterable<Node> nodes13 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*2");
+//        assertEquals(1,nodes13.spliterator().getExactSizeIfKnown());
+//        Iterable<Node> nodes14 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"index.*3");
+//        assertEquals(0,nodes14.spliterator().getExactSizeIfKnown());
+//    }
 
 }
