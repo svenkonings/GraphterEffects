@@ -44,12 +44,15 @@ public final class TestUtils {
 
     public static void testPredicateValue(TuProlog prolog, Element element, String predicate, String expectedID, String expectedValue) {
         Collection<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct(predicate, term(expectedID), var("Value"))));
-        assert answers.size() == 1;
         try {
+            assert answers.size() == 1;
             assert answerContains(answers, "Value", expectedValue);
-        } catch (Exception | AssertionError e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AssertionError();
+        } catch (AssertionError e) {
+            e.printStackTrace();
+            throw new AssertionError((and(elementTerm(element), struct(predicate, term(expectedID), var("Value"))).toString()) + " did not yield any results.");
         }
     }
 
