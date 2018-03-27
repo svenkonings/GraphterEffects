@@ -11,6 +11,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.junit.Test;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  *
  */
@@ -29,12 +34,19 @@ public class GraafvisCheckerTest {
     public void test() {
         GraafvisParser.ProgramContext program = parse(PROGRAM_1);
         CheckerResult checkerResult = new GraafvisChecker().check(program);
-        for (VisError error : checkerResult.getErrors()) {
-            System.err.println(error);
-        }
-        for (Warning warning : checkerResult.getWarnings()) {
-            System.out.println(warning);
-        }
+
+        List<VisError> errors = checkerResult.getErrors();
+        assertEquals(6, errors.size());
+        assertEquals("Could not turn Wolf into a functor at line 1:0", errors.get(0).toString());
+        assertEquals("Found blacklisted functor \"edge\" at line 4:11", errors.get(1).toString());
+        assertEquals("Introduced a new variable in the consequence of a clause at line 4:18.", errors.get(2).toString());
+        assertEquals("Introduced a new variable in the consequence of a clause at line 6:10.", errors.get(3).toString());
+        assertEquals("Introduced a new variable in the consequence of a clause at line 6:13.", errors.get(4).toString());
+        assertEquals("Introduced a new variable in the consequence of a clause at line 6:24.", errors.get(5).toString());
+
+        List<Warning> warnings = checkerResult.getWarnings();
+        assertEquals(1, warnings.size());
+        assertEquals("Singleton variable X found at line 5:10.", warnings.get(0).toString());
     }
 
     private static GraafvisParser.ProgramContext parse(String program) {

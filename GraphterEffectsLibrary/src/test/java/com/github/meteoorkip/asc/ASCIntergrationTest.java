@@ -43,7 +43,6 @@ public final class ASCIntergrationTest {
     public void intergrationTestDGS() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/dgs/graph1.dgs"));
         TuProlog prolog = generateGraphProlog(graph);
-        Printer.pprint(graph);
         graphTest(prolog, graph);
     }
 }

@@ -3,50 +3,69 @@ package com.github.meteoorkip.prolog;
 import alice.tuprolog.*;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 public class PrologTest {
     @Test
     public void test1() {
-        Var varX = new Var("X"), varY = new Var("Y");
+        Var varX = new Var("X");
+        Var varY = new Var("Y");
+        Var varW = new Var("W");
+
         Struct atomP = new Struct("p");
-        Struct list = new Struct(atomP, varY); // should be [p|Y]
-        System.out.println(list); // prints the list [p|Y]
+        Struct list = new Struct(atomP, varY);
         Struct fact = new Struct("p", new Struct("a"), new Int(5));
         Struct goal = new Struct("p", varX, new Var("Z"));
-        Prolog engine = new Prolog();
-        boolean res = goal.unify(engine, fact); // should be X/a, Y/5
-        System.out.println(goal); // prints the unified term p(a,5)
-        System.out.println(varX); // prints the variable binding X/a
-        Var varW = new Var("W");
-        res = varW.unify(engine, varY); // should be Z=Y
-        System.out.println(varY); // prints just Y, since it is unbound
-        System.out.println(varW); // prints the variable binding W / Y
         Struct st = new Struct("q", new Var("Y"), new Var("Y")); // unresolved
-        System.out.println(st.getArg(0) == st.getArg(1)); // prints false
+        Prolog engine = new Prolog();
+
+        assertEquals("[p|Y]", list.toString());
+        assertTrue(goal.unify(engine, fact));
+        assertEquals("p(a,5)", goal.toString());
+        assertEquals("X / a", varX.toString());
+        assertTrue(varW.unify(engine, varY));
+        assertEquals("Y", varY.toString());
+        assertEquals("W / Y", varW.toString());
+        assertFalse(st.getArg(0) == st.getArg(1));
         st.resolveTerm(); // now the term is resolved
-        res = st.match(new Struct()); // alternatively
-        res = st.unify(engine, new Struct()); // alternatively
-        System.out.println(st.getArg(0) == st.getArg(1)); // prints true
+        assertFalse(st.match(new Struct()));
+        assertFalse(st.unify(engine, new Struct()));
+        assertTrue(st.getArg(0)==st.getArg(1));
     }
 
     @Test
     public void test2() throws MalformedGoalException, NoSolutionException {
         Prolog engine = new Prolog();
         SolveInfo info = engine.solve("append([1],[2,3],X).");
-        System.out.println(info.getSolution());
+        assertEquals("append([1],[2,3],[1,2,3])", info.getSolution().toString());
     }
 
     @Test
     public void test3() throws MalformedGoalException, NoSolutionException, NoMoreSolutionException {
         Prolog engine = new Prolog();
         SolveInfo info = engine.solve("append(X,Y,[1,2]).");
-        while (info.isSuccess()) {
-            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
+
+        assertTrue(info.isSuccess());
+        assertEquals("append([],[1,2],[1,2])", info.getSolution().toString());
+        assertEquals("[X / [], Y / [1,2]]", info.getBindingVars().toString());
+        info = engine.solveNext();
+
+        assertTrue(info.isSuccess());
+        assertEquals("append([1],[2],[1,2])", info.getSolution().toString());
+        assertEquals("[X / [1], Y / [2]]", info.getBindingVars().toString());
+        info = engine.solveNext();
+
+        assertTrue(info.isSuccess());
+        assertEquals("append([1,2],[],[1,2])", info.getSolution().toString());
+        assertEquals("[X / [1,2], Y / []]", info.getBindingVars().toString());
+
+        try {
+            engine.solveNext();
+            fail();
+        } catch (NoMoreSolutionException e) {}
 
     }
 
@@ -76,9 +95,9 @@ public class PrologTest {
                         new Struct("true")
                 );
 
-        System.out.println(clause0 + " is a clause? " + clause0.isClause());
-        System.out.println(clause1 + " is a clause? " + clause1.isClause());
-        System.out.println(clause2 + " is a clause? " + clause2.isClause());
+        assertTrue(clause0.isClause());
+        assertTrue(clause1.isClause());
+        assertTrue(clause2.isClause());
 
         Prolog engine = new Prolog();
 
@@ -91,30 +110,29 @@ public class PrologTest {
                         )
                 );
 
-        System.out.println(clauseList + " is a list? " + clauseList.isList());
+        assertTrue(clauseList.isList());
 
         Theory t = new Theory(clauseList);
         engine.addTheory(t);
 
         SolveInfo info = engine.solve(new Struct("p", new Var("X")));
-        while (info.isSuccess()) { // taken from the previous example
-            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
+        assertFalse(engine.hasOpenAlternatives());
+        assertEquals("p(0)", info.getSolution().toString());
+        assertEquals("[X / 0]", info.getBindingVars().toString());
+        try {
+            engine.solveNext();
+            fail();
+        } catch (NoMoreSolutionException e) {}
+
 
         info = engine.solve(new Struct("node", new Var("X"), new Var("Y")));
-        while (info.isSuccess()) { // taken from the previous example
-            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
+        assertFalse(engine.hasOpenAlternatives());
+        assertEquals("node([a,b],e)", info.getSolution().toString());
+        assertEquals("[X / [a,b], Y / e]", info.getBindingVars().toString());
+        try {
+            engine.solveNext();
+            fail();
+        } catch (NoMoreSolutionException e) {}
     }
 
     @Test
@@ -153,11 +171,11 @@ public class PrologTest {
                         )
                 );
 
-        System.out.println(clause0 + " is a clause? " + clause0.isClause());
-        System.out.println(clause1 + " is a clause? " + clause1.isClause());
-        System.out.println(clause2 + " is a clause? " + clause2.isClause());
-        System.out.println(clause3 + " is a clause? " + clause3.isClause());
-        System.out.println(clause4 + " is a clause? " + clause4.isClause());
+        assertTrue(clause0.isClause());
+        assertTrue(clause1.isClause());
+        assertTrue(clause2.isClause());
+        assertTrue(clause3.isClause());
+        assertTrue(clause4.isClause());
 
         Prolog engine = new Prolog();
 
@@ -174,20 +192,47 @@ public class PrologTest {
                         )
                 );
 
-        System.out.println(clauseList + " is a list? " + clauseList.isList());
+        assertTrue(clauseList.isList());
 
         Theory t = new Theory(clauseList);
         engine.addTheory(t);
 
         SolveInfo info = engine.solve(new Struct("test", new Var("N1"), new Var("N2")));
-        while (info.isSuccess()) { // taken from the previous example
-            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(a,a)", info.getSolution().toString());
+        assertEquals("[N1 / a, N2 / a]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(a,c)", info.getSolution().toString());
+        assertEquals("[N1 / a, N2 / c]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(b,a)", info.getSolution().toString());
+        assertEquals("[N1 / b, N2 / a]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(b,b)", info.getSolution().toString());
+        assertEquals("[N1 / b, N2 / b]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(b,c)", info.getSolution().toString());
+        assertEquals("[N1 / b, N2 / c]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(c,a)", info.getSolution().toString());
+        assertEquals("[N1 / c, N2 / a]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("test(c,b)", info.getSolution().toString());
+        assertEquals("[N1 / c, N2 / b]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertFalse(engine.hasOpenAlternatives());
+        assertEquals("test(c,c)", info.getSolution().toString());
+        assertEquals("[N1 / c, N2 / c]", info.getBindingVars().toString());
+        try {
+            engine.solveNext();
+            fail();
+        } catch (NoMoreSolutionException e) {}
     }
 
     @Test
@@ -219,10 +264,10 @@ public class PrologTest {
                         )
                 );
 
-        System.out.println(clause0 + " is a clause? " + clause0.isClause());
-        System.out.println(clause1 + " is a clause? " + clause1.isClause());
-        System.out.println(clause2 + " is a clause? " + clause2.isClause());
-        System.out.println(clause3 + " is a clause? " + clause3.isClause());
+        assertTrue(clause0.isClause());
+        assertTrue(clause1.isClause());
+        assertTrue(clause2.isClause());
+        assertTrue(clause3.isClause());
 
         Prolog engine = new Prolog();
 
@@ -237,29 +282,36 @@ public class PrologTest {
                         )
                 );
 
-        System.out.println(clauseList + " is a list? " + clauseList.isList());
+        assertTrue(clauseList.isList());
 
         Theory t = new Theory(clauseList);
         engine.addTheory(t);
 
         SolveInfo info = engine.solve(new Struct("parent", new Var("X")));
-        while (info.isSuccess()) { // taken from the previous example
-            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("parent(a)", info.getSolution().toString());
+        assertEquals("[X / a]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertFalse(engine.hasOpenAlternatives());
+        assertEquals("parent(b)", info.getSolution().toString());
+        assertEquals("[X / b]", info.getBindingVars().toString());
+        try {
+            engine.solveNext();
+            fail();
+        } catch (NoMoreSolutionException e) {}
+
 
         info = engine.solve(new Struct("child", new Var("X")));
-        while (info.isSuccess()) { // taken from the previous example
-            System.out.println("solution: " + info.getSolution() + " - bindings: " + info);
-            if (engine.hasOpenAlternatives()) {
-                info = engine.solveNext();
-            } else {
-                break;
-            }
-        }
+        assertTrue(engine.hasOpenAlternatives());
+        assertEquals("child(c)", info.getSolution().toString());
+        assertEquals("[X / c]", info.getBindingVars().toString());
+        info = engine.solveNext();
+        assertFalse(engine.hasOpenAlternatives());
+        assertEquals("child(c)", info.getSolution().toString());
+        assertEquals("[X / c]", info.getBindingVars().toString());
+        try {
+            engine.solveNext();
+            fail();
+        } catch (NoMoreSolutionException e) {}
     }
 }

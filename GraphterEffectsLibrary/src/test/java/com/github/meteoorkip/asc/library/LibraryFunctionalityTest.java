@@ -51,7 +51,7 @@ public class LibraryFunctionalityTest {
     private void testSuccess(Term term, Graph graph) {
         SolveInfo res = asrcmap.get(graph).getProlog().solve(term);
         assertTrue(res.isSuccess());
-        System.out.println(term.toString() + "\n-->\n" + res.toString().replaceAll("\n", "\t\t") + "\n");
+        //System.out.println(term.toString() + "\n-->\n" + res.toString().replaceAll("\n", "\t\t") + "\n");
     }
 
     private void testFail(Term term, Graph graph) {

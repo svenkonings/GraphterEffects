@@ -51,7 +51,6 @@ public final class AbstractSyntaxConverterWLIB {
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
-        Printer.pprint(graph);
         graphTest(prolog, graph);
     }
 
