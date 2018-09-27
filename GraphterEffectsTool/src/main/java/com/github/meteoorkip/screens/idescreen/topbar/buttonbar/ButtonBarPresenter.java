@@ -142,7 +142,7 @@ public class ButtonBarPresenter implements Initializable, Observer {
         });
 
 
-        for (int i = graphComboBox.getItems().size()-1; i >= 0; i++){
+        for (int i = graphComboBox.getItems().size()-1; i >= 0; i--){
             graphComboBox.getItems().remove(i);
             choiceBoxFilled = false;
         }
