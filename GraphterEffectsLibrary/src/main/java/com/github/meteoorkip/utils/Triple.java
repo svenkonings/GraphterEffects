@@ -128,4 +128,9 @@ public class Triple<T, U, V> implements Iterable {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return t.hashCode() * 2 + u.hashCode() * 3 + v.hashCode() * 5;
+    }
+
 }
