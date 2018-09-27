@@ -1,6 +1,7 @@
 package com.github.meteoorkip.utils;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Class used as a container for 2 Objects.
@@ -113,6 +114,9 @@ public class Triple<T, U, V> implements Iterable {
 
         @Override
         public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             i += 1;
             return i - 1;
         }
