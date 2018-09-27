@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Class used for methods to read from- save to- or manipulate File Objects and related tasks.
@@ -61,7 +62,9 @@ public final class FileUtils {
      * @throws IOException Thrown when access was denied.
      */
     public static List<File> recursiveInDirectory(File dir) throws IOException {
-        return Files.walk(dir.toPath()).map(Path::toFile).filter(File::isFile).collect(Collectors.toList());
+        try (Stream<Path> stream = Files.walk(dir.toPath())){
+            return stream.map(Path::toFile).filter(File::isFile).collect(Collectors.toList());
+        }
     }
 
     /**
