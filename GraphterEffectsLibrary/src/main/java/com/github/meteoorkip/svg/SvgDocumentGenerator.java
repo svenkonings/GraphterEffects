@@ -42,10 +42,10 @@ public class SvgDocumentGenerator {
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         root.addAttribute("style", "max-height:100%");
 
-        int minX = min(visElems, "minX");
-        int minY = min(visElems, "minY");
-        int maxX = max(visElems, "maxX");
-        int maxY = max(visElems, "maxY");
+        int minX = min(visElems, "minX") - 1;
+        int minY = min(visElems, "minY") - 1;
+        int maxX = max(visElems, "maxX") + 1;
+        int maxY = max(visElems, "maxY") + 1;
         int width = maxX - minY;
         int height = maxY - minY;
         root.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
