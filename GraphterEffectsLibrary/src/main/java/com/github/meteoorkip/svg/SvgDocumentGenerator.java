@@ -40,7 +40,7 @@ public class SvgDocumentGenerator {
     public static Document generate(SvgElementGenerator generator, Collection<VisElem> visElems) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
-        root.addAttribute("style", "max-height:100%");
+        root.addAttribute("style", "height:600px");
 
         int minX = min(visElems, "minX") - 1;
         int minY = min(visElems, "minY") - 1;

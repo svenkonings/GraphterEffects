@@ -73,7 +73,7 @@ public class CommandLineTest {
     public void testPrintResult() throws Exception {
         assertEqualsIgnoreNewlines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "\n" +
-                "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"max-height:100%\" viewBox=\"-1 -1 45 45\">\n" +
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"height:600px\" viewBox=\"-1 -1 45 45\">\n" +
                 "  <line x1=\"38\" y1=\"16\" x2=\"27\" y2=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
                 "  <line x1=\"27\" y1=\"5\" x2=\"5\" y2=\"38\" fill=\"white\" stroke=\"black\"/>\n" +
                 "  <line x1=\"27\" y1=\"5\" x2=\"16\" y2=\"27\" fill=\"white\" stroke=\"black\"/>\n" +
