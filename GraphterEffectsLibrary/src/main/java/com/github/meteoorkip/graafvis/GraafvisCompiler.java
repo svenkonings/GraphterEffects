@@ -62,7 +62,7 @@ public class GraafvisCompiler {
             /* Can't compile -- add errors to list */
             StringBuilder sb = new StringBuilder();
             errors.addAll(errorListener.getErrors());
-            sb.append("TODO message for RON"); //TODO for RON
+//            sb.append("TODO message for RON"); //TODO for RON
             for (VisError error: errorListener.getErrors()) {
                 sb.append("\n" + "ERROR: " +  error.toString());
             }
@@ -74,7 +74,7 @@ public class GraafvisCompiler {
         if (checkerResult.getErrors().size() > 0) {
             /* Checker found errors */
             StringBuilder sb = new StringBuilder();
-            sb.append("TODO message for RON"); //TODO for RON
+//            sb.append("TODO message for RON"); //TODO for RON
             errors.addAll(checkerResult.getErrors());
             for (VisError error: checkerResult.getErrors()) {
                 sb.append("\n" + "ERROR: " + error.toString());
