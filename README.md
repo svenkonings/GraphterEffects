@@ -1,13 +1,13 @@
 [![Build Status](https://travis-ci.org/meteoorkip/GraphterEffects.svg?branch=master)](https://travis-ci.org/meteoorkip/GraphterEffects)
 
-**This product is currently being further developed.
+**Development is currently on hold.
 The available version is an work-in-progress and not yet suited for regular use.**
 
 Graphter Effects consists of a tool, for people who want to use Graphter Effects on its own,
 and a Java library, for people who want to integrate Graphter Effects in their code.
 
 The manual and the releases can be found at:
-[github.com/meteoorkip/GraphterEffects/releases](https://github.com/meteoorkip/GraphterEffects/releases).
+[github.com/svenkonings/GraphterEffects/releases](https://github.com/svenkonings/GraphterEffects/releases).
 
 
 # Graphter Effects

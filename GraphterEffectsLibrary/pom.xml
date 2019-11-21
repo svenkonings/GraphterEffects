@@ -19,9 +19,9 @@
     </description>
 
     <scm>
-        <connection>scm:git:https://github.com/meteoorkip/GraphterEffects.git</connection>
-        <developerConnection>scm:git:https://github.com/meteoorkip/GraphterEffects.git</developerConnection>
-        <url>https://github.com/meteoorkip/GraphterEffects</url>
+        <connection>scm:git:https://github.com/svenkonings/GraphterEffects.git</connection>
+        <developerConnection>scm:git:https://github.com/svenkonings/GraphterEffects.git</developerConnection>
+        <url>https://github.com/svenkonings/GraphterEffects</url>
     </scm>
 
     <distributionManagement>
