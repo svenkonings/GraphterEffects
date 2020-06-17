@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/meteoorkip/GraphterEffects.svg?branch=master)](https://travis-ci.org/meteoorkip/GraphterEffects)
+[![Build Status](https://travis-ci.org/svenkonings/GraphterEffects.svg?branch=master)](https://travis-ci.org/svenkonings/GraphterEffects)
 
 **Development is currently on hold.
 The available version is an work-in-progress and not yet suited for regular use.**
@@ -20,7 +20,7 @@ visualizations using our domain-specific logic language Graafvis
 ## Graafvis input
 *Input 1: a Graafvis script specifying layout rules for graph visualisation*
 
-![River crossing example script](http://i.imgur.com/0j2vGD7.png "River crossing example script")
+![River crossing example script](https://i.imgur.com/0j2vGD7.png "River crossing example script")
 
 Graafvis may be considered as "shorthand Prolog with special predicates".
 A .vis-script contains simple logic rules that define relations between two domains:
@@ -33,7 +33,7 @@ Specific predicates...
 ## Graph input
 *Input 2: a graph which contains information that can be visually represented*
 
-![River crossing example graph](http://i.imgur.com/pPMu6nQ.png "River crossing example graph")
+![River crossing example graph](https://i.imgur.com/pPMu6nQ.png "River crossing example graph")
 
 Thirteen graph import formats are currently supported, including DOT, GraphML and GXL.
 
@@ -41,7 +41,7 @@ Thirteen graph import formats are currently supported, including DOT, GraphML an
 Both the Graafvis script and the graph file are loaded and checked for errors.
 They are then converted to Prolog rules and a Prolog library.
 
-![Library design diagram](http://i.imgur.com/6w84s60.png "Library design diagram")
+![Library design diagram](https://i.imgur.com/6w84s60.png "Library design diagram")
 
 Three programming paradigms are involved:
 ### Logic
@@ -58,7 +58,7 @@ The resulting visualization elements are afterwards bundled into an SVG file.
 ## Visualization output
 *Output: a generated\* visualization using the script and the input graph above*
 
-![Visualization output with constraints](http://i.imgur.com/L6mgRh3.jpg "Visualization output with constraints")
+![Visualization output with constraints](https://i.imgur.com/L6mgRh3.jpg "Visualization output with constraints")
 \*The constraints depicted with arrows and labels are added to the generated visualization for clarification purposes
 
 The SVG image resulting from the Graphter Effects visualization process contains visualization elements
