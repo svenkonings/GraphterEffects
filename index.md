@@ -1,4 +1,4 @@
-**This product is currently being further developed.
+**Development is currently on hold.
 The available version is an work-in-progress and not yet suited for regular use.**
 
 Graphter Effects consists of a tool, for people who want to use Graphter Effects on its own,
