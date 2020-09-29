@@ -71,17 +71,16 @@ public class CommandLineTest {
 
     @Test
     public void testPrintResult() throws Exception {
-        assertEqualsIgnoreNewlines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "\n" +
-                "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"width=100%; max-height:600px;\" viewBox=\"-1 -1 45 45\">\n" +
-                "  <line x1=\"38\" y1=\"16\" x2=\"27\" y2=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <line x1=\"27\" y1=\"5\" x2=\"5\" y2=\"38\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <line x1=\"27\" y1=\"5\" x2=\"16\" y2=\"27\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"38\" cy=\"16\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"27\" cy=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"5\" cy=\"38\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"16\" cy=\"27\" fill=\"white\" stroke=\"black\"/>\n" +
-                "</svg>\n", getString(new String[]{graphLoc, visLoc, "-p"}));
+        assertEqualsIgnoreNewlines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"width=100%; max-height:600px;\" viewBox=\"-1 -1 45 45\">  " +
+                "<line x1=\"16\" y1=\"16\" x2=\"5\" y2=\"5\" fill=\"white\" stroke=\"black\"/>  " +
+                "<line x1=\"5\" y1=\"5\" x2=\"38\" y2=\"27\" fill=\"white\" stroke=\"black\"/>  " +
+                "<line x1=\"5\" y1=\"5\" x2=\"27\" y2=\"38\" fill=\"white\" stroke=\"black\"/>  " +
+                "<ellipse rx=\"5\" ry=\"5\" cx=\"16\" cy=\"16\" fill=\"white\" stroke=\"black\"/>  " +
+                "<ellipse rx=\"5\" ry=\"5\" cx=\"5\" cy=\"5\" fill=\"white\" stroke=\"black\"/>  " +
+                "<ellipse rx=\"5\" ry=\"5\" cx=\"38\" cy=\"27\" fill=\"white\" stroke=\"black\"/>  " +
+                "<ellipse rx=\"5\" ry=\"5\" cx=\"27\" cy=\"38\" fill=\"white\" stroke=\"black\"/>" +
+                "</svg>", getString(new String[]{graphLoc, visLoc, "-p"}));
     }
 
     private static void assertEqualsIgnoreNewlines(String expected, String actual) {
