@@ -117,9 +117,9 @@ public class GraphterEffects {
         }
         Solver solver = new Solver();
         SolveResults results = solver.solve(graph, terms);
-        if (debuginfo) {
-            results.getModel().getSolver().printStatistics();
-        }
+//        if (debuginfo) {
+//            results.getModel().getSolver().printStatistics();
+//        }
         if (!results.isSucces()) {
             throw new ElementException("Couldn't solve constraints");
         }

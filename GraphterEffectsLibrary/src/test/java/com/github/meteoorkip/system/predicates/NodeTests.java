@@ -5,11 +5,13 @@ import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import com.github.meteoorkip.utils.Triple;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xmlunit.builder.Input;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class NodeTests {
 
     private static String generated_visualization1;

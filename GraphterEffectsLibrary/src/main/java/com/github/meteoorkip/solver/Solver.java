@@ -11,7 +11,9 @@ import com.github.meteoorkip.solver.library.DefaultVisLibrary;
 import com.github.meteoorkip.solver.library.LibraryException;
 import com.github.meteoorkip.solver.library.VisLibrary;
 import com.github.meteoorkip.utils.TermUtils;
-import org.chocosolver.solver.Model;
+import nl.svenkonings.jacomo.model.Model;
+import nl.svenkonings.jacomo.solvers.chocosolver.ChocoSolver;
+import nl.svenkonings.jacomo.solvers.ortools.OrToolsSolver;
 import org.graphstream.graph.Graph;
 
 import java.util.*;
@@ -21,16 +23,24 @@ import java.util.*;
  */
 @SuppressWarnings("WeakerAccess")
 public class Solver {
-    /** The loader for the default graph library. */
+    /**
+     * The loader for the default graph library.
+     */
     private final GraphLibraryLoader defaultGraphLibraryLoader;
 
-    /** The mapping of names to library loaders. */
+    /**
+     * The mapping of names to library loaders.
+     */
     private final Map<String, GraphLibraryLoader> graphLibraryLoaders;
 
-    /** The default visualization library. */
+    /**
+     * The default visualization library.
+     */
     private final VisLibrary defaultVisLibrary;
 
-    /** The mapping of names to visualization libraries. */
+    /**
+     * The mapping of names to visualization libraries.
+     */
     private final Map<String, VisLibrary> visLibraries;
 
     /**
@@ -192,8 +202,10 @@ public class Solver {
         visLibraries.forEach(library -> solveVisLibrary(visMap, prolog, library));
         visLibraries.forEach(library -> applyVisLibraryConsumer(visMap, library));
 
-        boolean succes = model.getSolver().solve();
-        return new SolveResults(succes, prolog, model, visMap);
+        nl.svenkonings.jacomo.solvers.Solver solver = new ChocoSolver();
+//        nl.svenkonings.jacomo.solvers.Solver solver = new OrToolsSolver();
+        boolean success = solver.solve(model);
+        return new SolveResults(success, prolog, model, visMap);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.github.meteoorkip.solver;
 
 import com.github.meteoorkip.prolog.TuProlog;
-import org.chocosolver.solver.Model;
+import nl.svenkonings.jacomo.model.Model;
 
 /**
  * Class containing the results of the {@link Solver} after the solving process.
