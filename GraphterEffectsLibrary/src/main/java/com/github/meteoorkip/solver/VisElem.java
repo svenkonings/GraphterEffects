@@ -2,8 +2,8 @@ package com.github.meteoorkip.solver;
 
 import nl.svenkonings.jacomo.exceptions.unchecked.ContradictionException;
 import nl.svenkonings.jacomo.model.Model;
-import nl.svenkonings.jacomo.variables.integer.IntVar;
-import nl.svenkonings.jacomo.variables.integer.UpdatableIntVar;
+import nl.svenkonings.jacomo.elem.variables.integer.IntVar;
+import nl.svenkonings.jacomo.elem.variables.integer.UpdatableIntVar;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

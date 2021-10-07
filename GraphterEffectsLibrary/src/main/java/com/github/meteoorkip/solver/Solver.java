@@ -202,9 +202,9 @@ public class Solver {
         visLibraries.forEach(library -> solveVisLibrary(visMap, prolog, library));
         visLibraries.forEach(library -> applyVisLibraryConsumer(visMap, library));
 
-        nl.svenkonings.jacomo.solvers.Solver solver = new ChocoSolver();
-//        nl.svenkonings.jacomo.solvers.Solver solver = new OrToolsSolver();
-        boolean success = solver.solve(model);
+//        nl.svenkonings.jacomo.solvers.Solver solver = new ChocoSolver();
+        nl.svenkonings.jacomo.solvers.Solver solver = new OrToolsSolver();
+        boolean success = solver.solveAndUpdate(model);
         return new SolveResults(success, prolog, model, visMap);
     }
 

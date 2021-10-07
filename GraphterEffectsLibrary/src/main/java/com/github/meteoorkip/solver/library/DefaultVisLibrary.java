@@ -6,11 +6,11 @@ import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.QuadConsumer;
 import com.github.meteoorkip.utils.TriConsumer;
 import nl.svenkonings.jacomo.exceptions.unchecked.ContradictionException;
-import nl.svenkonings.jacomo.expressions.bool.BoolExpr;
-import nl.svenkonings.jacomo.expressions.integer.IntExpr;
+import nl.svenkonings.jacomo.elem.expressions.bool.BoolExpr;
+import nl.svenkonings.jacomo.elem.expressions.integer.IntExpr;
 import nl.svenkonings.jacomo.model.Model;
-import nl.svenkonings.jacomo.variables.integer.IntVar;
-import nl.svenkonings.jacomo.variables.integer.UpdatableIntVar;
+import nl.svenkonings.jacomo.elem.variables.integer.IntVar;
+import nl.svenkonings.jacomo.elem.variables.integer.UpdatableIntVar;
 
 import java.io.File;
 import java.io.IOException;
