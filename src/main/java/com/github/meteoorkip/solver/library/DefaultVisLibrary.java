@@ -343,15 +343,9 @@ public class DefaultVisLibrary extends VisLibrary {
             int value = termToInt(values.get("Value"));
             Model model = var1.getModel();
             if (swap) {
-                model.and(
-                        var1.ge(var2).decompose(),
-                        model.arithm(var1.sub(var2).intVar(), op, value)
-                ).post();
+                model.arithm(var1.sub(var2).intVar(), op, value).post();
             } else {
-                model.and(
-                        var2.ge(var1).decompose(),
-                        model.arithm(var2.sub(var1).intVar(), op, value)
-                ).post();
+                model.arithm(var2.sub(var1).intVar(), op, value).post();
             }
         });
     }
