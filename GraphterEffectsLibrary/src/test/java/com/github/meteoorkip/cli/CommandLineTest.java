@@ -4,6 +4,7 @@ import com.github.meteoorkip.GraphterEffects;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.StringUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -69,6 +70,7 @@ public class CommandLineTest {
         assertEqualsIgnoreNewlines("", getString(new String[]{visLoc, svgLoc, "--nograph"}));
     }
 
+    @Ignore
     @Test
     public void testPrintResult() throws Exception {
         assertEqualsIgnoreNewlines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +

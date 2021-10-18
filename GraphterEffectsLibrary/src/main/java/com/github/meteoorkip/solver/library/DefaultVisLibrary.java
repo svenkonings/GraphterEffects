@@ -6,6 +6,7 @@ import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.QuadConsumer;
 import com.github.meteoorkip.utils.TriConsumer;
 import nl.svenkonings.jacomo.elem.expressions.bool.BoolExpr;
+import nl.svenkonings.jacomo.elem.expressions.bool.binary.BiBoolExpr;
 import nl.svenkonings.jacomo.elem.expressions.bool.relational.ReBoolExpr;
 import nl.svenkonings.jacomo.elem.expressions.integer.IntExpr;
 import nl.svenkonings.jacomo.elem.variables.integer.IntVar;
@@ -411,28 +412,32 @@ public class DefaultVisLibrary extends VisLibrary {
             String op = stripQuotes(values.get("Operator"));
             int value = termToInt(values.get("Value"));
             Model model = elem1.getModel();
+            List<BiBoolExpr> exprs = new ArrayList<>();
             if (x) {
-                model.constraint(
+                exprs.add(
                         elem1.getVar("minX").ge(elem2.getVar("maxX")).and(
                                 opToBoolExpr(elem1.getVar("minX").sub(elem2.getVar("maxX")), op, IntExpr.constant(value))
-                        ).or(
-                                elem2.getVar("minX").ge(elem1.getVar("maxX")).and(
-                                        opToBoolExpr(elem2.getVar("minX").sub(elem1.getVar("maxX")), op, IntExpr.constant(value))
-                                )
+                        )
+                );
+                exprs.add(
+                        elem2.getVar("minX").ge(elem1.getVar("maxX")).and(
+                                opToBoolExpr(elem2.getVar("minX").sub(elem1.getVar("maxX")), op, IntExpr.constant(value))
                         )
                 );
             }
             if (y) {
-                model.constraint(
+                exprs.add(
                         elem1.getVar("minY").ge(elem2.getVar("maxY")).and(
                                 opToBoolExpr(elem1.getVar("minY").sub(elem2.getVar("maxY")), op, IntExpr.constant(value))
-                        ).or(
-                                elem2.getVar("minY").ge(elem1.getVar("maxY")).and(
-                                        opToBoolExpr(elem2.getVar("minY").sub(elem1.getVar("maxY")), op, IntExpr.constant(value))
-                                )
+                        )
+                );
+                exprs.add(
+                        elem2.getVar("minY").ge(elem1.getVar("maxY")).and(
+                                opToBoolExpr(elem2.getVar("minY").sub(elem1.getVar("maxY")), op, IntExpr.constant(value))
                         )
                 );
             }
+            model.constraint(BoolExpr.or(exprs.toArray(new BiBoolExpr[0])));
         });
     }
 
