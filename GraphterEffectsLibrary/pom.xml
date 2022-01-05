@@ -135,17 +135,17 @@
         <dependency>
             <groupId>nl.svenkonings.jacomo</groupId>
             <artifactId>jacomo</artifactId>
-            <version>0.1-RC3</version>
+            <version>0.1-RC4</version>
         </dependency>
         <dependency>
             <groupId>nl.svenkonings.jacomo</groupId>
             <artifactId>jacomo-chocosolver</artifactId>
-            <version>0.1-RC3</version>
+            <version>0.1-RC4</version>
         </dependency>
         <dependency>
             <groupId>nl.svenkonings.jacomo</groupId>
             <artifactId>jacomo-ortools</artifactId>
-            <version>0.1-RC3</version>
+            <version>0.1-RC4</version>
         </dependency>
         <dependency>
             <groupId>org.graphstream</groupId>
