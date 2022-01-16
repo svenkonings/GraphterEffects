@@ -4,11 +4,14 @@ import com.github.meteoorkip.solver.VisElem;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.QuadConsumer;
 import it.unibo.tuprolog.core.Term;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Model;
-import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.variables.IntVar;
+import nl.svenkonings.jacomo.elem.expressions.bool.BoolExpr;
+import nl.svenkonings.jacomo.elem.expressions.bool.binary.BiBoolExpr;
+import nl.svenkonings.jacomo.elem.expressions.bool.relational.ReBoolExpr;
+import nl.svenkonings.jacomo.elem.expressions.integer.IntExpr;
+import nl.svenkonings.jacomo.elem.variables.integer.IntVar;
+import nl.svenkonings.jacomo.elem.variables.integer.UpdatableIntVar;
+import nl.svenkonings.jacomo.exceptions.unchecked.ContradictionException;
+import nl.svenkonings.jacomo.model.Model;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +44,7 @@ public class DefaultVisLibrary extends VisLibrary {
                             break;
                         default:
                             elem.setVar("z", 0);
+                            break;
                     }
                 }
             }
@@ -326,12 +330,31 @@ public class DefaultVisLibrary extends VisLibrary {
         return elementPairQuery((elem1, elem2, values) -> setVar(elem1, varName, elem2, varName));
     }
 
+    private static BoolExpr opToBoolExpr(IntExpr expr1, String op, IntExpr expr2) {
+        switch (op) {
+            case "=":
+                return expr1.eq(expr2);
+            case "!=":
+                return expr1.ne(expr2);
+            case "<":
+                return expr1.lt(expr2);
+            case "<=":
+                return expr1.le(expr2);
+            case ">":
+                return expr1.gt(expr2);
+            case ">=":
+                return expr1.ge(expr2);
+            default:
+                throw new RuntimeException("Unknown op: " + op);
+        }
+    }
+
     public static QueryConsumer relPosQuery(String varName1, String varName2, String op) {
         return elementPairQuery((elem1, elem2, values) -> {
             IntVar var1 = elem1.getVar(varName1);
             IntVar var2 = elem2.getVar(varName2);
-            Model model = var1.getModel();
-            model.arithm(var1, op, var2).post();
+            Model model = elem1.getModel();
+            model.constraint(opToBoolExpr(var1, op, var2));
         });
     }
 
@@ -341,11 +364,11 @@ public class DefaultVisLibrary extends VisLibrary {
             IntVar var2 = elem2.getVar(varName2);
             String op = stripQuotes(values.get("Operator"));
             int value = termToInt(values.get("Value"));
-            Model model = var1.getModel();
+            Model model = elem1.getModel();
             if (swap) {
-                model.arithm(var1.sub(var2).intVar(), op, value).post();
+                model.constraint(opToBoolExpr(var1.sub(var2), op, IntExpr.constant(value)));
             } else {
-                model.arithm(var2.sub(var1).intVar(), op, value).post();
+                model.constraint(opToBoolExpr(var2.sub(var1), op, IntExpr.constant(value)));
             }
         });
     }
@@ -354,12 +377,12 @@ public class DefaultVisLibrary extends VisLibrary {
         assert x || y;
         return elementPairQuery((elem1, elem2, values) -> {
             if (x) {
-                elem1.getVar("minX").ge(elem2.getVar("minX")).post();
-                elem1.getVar("maxX").le(elem2.getVar("maxX")).post();
+                elem1.getModel().constraint(elem1.getVar("minX").ge(elem2.getVar("minX")));
+                elem1.getModel().constraint(elem1.getVar("maxX").le(elem2.getVar("maxX")));
             }
             if (y) {
-                elem1.getVar("minY").ge(elem2.getVar("minY")).post();
-                elem1.getVar("maxY").le(elem2.getVar("maxY")).post();
+                elem1.getModel().constraint(elem1.getVar("minY").ge(elem2.getVar("minY")));
+                elem1.getModel().constraint(elem1.getVar("maxY").le(elem2.getVar("maxY")));
             }
         });
     }
@@ -367,17 +390,17 @@ public class DefaultVisLibrary extends VisLibrary {
     public static QueryConsumer noOverlapQuery(boolean x, boolean y) {
         assert x || y;
         return elementPairQuery((elem1, elem2, values) -> {
-            List<Constraint> constraints = new ArrayList<>();
+            Model model = elem1.getModel();
+            List<ReBoolExpr> exprs = new ArrayList<>();
             if (x) {
-                constraints.add(elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose());
-                constraints.add(elem1.getVar("maxX").le(elem2.getVar("minX")).decompose());
+                exprs.add(elem1.getVar("minX").ge(elem2.getVar("maxX")));
+                exprs.add(elem1.getVar("maxX").le(elem2.getVar("minX")));
             }
             if (y) {
-                constraints.add(elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose());
-                constraints.add(elem1.getVar("maxY").le(elem2.getVar("minY")).decompose());
+                exprs.add(elem1.getVar("minY").ge(elem2.getVar("maxY")));
+                exprs.add(elem1.getVar("maxY").le(elem2.getVar("minY")));
             }
-            Model model = elem1.getModel();
-            model.or(constraints.toArray(new Constraint[0])).post();
+            model.constraint(BoolExpr.or(exprs.toArray(new ReBoolExpr[0])));
         });
     }
 
@@ -387,30 +410,32 @@ public class DefaultVisLibrary extends VisLibrary {
             String op = stripQuotes(values.get("Operator"));
             int value = termToInt(values.get("Value"));
             Model model = elem1.getModel();
+            List<BiBoolExpr> exprs = new ArrayList<>();
             if (x) {
-                model.or(
-                        model.and(
-                                elem1.getVar("minX").ge(elem2.getVar("maxX")).decompose(),
-                                model.arithm(elem1.getVar("minX").sub(elem2.getVar("maxX")).intVar(), op, value)
-                        ),
-                        model.and(
-                                elem2.getVar("minX").ge(elem1.getVar("maxX")).decompose(),
-                                model.arithm(elem2.getVar("minX").sub(elem1.getVar("maxX")).intVar(), op, value)
+                exprs.add(
+                        elem1.getVar("minX").ge(elem2.getVar("maxX")).and(
+                                opToBoolExpr(elem1.getVar("minX").sub(elem2.getVar("maxX")), op, IntExpr.constant(value))
                         )
-                ).post();
+                );
+                exprs.add(
+                        elem2.getVar("minX").ge(elem1.getVar("maxX")).and(
+                                opToBoolExpr(elem2.getVar("minX").sub(elem1.getVar("maxX")), op, IntExpr.constant(value))
+                        )
+                );
             }
             if (y) {
-                model.or(
-                        model.and(
-                                elem1.getVar("minY").ge(elem2.getVar("maxY")).decompose(),
-                                model.arithm(elem1.getVar("minY").sub(elem2.getVar("maxY")).intVar(), op, value)
-                        ),
-                        model.and(
-                                elem2.getVar("minY").ge(elem1.getVar("maxY")).decompose(),
-                                model.arithm(elem2.getVar("minY").sub(elem1.getVar("maxY")).intVar(), op, value)
+                exprs.add(
+                        elem1.getVar("minY").ge(elem2.getVar("maxY")).and(
+                                opToBoolExpr(elem1.getVar("minY").sub(elem2.getVar("maxY")), op, IntExpr.constant(value))
                         )
-                ).post();
+                );
+                exprs.add(
+                        elem2.getVar("minY").ge(elem1.getVar("maxY")).and(
+                                opToBoolExpr(elem2.getVar("minY").sub(elem1.getVar("maxY")), op, IntExpr.constant(value))
+                        )
+                );
             }
+            model.constraint(BoolExpr.or(exprs.toArray(new BiBoolExpr[0])));
         });
     }
 
@@ -434,16 +459,18 @@ public class DefaultVisLibrary extends VisLibrary {
         updateLowerBound(elem, "width", minSize);
         updateLowerBound(elem, "height", minSize);
 
-        elem.setVar("radiusX", elem.getVar("width").div(2).intVar());
-        elem.setVar("radiusY", elem.getVar("height").div(2).intVar());
+        Model model = elem.getModel();
+
+        elem.setVar("radiusX", model.intVar(elem.getVar("width").div(IntExpr.constant(2))));
+        elem.setVar("radiusY", model.intVar(elem.getVar("height").div(IntExpr.constant(2))));
 
         elem.setVar("minX", elem.getVar("x1"));
-        elem.setVar("centerX", elem.getVar("x1").add(elem.getVar("radiusX")).intVar());
-        elem.setVar("maxX", elem.getVar("x1").add(elem.getVar("width")).intVar());
+        elem.setVar("centerX", model.intVar(elem.getVar("x1").add(elem.getVar("radiusX"))));
+        elem.setVar("maxX", model.intVar(elem.getVar("x1").add(elem.getVar("width"))));
 
         elem.setVar("minY", elem.getVar("y1"));
-        elem.setVar("centerY", elem.getVar("y1").add(elem.getVar("radiusY")).intVar());
-        elem.setVar("maxY", elem.getVar("y1").add(elem.getVar("height")).intVar());
+        elem.setVar("centerY", model.intVar(elem.getVar("y1").add(elem.getVar("radiusY"))));
+        elem.setVar("maxY", model.intVar(elem.getVar("y1").add(elem.getVar("height"))));
     }
 
     /**
@@ -456,17 +483,19 @@ public class DefaultVisLibrary extends VisLibrary {
         elem.setVar("size", size);
         updateLowerBound(elem, "size", minSize);
 
-        elem.setVar("radius", elem.getVar("size").div(2).intVar());
+        Model model = elem.getModel();
+
+        elem.setVar("radius", model.intVar(elem.getVar("size").div(IntExpr.constant(2))));
         elem.setVar("radiusX", elem.getVar("radius"));
         elem.setVar("radiusY", elem.getVar("radius"));
 
         elem.setVar("minX", elem.getVar("x1"));
-        elem.setVar("centerX", elem.getVar("x1").add(elem.getVar("radiusX")).intVar());
-        elem.setVar("maxX", elem.getVar("x1").add(elem.getVar("width")).intVar());
+        elem.setVar("centerX", model.intVar(elem.getVar("x1").add(elem.getVar("radiusX"))));
+        elem.setVar("maxX", model.intVar(elem.getVar("x1").add(elem.getVar("width"))));
 
         elem.setVar("minY", elem.getVar("y1"));
-        elem.setVar("centerY", elem.getVar("y1").add(elem.getVar("radiusY")).intVar());
-        elem.setVar("maxY", elem.getVar("y1").add(elem.getVar("height")).intVar());
+        elem.setVar("centerY", model.intVar(elem.getVar("y1").add(elem.getVar("radiusY"))));
+        elem.setVar("maxY", model.intVar(elem.getVar("y1").add(elem.getVar("height"))));
     }
 
     /**
@@ -484,13 +513,15 @@ public class DefaultVisLibrary extends VisLibrary {
         line.setVar("x2", toElem.getVar("centerX"));
         line.setVar("y2", toElem.getVar("centerY"));
 
-        line.setVar("minX", line.getVar("x1").min(line.getVar("x2")).intVar());
-        line.setVar("centerX", line.getVar("x1").add(line.getVar("x2")).div(2).intVar());
-        line.setVar("maxX", line.getVar("x1").max(line.getVar("x2")).intVar());
+        Model model = line.getModel();
 
-        line.setVar("minY", line.getVar("y1").min(line.getVar("y2")).intVar());
-        line.setVar("centerY", line.getVar("y1").add(line.getVar("y2")).div(2).intVar());
-        line.setVar("maxY", line.getVar("y1").max(line.getVar("y2")).intVar());
+        line.setVar("minX", model.intVar(line.getVar("x1").min(line.getVar("x2"))));
+        line.setVar("centerX", model.intVar(line.getVar("x1").add(line.getVar("x2")).div(IntExpr.constant(2))));
+        line.setVar("maxX", model.intVar(line.getVar("x1").max(line.getVar("x2"))));
+
+        line.setVar("minY", model.intVar(line.getVar("y1").min(line.getVar("y2"))));
+        line.setVar("centerY", model.intVar(line.getVar("y1").add(line.getVar("y2")).div(IntExpr.constant(2))));
+        line.setVar("maxY", model.intVar(line.getVar("y1").max(line.getVar("y2"))));
     }
 
     public static IntVar setVar(VisElem elem1, String varName1, VisElem elem2, String varName2) {
@@ -503,11 +534,13 @@ public class DefaultVisLibrary extends VisLibrary {
 
     public static void updateLowerBound(VisElem elem, String varName, int lb) {
         IntVar var = elem.getVar(varName);
-        try {
-            var.updateLowerBound(lb, Cause.Null);
-        } catch (ContradictionException e) {
-            throw new LibraryException("Couldn't apply the minimum value %d to %s.%s with bounds[%d, %d]",
-                    lb, elem.getKey(), varName, var.getLB(), var.getUB());
+        if (var instanceof UpdatableIntVar) {
+            try {
+                ((UpdatableIntVar) var).updateLowerBound(lb);
+            } catch (ContradictionException e) {
+                throw new LibraryException("Couldn't apply the minimum value %d to %s.%s with bounds[%d, %d]",
+                        lb, elem.getKey(), varName, var.getLowerBound(), var.getUpperBound());
+            }
         }
     }
 }

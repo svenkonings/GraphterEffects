@@ -1,7 +1,7 @@
 package com.github.meteoorkip.solver;
 
 import it.unibo.tuprolog.core.Term;
-import org.chocosolver.solver.Model;
+import nl.svenkonings.jacomo.model.Model;
 
 import java.util.*;
 

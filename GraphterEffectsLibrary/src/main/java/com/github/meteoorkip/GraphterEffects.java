@@ -123,9 +123,9 @@ public class GraphterEffects {
         } catch (PrologException e) {
             e.printStackTrace();
         }
-        if (debuginfo) {
-            results.getModel().getSolver().printStatistics();
-        }
+//        if (debuginfo) {
+//            results.getModel().getSolver().printStatistics();
+//        }
         if (!results.isSucces()) {
             throw new ElementException("Couldn't solve constraints");
         }

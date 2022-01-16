@@ -13,7 +13,9 @@ import com.github.meteoorkip.solver.library.VisLibrary;
 import com.github.meteoorkip.utils.TermUtils;
 import it.unibo.tuprolog.core.Clause;
 import it.unibo.tuprolog.core.Term;
-import org.chocosolver.solver.Model;
+import nl.svenkonings.jacomo.model.Model;
+import nl.svenkonings.jacomo.solvers.chocosolver.ChocoSolver;
+import nl.svenkonings.jacomo.solvers.ortools.OrToolsSolver;
 import org.graphstream.graph.Graph;
 
 import java.util.*;
@@ -192,8 +194,10 @@ public class Solver {
         visLibraries.forEach(library -> solveVisLibrary(visMap, prolog, library));
         visLibraries.forEach(library -> applyVisLibraryConsumer(visMap, library));
 
-        boolean succes = model.getSolver().solve();
-        return new SolveResults(succes, prolog, model, visMap);
+//        ChocoSolver solver = new ChocoSolver();
+        OrToolsSolver solver = new OrToolsSolver();
+        boolean success = solver.solveAndUpdate(model);
+        return new SolveResults(success, prolog, model, visMap);
     }
 
     /**

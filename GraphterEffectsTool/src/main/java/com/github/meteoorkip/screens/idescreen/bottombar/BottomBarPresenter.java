@@ -100,16 +100,13 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 });
                 break;
             case SOLVED:
-                String measures = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getSolver().getMeasures().toString();
-                int nbVars = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getNbVars();
-                int nbConstraints = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getNbVars();
+                int nbVars = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getVars().size();
+                int nbConstraints = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getConstraints().size();
 
                 Platform.runLater(() -> {
                     generationResultTextArea.appendText("Constraints solved:\n");
                     generationResultTextArea.appendText("Variables : " + nbVars + "\n");
                     generationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
-                    generationResultTextArea.appendText("Measures : \n");
-                    generationResultTextArea.appendText(measures + "\n");
                 });
                 break;
             case SVGGENERATED:
@@ -120,17 +117,14 @@ public class BottomBarPresenter implements Initializable, Observer, LogListener{
                 GenerationModel.getInstance().getGeneration().getException().printStackTrace();
                 break;
             case NOSOLUTION:
-                measures = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getSolver().getMeasures().toString();
-                nbVars = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getNbVars();
-                nbConstraints = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getNbVars();
+                nbVars = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getVars().size();
+                nbConstraints = GenerationModel.getInstance().getGeneration().getSolveResults().getModel().getConstraints().size();
 
                 Platform.runLater(() -> {
                     generationResultTextArea.appendText("No solution found:\n");
                     generationResultTextArea.appendText("Constraints solved:\n");
                     generationResultTextArea.appendText("Variables : " + nbVars + "\n");
                     generationResultTextArea.appendText("Constraints : " + nbConstraints + "\n");
-                    generationResultTextArea.appendText("Measures : \n");
-                    generationResultTextArea.appendText(measures + "\n");
                 });
                 break;
             case COMPILEERROR:

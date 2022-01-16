@@ -42,15 +42,15 @@ public class SvgDocumentGenerator {
         Element root = document.addElement("svg", "http://www.w3.org/2000/svg");
         root.addAttribute("style", "max-height:100%");
 
-        int minX = min(visElems, "minX");
-        int minY = min(visElems, "minY");
-        int maxX = max(visElems, "maxX");
-        int maxY = max(visElems, "maxY");
+        int minX = minPos(visElems, "minX", true);
+        int minY = minPos(visElems, "minY", true);
+        int maxX = maxPos(visElems, "maxX", true);
+        int maxY = maxPos(visElems, "maxY", true);
         int width = maxX - minY;
         int height = maxY - minY;
         root.addAttribute("viewBox", String.format("%d %d %d %d", minX, minY, width, height));
 
-        int minZ = min(visElems, "z") - 1;
+        int minZ = minPos(visElems, "z", false) - 1;
         visElems.stream().filter(elem -> elem.hasValue("global")).forEach(elem -> {
             elem.replaceVar("z", minZ);
             elem.replaceVar("x1", minX);
@@ -61,6 +61,7 @@ public class SvgDocumentGenerator {
             elem.replaceVar("height", height);
         });
 
+        //noinspection ConstantConditions
         visElems.stream()
                 .sorted(Comparator.comparingInt(elem -> elem.getVar("z").getValue()))
                 .forEachOrdered(visElem -> generator.generate(visElem, root));
@@ -68,31 +69,82 @@ public class SvgDocumentGenerator {
     }
 
     /**
-     * Calculate the maximum value of the attribute with the given name.
+     * Calculate the maximum value of the specified position attribute
+     * from the list of visualization elements.
      *
-     * @param visElems The list of visualization elements.
-     * @param name     The name of the attribute.
+     * @param visElems      The list of visualization elements.
+     * @param pos           The name of the position attribute.
+     * @param includeStroke Whether to include the stroke width.
      * @return The maximum value.
      */
-    private static int max(Collection<VisElem> visElems, String name) {
+    private static int maxPos(Collection<VisElem> visElems, String pos, boolean includeStroke) {
         return visElems.stream()
-                .filter(visElem -> visElem.hasVar(name))
-                .mapToInt(visElem -> visElem.getVar(name).getValue())
+                .filter(visElem -> visElem.hasVar(pos))
+                .mapToInt(visElem -> getMaxPos(visElem, pos, includeStroke))
                 .max().orElse(0);
     }
 
     /**
-     * Calculate the minimum value of the attribute with the given name.
+     * Get the maximum value of the specified position attribute of the specified element.
      *
-     * @param visElems The list of visualization elements.
-     * @param name     The name of the attribute.
+     * @param visElem       The visualization element.
+     * @param pos           The position attribute.
+     * @param includeStroke Whether to include the stroke width.
+     * @return The position attribute value.
+     */
+    @SuppressWarnings("ConstantConditions")
+    private static int getMaxPos(VisElem visElem, String pos, boolean includeStroke) {
+        int result = visElem.getVar(pos).getValue();
+        if (includeStroke) {
+            result += getStrokeWidth(visElem);
+        }
+        return result;
+    }
+
+    /**
+     * Calculate the minimum value of the specified position attribute
+     * from the list of visualization elements.
+     *
+     * @param visElems      The list of visualization elements.
+     * @param pos           The name of the position attribute.
+     * @param includeStroke Whether to include the stroke width.
      * @return The minimum value.
      */
-    private static int min(Collection<VisElem> visElems, String name) {
+    private static int minPos(Collection<VisElem> visElems, String pos, boolean includeStroke) {
         return visElems.stream()
-                .filter(visElem -> visElem.hasVar(name))
-                .mapToInt(visElem -> visElem.getVar(name).getValue())
+                .filter(visElem -> visElem.hasVar(pos))
+                .mapToInt(visElem -> getMinPos(visElem, pos, includeStroke))
                 .min().orElse(0);
+    }
+
+    /**
+     * Get the minimum value of the specified position attribute
+     * of the specified element.
+     *
+     * @param visElem       The visualization element.
+     * @param pos           The position attribute.
+     * @param includeStroke Whether to include the stroke width.
+     * @return The position attribute value.
+     */
+    @SuppressWarnings("ConstantConditions")
+    private static int getMinPos(VisElem visElem, String pos, boolean includeStroke) {
+        int result = visElem.getVar(pos).getValue();
+        if (includeStroke) {
+            result -= getStrokeWidth(visElem);
+        }
+        return result;
+    }
+
+    /**
+     * Get the stroke width of the specified element.
+     *
+     * @param visElem the visualization element.
+     * @return the stroke width, or 1 (default stroke width)
+     * if stroke width is not specified.
+     */
+    @SuppressWarnings("ConstantConditions")
+    private static int getStrokeWidth(VisElem visElem) {
+        return visElem.hasVar("strokeWidth") ? visElem.getVar("strokeWidth").getValue() : 1;
     }
 
     /**

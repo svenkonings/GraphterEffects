@@ -55,7 +55,6 @@ public class CommandLineTest {
         String debuginfo = getString(new String[]{graphLoc, visLoc, svgLoc, "-d"});
         assertTrue(debuginfo.contains("#graph1.dot\t{}"));
         assertTrue(debuginfo.contains(":-"));
-        assertTrue(debuginfo.contains("** Choco"));
     }
 
     @Test

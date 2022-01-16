@@ -1,9 +1,9 @@
 package com.github.meteoorkip.solver;
 
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Model;
-import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.variables.IntVar;
+import nl.svenkonings.jacomo.exceptions.unchecked.ContradictionException;
+import nl.svenkonings.jacomo.model.Model;
+import nl.svenkonings.jacomo.elem.variables.integer.IntVar;
+import nl.svenkonings.jacomo.elem.variables.integer.UpdatableIntVar;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -112,14 +112,15 @@ public class VisElem {
                     "can't be defined as a variable with the constant %d", key, name, value, constant);
         } else if (vars.containsKey(name)) {
             IntVar var = vars.get(name);
-            if (!var.isInstantiated()) {
+            if (!var.hasValue() && var instanceof UpdatableIntVar) {
+                UpdatableIntVar uVar = (UpdatableIntVar) var;
                 try {
-                    var.instantiateTo(constant, Cause.Null);
+                    uVar.instantiateValue(constant);
                 } catch (ContradictionException e) {
                     throw new ElementException("%s.%s with domain [%d, %d] can't be instantiated to %d",
-                            key, name, var.getLB(), var.getUB(), constant);
+                            key, name, var.getLowerBound(), var.getUpperBound(), constant);
                 }
-            } else if (!var.isInstantiatedTo(constant)) {
+            } else if (!((Integer) constant).equals(var.getValue())) {
                 throw new ElementException("%s.%s already has the value %d instead of %d",
                         key, name, var.getValue(), constant);
             }
@@ -147,18 +148,18 @@ public class VisElem {
             throw new ElementException("%s.%s is already defined as the value %s and" +
                     "can't be defined as a variable with the bounds [%d, %d]", key, name, value, lb, ub);
         } else if (vars.containsKey(name)) {
-            IntVar var = vars.get(name);
+            UpdatableIntVar var = (UpdatableIntVar) vars.get(name);
             try {
-                var.updateLowerBound(lb, Cause.Null);
+                var.updateLowerBound(lb);
             } catch (ContradictionException e) {
                 throw new ElementException("%s.%s with domain [%d, %d] can't update the lower bound to %d",
-                        key, name, var.getLB(), var.getUB(), lb);
+                        key, name, var.getLowerBound(), var.getUpperBound(), lb);
             }
             try {
-                var.updateUpperBound(ub, Cause.Null);
+                var.updateUpperBound(ub);
             } catch (ContradictionException e) {
                 throw new ElementException("%s.%s with domain [%d, %d] can't update the upper bound to %d",
-                        key, name, var.getLB(), var.getUB(), ub);
+                        key, name, var.getLowerBound(), var.getUpperBound(), ub);
             }
             return var;
         } else {
@@ -184,7 +185,7 @@ public class VisElem {
         } else if (vars.containsKey(name)) {
             IntVar var = vars.get(name);
             if (!var.equals(newVar)) {
-                var.eq(newVar).post();
+                model.constraint(var.eq(newVar));
             }
             return var;
         } else {
@@ -202,6 +203,18 @@ public class VisElem {
      */
     public IntVar replaceVar(String name, int constant) {
         IntVar var = model.intVar(constant);
+        vars.put(name, var);
+        return var;
+    }
+
+    /**
+     * Sets or replaces the variable associated to the given name with the given variable.
+     *
+     * @param name The given name.
+     * @param var  The given variable.
+     * @return The variable.
+     */
+    public IntVar replaceVar(String name, IntVar var) {
         vars.put(name, var);
         return var;
     }
@@ -249,7 +262,7 @@ public class VisElem {
      * @return The value, or {@code null} if the {@link IntVar} isn't instantiated.
      */
     private static String varToValue(IntVar var) {
-        if (var.isInstantiated()) {
+        if (var.hasValue()) {
             return Integer.toString(var.getValue());
         }
         return null;
@@ -262,7 +275,7 @@ public class VisElem {
      * @return {@code true} if there is a value, {@code false} otherwise.
      */
     public boolean hasValue(String name) {
-        return values.containsKey(name) || vars.containsKey(name) && vars.get(name).isInstantiated();
+        return values.containsKey(name) || vars.containsKey(name) && vars.get(name).hasValue();
     }
 
     /**
