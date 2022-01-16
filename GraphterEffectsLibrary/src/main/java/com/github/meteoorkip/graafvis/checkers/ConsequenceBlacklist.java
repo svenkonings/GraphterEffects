@@ -86,12 +86,6 @@ class ConsequenceBlacklist extends GraafvisBaseVisitor<Void> {
         return null;
     }
 
-    /** Visit the consequence of a clause */
-    @Override
-    public Void visitClause(GraafvisParser.ClauseContext ctx) {
-        return visit(ctx.cArgSeries());
-    }
-
     /*
      * Terms
      */

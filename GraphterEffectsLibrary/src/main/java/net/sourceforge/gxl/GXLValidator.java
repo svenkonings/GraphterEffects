@@ -183,7 +183,7 @@ class GXLValidator {
 				for (int i = 0; i < tentacles.size(); i++) {
 					GXLLocalConnectionTentacle tentacle = (GXLLocalConnectionTentacle) tentacles.elementAt(i);
 					if (tentacle.hasTargetIncidenceOrder()) {
-						Integer order = new Integer(tentacle.getTargetIncidenceOrder());
+						Integer order = tentacle.getTargetIncidenceOrder();
 						if (orderSet.contains(order))
 							throw new GXLValidationException(GXLValidationException.DUPLICATE_ORDER);
 						orderSet.add(order);
@@ -477,9 +477,9 @@ class GXLValidator {
 		// Validate INVALID_VALUE
 		try {
 			if (gxlElement instanceof GXLInt)
-				new Integer(value);
+				Integer.parseInt(value);
 			else if (gxlElement instanceof GXLFloat)
-				new Float(value);
+				Float.parseFloat(value);
 		}
 		catch (NumberFormatException nfe) {
 			throw new GXLValidationException(GXLValidationException.INVALID_VALUE);

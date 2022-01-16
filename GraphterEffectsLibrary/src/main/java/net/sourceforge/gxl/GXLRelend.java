@@ -92,7 +92,7 @@ public class GXLRelend extends GXLAttributedElement implements GXLLocalConnectio
 	/** Sets the <code>GXLGraphElement</code> that this <code>relend</code> connects to. 
 	 *	Note that only the graph elements id is stored, and that changing that id prior to
 	 *	insertion into a <code>GXLDocument</code> will cause this tentacle to become dangling.
-	 *	@param graphElement The <code>GXLGraphElement</code> that this tentacle should connect to. 
+	 *	@param target The <code>GXLGraphElement</code> that this tentacle should connect to.
 	 *	@throws GXLValidationException If this action would result in an invalid GXL document.
 	 *	@see #setTargetID(String id)
 	 */
@@ -176,7 +176,7 @@ public class GXLRelend extends GXLAttributedElement implements GXLLocalConnectio
 	 */
 	public int getRelIncidenceOrder() {
 		String order = getAttribute(GXL.STARTORDER);
-		return order != null ? new Integer(order).intValue() : -1;
+		return order != null ? Integer.parseInt(order) : -1;
 	}
 
 	/** Sets the order of this <code>relend</code>. 
@@ -215,7 +215,7 @@ public class GXLRelend extends GXLAttributedElement implements GXLLocalConnectio
 	 */
 	public int getTargetIncidenceOrder() {
 		String order = getAttribute(GXL.ENDORDER);
-		return order != null ? new Integer(order).intValue() : -1;
+		return order != null ? Integer.parseInt(order) : -1;
 	}
 
 	/** Sets the order of this tentacle. 

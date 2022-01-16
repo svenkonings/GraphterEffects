@@ -87,7 +87,7 @@ public class GXLRel extends GXLLocalConnection {
 	}
 
 	/** Returns the specified <code>relend</code> child. 
-	 *	@param The index of the specified relend.
+	 *	@param i The index of the specified relend.
 	 *	@return The specified <code>relend</code> child. 
 	 *	@see #getChildAt(int i)
 	 *	@see #getTentacleAt(int i)

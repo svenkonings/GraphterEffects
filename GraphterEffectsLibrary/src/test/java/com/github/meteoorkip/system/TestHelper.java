@@ -1,19 +1,19 @@
 package com.github.meteoorkip.system;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graphloader.Importer;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
 import com.github.meteoorkip.utils.FileUtils;
+import it.unibo.tuprolog.core.Clause;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -26,7 +26,7 @@ public class TestHelper {
 
     public TestHelper() {}
 
-    public String compileFile(String scriptName, String graphFileName) throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SAXException {
+    public String compileFile(String scriptName, String graphFileName) throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, SAXException, PrologException {
         SolveResults results = solve(scriptName, graphFileName);
         String svgString = null;
         if(results.isSucces()) {
@@ -37,14 +37,19 @@ public class TestHelper {
     }
 
     public boolean checkIfSolutionExists(String scriptName, String graphFileName) throws SAXException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, IOException {
-        return this.solve(scriptName,graphFileName).isSucces();
+        try {
+            return this.solve(scriptName,graphFileName).isSucces();
+        } catch (PrologException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    private SolveResults solve(String scriptname, String graphFileName) throws GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, IOException, SAXException {
+    private SolveResults solve(String scriptname, String graphFileName) throws GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, IOException, SAXException, PrologException {
         GraafvisCompiler compiler = new GraafvisCompiler();
         Solver solver = new Solver();
         script = FileUtils.fromResourcesAsString(scriptname);
-        List<Term> terms = compiler.compile(script);
+        List<Clause> terms = compiler.compile(script);
 
         SolveResults results;
         if (graphFileName != null) {

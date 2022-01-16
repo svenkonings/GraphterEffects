@@ -4,11 +4,12 @@ import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import com.github.meteoorkip.utils.Triple;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.xmlunit.builder.Input;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class NodeTests {
 
@@ -16,7 +17,7 @@ public class NodeTests {
     private static SVGTestEngine svgTestEngine;
 
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         TestHelper testhelper = new TestHelper();
         generated_visualization1 = testhelper.compileFile("regression/predicates/nodetest.vis", "library/simple_graphs/nodetestgraph.dot");

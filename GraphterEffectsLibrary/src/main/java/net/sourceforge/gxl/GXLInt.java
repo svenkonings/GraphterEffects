@@ -41,7 +41,7 @@ public class GXLInt extends GXLAtomicValue {
 	//
 
 	/** Creates a new <code>GXLInt</code> element. 
-	 *	@param booleanValue The value encapsulated by the new <code>GXLInt</code>.
+	 *	@param intValue The value encapsulated by the new <code>GXLInt</code>.
 	 */
 	public GXLInt(int intValue) {
 		super(GXL.INT, String.valueOf(intValue));
@@ -52,7 +52,7 @@ public class GXLInt extends GXLAtomicValue {
 	GXLInt(Element element) {
 		super(GXL.INT, element);
 		// The constructor of GXLAtomicValue has initialized our value member
-		intValue = new Integer(value).intValue();	
+		intValue = Integer.parseInt(value);
 		createChildren(element);
 	}
 

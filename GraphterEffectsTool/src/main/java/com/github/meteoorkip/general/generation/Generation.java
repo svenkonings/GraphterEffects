@@ -1,10 +1,10 @@
 package com.github.meteoorkip.general.generation;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graafvis.errors.VisError;
 import com.github.meteoorkip.graafvis.warnings.Warning;
 import com.github.meteoorkip.graphloader.Importer;
+import it.unibo.tuprolog.core.Clause;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -34,7 +34,7 @@ public class Generation extends Observable{
 
     private GenerationProgress targetProgress;
 
-    private List<Term> scriptTerms;
+    private List<Clause> scriptTerms;
     private Graph graph;
     private Solver solver;
     private TuProlog prolog;
@@ -207,7 +207,7 @@ public class Generation extends Observable{
         return scriptFile;
     }
 
-    public List<Term> getScriptTerms() {
+    public List<Clause> getScriptTerms() {
         return scriptTerms;
     }
 

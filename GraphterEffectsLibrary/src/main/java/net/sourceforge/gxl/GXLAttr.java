@@ -139,7 +139,7 @@ public class GXLAttr extends GXLAttributedElement {
 
 	/** Sets the value of the <code>kind</code> attribute. 
 	 *	This simply calls <code>setAttribute(GXL.KIND, kind)</code>.
-	 *	@param name The new value.
+	 *	@param kind The new value.
 	 *	@see #setAttribute(String, String)
 	 */
 	public void setKind(String kind) {

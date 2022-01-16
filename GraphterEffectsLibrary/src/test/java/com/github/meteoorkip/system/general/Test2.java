@@ -1,25 +1,25 @@
 package com.github.meteoorkip.system.general;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import com.github.meteoorkip.utils.Triple;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
 
 import javax.xml.transform.Source;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public final class Test2 {
 
     @Test
-    public void test1() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
+    public void test1() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException, PrologException {
         Source generated_xml = Input.fromString(new TestHelper().compileFile("regression/general/test2.vis", "library/simple_graphs/graph1.dot")).build();
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
 
@@ -46,7 +46,7 @@ public final class Test2 {
     }
 
     @Test
-    public void test2() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
+    public void test2() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException, PrologException {
         Source generated_xml = Input.fromString(new TestHelper().compileFile("regression/general/test2.vis", "library/simple_graphs/graph6.dot")).build();
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
         //assert svgTestEngine.checkIfValidSVG();
@@ -78,7 +78,7 @@ public final class Test2 {
     }
 
     @Test
-    public void test3() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
+    public void test3() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException, PrologException {
         Source generated_xml = Input.fromString(new TestHelper().compileFile("regression/general/test2.vis", "library/strange_graphs/dgs/graph1.dgs")).build();
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
         //assert svgTestEngine.checkIfValidSVG();

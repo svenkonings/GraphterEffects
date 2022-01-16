@@ -52,7 +52,7 @@ public class GXLFloat extends GXLAtomicValue {
 	GXLFloat(Element element) {
 		super(GXL.FLOAT, element);
 		// The constructor of GXLAtomicValue has initialized our value member
-		floatValue = new Float(value).floatValue();	
+		floatValue = Float.parseFloat(value);
 		createChildren(element);
 	}
 

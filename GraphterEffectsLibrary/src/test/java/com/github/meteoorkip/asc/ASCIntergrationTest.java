@@ -3,9 +3,8 @@ package com.github.meteoorkip.asc;
 import com.github.meteoorkip.graphloader.Importer;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.FileUtils;
-import com.github.meteoorkip.utils.Printer;
 import org.graphstream.graph.Graph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.github.meteoorkip.asc.GraphRuleTests.generateGraphProlog;
 import static com.github.meteoorkip.asc.GraphRuleTests.graphTest;

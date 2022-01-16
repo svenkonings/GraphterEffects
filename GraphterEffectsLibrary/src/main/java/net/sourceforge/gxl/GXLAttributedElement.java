@@ -128,7 +128,7 @@ public abstract class GXLAttributedElement extends GXLElement {
 
 	/** Sets the value of the <code>id</code> attribute. 
 	 *	This simply calls <code>setAttribute(GXL.KIND, kind)</code>.
-	 *	@param name The new value.
+	 *	@param id The new value.
 	 *	@throws GXLValidationException If this action would result in an invalid GXL document.
 	 *	@see #setAttribute(String, String)
 	 */

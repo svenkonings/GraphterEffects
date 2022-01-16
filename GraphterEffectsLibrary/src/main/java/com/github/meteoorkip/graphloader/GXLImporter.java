@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Class used to import graphs saved in GXL format.
@@ -236,39 +237,36 @@ final class GXLImporter {
 
     private static Graph Grooveify(Graph input) {
         Graph res = GraphUtils.newGraphWithSameType(input);
-        for (String key : input.getAttributeKeySet()) {
-            res.setAttribute(key, (Object) input.getAttribute(key));
-        }
-        for (Node node : input.getEachNode()) {
+        input.attributeKeys().forEach(key -> res.setAttribute(key, input.getAttribute(key)));
+        input.nodes().forEach(node -> {
             Node added = res.addNode(node.getId());
-            for (String key : node.getAttributeKeySet()) {
-                added.setAttribute(key, (Object) node.getAttribute(key));
-            }
-        }
-        for (Edge edge : input.getEachEdge()) {
-            if (edge.getSourceNode().equals(edge.getTargetNode())) {
-                String label = edge.getAttribute("label");
-                if (label == null) {
-                    continue;
-                }
-                label = label.substring(1, label.length() - 1);
-                String[] attribute = label.split(":", 2);
-                if (attribute.length == 1) {
-                    res.getNode(edge.getSourceNode().getId()).setAttribute("label", "\"" + attribute[0] + "\"");
-                } else if (attribute.length == 2) {
-                    // FIXME: Should support type imports instead
-                    if ("type".equals(attribute[0])) {
-                        attribute[0] = "label";
+            node.attributeKeys().forEach(key -> added.setAttribute(key, node.getAttribute(key)));
+        });
+        input.edges().forEach(new Consumer<Edge>() {
+            @Override
+            public void accept(Edge edge) {
+                if (edge.getSourceNode().equals(edge.getTargetNode())) {
+                    String label = (String) edge.getAttribute("label");
+                    if (label == null) {
+                        return;
                     }
-                    res.getNode(edge.getSourceNode().getId()).setAttribute(attribute[0], "\"" + attribute[1] + "\"");
-                }
-            } else {
-                Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
-                for (String key : edge.getAttributeKeySet()) {
-                    added.setAttribute(key, (Object) edge.getAttribute(key));
+                    label = label.substring(1, label.length() - 1);
+                    String[] attribute = label.split(":", 2);
+                    if (attribute.length == 1) {
+                        res.getNode(edge.getSourceNode().getId()).setAttribute("label", "\"" + attribute[0] + "\"");
+                    } else if (attribute.length == 2) {
+                        // FIXME: Should support type imports instead
+                        if ("type".equals(attribute[0])) {
+                            attribute[0] = "label";
+                        }
+                        res.getNode(edge.getSourceNode().getId()).setAttribute(attribute[0], "\"" + attribute[1] + "\"");
+                    }
+                } else {
+                    Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
+                    edge.attributeKeys().forEach(key -> added.setAttribute(key, edge.getAttribute(key)));
                 }
             }
-        }
+        });
         return res;
     }
 }

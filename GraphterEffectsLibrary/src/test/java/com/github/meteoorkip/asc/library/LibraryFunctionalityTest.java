@@ -1,22 +1,24 @@
 package com.github.meteoorkip.asc.library;
 
-import alice.tuprolog.SolveInfo;
-import alice.tuprolog.Term;
 import com.github.meteoorkip.asc.ASCLibrary;
 import com.github.meteoorkip.graphloader.Importer;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.GraphUtils;
+import it.unibo.tuprolog.core.Struct;
+import it.unibo.tuprolog.core.Term;
 import org.graphstream.graph.Graph;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.github.meteoorkip.prolog.TuProlog.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class LibraryFunctionalityTest {
 
@@ -30,7 +32,7 @@ public class LibraryFunctionalityTest {
 
     Map<Graph, TuProlog> asrcmap = new HashMap<>();
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         diengine = new TuProlog();
         digraph = Importer.graphFromFile(FileUtils.fromResources("library/simple_graphs/graph4.dot"));
@@ -48,19 +50,15 @@ public class LibraryFunctionalityTest {
         asrcmap.put(empty, emptyengine);
     }
 
-    private void testSuccess(Term term, Graph graph) {
-        SolveInfo res = asrcmap.get(graph).getProlog().solve(term);
-        assertTrue(res.isSuccess());
+    private void testSuccess(Struct struct, Graph graph) {
+        List<Map<String, Term>> res = asrcmap.get(graph).solve(struct);
+        assertFalse(res.isEmpty());
         //System.out.println(term.toString() + "\n-->\n" + res.toString().replaceAll("\n", "\t\t") + "\n");
     }
 
-    private void testFail(Term term, Graph graph) {
-        SolveInfo res = asrcmap.get(graph).getProlog().solve(term);
-        try {
-            assertFalse(res.isSuccess());
-        } catch (AssertionError e) {
-            throw new AssertionError("Found a solution anyway: " + res.toString().replaceAll("\n", "\t "));
-        }
+    private void testFail(Struct struct, Graph graph) {
+        List<Map<String, Term>> res = asrcmap.get(graph).solve(struct);
+        assertTrue(res.isEmpty(), () -> "Found a solution anyway: " + res.toString().replaceAll("\n", "\t "));
     }
 
 
@@ -131,15 +129,15 @@ public class LibraryFunctionalityTest {
     }
 
     @Test
-    public void flagTest() throws Exception {
-        SolveInfo res = asrcmap.get(digraph).getProlog().solve(struct("flag_list", var("X")));
-        assertTrue(res.isSuccess());
+    public void flagTest() {
+        List<Map<String, Term>> res = asrcmap.get(digraph).solve(struct("current_prolog_flag", var("X"), var("Y")));
+        assertFalse(res.isEmpty());
     }
 
     @Test
-    public void ComponentTest() throws Exception {
+    public void ComponentTest() {
         GraphUtils.ConnectedComponentsCount(digraph);
-        SolveInfo res = asrcmap.get(digraph).getProlog().solve(and(struct("node", var("X")), struct("inComponent", var("X"), var("Y"))));
-        assertTrue(res.isSuccess());
+        List<Map<String, Term>> res = asrcmap.get(digraph).solve(and(struct("node", var("X")), struct("inComponent", var("X"), var("Y"))));
+        assertFalse(res.isEmpty());
     }
 }

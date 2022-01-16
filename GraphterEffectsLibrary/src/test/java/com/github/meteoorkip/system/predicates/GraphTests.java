@@ -1,21 +1,21 @@
 package com.github.meteoorkip.system.predicates;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import com.github.meteoorkip.utils.Triple;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public final class GraphTests {
     
@@ -27,8 +27,8 @@ public final class GraphTests {
     private static SVGTestEngine svgTestEngine3;
 
 
-    @BeforeClass
-    public static void setup() throws SAXException, GraafvisCompiler.SyntaxException, IOException, GraafvisCompiler.CheckerException {
+    @BeforeAll
+    public static void setup() throws SAXException, GraafvisCompiler.SyntaxException, IOException, GraafvisCompiler.CheckerException, PrologException {
         generated_visualization1 = new TestHelper().compileFile("regression/predicates/graphtest/graphtest.vis", "regression/predicates/graphtest/graph1.dot");
         svgTestEngine1 = new SVGTestEngine(Input.fromString(generated_visualization1).build());
         generated_visualization2 = new TestHelper().compileFile("regression/predicates/graphtest/graphtest.vis", "regression/predicates/graphtest/graph2.dot");
@@ -38,7 +38,7 @@ public final class GraphTests {
     }
 
     @Test
-    public void graphTest() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
+    public void graphTest() {
         SVGElementQuery testQuery = new SVGElementQuery("body", new Triple<>("text()","=","graph"));
         assertTrue(svgTestEngine1.containsElement(testQuery));
         assertTrue(svgTestEngine2.containsElement(testQuery));
@@ -94,7 +94,7 @@ public final class GraphTests {
         assertFalse(svgTestEngine3.containsElement(testQuery));
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void nodeCount(){
         SVGElementQuery testQuery = new SVGElementQuery("foreignObject", new Triple<>("height","=","9"));
@@ -106,7 +106,7 @@ public final class GraphTests {
         assertEquals("8",value3);
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void edgeCount(){
         SVGElementQuery testQuery = new SVGElementQuery("foreignObject", new Triple<>("height","=","10"));
@@ -118,7 +118,7 @@ public final class GraphTests {
         assertEquals("4",value3);
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void attributeCount(){
         SVGElementQuery testQuery = new SVGElementQuery("foreignObject", new Triple<>("height","=","11"));
@@ -130,7 +130,7 @@ public final class GraphTests {
         assertEquals("0",value3);
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void componentCount(){
         SVGElementQuery testQuery = new SVGElementQuery("foreignObject", new Triple<>("height","=","12"));

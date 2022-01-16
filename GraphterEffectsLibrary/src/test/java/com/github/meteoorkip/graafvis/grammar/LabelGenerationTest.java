@@ -1,6 +1,7 @@
 package com.github.meteoorkip.graafvis.grammar;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 

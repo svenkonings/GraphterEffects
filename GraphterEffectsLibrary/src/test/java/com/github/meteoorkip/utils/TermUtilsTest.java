@@ -1,9 +1,10 @@
 package com.github.meteoorkip.utils;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import static com.github.meteoorkip.prolog.TuProlog.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TermUtilsTest {
 
@@ -14,7 +15,7 @@ public class TermUtilsTest {
         assertEquals("\"labeltest\"", TermUtils.termToString(struct("\"labeltest\"")));
         assertEquals("\"test2\"(X,Y)", TermUtils.termToString(struct("\"test2\"", var("X"), var("Y"))));
 //        assertEquals("\"_test_3\"", TermUtils.termToString(term("\"_test_3\"")));
-        assertEquals("test_4", TermUtils.termToString(term("test_4")));
+        assertEquals("test_4", TermUtils.termToString(atom("test_4")));
         assertEquals("1", TermUtils.termToString(intVal(1)));
         assertEquals("2", TermUtils.termToString(number("2")));
         assertEquals("X", TermUtils.termToString(var("X")));

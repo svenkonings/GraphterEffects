@@ -1,6 +1,6 @@
 package com.github.meteoorkip.solver;
 
-import alice.tuprolog.Term;
+import it.unibo.tuprolog.core.Term;
 import org.chocosolver.solver.Model;
 
 import java.util.*;

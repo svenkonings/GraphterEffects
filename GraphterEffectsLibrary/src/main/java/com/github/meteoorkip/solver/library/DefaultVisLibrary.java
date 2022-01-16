@@ -1,10 +1,9 @@
 package com.github.meteoorkip.solver.library;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.solver.VisElem;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.QuadConsumer;
-import com.github.meteoorkip.utils.TriConsumer;
+import it.unibo.tuprolog.core.Term;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
@@ -42,8 +41,6 @@ public class DefaultVisLibrary extends VisLibrary {
                             break;
                         default:
                             elem.setVar("z", 0);
-                            break;
-
                     }
                 }
             }
@@ -287,8 +284,8 @@ public class DefaultVisLibrary extends VisLibrary {
     }
 
     /**
-     * Creates a {@link QueryConsumer} that calls the given {@link TriConsumer} for every result of the solved query.
-     * The {@link TriConsumer} receives the visualization elements that belongs to "Elem1" and "Elem2" variables and a
+     * Creates a {@link QueryConsumer} that calls the given {@link com.github.meteoorkip.utils.TriConsumer} for every result of the solved query.
+     * The {@link com.github.meteoorkip.utils.TriConsumer} receives the visualization elements that belongs to "Elem1" and "Elem2" variables and a
      * {@link Map} of the results.
      *
      * @param consumer The given consumer.

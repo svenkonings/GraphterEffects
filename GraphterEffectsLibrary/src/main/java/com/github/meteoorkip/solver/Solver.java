@@ -1,20 +1,25 @@
 package com.github.meteoorkip.solver;
 
-import alice.tuprolog.InvalidLibraryException;
-import alice.tuprolog.InvalidTheoryException;
-import alice.tuprolog.Term;
+
 import com.github.meteoorkip.asc.ASCLibrary;
 import com.github.meteoorkip.asc.GraphLibrary;
 import com.github.meteoorkip.asc.GraphLibraryLoader;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.solver.library.DefaultVisLibrary;
 import com.github.meteoorkip.solver.library.LibraryException;
+import com.github.meteoorkip.solver.library.QueryConsumer;
 import com.github.meteoorkip.solver.library.VisLibrary;
 import com.github.meteoorkip.utils.TermUtils;
+import it.unibo.tuprolog.core.Clause;
+import it.unibo.tuprolog.core.Term;
 import org.chocosolver.solver.Model;
 import org.graphstream.graph.Graph;
 
 import java.util.*;
+
+import static com.github.meteoorkip.prolog.TuProlog.struct;
+import static com.github.meteoorkip.prolog.TuProlog.var;
 
 /**
  * The constraint solver.
@@ -133,7 +138,7 @@ public class Solver {
      * @param terms The given terms.
      * @return The created {@link TuProlog} object.
      */
-    public TuProlog loadProlog(Collection<Term> terms) {
+    public TuProlog loadProlog(Collection<Clause> terms) {
         return loadProlog(null, terms);
     }
 
@@ -141,18 +146,13 @@ public class Solver {
      * Creates a {@link TuProlog} object with the given terms and loads all the graph and visualization library imports
      * specified in the terms.
      *
-     * @param terms The given terms.
+     * @param clauses The given terms.
      * @param graph The graph used for the {@link GraphLibrary}.
      * @return The created {@link TuProlog} object.
      */
-    public TuProlog loadProlog(Graph graph, Collection<Term> terms) {
+    public TuProlog loadProlog(Graph graph, Collection<Clause> clauses) {
         TuProlog prolog;
-        try {
-            prolog = new TuProlog(terms);
-        } catch (InvalidTheoryException e) {
-            throw new LibraryException(e);
-        }
-
+        prolog = new TuProlog(clauses);
         if (graph != null) {
             getGraphLibraries(prolog, graph).forEach(library -> loadGraphLibrary(prolog, library));
         }
@@ -165,7 +165,7 @@ public class Solver {
      *
      * @return The {@link SolveResults}.
      */
-    public SolveResults solve(Collection<Term> terms) {
+    public SolveResults solve(Collection<Clause> terms) throws PrologException {
         return solve(loadProlog(terms));
     }
 
@@ -174,7 +174,7 @@ public class Solver {
      *
      * @return The {@link SolveResults}.
      */
-    public SolveResults solve(Graph graph, Collection<Term> terms) {
+    public SolveResults solve(Graph graph, Collection<Clause> terms) throws PrologException {
         TuProlog a = loadProlog(graph, terms);
         return solve(a);
     }
@@ -206,7 +206,7 @@ public class Solver {
     private Set<GraphLibrary> getGraphLibraries(TuProlog prolog, Graph graph) {
         Set<GraphLibrary> libraries = new LinkedHashSet<>();
         libraries.add(defaultGraphLibraryLoader.getInstance(graph));
-        prolog.solve("graphLibrary(X)").stream()
+        prolog.solve(struct("graphLibrary", var("X"))).stream()
                 .map(map -> map.get("X"))
                 .map(TermUtils::stripQuotes)
                 .map(name -> getGraphLibrary(name, graph))
@@ -223,7 +223,7 @@ public class Solver {
     private Set<VisLibrary> getVisLibraries(TuProlog prolog) {
         Set<VisLibrary> libraries = new LinkedHashSet<>();
         libraries.add(defaultVisLibrary);
-        prolog.solve("visLibrary(X)").stream()
+        prolog.solve(struct("visLibrary", var("X"))).stream()
                 .map(map -> map.get("X"))
                 .map(TermUtils::stripQuotes)
                 .map(this::getVisLibrary)
@@ -238,13 +238,7 @@ public class Solver {
      * @param library The library to be loaded.
      */
     private static void loadGraphLibrary(TuProlog prolog, GraphLibrary library) {
-        try {
-            prolog.loadLibrary(library);
-        } catch (InvalidLibraryException e) {
-            e.printStackTrace();
-            // FIXME: The library exception is sometimes also thrown by TuProlog when it's correctly loaded
-//            throw new LibraryException(e);
-        }
+        prolog.loadLibrary(library);
     }
 
     /**
@@ -254,11 +248,7 @@ public class Solver {
      * @param library The library containing the terms to be loaded.
      */
     private static void loadVisLibrary(TuProlog prolog, VisLibrary library) {
-        try {
-            prolog.addTheory(library.getTerms().toArray(new Term[0]));
-        } catch (InvalidTheoryException e) {
-            throw new LibraryException(e);
-        }
+        prolog.addTheory(library.getClauses());
     }
 
     /**
@@ -269,7 +259,11 @@ public class Solver {
      * @param library The given {@link VisLibrary}.
      */
     private static void solveVisLibrary(VisMap visMap, TuProlog prolog, VisLibrary library) {
-        library.getQueries().forEach((query, queryConsumer) -> queryConsumer.accept(visMap, prolog.solve(query)));
+        Set<Map.Entry<String, QueryConsumer>> entries = library.getQueries().entrySet();
+        for (Map.Entry<String, QueryConsumer> entry : entries) {
+            List<Map<String, Term>> result = prolog.solve(entry.getKey());
+            entry.getValue().accept(visMap, result);
+        }
     }
 
     /**

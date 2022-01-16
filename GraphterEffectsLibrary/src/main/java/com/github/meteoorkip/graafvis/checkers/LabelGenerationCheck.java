@@ -47,23 +47,23 @@ class LabelGenerationCheck extends GraafvisBaseVisitor<Void> {
     public Void visitLabel(GraafvisParser.LabelContext ctx) {
         if (ctx.RENAME_TOKEN() == null) {
             String labelString = ctx.STRING().getText();
-        /* Remove quotation marks */
+            /* Remove quotation marks */
             String functorToGenerate = labelString.substring(1, labelString.length() - 1);
 
-        /* Parse functor for correctness */
+            /* Parse functor for correctness */
             CharStream stream = new ANTLRInputStream(functorToGenerate);
             GraafvisLexer lexer = new GraafvisLexer(stream);
             TokenStream tokenStream = new CommonTokenStream(lexer);
             GraafvisParser parser = new GraafvisParser(tokenStream);
             ErrorListener errorListener = new ErrorListener();
 
-        /* Make sure parse graafvis errors are captured */
+            /* Make sure parse graafvis errors are captured */
             lexer.removeErrorListeners();
             lexer.addErrorListener(errorListener);
             parser.removeErrorListeners();
             parser.addErrorListener(errorListener);
 
-        /* Parse the functor */
+            /* Parse the functor */
             GraafvisParser.FunctorContext functor = parser.functor();
             if (errorListener.hasErrors()) {
                 int line = functor.getStart().getLine();

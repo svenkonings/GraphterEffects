@@ -1,9 +1,10 @@
 package com.github.meteoorkip.utils;
 
 import org.graphstream.graph.implementations.MultiGraph;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
@@ -11,14 +12,15 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public final class PrinterTest {
 
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private PrintStream ps = new PrintStream(baos);
 
-    @Before
+    @BeforeEach
     public void setOUT() {
         System.setOut(ps);
     }
@@ -59,7 +61,7 @@ public final class PrinterTest {
     }
 
 
-    @After
+    @AfterEach
     public void resetOUT() {
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
     }

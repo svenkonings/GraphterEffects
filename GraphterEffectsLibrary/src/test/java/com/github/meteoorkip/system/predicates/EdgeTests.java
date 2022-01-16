@@ -1,52 +1,47 @@
 package com.github.meteoorkip.system.predicates;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.solver.ElementException;
 import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
 import com.github.meteoorkip.system.TestHelper;
 import com.github.meteoorkip.utils.Triple;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public final class EdgeTests {
 
-    private static String generatedVisualizationBrokenAttribute;
-
-    private static String generated_visualization1;
     private static SVGTestEngine svgTestEngine1;
-    private static String generated_visualization2;
     private static SVGTestEngine svgTestEngine2;
-    private static String generated_visualization3;
     private static SVGTestEngine svgTestEngine3;
-    private static String generated_visualization4;
     private static SVGTestEngine svgTestEngine4;
 
 
-    @BeforeClass
-    public static void setup() throws SAXException, GraafvisCompiler.SyntaxException, IOException, GraafvisCompiler.CheckerException {
-        generated_visualization1 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph1.dot");
+    @BeforeAll
+    public static void setup() throws SAXException, GraafvisCompiler.SyntaxException, IOException, GraafvisCompiler.CheckerException, PrologException {
+        String generated_visualization1 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph1.dot");
         svgTestEngine1 = new SVGTestEngine(Input.fromString(generated_visualization1).build());
-        generated_visualization2 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph2.dot");
+        String generated_visualization2 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph2.dot");
         svgTestEngine2 = new SVGTestEngine(Input.fromString(generated_visualization2).build());
-        generated_visualization3 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph3.dot");
+        String generated_visualization3 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph3.dot");
         svgTestEngine3 = new SVGTestEngine(Input.fromString(generated_visualization3).build());
-        generated_visualization4 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph4.dot");
+        String generated_visualization4 = new TestHelper().compileFile("regression/predicates/edgetest/edgetest.vis", "regression/predicates/edgetest/graph4.dot");
         svgTestEngine4 = new SVGTestEngine(Input.fromString(generated_visualization4).build());
     }
 
     @Test
     public void noDoubleText() throws Exception {
         try {
-            generatedVisualizationBrokenAttribute = new TestHelper().compileFile("regression/predicates/edgetest/brokenattribute.vis", "regression/predicates/edgetest/brokenattribute.dot");
+            new TestHelper().compileFile("regression/predicates/edgetest/brokenattribute.vis", "regression/predicates/edgetest/brokenattribute.dot");
         } catch (ElementException e) {
             return;
         }
@@ -54,7 +49,7 @@ public final class EdgeTests {
     }
 
     @Test
-    public void edgeTest() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
+    public void edgeTest() {
         SVGElementQuery testQuery = new SVGElementQuery("body");
         Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"edgeID.*");
         assertEquals(3,nodes1.spliterator().getExactSizeIfKnown());
@@ -66,12 +61,12 @@ public final class EdgeTests {
         assertEquals(3,nodes4.spliterator().getExactSizeIfKnown());
     }
 
-    @Test @Ignore//TODO: Broken test!!!
+    @Test @Disabled//TODO: Broken test!!!
     public void attributeTest(){
         assertTrue(svgTestEngine1.containsElement(new SVGElementQuery("body", new Triple<>("text()","=","attribute"))));
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void flagTest(){
         Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"flag.*");
         assertEquals(0,nodes1.spliterator().getExactSizeIfKnown());
@@ -79,7 +74,7 @@ public final class EdgeTests {
         assertEquals(1,nodes4.spliterator().getExactSizeIfKnown());
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void labelTest(){
         Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"label.*");
         assertEquals(0,nodes1.spliterator().getExactSizeIfKnown());
@@ -111,7 +106,7 @@ public final class EdgeTests {
         assertEquals(0,nodes4.spliterator().getExactSizeIfKnown());
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void attributeCountTest(){
         Iterable<Node> nodes1 = SVGTestEngine.filterOnValue(svgTestEngine1.getElements(new SVGElementQuery("body")), "\"attributeCount.*0.*");
         assertEquals(3,nodes1.spliterator().getExactSizeIfKnown());

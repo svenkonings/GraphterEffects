@@ -3,7 +3,6 @@ package com.github.meteoorkip.system;
 import com.github.meteoorkip.utils.Triple;
 import org.w3c.dom.Node;
 import org.xmlunit.util.Convert;
-import org.xmlunit.util.IterableNodeList;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.Validator;
 import org.xmlunit.xpath.JAXPXPathEngine;
@@ -11,14 +10,9 @@ import org.xmlunit.xpath.JAXPXPathEngine;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathFactory;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class SVGTestEngine extends JAXPXPathEngine {
 
@@ -40,7 +34,7 @@ public class SVGTestEngine extends JAXPXPathEngine {
      * @return If the svg document conforms to the SVG DTD schema
      */
     public boolean checkIfValidSVG(){
-        Validator v = org.xmlunit.validation.Validator.forLanguage(Languages.XML_DTD_NS_URI);
+        Validator v = Validator.forLanguage(Languages.XML_DTD_NS_URI);
         v.setSchemaSource(new StreamSource("regression/svg11.dtd"));
         return v.validateInstance(source).isValid();
     }

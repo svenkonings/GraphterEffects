@@ -1,11 +1,14 @@
 package com.github.meteoorkip.graafvis.generator;
 
-import alice.tuprolog.Term;
+
 import com.github.meteoorkip.graafvis.grammar.GraafvisBaseVisitor;
 import com.github.meteoorkip.graafvis.grammar.GraafvisLexer;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser.*;
 import com.github.meteoorkip.utils.StringUtils;
+import it.unibo.tuprolog.core.Clause;
+import it.unibo.tuprolog.core.Struct;
+import it.unibo.tuprolog.core.Term;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
@@ -16,13 +19,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static com.github.meteoorkip.prolog.TuProlog.*;
 
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
-    private List<Term> result;
+    private List<Clause> result;
 
-    public RuleGenerator(GraafvisParser.ProgramContext ctx) {
+    public RuleGenerator(ProgramContext ctx) {
         result = new ArrayList<>();
         ctx.accept(this);
     }
@@ -42,7 +46,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         }
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
-        GraafvisParser.ProgramContext programContext = parser.program();
+        ProgramContext programContext = parser.program();
         programContext.accept(this);
         return null;
     }
@@ -109,14 +113,25 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitClause(ClauseContext ctx) {
-        Term antecedent = (ctx.antecedent == null) ? null : visit(ctx.antecedent);
-        for (CTermContext cTerm : ctx.consequence.args) {
-            if (cTerm instanceof MultiCompoundConsequenceContext) {
-                visitMultiArgs(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
+        if (ctx.antecedent == null) { //is a fact, not a clause
+            for (CTermContext cTerm : ctx.consequence.args) {
+                if (cTerm instanceof MultiCompoundConsequenceContext) {
+                    visitMultiArgs(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
+                }
+                addFact((Struct) visit(cTerm));
             }
-            addClause(visit(cTerm), antecedent);
+            return null;
+        } else {
+            Term antecedent = visit(ctx.antecedent);
+            Objects.requireNonNull(antecedent);
+            for (CTermContext cTerm : ctx.consequence.args) {
+                if (cTerm instanceof MultiCompoundConsequenceContext) {
+                    visitMultiArgs(((MultiCompoundConsequenceContext) cTerm).functor(), ((MultiCompoundConsequenceContext) cTerm).args);
+                }
+                addClause((Struct) visit(cTerm), antecedent);
+            }
+            return null;
         }
-        return null;
     }
 
     // --- ANTECEDENT ---
@@ -130,11 +145,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiAndCompoundAntecedent(MultiAndCompoundAntecedentContext ctx) {
-        return safeAnd(visitMultiArgs(ctx.functor(), ctx.args));
+        return and(visitMultiArgs(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitMultiOrCompoundAntecedent(MultiOrCompoundAntecedentContext ctx) {
-        return safeOr(visitMultiArgs(ctx.functor(), ctx.args));
+        return or(visitMultiArgs(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitParAntecedent(ParAntecedentContext ctx) {
@@ -162,11 +177,11 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitAArgSeries(AArgSeriesContext ctx) {
-        return safeAnd(visitAggregate(ctx.args));
+        return and(visitAggregate(ctx.args));
     }
 
     @Override public Term visitOrSeries(OrSeriesContext ctx) {
-        return safeOr(visitAggregate(ctx.args));
+        return or(visitAggregate(ctx.args));
     }
 
     @Override public Term visitAndExpressionAntecedent(AndExpressionAntecedentContext ctx) {
@@ -188,7 +203,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitMultiCompoundConsequence(MultiCompoundConsequenceContext ctx) {
-        return safeAnd(visitMultiArgs(ctx.functor(), ctx.args));
+        return and(visitMultiArgs(ctx.functor(), ctx.args));
     }
 
     @Override public Term visitListConsequence(ListConsequenceContext ctx) {
@@ -208,9 +223,9 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
 
-    /********************************
+    /* *******************************
      --- Abstract visitor methods ---
-     ********************************/
+     ******************************* */
 
     /**
      * Visits a compound term, returning one {@link Term} given a functor and an arbitrary amount of arguments.
@@ -295,7 +310,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      *      Line in Graafvis script:        p{a, (X,Y), ((a,b)), (), []}.
      *      Generates the hidden rules:     p(a). p(X,Y). p((a,b)). p. p([]).
      *
-     * N.B. using {@link com.github.meteoorkip.prolog.TuProlog#safeStruct(String, Term...)} ensures that a multi
+     * N.B. using {@link com.github.meteoorkip.prolog.TuProlog ensures that a multi
      * argument which does not contain any arguments still generates an atom: the functor without arguments.
      * N.B. there is no check ensuring multiArgs is not null, as the grammar prohibits using a multi compound without
      * multi arguments. Example: p{} is not allowed.
@@ -340,8 +355,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                     args = null;
                 }
             }
-
-            results[i] = safeStruct(getFunctor(functor), visitAggregate(args));
+            Term[] arguments = visitAggregate(args);
+            results[i] = arguments == null ? struct(getFunctor(functor)) : struct(getFunctor(functor), arguments);
         }
         return results;
     }
@@ -353,15 +368,19 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
 
     // --- Updating & reading the rule generation model ---
 
-    private void addClause(Term head, Term body) {
-        result.add(safeClause(head, body));
+    private void addClause(Struct head, Term... body) {
+        result.add(clause(head, body));
     }
 
-    public List<Term> getResult() {
+    private void addFact(Struct head) {
+        result.add(fact(head));
+    }
+
+    public List<Clause> getResult() {
         return result;
     }
 
-    public void setResult(List<Term> ts) {
+    public void setResult(List<Clause> ts) {
         this.result = ts;
     }
 

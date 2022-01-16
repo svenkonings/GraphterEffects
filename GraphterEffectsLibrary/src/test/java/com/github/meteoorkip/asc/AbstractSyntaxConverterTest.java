@@ -1,21 +1,22 @@
 package com.github.meteoorkip.asc;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graphloader.Importer;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.FileUtils;
+import it.unibo.tuprolog.core.Term;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.github.meteoorkip.asc.GraphRuleTests.generateGraphProlog;
 import static com.github.meteoorkip.asc.GraphRuleTests.graphTest;
 import static com.github.meteoorkip.prolog.TuProlog.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class AbstractSyntaxConverterTest {
 
@@ -82,7 +83,7 @@ public final class AbstractSyntaxConverterTest {
             length++;
         }
         TuProlog prolog = generateGraphProlog(graph);
-        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("ID")), struct("inMST", var("ID"))));
+        List<Map<String, Term>> a = prolog.solve(struct("edge", var("ID")), struct("inMST", var("ID")));
         assertEquals(length, a.size());
     }
 }

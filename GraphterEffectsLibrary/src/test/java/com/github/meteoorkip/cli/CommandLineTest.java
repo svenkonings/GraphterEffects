@@ -3,16 +3,17 @@ package com.github.meteoorkip.cli;
 import com.github.meteoorkip.GraphterEffects;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class CommandLineTest {
 
@@ -20,7 +21,7 @@ public class CommandLineTest {
     private String graphLoc;
     private String svgLoc;
 
-    @Before
+    @BeforeEach
     public void Prepare() throws Exception {
         visLoc = FileUtils.fromResources("regression/general/test1.vis").getAbsolutePath();
         graphLoc = FileUtils.fromResources("library/simple_graphs/graph1.dot").getAbsolutePath();
@@ -67,21 +68,6 @@ public class CommandLineTest {
         assertEqualsIgnoreNewlines("", getString(new String[]{"-n", visLoc, svgLoc}));
         assertEqualsIgnoreNewlines("", getString(new String[]{visLoc, svgLoc, "-n"}));
         assertEqualsIgnoreNewlines("", getString(new String[]{visLoc, svgLoc, "--nograph"}));
-    }
-
-    @Test
-    public void testPrintResult() throws Exception {
-        assertEqualsIgnoreNewlines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "\n" +
-                "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"max-height:100%\" viewBox=\"0 0 43 43\">\n" +
-                "  <line x1=\"38\" y1=\"16\" x2=\"27\" y2=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <line x1=\"27\" y1=\"5\" x2=\"5\" y2=\"38\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <line x1=\"27\" y1=\"5\" x2=\"16\" y2=\"27\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"38\" cy=\"16\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"27\" cy=\"5\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"5\" cy=\"38\" fill=\"white\" stroke=\"black\"/>\n" +
-                "  <ellipse rx=\"5\" ry=\"5\" cx=\"16\" cy=\"27\" fill=\"white\" stroke=\"black\"/>\n" +
-                "</svg>\n", getString(new String[]{graphLoc, visLoc, "-p"}));
     }
 
     private static void assertEqualsIgnoreNewlines(String expected, String actual) {

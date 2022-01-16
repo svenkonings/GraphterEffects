@@ -80,11 +80,11 @@ class GXLValueModification extends GXLDocumentModification {
 		gxlElement.value = newValue;
 		// Change cashed converted value
 		if (gxlElement instanceof GXLBool)
-			((GXLBool) gxlElement).booleanValue = new Boolean(newValue).booleanValue();
+			((GXLBool) gxlElement).booleanValue = Boolean.parseBoolean(newValue);
 		else if (gxlElement instanceof GXLFloat)
-			((GXLFloat) gxlElement).floatValue = new Float(newValue).floatValue();
+			((GXLFloat) gxlElement).floatValue = Float.parseFloat(newValue);
 		else if (gxlElement instanceof GXLInt)
-			((GXLInt) gxlElement).intValue = new Integer(newValue).intValue();
+			((GXLInt) gxlElement).intValue = Integer.parseInt(newValue);
 
 		// Notify any listeners
 		if (gxlElement.gxlDocument != null && gxlElement.gxlDocument.gxlDocumentListeners.size() > 0)

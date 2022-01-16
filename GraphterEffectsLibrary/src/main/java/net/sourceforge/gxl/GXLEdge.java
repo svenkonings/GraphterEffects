@@ -203,7 +203,7 @@ public class GXLEdge extends GXLLocalConnection {
 	 */
 	public int getSourceIncidenceOrder() {
 		String order = getAttribute(GXL.FROMORDER);
-		return order != null ? new Integer(order).intValue() : -1;
+		return order != null ? Integer.parseInt(order) : -1;
 	}
 
 	/** Sets the integer used to order this edge's source tentacle relative to the source's other
@@ -235,7 +235,7 @@ public class GXLEdge extends GXLLocalConnection {
 	 */
 	public int getTargetIncidenceOrder() {
 		String order = getAttribute(GXL.TOORDER);
-		return order != null ? new Integer(order).intValue() : -1;
+		return order != null ? Integer.parseInt(order) : -1;
 	}
 
 	/** Sets the integer used to order this edge's target tentacle relative to the target's other

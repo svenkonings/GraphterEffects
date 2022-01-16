@@ -1,11 +1,21 @@
 package com.github.meteoorkip.prolog;
 
-import alice.tuprolog.Double;
-import alice.tuprolog.Float;
-import alice.tuprolog.*;
-import alice.tuprolog.Long;
-import alice.tuprolog.Number;
+import it.unibo.tuprolog.core.Integer;
+import it.unibo.tuprolog.core.*;
+import it.unibo.tuprolog.core.parsing.TermParser;
+import it.unibo.tuprolog.solve.Solution;
+import it.unibo.tuprolog.solve.Solver;
+import it.unibo.tuprolog.solve.channel.InputChannel;
+import it.unibo.tuprolog.solve.channel.OutputChannel;
+import it.unibo.tuprolog.solve.classic.ClassicSolverFactory;
+import it.unibo.tuprolog.solve.exception.Warning;
+import it.unibo.tuprolog.solve.flags.FlagStore;
+import it.unibo.tuprolog.solve.library.AliasedLibrary;
+import it.unibo.tuprolog.solve.library.Libraries;
+import it.unibo.tuprolog.theory.Theory;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,160 +24,62 @@ import java.util.stream.Collectors;
  */
 public class TuProlog {
 
-    /**
-     * Create a {@link Term} from a {@link String}.
-     *
-     * @param term The given {@link String}.
-     * @return The parsed {@link Term}.
-     */
-    public static Term term(String term) {
-        try {
-            return Term.createTerm(term);
-        } catch (InvalidTermException e) {
-            // TODO: Attributes, labels and names should probably be Strings anyway
-            return Term.createTerm(String.format("\"%s\"", term));
-        }
+    public static final List<LogListener> loglisteners = new ArrayList<>();
+    private Libraries libraries = Libraries.empty();
+    private Theory staticTheory;
+
+    public TuProlog(Collection<Clause> clauses) {
+        staticTheory = Theory.of(clauses);
     }
 
-    /**
-     * Create a {@link Number} from a {@link String}.
-     *
-     * @param number The given {@link String}.
-     * @return The parsed {@link Number}.
-     */
-    public static Number number(String number) {
-        return Number.createNumber(number);
+    public TuProlog(Clause... clauses) {
+        staticTheory = Theory.of(clauses);
     }
 
-    /**
-     * Create a {@link Int} from the given {@code int} value.
-     *
-     * @param value The given {@code int} value.
-     * @return The {@link Int}.
-     */
-    public static Int intVal(int value) {
-        return new Int(value);
+    public static Atom atom(String atom) {
+        return Atom.of(atom);
     }
 
-    /**
-     * Create a {@link Long} from the given {@code long} value.
-     *
-     * @param value The given {@code long} value.
-     * @return The {@link Long}.
-     */
-    public static Long longVal(long value) {
-        return new Long(value);
+    public static Numeric number(String number) {
+        return Numeric.of(number);
     }
 
-    /**
-     * Create a {@link Float} from the given {@code float} value.
-     *
-     * @param value The given {@code float} value.
-     * @return The {@link Float}.
-     */
-    public static Float floatVal(float value) {
-        return new Float(value);
+    public static Integer intVal(int value) {
+        return Integer.of(value);
     }
 
-    /**
-     * Create a {@link Double} from the given {@code double} value.
-     *
-     * @param value The given {@code double} value.
-     * @return The {@link Double}.
-     */
-    public static Double doubleVal(double value) {
-        return new Double(value);
-    }
-
-    /**
-     * Creates an anonymous {@link Var}.
-     *
-     * @return The {@link Var}.
-     */
     public static Var var() {
-        return new Var();
+        return Var.anonymous();
     }
 
-    /**
-     * Creates a {@link Var} with the given name.
-     *
-     * @param name The given name.
-     * @return The {@link Var}.
-     */
     public static Var var(String name) {
-        return new Var(name);
+        return Var.of(name);
     }
 
-    /**
-     * Creates a list {@link Struct} from the given terms. The list can be empty.
-     *
-     * @param terms The given terms.
-     * @return The {@link Struct}.
-     */
-    public static Struct list(Term... terms) {
-        if (terms.length == 0) {
-            return new Struct();
-        } else {
-            return new Struct(terms);
-        }
+    public static it.unibo.tuprolog.core.List list(Term... terms) {
+        return it.unibo.tuprolog.core.List.of(terms);
     }
 
-    /**
-     * Creates a list {@link Struct} from the given terms and tail. The list can be empty.
-     *
-     * @param terms The given terms.
-     * @return The {@link Struct}.
-     */
     public static Struct listTail(Term tail, Term... terms) {
         List<Term> ts = new ArrayList<>(Arrays.asList(terms));
         ts.add(tail);
         return nestTermsRight(".", ts.toArray(new Term[0]));
     }
 
-    /**
-     * Creates a {@link Struct} with the given name and terms. A {@link Struct} without terms is atomic.
-     *
-     * @param name  The given name
-     * @param terms The given terms.
-     * @return The {@link Struct}.
-     */
     public static Struct struct(String name, Term... terms) {
-        return new Struct(name, terms);
+        return Struct.of(name, terms);
     }
 
-    /**
-     * Creates a {@link Struct} with the given name and terms. A {@link Struct} without terms is atomic.
-     * If terms is null, it will return a {@link Struct} without terms.
-     *
-     * @param name  The given name
-     * @param terms The given terms.
-     * @return The {@link Struct}.
-     */
-    public static Struct safeStruct(String name, Term... terms) {
-        return (terms == null) ? new Struct(name) : new Struct(name, terms);
+    public static Clause clause(@NotNull Struct head, Term... body) {
+        return Clause.of(head, body);
     }
 
-    /**
-     * Creates a clause {@link Struct} with the given head and body.
-     *
-     * @param head The given head.
-     * @param body The given body.
-     * @return The {@link Struct}.
-     */
-    public static Struct clause(Term head, Term body) {
-        return new Struct(":-", head, body);
+    public static Fact fact(Struct head) {
+        return Fact.of(head);
     }
 
-    /**
-     * Creates a clause {@link Term} with the given head and body, if the body is not null.
-     * If the body is null, it will return the head {@link Term}.
-     *
-     * @param head The given head.
-     * @param body The given body.
-     * @return The {@link Term}.
-     */
-    public static Term safeClause(Term head, Term body) {
-        return (body == null) ? head : new Struct(":-", head, body);
+    public static Fact fact(String name, Term... terms) {
+        return fact(struct(name, terms));
     }
 
     /**
@@ -191,49 +103,18 @@ public class TuProlog {
     }
 
     /**
-     * Creates a concatenation of and clauses with the given terms.
-     * If there are no terms, it will return an empty {@link Struct}.
-     * If there is one terms, it will return that one {@link Term}.
-     *
-     * @param terms The given term.
-     * @return The resulting {@link Term}.
-     */
-    public static Term safeAnd(Term... terms) {
-        if (terms.length == 0) {
-            return new Struct();
-        } else if (terms.length == 1) {
-            return terms[0];
-        }
-        return nestTermsLeft(",", terms);
-    }
-
-    /**
      * Creates a concatenation of or clauses with the given terms.
      *
      * @param terms The given term.
      * @return The resulting {@link Struct}.
      */
-    public static Struct or(Term... terms) {
-        return nestTermsLeft(";", terms);
-    }
-
-    /**
-     * Creates a concatenation of or clauses with the given terms.
-     * If there are no terms, it will return an empty {@link Struct}.
-     * If there is one terms, it will return that one {@link Term}.
-     *
-     * @param terms The given term.
-     * @return The resulting {@link Term}.
-     */
-    public static Term safeOr(Term... terms) {
-        if (terms.length == 0) {
-            return new Struct();
-        } else if (terms.length == 1) {
+    public static Term or(Term... terms) {
+        if (terms.length == 1) {
             return terms[0];
+        } else {
+            return Struct.of(";", terms);
         }
-        return nestTermsLeft(";", terms);
     }
-
 
     /**
      * Creates a concatenation of clauses with the given name and the given terms.
@@ -279,117 +160,6 @@ public class TuProlog {
         return struct;
     }
 
-    // Class start
-    /** The internal {@link Prolog} engine. */
-    private final Prolog prolog;
-
-    /** Creates a new {@code TuProlog} engine. */
-    public TuProlog() {
-        prolog = new Prolog();
-    }
-
-    /**
-     * Creates a new {@code TuProlog} engine with the given terms as {@link Theory}.
-     *
-     * @param terms The given terms.
-     * @throws InvalidTheoryException If the {@link Theory} is invalid.
-     */
-    public TuProlog(Collection<Term> terms) throws InvalidTheoryException {
-        this();
-        setTheory(terms.toArray(new Term[0]));
-    }
-
-    /**
-     * Add the {@link Theory} of the given terms.
-     *
-     * @param terms The given terms.
-     * @throws InvalidTheoryException If the {@link Theory} is invalid.
-     */
-    public void addTheory(Term... terms) throws InvalidTheoryException {
-        Theory theory = new Theory(list(terms));
-        prolog.addTheory(theory);
-    }
-
-    /**
-     * Set the {@link Theory} of the given terms.
-     *
-     * @param terms The given terms.
-     * @throws InvalidTheoryException If the {@link Theory} is invalid.
-     */
-    public void setTheory(Term... terms) throws InvalidTheoryException {
-        Theory theory = new Theory(list(terms));
-        prolog.setTheory(theory);
-    }
-
-    /**
-     * Get the current {@link Theory}.
-     *
-     * @return The {@link Theory}.
-     */
-    public Theory getTheory() {
-        return prolog.getTheory();
-    }
-
-    /**
-     * Parses the given {@link String} query to a {@link Term} and solves it. The result is a {@link List} of all the
-     * results. Each result is a {@link Map} with the {@link String} representation of the original name as key and the
-     * resulting {@link Term} as value.
-     *
-     * @param query The {@link String} query.
-     * @return The resulting {@link List}.
-     */
-    public List<Map<String, Term>> solve(String query) {
-        return solve(term(query));
-    }
-
-    /**
-     * solves the given {@link Term}. The result is a {@link List} of all the results. Each result is a {@link Map} with
-     * the {@link String} representation of the original name as key and the resulting {@link Term} as value.
-     *
-     * @param term The query {@link Term}.
-     * @return The resulting {@link List}.
-     */
-    public List<Map<String, Term>> solve(Term term) {
-        List<Map<String, Term>> results = new ArrayList<>();
-        SolveInfo info = prolog.solve(term);
-        while (info.isSuccess()) {
-            List<Var> vars;
-            try {
-                vars = info.getBindingVars();
-            } catch (NoSolutionException e) {
-                break;
-            }
-            Map<String, Term> result = vars.stream().collect(Collectors.toMap(Var::getOriginalName, Var::getTerm));
-            results.add(result);
-            if (prolog.hasOpenAlternatives()) {
-                try {
-                    info = prolog.solveNext();
-                } catch (NoMoreSolutionException e) {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        prolog.solveEnd();
-        return results;
-    }
-
-    @Override
-    public String toString() {
-        return getTheory().toString();
-    }
-
-    public void loadLibrary(Library library) throws InvalidLibraryException {
-        prolog.loadLibrary(library);
-    }
-
-    public Prolog getProlog() {
-        return prolog;
-    }
-
-    public static final List<LogListener> loglisteners = new ArrayList<>();
-
     public static void addLogListener(LogListener e) {
         loglisteners.add(e);
     }
@@ -398,5 +168,61 @@ public class TuProlog {
         for (LogListener ll : loglisteners) {
             ll.textAdded(tolog);
         }
+    }
+
+    public void addTheory(Clause... clauses) {
+        staticTheory = staticTheory.plus(Theory.of(clauses));
+    }
+
+    public void addTheory(Collection<Clause> clauses) {
+        staticTheory = staticTheory.plus(Theory.of(clauses));
+    }
+
+    public Theory getTheory() {
+        return staticTheory;
+    }
+
+    public List<Map<String, Term>> solve(String query) {
+        return solve(TermParser.getWithDefaultOperators().parseStruct(query));
+    }
+
+    public List<Map<String, Term>> solve(Struct... andQuery) {
+        Set<Var> allvars = new HashSet<>();
+        for (Struct struct : andQuery) {
+            struct.getVariables().iterator().forEachRemaining(allvars::add);
+        }
+        staticTheory = staticTheory.plus(clause(Struct.of("myQuery", allvars), andQuery));
+        return solve(Struct.of("myQuery", allvars));
+    }
+
+    public List<Map<String, Term>> solve(Struct query) {
+        List<Warning> warnings = new ArrayList<>();
+        OutputChannel<Warning> warningOutputChannel = OutputChannel.of(x -> {
+            warnings.add(x);
+            log(x.getMessage());
+            return null;
+        });
+        Solver solver = ClassicSolverFactory.INSTANCE.solverWithDefaultBuiltins(libraries, FlagStore.DEFAULT, staticTheory, Theory.empty(), InputChannel.stdIn(), OutputChannel.of(x -> null), OutputChannel.of(x -> null), warningOutputChannel);
+        List<Solution> solutions = solver.solveList(query);
+        List<Map<String, Term>> res = new ArrayList<>();
+        for (Solution solution : solutions) {
+            if (solution.isYes()) {
+                Set<String> keys = solution.getSubstitution().keySet().stream().map(Var::getName).collect(Collectors.toSet());
+                Map<String, Term> toAdd = keys.stream().collect(Collectors.toMap(v -> v, s -> solution.getSubstitution().getByName(s)));
+                if (!res.contains(toAdd)) {
+                    res.add(toAdd);
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public String toString() {
+        return getTheory().toString();
+    }
+
+    public void loadLibrary(AliasedLibrary library) {
+        libraries = libraries.plus(library);
     }
 }

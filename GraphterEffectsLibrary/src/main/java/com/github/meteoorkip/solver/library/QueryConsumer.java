@@ -1,7 +1,8 @@
 package com.github.meteoorkip.solver.library;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.solver.VisMap;
+import it.unibo.tuprolog.core.Struct;
+import it.unibo.tuprolog.core.Term;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.function.BiConsumer;
 
 /**
  * Represents a {@link BiConsumer} that receives a {@link VisMap} and the {@link com.github.meteoorkip.prolog.TuProlog}
- * result (see {@link com.github.meteoorkip.prolog.TuProlog#solve(Term)}. This consumer is ussually used to modify the
+ * result (see {@link com.github.meteoorkip.prolog.TuProlog#solve(Struct)}. This consumer is ussually used to modify the
  * visualization elements in the {@link VisMap} based the results.
  */
 @FunctionalInterface

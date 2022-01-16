@@ -1,20 +1,19 @@
 package com.github.meteoorkip.asc;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graphloader.Importer;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.GraphUtils;
-import com.github.meteoorkip.utils.Printer;
+import it.unibo.tuprolog.core.Term;
 import org.graphstream.graph.Graph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.github.meteoorkip.asc.GraphRuleTests.graphTest;
 import static com.github.meteoorkip.prolog.TuProlog.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class AbstractSyntaxConverterWLIB {
 
@@ -83,7 +82,7 @@ public final class AbstractSyntaxConverterWLIB {
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);
         prolog.loadLibrary(library);
-        List<Map<String, Term>> a = prolog.solve(and(struct("edge", var("X")), struct("inMST", var("X"))));
+        List<Map<String, Term>> a = prolog.solve(struct("edge", var("X")), struct("inMST", var("X")));
         assertEquals(length, a.size());
     }
 }

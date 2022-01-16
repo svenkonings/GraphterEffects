@@ -1,21 +1,26 @@
 package com.github.meteoorkip.graafvis;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graafvis.generator.RuleGenerator;
 import com.github.meteoorkip.graafvis.grammar.GraafvisLexer;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser;
+import it.unibo.tuprolog.core.Clause;
+import it.unibo.tuprolog.core.Rule;
+import it.unibo.tuprolog.core.Struct;
+import it.unibo.tuprolog.core.Term;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.github.meteoorkip.graafvis.generator.RuleGenerator.inList;
 import static com.github.meteoorkip.prolog.TuProlog.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RuleGeneratorTest {
 
@@ -25,29 +30,29 @@ public class RuleGeneratorTest {
 
     @Test
     public void testFacts() {
-        singleAssert("p(X).", struct("p", var("X")));
-        singleAssert("`,`(a, b).", struct(",", struct("a"), struct("b")));
-        singleAssert("`%/{`(a, b, c).", struct("%/{", struct("a"), struct("b"), struct("c")));
-        singleAssert("p(X,Y).", struct("p", var("X"), var("Y")));
-        multAssert("p(X), p(Y).", struct("p", var("X")), struct("p", var("Y")));
+        singleAssert("p(X).", fact(struct("p", var("X"))));
+        singleAssert("`,`(a, b).", fact(struct(",", struct("a"), struct("b"))));
+        singleAssert("`%/{`(a, b, c).", fact(struct("%/{", struct("a"), struct("b"), struct("c"))));
+        singleAssert("p(X,Y).", fact(struct("p", var("X"), var("Y"))));
+        multAssert("p(X), p(Y).", fact(struct("p", var("X"))), fact(struct("p", var("Y"))));
         // List
-        singleAssert("p([X,Y]).", struct("p", list(var("X"), var("Y"))));
+        singleAssert("p([X,Y]).", fact(struct("p", list(var("X"), var("Y")))));
         singleAssert("shape([X,Y], square).",
-                struct("shape", list(var("X"), var("Y")), struct("square"))
+                fact(struct("shape", list(var("X"), var("Y")), struct("square")))
         );
         singleAssert("shape([], square).",
-                struct("shape", list(), struct("square"))
+                fact(struct("shape", list(), struct("square")))
         );
-        singleAssert("[].", list());
-        singleAssert("[a].", list(struct("a")));
-        singleAssert("[a,X].", list(struct("a"), var("X")));
-        singleAssert("[a,b|[c]].", struct(".", struct("a"), struct(".", struct("b"), list(struct("c")))));
+        singleAssert("[].", fact(list()));
+        singleAssert("[a].", fact(list(struct("a"))));
+        singleAssert("[a,X].", fact(list(struct("a"), var("X"))));
+        singleAssert("[a,b|[c]].",fact( struct(".", struct("a"), struct(".", struct("b"), list(struct("c"))))));
         // Nested list
         singleAssert("shape([X,[3, \"wolf\"]], square).",
-                struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square"))
+                fact(struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""))), struct("square")))
         );
         singleAssert("shape([X,[3, \"wolf\", []]], square).",
-                struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""), list())), struct("square"))
+                fact(struct("shape", list(var("X"), list(number("3"), struct("\"wolf\""), list())), struct("square")))
         );
     }
 
@@ -162,11 +167,11 @@ public class RuleGeneratorTest {
     public void testMultiAtoms() {
         // Comma
         singleAssert("node{(X),(Y),(Z)}.",
-                and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))
+                fact(and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))))
         );
-        singleAssert("node{X,Y,Z}.", and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z"))));
+        singleAssert("node{X,Y,Z}.", fact(and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))));
         singleAssert("node{X,(Y),(Z1, Z2)}.",
-                and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z1"), var("Z2")))
+                fact(and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z1"), var("Z2"))))
         );
         singleAssert("node{X, Y, Z} -> a.",
                 clause(struct("a"), and(struct("node", var("X")), struct("node", var("Y")), struct("node", var("Z")))));
@@ -292,16 +297,32 @@ public class RuleGeneratorTest {
 
     // --- Custom assertions ---
     public static void singleAssert(String s, Term t) {
-        assertEquals(inList(t), generate(s));
+        assertEquals(inList(replaceVarsWithAtoms(t)), generate(s).stream().map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()));
+    }
+
+    private static Term replaceVarsWithAtoms(Term term) {
+        if (term.isVar()) {
+            return atom(term.castToVar().getName());
+        } else if (term.isRule()) {
+            List<Term> newBody = new ArrayList<>();
+            term.castToRule().getBodyItems().forEach(x -> newBody.add(replaceVarsWithAtoms(x)));
+            return Rule.of(replaceVarsWithAtoms(term.castToRule().getHead()).castToStruct(), newBody);
+        } else if (term.isStruct()) {
+            return Struct.of(term.castToStruct().getFunctor(), term.castToStruct().getArgs().stream().map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()));
+        } else if (term.isInteger()) {
+            return term;
+        } else {
+            throw new UnsupportedOperationException(term.getClass().getName());
+        }
     }
 
     public static void multAssert(String s, Term... ts) {
-        assertEquals(Arrays.asList(ts), generate(s));
+        assertEquals(Arrays.stream(ts).map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()), generate(s).stream().map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()));
     }
 
     // --- Calling the rule generator ---
 
-    public static List<Term> generate(String script) {
+    public static List<Clause> generate(String script) {
         Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);

@@ -1,8 +1,9 @@
 package com.github.meteoorkip.system.testing;
 
 import com.github.meteoorkip.system.TestHelper;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +14,8 @@ public class InvalidLibraryExceptionTest {
     private TestHelper helper = new TestHelper();
 
 
-    @Test @Ignore //TODO Fix InvalidLibraryException
+    @Test
+    @Disabled //TODO Fix InvalidLibraryException
     public void TestInvalidLibraryException() throws Exception {
         PrintStream backup = System.err;
         try {

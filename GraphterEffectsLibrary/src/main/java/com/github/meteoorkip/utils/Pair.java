@@ -8,7 +8,7 @@ import java.util.Iterator;
  * @param <T> Type of the first Object.
  * @param <U> Type of the second Object.
  */
-public class Pair<T, U> implements Iterable {
+public class Pair<T, U> implements Iterable<Object> {
     /**
      * First Object contained in this Pair.
      */
@@ -79,11 +79,11 @@ public class Pair<T, U> implements Iterable {
      * @return an Iterator that iterates over the two Objects in this Pair.
      */
     @Override
-    public Iterator iterator() {
+    public Iterator<Object> iterator() {
         return new PairIterator();
     }
 
-    private class PairIterator implements Iterator {
+    private static class PairIterator implements Iterator<Object> {
 
         private int i;
 

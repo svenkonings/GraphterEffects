@@ -1,115 +1,191 @@
 package com.github.meteoorkip.asc;
 
-
-import alice.tuprolog.*;
 import com.github.meteoorkip.utils.GraphUtils;
-import com.github.meteoorkip.utils.StringUtils;
+import it.unibo.tuprolog.core.Atom;
+import it.unibo.tuprolog.core.Struct;
+import it.unibo.tuprolog.core.Substitution;
+import it.unibo.tuprolog.core.Term;
+import it.unibo.tuprolog.core.operators.Operator;
+import it.unibo.tuprolog.solve.ExecutionContext;
+import it.unibo.tuprolog.solve.Signature;
+import it.unibo.tuprolog.solve.Solution;
+import it.unibo.tuprolog.solve.function.LogicFunction;
+import it.unibo.tuprolog.solve.library.AliasedLibrary;
+import it.unibo.tuprolog.solve.primitive.Solve;
+import kotlin.sequences.Sequence;
+import kotlin.sequences.SequencesKt;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.jetbrains.annotations.NotNull;
 
-import java.lang.Double;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import static com.github.meteoorkip.prolog.TuProlog.intVal;
-import static com.github.meteoorkip.prolog.TuProlog.struct;
+import static com.github.meteoorkip.prolog.TuProlog.atom;
 
-/**
- * Prolog library used for {@link Graph} predicates.
- */
-@SuppressWarnings("WeakerAccess")
-public abstract class GraphLibrary extends Library {
+public abstract class GraphLibrary implements AliasedLibrary {
+
 
     /**
      * {@link Graph} on which predicates are performed.
      */
     protected final Graph graph;
-
+    private final String libraryName;
     /**
      * Creates a new {@link GraphLibrary}.
      *
      * @param graph {@link Graph} on which predicates are performed.
      */
-    public GraphLibrary(Graph graph) {
+    public GraphLibrary(Graph graph, String libraryName) {
         this.graph = graph;
+        this.libraryName = libraryName;
     }
 
-    /**
-     * Returns a {@link GraphLibraryLoader} that returns an instance of this library.
-     *
-     * @return A {@link GraphLibraryLoader} that returns an instance of this library.
-     */
-    public abstract GraphLibraryLoader getLoader();
+    protected String stringRep(Object term) {
+        try {
+            if (term instanceof Integer || (term instanceof String && ((String) term).matches("\\d*"))) {
+                return term.toString();
+            } else if (term instanceof String && ((String) term).matches("\"\\d+\"")) {
+                return ((String) term).replaceFirst("\"(\\d+)\"", "$1");
+            } else if (term instanceof String[]) {
+                String[] res = new String[((String[]) term).length];
+                for (int i = 0; i < ((String[]) term).length; i++) {
+                    res[i] = stringRep(((String[]) term)[i]);
+                }
+                return Arrays.asList(res).toString();
+            } else if (term instanceof String && ((String) term).matches("\".*\"")) {
+                return (String) term;
+                //                return "'" + term + "'";
+            }
+            if (term instanceof List) {
+                if (((List) term).size() == 0) {
+                    return "[]";
+                } else {
+                    if (((List) term).get(0) instanceof String) {
+                        return stringRep(((List) term).toArray(new String[0]));
+                    } else {
+                        throw new RuntimeException("Unknown attribute value type: " + term.getClass());
+                    }
+                }
+            } else if (term instanceof String) {
+                return (String) term;
+            } else {
+                throw new RuntimeException("Unknown attribute value type: " + term.getClass());
+            }
 
-    /**
-     * Returns a Prolog theory to be added to the Prolog solver. Use an empty {@link String} if unwished for.
-     *
-     * @return a Prolog theory.
-     */
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     @Override
-    public abstract String getTheory();
-
-
-    /**
-     * Method used for predicates with two arguments of which the second is a numeric property.
-     *
-     * @param ID           ID of the element with the numeric property.
-     * @param numericValue Numeric value of this property.
-     * @param numberGetter {@link GetNumber} that specifices what numeric value holds for this object.
-     * @param nodes        Whether this method is applicable for {@link org.graphstream.graph.Node} objects.
-     * @param edges        Whether this method is applicable for {@link org.graphstream.graph.Edge} objects.
-     * @param graphs       Whether this method is applicable for {@link org.graphstream.graph.Graph} objects.
-     * @return Whether unification was possible.
-     */
-    protected boolean numeric(Struct ID, Term numericValue, GetNumber numberGetter, boolean nodes, boolean edges, boolean graphs) {
-        String name = ID.getName();
-        Element gotten = GraphUtils.getByID(graph, name);
-        if (!nodes && gotten instanceof Node) {
-            return false;
-        }
-        if (!edges && gotten instanceof Edge) {
-            return false;
-        }
-        if (!graphs && gotten instanceof Graph) {
-            return false;
-        }
-
-        if (numericValue instanceof Int) {
-            return ((Int) numericValue).intValue() == numberGetter.get(gotten);
-        } else if (numericValue instanceof Var) {
-            return numericValue.unify(getEngine(), intVal(numberGetter.get(gotten)));
-        }
+    public final boolean contains(@NotNull Operator operator) {
         return false;
     }
 
-    /**
-     * Method used for predicates with one argument that exists based on a condition.
-     * Does not support {@link Var} IDs.
-     *
-     * @param ID         ID of which the condition holds.
-     * @param actualbool {@link GetBool} that specifies whether the condition holds.
-     * @param nodes      Whether this method is applicable for {@link org.graphstream.graph.Node} objects.
-     * @param edges      Whether this method is applicable for {@link org.graphstream.graph.Edge} objects.
-     * @param graphs     Whether this method is applicable for {@link org.graphstream.graph.Graph} objects.
-     * @return Whether the condition holds.
-     */
-    protected boolean bool(Struct ID, GetBool actualbool, boolean nodes, boolean edges, boolean graphs) {
-        Element gotten = GraphUtils.getByID(graph, ID.getName());
-        return !(!nodes && gotten instanceof Node) && !(!edges && gotten instanceof Edge) && !(!graphs && gotten instanceof Graph) && actualbool.get(gotten);
+    @NotNull
+    @Override
+    public Map<Signature, LogicFunction> getFunctions() {
+        Map<Signature, LogicFunction> res = new HashMap<>();
+        return res;
     }
 
 
-    /**
-     * Interface that returns numeric information about a {@link Element}.
-     */
-    protected interface GetNumber {
-        int get(Element n);
+    @NotNull
+    @Override
+    public String getAlias() {
+        return libraryName;
     }
 
-    /**
-     * Interface that returns boolean information about a {@link Element}.
-     */
-    protected interface GetBool {
-        boolean get(Element n);
+    protected Sequence<Solve.Response> predicate(boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Solve.Request<? extends ExecutionContext> request, Predicate<Element> predicate) {
+        if (request.getArguments().get(0).isVar()) {
+            Set<Element> candidates = new HashSet<>();
+            if (graphApplicable && predicate.test(graph)) {
+                candidates.add(graph);
+            }
+            if (nodesApplicable) {
+                graph.nodes().filter(predicate).forEach(candidates::add);
+            }
+            if (edgesApplicable) {
+                graph.edges().filter(predicate).forEach(candidates::add);
+            }
+            return SequencesKt.asSequence(candidates.stream().map(element -> request.replySuccess(Substitution.of(request.getArguments().get(0).castToVar(), atom(element.getId())), null)).iterator());
+        } else {
+            String id = request.getArguments().get(0).castToAtom().getValue();
+            Optional<Element> elementSelected = GraphUtils.getById(graph, id);
+            if (!elementSelected.isPresent() || !graphApplicable && elementSelected.get() instanceof Graph || !edgesApplicable && elementSelected.get() instanceof Edge || !nodesApplicable && elementSelected.get() instanceof Node || !predicate.test(elementSelected.get())) {
+                return SequencesKt.emptySequence();
+            } else {
+                return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+            }
+        }
+    }
+
+    protected Sequence<Solve.Response> property(boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Solve.Request<? extends ExecutionContext> request, Function<Element, Optional<Term>> mapper) {
+        if (request.getArguments().get(0).isVar()) {
+            Set<Element> candidates = new HashSet<>();
+            if (graphApplicable) {
+                candidates.add(graph);
+            }
+            if (nodesApplicable) {
+                graph.nodes().forEach(candidates::add);
+            }
+            if (edgesApplicable) {
+                graph.edges().forEach(candidates::add);
+            }
+            Sequence<Solve.Response> res = SequencesKt.emptySequence();
+            for (Element candidate : candidates) {
+                Substitution.Unifier substitution = Substitution.of(request.getArguments().get(0).asVar(), Atom.of(candidate.getId()));
+                Struct newQuery = request.getQuery().apply(substitution).asStruct();
+                Sequence<Solve.Response> solutions = SequencesKt.map(SequencesKt.filter(request.solve(newQuery, Long.MAX_VALUE), Solution::isYes), solution -> request.replySuccess(substitution.plus(solution.getSubstitution()).castToUnifier(), null));
+                res = SequencesKt.plus(res, solutions);
+            }
+            return res;
+        }
+        String id = request.getArguments().get(0).castToAtom().getValue();
+        Optional<Element> elementSelected = GraphUtils.getById(graph, id);
+        if (!elementSelected.isPresent()) {
+            return SequencesKt.emptySequence();
+        }
+        if (!graphApplicable && elementSelected.get() instanceof Graph) {
+            return SequencesKt.emptySequence();
+        }
+        if (!edgesApplicable && elementSelected.get() instanceof Edge) {
+            return SequencesKt.emptySequence();
+        }
+        if (!nodesApplicable && elementSelected.get() instanceof Node) {
+            return SequencesKt.emptySequence();
+        }
+        Optional<Term> shouldBe = mapper.apply(elementSelected.get());
+        if (!shouldBe.isPresent()) {
+            return SequencesKt.emptySequence();
+        }
+        if (request.getArguments().get(1).equals(shouldBe.get(), false)) {
+            return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+        } else if (request.getArguments().get(1).isVar()) {
+            return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(request.getArguments().get(1).castToVar(), shouldBe.get()), null));
+        } else {
+            return SequencesKt.emptySequence();
+        }
+    }
+
+
+    @Override
+    public final boolean contains(@NotNull Signature signature) {
+        return getFunctions().containsKey(signature) || getPrimitives().containsKey(signature);
+    }
+
+    @Override
+    public final boolean hasPrimitive(@NotNull Signature signature) {
+        return getPrimitives().containsKey(signature);
+    }
+
+    @Override
+    public final boolean hasProtected(@NotNull Signature signature) {
+        return false;
     }
 }

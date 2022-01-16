@@ -103,7 +103,7 @@ class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
 
         /** Add a variable occurrence */
         void add(String var, int line, int column) {
-            if (this.keySet().contains(var)) {
+            if (this.containsKey(var)) {
                 this.put(var, this.get(var) + 1);
             } else {
                 this.put(var, 1);
@@ -113,11 +113,7 @@ class SingletonVariablesCheck extends GraafvisBaseVisitor<Void> {
 
         /** Get the number of times that a variable occurred */
         int count(String var) {
-            if (this.keySet().contains(var)) {
-                return this.get(var);
-            } else {
-                return 0;
-            }
+            return this.getOrDefault(var, 0);
         }
 
         /** Get the latest occurrence of a variable */

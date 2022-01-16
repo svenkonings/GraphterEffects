@@ -2,11 +2,13 @@ package com.github.meteoorkip.graafvis.grammar;
 
 import com.github.meteoorkip.graafvis.ErrorListener;
 import org.antlr.v4.runtime.*;
-import org.junit.Assert;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  *
@@ -87,14 +89,14 @@ abstract class TestUtil {
         int errors = countErrors(parser);
         String msg = String.format("Parsed: %-64s | Did not expect 0 errors. Actual: %d\n", parser.getTokenStream().getText(), errors);
         printIfRequired(msg);
-        Assert.assertNotEquals(msg, 0, errors);
+        assertNotEquals(0, errors, msg);
     }
 
     static void assertHasNoErrors(GraafvisParser parser) {
         int errors = countErrors(parser);
         String msg = String.format("Parsed: %-64s |       Expected 0 errors. Actual: %d\n", parser.getTokenStream().getText(), errors);
         printIfRequired(msg);
-        Assert.assertEquals(msg, 0, errors);
+        assertEquals(0, errors, msg);
     }
 
 

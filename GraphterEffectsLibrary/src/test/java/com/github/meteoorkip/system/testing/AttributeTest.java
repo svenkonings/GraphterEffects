@@ -3,8 +3,8 @@ package com.github.meteoorkip.system.testing;
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.system.SVGElementQuery;
 import com.github.meteoorkip.system.SVGTestEngine;
-import com.sun.org.apache.xerces.internal.dom.DeferredAttrNSImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
@@ -14,14 +14,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public final class AttributeTest {
 
     @Test
-    public void test1() throws IOException, GraafvisCompiler.CheckerException, GraafvisCompiler.SyntaxException, SAXException {
+    public void test1() throws IOException {
         Source generated_xml = Input.fromString(new String(Files.readAllBytes(new File(this.getClass().getClassLoader()
                 .getResource("regression/testing/chessboard.svg").getFile()).toPath()))).build();
         SVGTestEngine svgTestEngine = new SVGTestEngine(generated_xml);
@@ -30,11 +30,11 @@ public final class AttributeTest {
         int black_square_count = 0;
         int white_square_count = 0;
         for (Node square: colored_squares){
-            assertTrue(((DeferredAttrNSImpl) square).getValue().equals("white") || ((DeferredAttrNSImpl) square).getValue().equals("black"));
-            if (((DeferredAttrNSImpl) square).getValue().equals("white")){
+            assertTrue(((Attr) square).getValue().equals("white") || ((Attr) square).getValue().equals("black"));
+            if (((Attr) square).getValue().equals("white")){
                 white_square_count += 1;
             }
-            else if (((DeferredAttrNSImpl) square).getValue().equals("black")){
+            else if (((Attr) square).getValue().equals("black")){
                 black_square_count += 1;
             }
         }

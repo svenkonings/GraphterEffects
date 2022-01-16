@@ -63,7 +63,7 @@ public class GXLIDGenerator {
 		int cnt = i != null ? i.intValue() : 1;
 		while (gxlDocument.containsID(prefix+cnt))
 			cnt++;
-		counters.put(prefix, new Integer(cnt+1));
+		counters.put(prefix, cnt + 1);
 		return prefix+cnt;
 	}
 

@@ -1,12 +1,12 @@
 package com.github.meteoorkip.graafvis.grammar;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
 import static com.github.meteoorkip.graafvis.grammar.TestUtil.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -54,7 +54,7 @@ public class NumberTest {
     private static void testValidAntecedentNumber(String sample) {
         GraafvisParser parser = getGraafvisParserFor(sample);
         ParseTree ctx = parser.aTerm();
-        Assert.assertTrue(isAntecedentNumber(ctx));
+        assertTrue(isAntecedentNumber(ctx));
         assertHasNoErrors(parser);
 
     }
@@ -71,7 +71,7 @@ public class NumberTest {
     private static void testValidConsequenceNumber(String sample) {
         GraafvisParser parser = getGraafvisParserFor(sample);
         ParseTree ctx = parser.cTerm();
-        Assert.assertTrue(isConsequenceNumber(ctx));
+        assertTrue(isConsequenceNumber(ctx));
         assertHasNoErrors(parser);
     }
 

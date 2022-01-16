@@ -4,12 +4,16 @@ import com.github.meteoorkip.graphloader.Importer;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public final class GraphUtilsTest {
 
@@ -20,10 +24,10 @@ public final class GraphUtilsTest {
 
         //attributes unchanged
         assertTrue(sameAttributes(gfirst, gsecond));
-        for (Node n : gfirst.getEachNode()) {
-            assertTrue(gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId()) != null);
+        gfirst.nodes().forEach(n -> {
+            assertNotNull(gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId()));
             assertTrue(sameAttributes(n, gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId())));
-        }
+        });
     }
 
     @Test
@@ -33,15 +37,15 @@ public final class GraphUtilsTest {
 
         //attributes unchanged
         assertTrue(sameAttributes(gfirst, gsecond));
-        for (Node n : gfirst.getEachNode()) {
-            assertTrue(gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId()) != null);
+        gfirst.nodes().forEach(n -> {
+            assertNotNull(gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId()));
             assertTrue(sameAttributes(n, gsecond.getNode(GraphUtils.ILLEGAL_PREFIX + n.getId())));
-        }
+        });
     }
 
 
     private boolean sameAttributes(Element e1, Element e2) {
-        for (String key : e1.getAttributeKeySet()) {
+        for (String key : e1.attributeKeys().collect(Collectors.toSet())) {
             if (!e2.hasAttribute(key)) {
                 return false;
             }
@@ -49,7 +53,7 @@ public final class GraphUtilsTest {
                 return false;
             }
         }
-        for (String key : e2.getAttributeKeySet()) {
+        for (String key : e2.attributeKeys().collect(Collectors.toSet())) {
             if (!e1.hasAttribute(key)) {
                 return false;
             }

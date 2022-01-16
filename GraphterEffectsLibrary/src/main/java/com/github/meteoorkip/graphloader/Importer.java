@@ -68,6 +68,5 @@ public final class Importer {
         }
         g = GraphUtils.enforceQuotes(g);
         return g;
-
     }
 }

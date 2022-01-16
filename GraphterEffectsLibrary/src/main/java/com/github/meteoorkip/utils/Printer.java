@@ -1,10 +1,13 @@
 package com.github.meteoorkip.utils;
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 /**
@@ -23,26 +26,21 @@ public final class Printer {
         builder.append(g.toString());
         builder.append("\t{");
 
-
-        StringBuilder attrstring = new StringBuilder();
-        for (String key : g.getAttributeKeySet()) {
-            attrstring.append("\"").append(key).append("\":\"").append((String) g.getAttribute(key)).append("\",");
-        }
+        final StringBuilder attrstring = new StringBuilder();
+        g.attributeKeys().forEach(key -> attrstring.append("\"").append(key).append("\":\"").append((String) g.getAttribute(key)).append("\","));
         if (attrstring.toString().endsWith(",")) {
-            attrstring = new StringBuilder(attrstring.substring(0, attrstring.length() - 1));
+            builder.append(attrstring.substring(0, attrstring.length() - 1)).append("}\n");
+        } else {
+            builder.append(attrstring).append("}\n");
         }
-        attrstring.append("}");
-        builder.append(attrstring).append("\n");
 
-        List<Element> nodeset = new LinkedList<>(g.getNodeSet());
-        nodeset.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+        List<Element> nodeset = g.nodes().sorted((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId())).collect(Collectors.toCollection(LinkedList::new));
         builder.append("NODES\n");
         addfromlist(builder, nodeset, false, false);
-        List<Element> edgeset = new LinkedList<>(g.getEdgeSet());
-        edgeset.sort((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId()));
+        List<Element> edgeset = g.edges().sorted((o1, o2) -> StringUtils.compareStrings(o1.getId(), o2.getId())).collect(Collectors.toCollection(LinkedList::new));
         builder.append("EDGES\n");
         addfromlist(builder, edgeset, false, false);
-        System.out.println(builder.toString());
+        System.out.println(builder);
     }
 
 
@@ -55,28 +53,18 @@ public final class Printer {
      * @param valuequotes True if quotes are added around values of a key-value pair.
      */
     private static void addfromlist(StringBuilder builder, List<Element> list, boolean keyquotes, boolean valuequotes) {
-        String keyq = "";
-        String valq = "";
-        if (keyquotes) {
-            keyq = "\"";
-        }
-        if (valuequotes) {
-            valq = "\"";
-        }
+        final String keyq = keyquotes ? "\"" : "";
+        final String valq = valuequotes ? "\"" : "";
         for (Element e : list) {
             builder.append("\t").append(e);
             builder.append("\t{");
-            StringBuilder attrstring = new StringBuilder();
-            for (String key : e.getAttributeKeySet()) {
-                attrstring.append(keyq).append(key).append(keyq).append(":").append(valq).append(StringUtils.ObjectToString(e.getAttribute(key))).append(valq).append(",");
-            }
+            final StringBuilder attrstring = new StringBuilder();
+            e.attributeKeys().forEach(key -> attrstring.append(keyq).append(key).append(keyq).append(":").append(valq).append(StringUtils.ObjectToString(e.getAttribute(key))).append(valq).append(","));
             if (attrstring.toString().endsWith(",")) {
-                attrstring = new StringBuilder(attrstring.substring(0, attrstring.length() - 1));
+                builder.append(attrstring.substring(0, attrstring.length() - 1)).append("}\n");
+            } else {
+                builder.append(attrstring).append("}\n");
             }
-            attrstring.append("}");
-            builder.append(attrstring).append("\n");
         }
-
     }
-
 }

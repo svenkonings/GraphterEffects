@@ -18,7 +18,7 @@ public class UndefinedVariableError extends VisError {
     public UndefinedVariableError(int row, int column, String variable) {
         super(row, column);
         this.variable = variable;
-        this.setMsg(String.format("Introduced a new variable in the consequence of a clause at line %d:%d.", row, column));
+        this.setMsg(String.format("Introduced a new variable \"" + variable + "\" in the consequence of a clause at line %d:%d.", row, column));
     }
 
     /** Get the variable that was not defined */

@@ -1,14 +1,15 @@
 package com.github.meteoorkip;
 
-import alice.tuprolog.InvalidTheoryException;
-import alice.tuprolog.Term;
+
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graphloader.Importer;
+import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.solver.ElementException;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
 import com.github.meteoorkip.utils.*;
+import it.unibo.tuprolog.core.Clause;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
 import org.xml.sax.SAXException;
@@ -37,7 +38,7 @@ public class GraphterEffects {
     public static final String VERSIONSTRING = "1.0.0";
 
 
-    public static void main(String[] args) throws IOException, SAXException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, InvalidTheoryException, UnknownFlagException {
+    public static void main(String[] args) throws IOException, SAXException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException, UnknownFlagException {
         Pair<String[], Set<String>> argsflags = processFlags(args);
         if (argsflags.getSecond().contains("help") && argsflags.getSecond().size() > 1) {
             System.out.println("Error: If help flag is used, no other flags may be used. Type --help for help.");
@@ -108,15 +109,20 @@ public class GraphterEffects {
             Printer.pprint(graph);
         }
 
-        List<Term> terms = new GraafvisCompiler().compile(FileUtils.readFromFile(new File(scriptarg)));
+        List<Clause> clauses = new GraafvisCompiler().compile(FileUtils.readFromFile(new File(scriptarg)));
 
         if (debuginfo) {
             System.out.println();
-            terms.forEach(System.out::println);
+            clauses.forEach(System.out::println);
             System.out.println();
         }
         Solver solver = new Solver();
-        SolveResults results = solver.solve(graph, terms);
+        SolveResults results = null;
+        try {
+            results = solver.solve(graph, clauses);
+        } catch (PrologException e) {
+            e.printStackTrace();
+        }
         if (debuginfo) {
             results.getModel().getSolver().printStatistics();
         }

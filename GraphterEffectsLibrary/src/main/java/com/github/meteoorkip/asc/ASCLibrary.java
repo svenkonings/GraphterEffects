@@ -1,26 +1,32 @@
 package com.github.meteoorkip.asc;
 
-
-import alice.tuprolog.Struct;
-import alice.tuprolog.Term;
-import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.GraphUtils;
 import com.github.meteoorkip.utils.StringUtils;
+import it.unibo.tuprolog.core.*;
+import it.unibo.tuprolog.core.operators.OperatorSet;
+import it.unibo.tuprolog.solve.Signature;
+import it.unibo.tuprolog.solve.Solution;
+import it.unibo.tuprolog.solve.primitive.Primitive;
+import it.unibo.tuprolog.solve.primitive.Solve;
+import it.unibo.tuprolog.theory.Theory;
+import kotlin.sequences.Sequence;
+import kotlin.sequences.SequencesKt;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.*;
 
-import static com.github.meteoorkip.prolog.TuProlog.struct;
+import static com.github.meteoorkip.prolog.TuProlog.*;
 
-
-/**
- * Default library for {@link Graph} predicates.
- */
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class ASCLibrary extends GraphLibrary {
+
+
+    private final Map<Node, Map<Node, Path>> shortestPaths = new HashMap<>();
+    private final Map<Node, Dijkstra> dijkstras = new HashMap<>();
 
     /**
      * Creates a new ASCLibrary that retrieves information from a given {@link Graph}.
@@ -28,309 +34,328 @@ public class ASCLibrary extends GraphLibrary {
      * @param graph Given {@code Graph}
      */
     public ASCLibrary(Graph graph) {
-        super(graph);
+        super(graph, "ASCLibrary");
     }
 
+    @NotNull
     @Override
-    public GraphLibraryLoader getLoader() {
-        return ASCLibrary::new;
+    public OperatorSet getOperators() {
+        return OperatorSet.EMPTY;
     }
 
-
-
-    private String StringRep(Object term) {
-        try {
-            if (term instanceof Integer || (term instanceof String && ((String) term).matches("\\d*"))) {
-                return term.toString();
-            } else if (term instanceof String && ((String) term).matches("\"\\d+\"")) {
-                return ((String) term).replaceFirst("\"(\\d+)\"", "$1");
-            } else if (term instanceof String[]) {
-                String[] res = new String[((String[]) term).length];
-                for (int i = 0; i < ((String[]) term).length; i++) {
-                        res[i] = StringRep(((String[])term)[i]);
-                }
-                return Arrays.asList(res).toString();
-            } else if (term instanceof String && ((String) term).matches("\".*\"")) {
-                return "'" + term + "'";
-            } if (term instanceof List) {
-                if (((List) term).size()==0) {
-                    return "[]";
+    @NotNull
+    @Override
+    public Map<Signature, Primitive> getPrimitives() {
+        Map<Signature, Primitive> res = new HashMap<>();
+        res.put(new Signature("graph", 1, false), request -> predicate(true, false, false, request, ignored -> true));
+        res.put(new Signature("node", 1, false), request -> predicate(false, true, false, request, ignored -> true));
+        res.put(new Signature("edge", 1, false), request -> predicate(false, false, true, request, ignored -> true));
+        res.put(new Signature("inComponent", 2, false), request -> {
+            GraphUtils.ConnectedComponentsCount(graph);
+            return property(false, true, false, request, node -> Optional.of(atom(node.getId())));
+        });
+        res.put(new Signature("label", 2, false), request -> property(true, true, true, request, element -> {
+            String label = (String) element.getAttribute("label");
+            return label == null ? Optional.empty() : Optional.of(atom(label));
+        }));
+        res.put(new Signature("flag", 2, false), request -> property(true, true, true, request, element -> {
+            String label = (String) element.getAttribute("flag");
+            return label == null ? Optional.empty() : Optional.of(atom(label));
+        }));
+        res.put(new Signature("type", 2, false), request -> property(true, true, true, request, element -> {
+            String label = (String) element.getAttribute("type");
+            return label == null ? Optional.empty() : Optional.of(atom(label));
+        }));
+        res.put(new Signature("mixed", 1, false), request -> predicate(true, false, false, request, element -> GraphUtils.isDirectedGeneral(element) == GraphUtils.isUnDirectedGeneral(element)));
+        res.put(new Signature("directed", 1, false), request -> predicate(true, false, true, request, GraphUtils::isDirectedGeneral));
+        res.put(new Signature("singlegraph", 1, false), request -> predicate(true, false, true, request, graph -> graph instanceof SingleGraph));
+        res.put(new Signature("multigraph", 1, false), request -> predicate(true, false, true, request, graph -> graph instanceof MultiGraph));
+        res.put(new Signature("nodeCount", 2, false), request -> property(true, false, false, request, element -> Optional.of(intVal(((Graph) element).getNodeCount()))));
+        res.put(new Signature("edgeCount", 2, false), request -> property(true, false, false, request, element -> Optional.of(intVal(((Graph) element).getEdgeCount()))));
+        res.put(new Signature("undirected", 1, false), request -> predicate(true, false, true, request, GraphUtils::isUnDirectedGeneral));
+        res.put(new Signature("componentCount", 2, false), request -> property(true, false, false, request, element -> Optional.of(intVal(GraphUtils.ConnectedComponentsCount((Graph) element)))));
+        res.put(new Signature("attributeCount", 2, false), request -> property(true, true, true, request, element -> Optional.of(intVal(element.getAttributeCount()))));
+        res.put(new Signature("degree", 2, false), request -> property(false, true, false, request, node -> Optional.of(intVal(((Node) node).getDegree()))));
+        res.put(new Signature("indegree", 2, false), request -> property(false, true, false, request, node -> Optional.of(intVal(((Node) node).getInDegree()))));
+        res.put(new Signature("outdegree", 2, false), request -> property(false, true, false, request, node -> Optional.of(intVal(((Node) node).getOutDegree()))));
+        res.put(new Signature("neighbourCount", 2, false), request -> property(false, true, false, request, node -> Optional.of(intVal(GraphUtils.neighbourCount((Node) node)))));
+        res.put(new Signature("inMST", 1, false), request -> predicate(false, false, true, request, edge -> GraphUtils.getMST(graph).contains((Edge) edge)));
+        res.put(new Signature("edge", 3, false), request -> {
+            List<Term> arguments = request.getArguments();
+            if (arguments.get(0).isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.edges().map(Edge::getSourceNode).distinct().map(sourceNode -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(arguments.get(0).castToVar(), atom(sourceNode.getId()))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
                 } else {
-                    if (((List) term).get(0) instanceof String) {
-                        return StringRep(((List)term).toArray(new String[0]));
-                    } else {
-                        throw new RuntimeException("Unknown attribute value type: " + term.getClass());
-                    }
+                    return SequencesKt.map(subSolutions.get(), solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(arguments.get(0).castToVar(), solution.getSolvedQuery().getArgAt(0))).castToUnifier(), null));
+                }
+            }
+            Optional<Element> source = GraphUtils.getById(graph, arguments.get(0).castToAtom().getValue());
+            if (!source.isPresent()) {
+                return SequencesKt.emptySequence();
+            }
+            Term secondArgument = arguments.get(1);
+            if (secondArgument.isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.edges().filter(x -> x.getSourceNode() == source.get()).map(Edge::getTargetNode).distinct().map(sourceNode -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(secondArgument.castToVar(), atom(sourceNode.getId()))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.map(subSolutions.get(), solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(secondArgument.castToVar(), solution.getSolvedQuery().getArgAt(1))).castToUnifier(), null));
+                }
+            }
+            Optional<Element> target = GraphUtils.getById(graph, secondArgument.castToAtom().getValue());
+            if (!target.isPresent()) {
+                return SequencesKt.emptySequence();
+            }
+            Term thirdArgument = arguments.get(2);
+            if (thirdArgument.isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.edges().filter(x -> x.getTargetNode() == target.get() && x.getSourceNode() == source.get()).map(edge -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(thirdArgument.castToVar(), atom(edge.getId()))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.map(subSolutions.get(), solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(thirdArgument.castToVar(), solution.getSolvedQuery().getArgAt(2))).castToUnifier(), null));
+                }
+            }
+            Optional<Element> edge = GraphUtils.getById(graph, thirdArgument.castToAtom().getValue());
+            if (!edge.isPresent() || !(edge.get() instanceof Edge) || ((Edge) edge.get()).getSourceNode() != source.get() || ((Edge) edge.get()).getTargetNode() != target.get()) {
+                return SequencesKt.emptySequence();
+            } else {
+                return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+            }
+        });
+        res.put(new Signature("inShortestPath", 3, false), request -> {
+            List<Term> arguments = request.getArguments();
+            if (arguments.get(0).isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.edges().map(edge -> request.getQuery().apply(Substitution.of(arguments.get(0).castToVar(), atom(edge.getId()))).castToStruct()).map(newQuery -> request.solve(newQuery, Long.MAX_VALUE)).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    Sequence<Solve.Response>[] toReturn = new Sequence[]{SequencesKt.emptySequence()};
+                    SequencesKt.forEach(subSolutions.get(), solution -> {
+                        if (solution.isYes()) {
+                            toReturn[0] = SequencesKt.plus(toReturn[0], request.replySuccess(solution.getSubstitution().plus(Substitution.of(arguments.get(0).castToVar(), solution.getSolvedQuery().getArgAt(0))).castToUnifier(), null));
+                        }
+                        return null;
+                    });
+                    return toReturn[0];
+                }
+            }
+            Optional<Element> edge = GraphUtils.getById(graph, arguments.get(0).castToAtom().getValue());
+            if (!edge.isPresent()) {
+                return SequencesKt.emptySequence();
+            }
+            if (arguments.get(1).isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.nodes().map(sourceNode -> request.getQuery().apply(Substitution.of(arguments.get(1).castToVar(), atom(sourceNode.getId()))).castToStruct()).map(newQuery -> request.solve(newQuery, Long.MAX_VALUE)).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    final Sequence<Solve.Response>[] toReturn = new Sequence[]{SequencesKt.emptySequence()};
+                    SequencesKt.forEach(subSolutions.get(), solution -> {
+                        if (solution.isYes()) {
+                            toReturn[0] = SequencesKt.plus(toReturn[0], request.replySuccess(solution.getSubstitution().plus(Substitution.of(arguments.get(1).castToVar(), solution.getSolvedQuery().getArgAt(1))).castToUnifier(), null));
+                        }
+                        return null;
+                    });
+                    return toReturn[0];
+
+                }
+            }
+            Optional<Element> sourceNode = GraphUtils.getById(graph, arguments.get(1).castToAtom().getValue());
+            if (!sourceNode.isPresent()) {
+                return SequencesKt.emptySequence();
+            }
+            if (arguments.get(2).isVar()) {
+                return SequencesKt.asSequence(graph.nodes().filter(targetNode -> inShortestPath((Edge) edge.get(), (Node) sourceNode.get(), targetNode)).map(targetNode -> request.replySuccess(Substitution.of(arguments.get(2).castToVar(), atom(targetNode.getId())), null)).iterator());
+            } else {
+                Optional<Element> targetNode = GraphUtils.getById(graph, arguments.get(2).castToAtom().getValue());
+                if (!targetNode.isPresent() || !inShortestPath((Edge) edge.get(), (Node) sourceNode.get(), (Node) targetNode.get())) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+                }
+            }
+        });
+        res.put(new Signature("edge", 2, false), request -> {
+            List<Term> arguments = request.getArguments();
+            if (arguments.get(0).isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.edges().map(Edge::getSourceNode).distinct().map(sourceNode -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(arguments.get(0).castToVar(), atom(sourceNode.getId()))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.map(subSolutions.get(), solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(arguments.get(0).castToVar(), solution.getSolvedQuery().getArgAt(0))).castToUnifier(), null));
+                }
+            }
+            Optional<Element> source = GraphUtils.getById(graph, arguments.get(0).castToAtom().getValue());
+            if (!source.isPresent()) {
+                return SequencesKt.emptySequence();
+            }
+            Term secondArgument = arguments.get(1);
+            if (secondArgument.isVar()) {
+                Optional<Sequence<Solution>> subSolutions = graph.edges().filter(x -> x.getSourceNode() == source.get()).map(Edge::getTargetNode).distinct().map(sourceNode -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(secondArgument.castToVar(), atom(sourceNode.getId()))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.map(subSolutions.get(), solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(secondArgument.castToVar(), solution.getSolvedQuery().getArgAt(1))).castToUnifier(), null));
                 }
             } else {
-                throw new RuntimeException("Unknown attribute value type: " + term.getClass());
+                Optional<Element> target = GraphUtils.getById(graph, secondArgument.castToAtom().getValue());
+                if (!target.isPresent() || graph.edges().noneMatch(x -> {
+                    if (x.isDirected()) {
+                        return x.getSourceNode() == source.get() && x.getTargetNode() == target.get();
+                    } else {
+                        return Arrays.equals(new Element[]{x.getSourceNode(), x.getTargetNode()}, new Element[]{source.get(), target.get()});
+                    }
+                })) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+                }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
+        });
+        res.put(new Signature("attribute", 3, false), request -> {
+            List<Term> arguments = request.getArguments();
+            Set<Element> allElements = new HashSet<>();
+            allElements.add(graph);
+            graph.edges().forEach(allElements::add);
+            graph.nodes().forEach(allElements::add);
+            if (arguments.get(0).isVar()) {
+                Optional<Sequence<Solution>> subSolutions = allElements.stream().map(element -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(arguments.get(0).castToVar(), atom(element.getId()))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    Sequence<Solution> realSubSolutions = SequencesKt.distinct(SequencesKt.filter(subSolutions.get(), Solution::isYes));
+                    final Sequence<Solve.Response>[] responses = new Sequence[]{SequencesKt.emptySequence()};
+                    SequencesKt.forEach(realSubSolutions, solution -> {
+                        if (solution.isYes()) {
+                            responses[0] = SequencesKt.plus(responses[0], request.replySuccess(solution.getSubstitution().plus(Substitution.of(arguments.get(0).castToVar(), solution.getSolvedQuery().getArgAt(0))).castToUnifier(), null));
+                        }
+                        return null;
+                    });
+                    return responses[0];
+                }
+            }
+            Optional<Element> element = GraphUtils.getById(graph, arguments.get(0).castToAtom().getValue());
+            if (!element.isPresent()) {
+                return SequencesKt.emptySequence();
+            }
+            if (arguments.get(1).isVar()) {
+                Optional<Sequence<Solution>> subSolutions = element.get().attributeKeys().map(key -> {
+                    Struct newQuery = request.getQuery().apply(Substitution.of(arguments.get(1).castToVar(), atom(key))).castToStruct();
+                    return request.solve(newQuery, Long.MAX_VALUE);
+                }).distinct().reduce(SequencesKt::plus);
+                if (!subSolutions.isPresent()) {
+                    return SequencesKt.emptySequence();
+                } else {
+                    return SequencesKt.map(subSolutions.get(), solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(arguments.get(1).castToVar(), solution.getSolvedQuery().getArgAt(1))).castToUnifier(), null));
+                }
+            }
+            String attributeKey = arguments.get(1).castToAtom().getValue();
+            Object attributeValue = element.get().getAttribute(StringUtils.removeQuotation(attributeKey));
+            Term thirdArgument = arguments.get(2);
+            if (thirdArgument.isVar()) {
+                return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(thirdArgument.castToVar(), atom(stringRep(attributeValue))), null));
+            } else if (thirdArgument.isAtom() && thirdArgument.castToAtom().getValue().equals(attributeValue)) {
+                return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+            } else {
+                return SequencesKt.emptySequence();
+            }
+        });
+        res.put(new Signature("text_concat", 3, false), request -> {
+            Term one = request.getArguments().get(0);
+            Term two = request.getArguments().get(1);
+            Term three = request.getArguments().get(2);
+            if (one.isAtom()) {
+                String oneContents = stringRep(one.castToAtom().getValue());
+                if (two.isAtom()) {
+                    String twoContents = stringRep(two.castToAtom().getValue());
+                    Atom threeShouldBe = atom(oneContents + two.castToAtom().getValue());
+                    if (three.isVar()) {
+                        return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(three.castToVar(), atom(oneContents + twoContents)), null));
+                    } else if (three.equals(threeShouldBe)) {
+                        return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+                    } else {
+                        return SequencesKt.emptySequence();
+                    }
+                } else if (three.isAtom()) {
+                    String threeContents = stringRep(one.castToAtom().getValue());
+                    if (threeContents.startsWith(oneContents)) {
+                        String twoShouldBe = threeContents.substring(oneContents.length());
+                        if (two.isAtom() && stringRep(two.castToAtom().getValue()).equals(twoShouldBe)) {
+                            return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+                        } else if (two.isVar()) {
+                            return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(two.castToVar(), atom(twoShouldBe)), null));
+                        } else {
+                            return SequencesKt.emptySequence();
+                        }
+                    } else {
+                        return SequencesKt.emptySequence();
+                    }
+                } else {
+                    return SequencesKt.emptySequence();
+                }
+            } else if (one.isVar() && two.isAtom() && three.isAtom()) {
+                String twoContents = stringRep(two.castToAtom().getValue());
+                String threeContents = stringRep(one.castToAtom().getValue());
+                if (threeContents.endsWith(twoContents)) {
+                    String oneShouldBe = threeContents.substring(0, threeContents.length() - twoContents.length());
+                    return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(one.castToVar(), atom(oneShouldBe)), null));
+                } else {
+                    return SequencesKt.emptySequence();
+                }
+            } else {
+                return SequencesKt.emptySequence();
+            }
+        });
+        res.put(new Signature("text_term", 2, false), request -> {
+            if (request.getArguments().get(0).isVar()) {
+                return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(request.getArguments().get(0).castToVar(), atom(request.getArguments().get(1).toString())), null));
+            } else if (request.getArguments().get(0).isAtom() && request.getArguments().get(0).equals(atom(request.getArguments().get(1).toString()))) {
+                return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
+            } else {
+                return SequencesKt.emptySequence();
+            }
+        });
+        return res;
     }
 
-    /**
-     * Returns the Prolog Theory associated with this library. Contains generative predicates ({@link Graph}/{@link
-     * Edge}/{@link Node}) as well as functional predicates.
-     *
-     * @return The Prolog theory.
-     */
+    private boolean inShortestPath(Edge edge, Node from, Node to) {
+        shortestPaths.computeIfAbsent(from, edges -> new HashMap<>());
+        shortestPaths.get(from).computeIfAbsent(to, edges -> {
+            dijkstras.computeIfAbsent(from, from1 -> {
+                Dijkstra res = new Dijkstra();
+                res.init(graph);
+                res.setSource(from1);
+                res.compute();
+                return res;
+            });
+            return dijkstras.get(from).getPath(to);
+        });
+        return shortestPaths.get(from).get(to).contains(edge);
+    }
+
+    @NotNull
     @Override
-    public String getTheory() {
-        try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("graph(\"" + graph.getId() + "\").\n");
-            for (Node n : graph.getEachNode()) {
-                sb.append("node(\"" + n.getId() + "\").\n");
-                for (String attrKey : n.getAttributeKeySet()) {
-                    sb.append("attribute(\"" + n.getId() + "\", '\"" + attrKey + "\"', " + StringRep(n.getAttribute(attrKey)) + ").\n");
-                }
-            }
-            for (Edge n : graph.getEachEdge()) {
-                sb.append("edge(\"" + n.getId() + "\").\n");
-                sb.append("edge(\"" + n.getSourceNode().getId() + "\", \"" + n.getTargetNode().getId() + "\").\n");
-                sb.append("edge(\"" + n.getSourceNode().getId() + "\", \"" + n.getTargetNode().getId() + "\", \"" + n.getId() + "\").\n");
-                for (String attrKey : n.getAttributeKeySet()) {
-                    sb.append("attribute(\"" + n.getId() + "\", '\"" + attrKey + "\"', " + StringRep(n.getAttribute(attrKey)) + ").\n");
-                }
-            }
-            for (String attrKey : graph.getAttributeKeySet()) {
-                sb.append("attribute(\"" + graph.getId() + "\", '\"" + attrKey + "\"', " + StringRep(graph.getAttribute(attrKey)) + ").\n");
-            }
-
-            sb.append("undirected(X) :- graph(X), undirectedSecond(X).\n");
-            sb.append("undirected(X) :- edge(X), undirectedSecond(X).\n");
-            sb.append("directed(X) :- graph(X), directedSecond(X).\n");
-            sb.append("directed(X) :- edge(X), directedSecond(X).\n");
-            sb.append("mixed(X) :- graph(X), mixedSecond(X).\n");
-            sb.append("edgeCount(X, Y) :- graph(X), edgeCountSecond(X, Y).\n");
-            sb.append("nodeCount(X, Y) :- graph(X), nodeCountSecond(X, Y).\n");
-            sb.append("componentCount(X, Y) :- graph(X), componentCountSecond(X, Y).\n");
-            sb.append("attributeCount(X, Y) :- graph(X), attributeCountSecond(X, Y).\n");
-            sb.append("attributeCount(X, Y) :- node(X), attributeCountSecond(X, Y).\n");
-            sb.append("attributeCount(X, Y) :- edge(X), attributeCountSecond(X, Y).\n");
-            sb.append("singlegraph(X) :- graph(X), singlegraphSecond(X).\n");
-            sb.append("multigraph(X) :- graph(X), multigraphSecond(X).\n");
-            sb.append("isConnected(X) :- componentCount(X, 0) ; componentCount(X, 1).\n");
-            sb.append("degree(X, Y) :- node(X), degreeSecond(X, Y).\n");
-            sb.append("indegree(X, Y) :- node(X), indegreeSecond(X, Y).\n");
-            sb.append("outdegree(X, Y) :- node(X), outdegreeSecond(X, Y).\n");
-            sb.append("neighbourCount(X, Y) :- node(X), neighbourCountSecond(X, Y).\n");
-            sb.append("label(X, Y) :- attribute(X, '\"label\"', Y).\n");
-            sb.append("flag(X, Y) :- attribute(X, '\"flag\"', Y).\n");
-            sb.append("type(X, Y) :- attribute(X, '\"type\"', Y).\n");
-            sb.append("inComponent(X, Y) :- node(X), inComponentSecond(X, Y).\n");
-            sb.append("inMST(X) :- edge(X), inMSTSecond(X).\n");
-            sb.append("inShortestPath(X,Y,Z) :- edge(X), node(Y), node(Z), inShortestPathSecond(X,Y,Z).\n");
-            sb.append("colour(X,Y) :- color(X,Y).");
-            return sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    /**
-     * Returns whether the given object is directed, be it an {@link Edge} or {@link Graph}.
-     *
-     * @param ID Identifier of the {@link Graph} element.
-     * @return Whether the given object is directed.
-     */
-    public boolean directedSecond_1(Term ID) {
-        return bool((Struct) ID.getTerm(), GraphUtils::isDirectedGeneral, false, true, true);
-    }
-
-    /**
-     * Returns whether the given object is undirected, be it an {@link Edge} or {@link Graph}.
-     *
-     * @param ID Identifier of the {@link Graph} element.
-     * @return Whether the given object is undirected.
-     */
-    public boolean undirectedSecond_1(Term ID) {
-        return bool((Struct) ID.getTerm(), GraphUtils::isUnDirectedGeneral, false, true, true);
-    }
-
-    /**
-     * Logs the given term, then returns true
-     *
-     * @param ignore Term to be logged
-     * @return true
-     */
-    @SuppressWarnings("SameReturnValue")
-    public boolean println_1(Term ignore) {
-        TuProlog.log(ignore.getTerm().toString());
-        System.out.println(ignore.getTerm().toString());
-        return true;
-    }
-
-    /**
-     * Returns whether the given {@link Graph} object is mixed.
-     *
-     * @param ID Identifier of the {@link Graph} element.
-     * @return Whether the given {@link Graph} is undirected.
-     */
-    public boolean mixedSecond_1(Term ID) {
-        return directedSecond_1(ID) == undirectedSecond_1(ID);
-    }
-
-    /**
-     * Returns whether the given {@link Graph} has this {@link Edge} count or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Graph}.
-     * @param count {@link Edge} count of the {@link Graph}
-     * @return Whether unification was possible or the given count was correct.
-     */
-    public boolean edgeCountSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Graph) n).getEdgeCount(), false, false, true);
-    }
-
-    /**
-     * Returns whether the given {@link Graph} is a {@link SingleGraph}.
-     *
-     * @param ID Identifier of the {@link Graph}.
-     * @return Whether the {@link Graph} is a {@link SingleGraph}.
-     */
-    public boolean singlegraphSecond_1(Term ID) {
-        return bool((Struct) ID.getTerm(), n -> n instanceof SingleGraph, false, false, true);
-    }
-
-    /**
-     * Returns whether the given {@link Graph} is a {@link MultiGraph}.
-     *
-     * @param ID Identifier of the {@link Graph}.
-     * @return Whether the {@link Graph} is a {@link MultiGraph}.
-     */
-    public boolean multigraphSecond_1(Term ID) {
-        return bool((Struct) ID.getTerm(), n -> n instanceof MultiGraph, false, false, true);
-    }
-
-    /**
-     * Returns whether the given {@link Graph} has this {@link Node} count or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Graph}.
-     * @param count {@link Node} count of the {@link Graph}
-     * @return Whether unification was possible or the given count was correct.
-     */
-    public boolean nodeCountSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Graph) n).getNodeCount(), false, false, true);
-    }
-
-    /**
-     * Returns whether the given {@link Graph} has this component count or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Graph}.
-     * @param count Component count of the {@link Graph}
-     * @return Whether unification was possible or the given count was correct.
-     */
-    public boolean componentCountSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> GraphUtils.ConnectedComponentsCount(((Graph) n)), false, false, true);
-    }
-
-    /**
-     * Returns whether the given {@link Graph} element has this number of attributes or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Graph}.
-     * @param count Attribute count of the {@link Graph}
-     * @return Whether unification was possible or the given count was correct.
-     */
-    public boolean attributeCountSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, Element::getAttributeCount, true, true, true);
-    }
-
-    /**
-     * Returns whether the given {@link Node} has this degree or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Node}.
-     * @param count Degree of the {@link Node}
-     * @return Whether unification was possible or the given degree was correct.
-     */
-    public boolean degreeSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getDegree(), true, false, false);
-    }
-
-    /**
-     * Returns whether the given {@link Node} has this indegree or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Node}.
-     * @param count Indegree of the {@link Node}
-     * @return Whether unification was possible or the given indegree was correct.
-     */
-    public boolean indegreeSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getInDegree(), true, false, false);
-    }
-
-    /**
-     * Returns whether the given {@link Node} has this outdegree or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Node}.
-     * @param count Outdegree of the {@link Node}
-     * @return Whether unification was possible or the given outdegree was correct.
-     */
-    public boolean outdegreeSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> ((Node) n).getOutDegree(), true, false, false);
-    }
-
-    /**
-     * Returns whether the given {@link Node} has this number of neighbours or unifies otherwise.
-     *
-     * @param ID    Identifier of the {@link Node}.
-     * @param count Number of neighbours the {@link Node} has.
-     * @return Whether unification was possible or the given number was correct.
-     */
-    public boolean neighbourCountSecond_2(Term ID, Term count) {
-        return numeric((Struct) ID.getTerm(), count, n -> GraphUtils.neighbourCount((Node) n), true, false, false);
-    }
-
-
-    /**
-     * Returns whether the given {@link Node} is in a specific component of the {@link Graph} or unifies otherwise.
-     *
-     * @param ID        Identifier of the {@link Node}
-     * @param component Numeric identifier of the component this {@link Node} is in.
-     * @return Whether unification was possible or the given component ID was correct.
-     */
-    public boolean inComponentSecond_2(Term ID, Term component) {
-        GraphUtils.ConnectedComponentsCount(graph);
-        return numeric((Struct) ID.getTerm(), component, n -> n.getAttribute("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_"), true, false, false);
-    }
-
-    private Dijkstra dijkstra;
-
-    /**
-     * Returns whether an {@link Edge} is in the shortest path between two {@link Node} objects or unifies otherwise.
-     *
-     * @param ID   Identifier of the {@link Edge}.
-     * @param from Source {@link Node} of the shortest path.
-     * @param to   Target {@link Node} of the shortest path.
-     * @return Whether the given {@link Edge} lies on the shortest path between the two {@link Node} objects.
-     */
-    public boolean inShortestPathSecond_3(Term ID, Term from, Term to) {
-        if (dijkstra == null) {
-            dijkstra = new Dijkstra(null, "_ATTRIBUTE_FOR_SHORTEST_PATH_", null);
-            dijkstra.init(graph);
-        }
-        dijkstra.setSource(graph.getNode(((Struct) from.getTerm()).getName()));
-        dijkstra.compute();
-        Path a = dijkstra.getPath(graph.getNode(((Struct) to.getTerm()).getName()));
-        return a.contains((Edge) graph.getEdge(((Struct) ID.getTerm()).getName()));
-    }
-
-    /**
-     * Returns whether an {@link Edge} is in the minimal spanning tree of the {@link Graph}.
-     *
-     * @param ID Identifier of the {@link Edge}.
-     * @return Whether the {@link Edge} is in the minimal spanning tree of the {@link Graph}.
-     */
-    @SuppressWarnings("SuspiciousMethodCalls")
-    public boolean inMSTSecond_1(Term ID) {
-        try {
-            return bool((Struct) ID.getTerm(), n -> GraphUtils.getMST(graph).contains(n), false, true, false);
-        } catch (Exception | AssertionError e) {
-            e.printStackTrace();
-            return false;
-        }
+    public Theory getTheory() {
+        Clause clause0 = clause(struct("isConnected", var("X")), or(struct("componentCount", var("X"), intVal(0)), struct("componentCount", var("X"), intVal(1))));
+        Clause clause1 = fact(struct("graphLibrary", var("X"), Truth.FALSE));
+        return Theory.of(clause0, clause1);
     }
 }

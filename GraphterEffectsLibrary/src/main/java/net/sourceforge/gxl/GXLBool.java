@@ -54,7 +54,7 @@ public class GXLBool extends GXLAtomicValue {
 	GXLBool(Element element) {
 		super(GXL.BOOL, element);
 		// The constructor of GXLAtomicValue has initialized our value member
-		booleanValue = new Boolean(value).booleanValue();
+		booleanValue = Boolean.parseBoolean(value);
 		createChildren(element);
 	}
 

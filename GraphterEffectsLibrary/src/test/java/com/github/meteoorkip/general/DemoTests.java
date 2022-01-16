@@ -1,14 +1,14 @@
 package com.github.meteoorkip.general;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graphloader.Importer;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
 import com.github.meteoorkip.utils.FileUtils;
+import it.unibo.tuprolog.core.Clause;
 import org.dom4j.Document;
 import org.graphstream.graph.Graph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,9 +19,9 @@ public final class DemoTests {
     @Test
     public void demo1() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo1.dot"));
-        List<Term> terms = Arrays.asList(
+        List<Clause> terms = Arrays.asList(
                 //Display nodes as circles
-                clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("shape", var("N"), atom("ellipse")), struct("node", var("N"))),
                 clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
@@ -36,7 +36,7 @@ public final class DemoTests {
 
                 //Display node id as a label of the shape.
                 //Display the weight of the edges as label of the lines
-                clause(struct("text", var("N"), var("L")), struct("attribute", term("label"), var("X"), var("L")))
+                clause(struct("text", var("N"), var("L")), struct("attribute", atom("label"), var("X"), var("L")))
         );
         Solver solver = new Solver();
         SolveResults results = solver.solve(graph, terms);
@@ -47,9 +47,9 @@ public final class DemoTests {
     @Test
     public void demo2() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo2.dot"));
-        List<Term> terms = Arrays.asList(
+        List<Clause> terms = Arrays.asList(
                 //Display nodes as circles
-                clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("shape", var("N"), atom("ellipse")), struct("node", var("N"))),
                 clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
@@ -64,20 +64,20 @@ public final class DemoTests {
 
                 //Display node id as a label of the shape.
                 //Display the weight of the edges as label of the lines
-                clause(struct("text", var("N"), var("L")), struct("attribute", term("label"), var("X"), var("L"))),
+                clause(struct("text", var("N"), var("L")), struct("attribute", atom("label"), var("X"), var("L"))),
 
                 //Colour the nodes depending on the number of neighbours
                 //Yellow = 1
-                clause(struct("colour", var("N"), term("green")), struct("neighbourcount", var("N"), intVal(1))),
+                clause(struct("colour", var("N"), atom("green")), struct("neighbourcount", var("N"), intVal(1))),
 
                 //Orange = 2
-                clause(struct("colour", var("N"), term("yellow")), struct("neighbourcount", var("N"), intVal(2))),
+                clause(struct("colour", var("N"), atom("yellow")), struct("neighbourcount", var("N"), intVal(2))),
 
                 //Red = 3
-                clause(struct("colour", var("N"), term("orange")), struct("neighbourcount", var("N"), intVal(3))),
+                clause(struct("colour", var("N"), atom("orange")), struct("neighbourcount", var("N"), intVal(3))),
 
                 //Dark red= 4
-                clause(struct("colour", var("N"), term("red")), struct("neighbourcount", var("N"), intVal(4)))
+                clause(struct("colour", var("N"), atom("red")), struct("neighbourcount", var("N"), intVal(4)))
         );
         Solver solver = new Solver();
         SolveResults results = solver.solve(graph, terms);
@@ -88,9 +88,9 @@ public final class DemoTests {
     @Test
     public void demo3() throws Exception {
         Graph graph = Importer.graphFromFile(FileUtils.fromResources("tool/demo3.dot"));
-        List<Term> terms = Arrays.asList(
+        List<Clause> terms = Arrays.asList(
                 //Display nodes as circles
-                clause(struct("shape", var("N"), term("ellipse")), struct("node", var("N"))),
+                clause(struct("shape", var("N"), atom("ellipse")), struct("node", var("N"))),
                 clause(struct("noOverlap", var("N1"), var("N2")), and(struct("node", var("N1")), struct("node", var("N2")))),
                 clause(struct("width", var("N"), intVal(10)), struct("node", var("N"))),
                 clause(struct("height", var("N"), intVal(10)), struct("node", var("N"))),
@@ -104,10 +104,10 @@ public final class DemoTests {
                 clause(struct("behind", list(var("N1"), var("N2")), var("N2")), struct("edge", var("N1"), var("N2"), var())),
 
                 //Display all the nodes with a red border
-                clause(struct("stroke", var("N"), term("red")), struct("node", var("N"))),
+                clause(struct("stroke", var("N"), atom("red")), struct("node", var("N"))),
 
                 //colour all the edges which are in the mst in red
-                clause(struct("stroke", list(var("N1"), var("N2")), term("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
+                clause(struct("stroke", list(var("N1"), var("N2")), atom("red")), and(struct("inmst", var("E")), struct("edge", var("N1"), var("N2"), var("E"))))
         );
         Solver solver = new Solver();
         SolveResults results = solver.solve(graph, terms);

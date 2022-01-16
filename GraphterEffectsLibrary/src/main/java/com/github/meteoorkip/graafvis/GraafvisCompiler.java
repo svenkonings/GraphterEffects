@@ -1,7 +1,6 @@
 package com.github.meteoorkip.graafvis;
 
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.graafvis.checkers.CheckerResult;
 import com.github.meteoorkip.graafvis.checkers.GraafvisChecker;
 import com.github.meteoorkip.graafvis.errors.VisError;
@@ -9,6 +8,7 @@ import com.github.meteoorkip.graafvis.generator.RuleGenerator;
 import com.github.meteoorkip.graafvis.grammar.GraafvisLexer;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser;
 import com.github.meteoorkip.graafvis.warnings.Warning;
+import it.unibo.tuprolog.core.Clause;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
@@ -42,7 +42,7 @@ public class GraafvisCompiler {
      * @throws SyntaxException  A syntax error has occurred
      * @throws CheckerException An error has occurred during the checking phase
      */
-    public List<Term> compile(String script) throws SyntaxException, CheckerException {
+    public List<Clause> compile(String script) throws SyntaxException, CheckerException {
         errors.clear();
         warnings.clear();
         /* Create a parser */

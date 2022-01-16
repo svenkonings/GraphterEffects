@@ -1,8 +1,9 @@
 package com.github.meteoorkip.screens.idescreen.tab.ruleviewer;
 
-import alice.tuprolog.Struct;
-import alice.tuprolog.Term;
+
 import com.github.meteoorkip.general.generation.GenerationModel;
+import it.unibo.tuprolog.core.Clause;
+import it.unibo.tuprolog.core.Term;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -55,19 +56,18 @@ public class RuleViewerPresenter implements Initializable {
         loadContent(GenerationModel.getInstance().getGeneration().getProlog(), GenerationModel.getInstance().getGeneration().getScriptTerms());
     }
 
-    public void loadContent(TuProlog tuProlog, List<Term> scriptTerms) {
+    public void loadContent(TuProlog tuProlog, List<Clause> scriptTerms) {
         this.tuProlog = tuProlog;
-        for (Term term : scriptTerms) {
-            String head;
+        for (Clause term : scriptTerms) {
+            String head = "";
             StringBuilder tail = new StringBuilder();
-            if (term instanceof Struct && ((Struct) term).isClause()) {
-                Struct struct = (Struct) term;
-                head = struct.getArg(0).toString();
-                for (int i = 1; i < struct.getArity(); i++) {
-                    tail.append(struct.getArg(i).toString());
-                }
-            } else {
+            if (term.isFact()) {
                 head = term.toString();
+            } else if (term.isClause()) {
+                head = term.getHead().toString();
+                for (int i = 1; i < term.castToClause().getBodySize(); i++) {
+                    tail.append(term.castToClause().getBodyItem(i).toString());
+                }
             }
 
             TableTerm tableTerm = new TableTerm(head, tail.toString());

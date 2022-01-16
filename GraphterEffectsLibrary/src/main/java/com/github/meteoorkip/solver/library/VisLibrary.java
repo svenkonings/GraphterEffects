@@ -1,9 +1,11 @@
 package com.github.meteoorkip.solver.library;
 
-import alice.tuprolog.Term;
 import com.github.meteoorkip.solver.VisElem;
 import com.github.meteoorkip.solver.VisMap;
 import com.github.meteoorkip.utils.TriConsumer;
+import it.unibo.tuprolog.core.Clause;
+import it.unibo.tuprolog.core.Struct;
+import it.unibo.tuprolog.core.Term;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,7 +31,7 @@ import static com.github.meteoorkip.prolog.TuProlog.clause;
 public class VisLibrary {
 
     /** Terms to be added before querieing */
-    protected final List<Term> terms;
+    protected final List<Clause> clauses;
 
     /** Mapping from query to {@link QueryConsumer}. */
     protected final Map<String, QueryConsumer> queries;
@@ -42,7 +44,7 @@ public class VisLibrary {
      * nothing.
      */
     public VisLibrary() {
-        this.terms = new ArrayList<>();
+        this.clauses = new ArrayList<>();
         this.queries = new LinkedHashMap<>();
         this.elemConsumer = elem -> {
             // Do nothing.
@@ -54,8 +56,8 @@ public class VisLibrary {
      *
      * @return The set of terms.
      */
-    public List<Term> getTerms() {
-        return terms;
+    public List<Clause> getClauses() {
+        return clauses;
     }
 
     /**
@@ -83,8 +85,8 @@ public class VisLibrary {
      * @param body The clause tail.
      * @return {@code true} if the terms did not already contain the specified element.
      */
-    public boolean addClause(Term head, Term body) {
-        return addTerm(clause(head, body));
+    public boolean addClause(Struct head, Term... body) {
+        return clauses.add(clause(head, body));
     }
 
     /**
@@ -94,28 +96,9 @@ public class VisLibrary {
      * @param body The clause tail.
      * @return {@code true} if the clause existed.
      */
-    public boolean removeClause(Term head, Term body) {
-        return removeTerm(clause(head, body));
-    }
+    public boolean removeClause(Struct head, Term... body) {
+        return clauses.remove(clause(head, body));
 
-    /**
-     * Add the given term to the terms.
-     *
-     * @param term The given term.
-     * @return {@code true} if the terms did not already contain the specified element.
-     */
-    public boolean addTerm(Term term) {
-        return terms.add(term);
-    }
-
-    /**
-     * Remove the given term from terms.
-     *
-     * @param term The given term.
-     * @return {@code true} if the term existed.
-     */
-    public boolean removeTerm(Term term) {
-        return terms.remove(term);
     }
 
     /**

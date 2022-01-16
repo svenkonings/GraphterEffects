@@ -8,10 +8,12 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  *
@@ -36,11 +38,11 @@ public class LabelGenerationCheckTest {
     }
 
     private void validityCheck(String program) {
-        Assert.assertEquals(0, check(program).size());
+        assertEquals(0, check(program).size());
     }
 
     private void invalidityCheck(String program) {
-        Assert.assertNotEquals(0, check(program).size());
+        assertNotEquals(0, check(program).size());
     }
 
     /** Run the checker on a program. Return resulting graafvis.errors */

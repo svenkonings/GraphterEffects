@@ -2,14 +2,14 @@ package com.github.meteoorkip.graphloader;
 
 import com.github.meteoorkip.utils.FileUtils;
 import org.graphstream.graph.Graph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public final class GXLImporterTest {
 
@@ -45,6 +45,3 @@ public final class GXLImporterTest {
         }
     }
 }
-
-
-
