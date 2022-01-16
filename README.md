@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/svenkonings/GraphterEffects.svg?branch=master)](https://travis-ci.org/svenkonings/GraphterEffects)
+[![Build](https://github.com/svenkonings/GraphterEffects/workflows/build/badge.svg?branch=master&event=push)](https://github.com/svenkonings/GraphterEffects/actions?query=workflow%3Abuild+branch%3Amaster+event%3Apush)
 
 **Development is currently on hold.
 The available version is an work-in-progress and not yet suited for regular use.**
