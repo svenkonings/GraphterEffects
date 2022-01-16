@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -32,7 +33,7 @@ public final class PrinterTest {
         int lengthA = getOUT().length();
         Printer.pprint(mg);
         int lengthB = getOUT().length();
-        assertTrue(lengthB == lengthA);
+        assertEquals(lengthA, lengthB);
 
         mg.setAttribute("samplekey", "samplevalue");
         Printer.pprint(mg);
