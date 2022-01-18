@@ -8,6 +8,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.graph.implementations.MultiNode;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class GraphUtils {
 
-    private static Map<Graph, Set<Edge>> spanningTrees = new HashMap<>();
+    private static final Map<Graph, Set<Edge>> spanningTrees = new HashMap<>();
 
 
     public static Graph getEmptyGraph() {
@@ -50,12 +51,7 @@ public class GraphUtils {
      * @return A set of all its neighbours.
      */
     public static Set<Node> neighbours(Node node) {
-        Set<Node> neighbours = new HashSet<>();
-        node.edges().forEach(e ->
-            neighbours.add(e.getOpposite(node))
-        );
-        neighbours.remove(node);
-        return neighbours;
+        return node.neighborNodes().collect(Collectors.toSet());
     }
 
     /**
@@ -65,7 +61,7 @@ public class GraphUtils {
      * @return The number of neighbours the node has.
      */
     public static int neighbourCount(Node node) {
-        return neighbours(node).size();
+        return Math.toIntExact(node.neighborNodes().count());
     }
 
 
@@ -88,6 +84,22 @@ public class GraphUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Returns all edges between two nodes A and B that either are directed and are pointed towards B or undirected.
+     * @param a source node
+     * @param b target node
+     * @return set of edges
+     */
+    public static Set<Edge> edgesBetween(Node a, Node b) {
+        if (a instanceof MultiNode) {
+            return ((MultiNode) a).getEdgeSetBetween(b).stream().filter(edge -> edge.getSourceNode() == a).collect(Collectors.toSet());
+        } else if (a.hasEdgeToward(b)) {
+            return CollectionUtils.setOf(a.getEdgeToward(b));
+        } else {
+            return Collections.emptySet();
+        }
     }
 
     /**

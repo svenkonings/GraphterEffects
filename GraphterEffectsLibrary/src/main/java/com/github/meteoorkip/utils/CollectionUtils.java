@@ -58,5 +58,13 @@ public class CollectionUtils {
         return new HashMap<>();
     }
 
-
+    /**
+     * Returns a set of the objects passed to the varargs parameters
+     * @param items objects
+     * @param <T> type of each object
+     * @return a list of the objects
+     */
+    public static <T> Set<T> setOf(T...items) {
+        return new HashSet<>(Arrays.asList(items));
+    }
 }

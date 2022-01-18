@@ -11,6 +11,7 @@ import it.unibo.tuprolog.solve.library.AliasedLibrary;
 import it.unibo.tuprolog.solve.primitive.Solve;
 import kotlin.sequences.Sequence;
 import kotlin.sequences.SequencesKt;
+import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
@@ -22,6 +23,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static com.github.meteoorkip.prolog.TuProlog.atom;
 
@@ -73,7 +75,7 @@ public abstract class GraphLibrary implements AliasedLibrary {
             } else if (term instanceof String) {
                 return (String) term;
             } else {
-                throw new RuntimeException("Unknown attribute value type: " + term.getClass());
+                throw new UnknownObjectException("Unknown attribute value type: " + term.getClass());
             }
 
         } catch (Exception e) {
@@ -117,27 +119,9 @@ public abstract class GraphLibrary implements AliasedLibrary {
 
     protected Sequence<Solve.Response> property(boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Solve.Request<? extends ExecutionContext> request, Function<Element, Optional<Term>> mapper) {
         if (request.getArguments().get(0).isVar()) {
-            Set<Element> candidates = new HashSet<>();
-            if (graphApplicable) {
-                candidates.add(graph);
-            }
-            if (nodesApplicable) {
-                graph.nodes().forEach(candidates::add);
-            }
-            if (edgesApplicable) {
-                graph.edges().forEach(candidates::add);
-            }
-            Sequence<Solve.Response> res = SequencesKt.emptySequence();
-            for (Element candidate : candidates) {
-                Substitution.Unifier substitution = Substitution.of(request.getArguments().get(0).asVar(), Atom.of(candidate.getId()));
-                Struct newQuery = request.getQuery().apply(substitution).asStruct();
-                Sequence<Solve.Response> solutions = SequencesKt.map(SequencesKt.filter(request.solve(newQuery, Long.MAX_VALUE), Solution::isYes), solution -> request.replySuccess(substitution.plus(solution.getSubstitution()).castToUnifier(), null));
-                res = SequencesKt.plus(res, solutions);
-            }
-            return res;
+            return makeElementAtom(request, request.getArguments().get(0).castToVar(), GraphUtils.getGraphElements(graph, graphApplicable, nodesApplicable, edgesApplicable, x -> true).stream());
         }
-        String id = request.getArguments().get(0).castToAtom().getValue();
-        Optional<Element> elementSelected = GraphUtils.getById(graph, id);
+        Optional<Element> elementSelected = GraphUtils.getById(graph, request.getArguments().get(0).castToAtom().getValue());
         if (!elementSelected.isPresent()) {
             return SequencesKt.emptySequence();
         }
@@ -179,17 +163,38 @@ public abstract class GraphLibrary implements AliasedLibrary {
         return false;
     }
 
-    protected Sequence<Solve.Response> makeEdgeAtom(Solve.Request<? extends ExecutionContext> request, Var term, Predicate<Edge> filter) {
-        return makeAtom(false, false, true, request, term, x -> filter.test((Edge) x));
+    /**
+     * When called from a Primitive, this method will substitute a Var with Atoms representing graph elements and perform
+     * a recursive search using Prolog. The result of this method may then be returned from the Primitive without modification.
+     * @param request request to solve
+     * @param var variable to substitute to
+     * @param stream graph elements that are suitable substitutions
+     * @return responses to the request (gathered recursively)
+     */
+    protected Sequence<Solve.Response> makeElementAtom(Solve.Request<? extends ExecutionContext> request, Var var, Stream<? extends Element> stream) {
+       return makeAtom(request, var, stream.map(e -> atom(e.getId())));
     }
 
-
-    protected Sequence<Solve.Response> makeAtom(boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Solve.Request<? extends ExecutionContext> request, Var firstEdgeTerm, Predicate<Element> filter) {
-        Optional<Sequence<Solve.Response>> recursiveSolutions = GraphUtils.getGraphElements(graph, graphApplicable, nodesApplicable, edgesApplicable, filter).stream().map(edge -> {
-            Struct newQuery = request.getQuery().apply(Substitution.of(firstEdgeTerm.castToVar(), atom(edge.getId()))).castToStruct();
+    /**
+     * When called from a Primitive, this method will substitute a Var with provided Atoms and perform
+     * a recursive search using Prolog. The result of this method may then be returned from the Primitive without modification.
+     * @param request request to solve
+     * @param var variable to substitute to
+     * @param atomStream suitable substitutions
+     * @return responses to the request (gathered recursively)
+     */
+    protected Sequence<Solve.Response> makeAtom(Solve.Request<? extends ExecutionContext> request, Var var, Stream<Atom> atomStream) {
+        Optional<Sequence<Solve.Response>> recursiveSolutions = atomStream.map(element -> {
+            Struct newQuery = request.getQuery().apply(Substitution.of(var, element)).castToStruct();
             return SequencesKt.map(SequencesKt.filter(request.solve(newQuery, Long.MAX_VALUE), Solution::isYes),
-                    solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(firstEdgeTerm.castToVar(), atom(edge.getId()))).castToUnifier(), null));
+                    solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(var, element)).castToUnifier(), null));
         }).reduce(SequencesKt::plus);
         return recursiveSolutions.orElseGet(SequencesKt::emptySequence);
+    }
+
+    private static class UnknownObjectException extends RuntimeException {
+        public UnknownObjectException(String s) {
+            super(s);
+        }
     }
 }
