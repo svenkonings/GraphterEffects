@@ -1,10 +1,7 @@
 package com.github.meteoorkip.asc;
 
 import com.github.meteoorkip.utils.GraphUtils;
-import it.unibo.tuprolog.core.Atom;
-import it.unibo.tuprolog.core.Struct;
-import it.unibo.tuprolog.core.Substitution;
-import it.unibo.tuprolog.core.Term;
+import it.unibo.tuprolog.core.*;
 import it.unibo.tuprolog.core.operators.Operator;
 import it.unibo.tuprolog.solve.ExecutionContext;
 import it.unibo.tuprolog.solve.Signature;
@@ -20,7 +17,9 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.Integer;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -38,6 +37,7 @@ public abstract class GraphLibrary implements AliasedLibrary {
      * Creates a new {@link GraphLibrary}.
      *
      * @param graph {@link Graph} on which predicates are performed.
+     * @param libraryName name of the library
      */
     public GraphLibrary(Graph graph, String libraryName) {
         this.graph = graph;
@@ -90,8 +90,7 @@ public abstract class GraphLibrary implements AliasedLibrary {
     @NotNull
     @Override
     public Map<Signature, LogicFunction> getFunctions() {
-        Map<Signature, LogicFunction> res = new HashMap<>();
-        return res;
+        return new HashMap<>();
     }
 
 
@@ -103,16 +102,7 @@ public abstract class GraphLibrary implements AliasedLibrary {
 
     protected Sequence<Solve.Response> predicate(boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Solve.Request<? extends ExecutionContext> request, Predicate<Element> predicate) {
         if (request.getArguments().get(0).isVar()) {
-            Set<Element> candidates = new HashSet<>();
-            if (graphApplicable && predicate.test(graph)) {
-                candidates.add(graph);
-            }
-            if (nodesApplicable) {
-                graph.nodes().filter(predicate).forEach(candidates::add);
-            }
-            if (edgesApplicable) {
-                graph.edges().filter(predicate).forEach(candidates::add);
-            }
+            Set<Element> candidates = GraphUtils.getGraphElements(graph, graphApplicable, nodesApplicable, edgesApplicable, predicate);
             return SequencesKt.asSequence(candidates.stream().map(element -> request.replySuccess(Substitution.of(request.getArguments().get(0).castToVar(), atom(element.getId())), null)).iterator());
         } else {
             String id = request.getArguments().get(0).castToAtom().getValue();
@@ -187,5 +177,19 @@ public abstract class GraphLibrary implements AliasedLibrary {
     @Override
     public final boolean hasProtected(@NotNull Signature signature) {
         return false;
+    }
+
+    protected Sequence<Solve.Response> makeEdgeAtom(Solve.Request<? extends ExecutionContext> request, Var term, Predicate<Edge> filter) {
+        return makeAtom(false, false, true, request, term, x -> filter.test((Edge) x));
+    }
+
+
+    protected Sequence<Solve.Response> makeAtom(boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Solve.Request<? extends ExecutionContext> request, Var firstEdgeTerm, Predicate<Element> filter) {
+        Optional<Sequence<Solve.Response>> recursiveSolutions = GraphUtils.getGraphElements(graph, graphApplicable, nodesApplicable, edgesApplicable, filter).stream().map(edge -> {
+            Struct newQuery = request.getQuery().apply(Substitution.of(firstEdgeTerm.castToVar(), atom(edge.getId()))).castToStruct();
+            return SequencesKt.map(SequencesKt.filter(request.solve(newQuery, Long.MAX_VALUE), Solution::isYes),
+                    solution -> request.replySuccess(solution.getSubstitution().plus(Substitution.of(firstEdgeTerm.castToVar(), atom(edge.getId()))).castToUnifier(), null));
+        }).reduce(SequencesKt::plus);
+        return recursiveSolutions.orElseGet(SequencesKt::emptySequence);
     }
 }

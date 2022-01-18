@@ -9,13 +9,15 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GraphUtils {
 
-    private static Map<Graph, Set<Edge>> graphmap = new HashMap<>();
+    private static Map<Graph, Set<Edge>> spanningTrees = new HashMap<>();
 
 
     public static Graph getEmptyGraph() {
@@ -29,15 +31,15 @@ public class GraphUtils {
      * @return A set of edges containing its minimal spanning tree.
      */
     public static Set<Edge> getMST(Graph graph) {
-        if (graphmap.containsKey(graph)) {
-            return graphmap.get(graph);
+        if (spanningTrees.containsKey(graph)) {
+            return spanningTrees.get(graph);
         }
         Kruskal kruskal = new Kruskal();
         kruskal.init(graph);
         kruskal.compute();
         Set<Edge> res = new HashSet<>();
         kruskal.getTreeEdges().forEach(res::add);
-        graphmap.put(graph, res);
+        spanningTrees.put(graph, res);
         return res;
     }
 
@@ -71,7 +73,7 @@ public class GraphUtils {
      * Prefix to be placed before each graph identifier to avoid usage in Graafvis script.
      */
     public static final String ILLEGAL_PREFIX = "#";
-    private static Map<Graph, ConnectedComponents> ccmap = new HashMap<>();
+    private static final Map<Graph, ConnectedComponents> connectedComponents = new HashMap<>();
 
     /**
      * Returns whether each edge in a given graph is undirected.
@@ -135,14 +137,14 @@ public class GraphUtils {
 
 
     private static void initComponentCount(Graph graph) {
-        if (ccmap.containsKey(graph)) {
+        if (connectedComponents.containsKey(graph)) {
             return;
         }
         ConnectedComponents connectedComponents = new ConnectedComponents();
         connectedComponents.init(graph);
         connectedComponents.compute();
         connectedComponents.setCountAttribute("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_");
-        ccmap.put(graph, connectedComponents);
+        GraphUtils.connectedComponents.put(graph, connectedComponents);
     }
 
     /**
@@ -153,7 +155,7 @@ public class GraphUtils {
      */
     public static int ConnectedComponentsCount(Graph graph) {
         initComponentCount(graph);
-        return ccmap.get(graph).getConnectedComponentsCount();
+        return connectedComponents.get(graph).getConnectedComponentsCount();
     }
 
 
@@ -261,5 +263,20 @@ public class GraphUtils {
         }
         return Optional.empty();
 
+    }
+
+    @NotNull
+    public static Set<Element> getGraphElements(Graph graph, boolean graphApplicable, boolean nodesApplicable, boolean edgesApplicable, Predicate<Element> predicate) {
+        Set<Element> candidates = new HashSet<>();
+        if (graphApplicable && predicate.test(graph)) {
+            candidates.add(graph);
+        }
+        if (nodesApplicable) {
+            graph.nodes().filter(predicate).forEach(candidates::add);
+        }
+        if (edgesApplicable) {
+            graph.edges().filter(predicate).forEach(candidates::add);
+        }
+        return candidates;
     }
 }
