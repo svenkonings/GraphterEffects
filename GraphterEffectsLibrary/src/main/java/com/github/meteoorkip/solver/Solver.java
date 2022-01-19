@@ -4,7 +4,6 @@ package com.github.meteoorkip.solver;
 import com.github.meteoorkip.asc.ASCLibrary;
 import com.github.meteoorkip.asc.GraphLibrary;
 import com.github.meteoorkip.asc.GraphLibraryLoader;
-import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.solver.library.DefaultVisLibrary;
 import com.github.meteoorkip.solver.library.LibraryException;
@@ -14,9 +13,9 @@ import com.github.meteoorkip.utils.TermUtils;
 import it.unibo.tuprolog.core.Clause;
 import it.unibo.tuprolog.core.Term;
 import nl.svenkonings.jacomo.model.Model;
-import nl.svenkonings.jacomo.solvers.chocosolver.ChocoSolver;
 import nl.svenkonings.jacomo.solvers.ortools.OrToolsSolver;
 import org.graphstream.graph.Graph;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -55,10 +54,9 @@ public class Solver {
      *
      * @param name   The given name.
      * @param loader The given {@link GraphLibraryLoader}.
-     * @return The previous mapping, or null if there wasn't one.
      */
-    public GraphLibraryLoader putGraphLibraryLoader(String name, GraphLibraryLoader loader) {
-        return graphLibraryLoaders.put(name, loader);
+    public void putGraphLibraryLoader(String name, GraphLibraryLoader loader) {
+        graphLibraryLoaders.put(name, loader);
     }
 
     /**
@@ -77,16 +75,6 @@ public class Solver {
     }
 
     /**
-     * Removes the {@link GraphLibraryLoader} associated to the given name.
-     *
-     * @param name The given name.
-     * @return The removed {@link GraphLibraryLoader}.
-     */
-    public GraphLibraryLoader removeGraphLibraryLoader(String name) {
-        return graphLibraryLoaders.remove(name);
-    }
-
-    /**
      * Get an instance of the {@link GraphLibrary} from the loader associated to the given name.
      *
      * @param name  The given name.
@@ -102,10 +90,9 @@ public class Solver {
      *
      * @param name    The given name.
      * @param library The given {@link VisLibrary}.
-     * @return The previous mapping, or null if there wasn't one.
      */
-    public VisLibrary putVisLibrary(String name, VisLibrary library) {
-        return visLibraries.put(name, library);
+    public void putVisLibrary(String name, VisLibrary library) {
+        visLibraries.put(name, library);
     }
 
     /**
@@ -121,16 +108,6 @@ public class Solver {
             throw new LibraryException("Vis library %s not found", name);
         }
         return library;
-    }
-
-    /**
-     * Removes the {@link VisLibrary} associated to the given name.
-     *
-     * @param name The given name.
-     * @return The removed {@link VisLibrary}.
-     */
-    public VisLibrary removeVisLibrary(String name) {
-        return visLibraries.remove(name);
     }
 
     /**
@@ -165,28 +142,31 @@ public class Solver {
     /**
      * Solves the constraints and returns the {@link SolveResults}.
      *
+     * @param terms terms parsed from the Graafvis script
      * @return The {@link SolveResults}.
      */
-    public SolveResults solve(Collection<Clause> terms) throws PrologException {
+    public SolveResults solve(Collection<Clause> terms) {
         return solve(loadProlog(terms));
     }
 
     /**
      * Solves the constraints and returns the {@link SolveResults}.
      *
+     * @param graph graph subject to visualization
+     * @param terms terms parsed from the Graafivis script
      * @return The {@link SolveResults}.
      */
-    public SolveResults solve(Graph graph, Collection<Clause> terms) throws PrologException {
-        TuProlog a = loadProlog(graph, terms);
-        return solve(a);
+    public SolveResults solve(Graph graph, Collection<Clause> terms) {
+        return solve(loadProlog(graph, terms));
     }
 
     /**
      * Solves the constraints and returns the {@link SolveResults}.
      *
+     * @param prolog prolog engine
      * @return The {@link SolveResults}.
      */
-    public SolveResults solve(TuProlog prolog) {
+    public @NotNull SolveResults solve(TuProlog prolog) {
         Model model = new Model();
         VisMap visMap = new VisMap(model);
 

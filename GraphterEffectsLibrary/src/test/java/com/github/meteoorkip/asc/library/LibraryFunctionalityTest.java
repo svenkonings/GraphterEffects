@@ -2,7 +2,6 @@ package com.github.meteoorkip.asc.library;
 
 import com.github.meteoorkip.asc.ASCLibrary;
 import com.github.meteoorkip.graphloader.Importer;
-import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.FileUtils;
 import com.github.meteoorkip.utils.GraphUtils;
@@ -17,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.meteoorkip.prolog.TuProlog.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LibraryFunctionalityTest {
 
@@ -30,7 +29,7 @@ public class LibraryFunctionalityTest {
     private Graph undigraph;
     private Graph empty;
 
-    Map<Graph, TuProlog> asrcmap = new HashMap<>();
+    final Map<Graph, TuProlog> asrcmap = new HashMap<>();
 
     @BeforeEach
     public void init() throws Exception {
@@ -63,15 +62,14 @@ public class LibraryFunctionalityTest {
 
 
     @Test
-    public void Label() throws Exception {
-//        testSuccess(struct("edge", struct("#(a;b)")), digraph);
-//        testSuccess(struct("attributesecond", struct("#(a;b)"), struct("label"), var("X")), digraph);
-//        testSuccess(struct("attribute", struct("#(a;b)"), struct("label"), var("X")), digraph);
-//        testSuccess(struct("label", struct("#(a;c)"), var("X")), digraph);
+    public void Label() {
+        testSuccess(struct("edge", struct("#(a;b)")), digraph);
+        testSuccess(struct("attribute", struct("#(a;b)"), struct("label"), var("X")), digraph);
+        testSuccess(struct("label", struct("#(a;c)"), var("X")), digraph);
 
 
-        testSuccess(struct("label", var("X"), struct("\"bcd\"")), digraph);
-        testSuccess(struct("label", struct("#(a;b)"), struct("\"abc\"")), digraph);
+        testSuccess(struct("label", var("X"), struct("bcd")), digraph);
+        testSuccess(struct("label", struct("#(a;b)"), struct("abc")), digraph);
         testSuccess(struct("label", struct("#(a;b)"), var("X")), digraph);
 
         testSuccess(struct("label", var("X"), var("Y")), digraph); //generation not supported
@@ -80,23 +78,12 @@ public class LibraryFunctionalityTest {
         testFail(struct("label", struct("#(a;b)"), struct("bcd")), digraph);
     }
 
-//    @Test
-//    public void testRaar() throws InvalidLibraryException, MalformedGoalException {
-//        Prolog prolog = new Prolog();
-//        prolog.loadLibrary(new TestLibrary(null));
-//        //SolveInfo a = prolog.solve("aAAA(a,b,c).");
-//        SolveInfo a = prolog.solve("cCCC(a,b,c).");
-//        System.out.println(a);
-//
-//    }
-
     @Test
-    public void Directed() throws Exception {
+    public void Directed() {
         testSuccess(struct("directed", struct("#(a;b)")), digraph);
         testFail(struct("undirected", struct("#(a;b)")), digraph);
         testSuccess(struct("directed", struct("#graph4.dot")), digraph);
         testFail(struct("directed", struct("#graph5.dot")), undigraph);
-//        System.out.println(new ASRCLibrary(undigraph).getTheory());
         testSuccess(struct("graph", var("X")), undigraph);
         testSuccess(struct("undirected", struct("#graph5.dot")), undigraph);
         testFail(struct("directed", var("X")), undigraph);
@@ -104,13 +91,13 @@ public class LibraryFunctionalityTest {
     }
 
     @Test
-    public void Mixed() throws Exception {
+    public void Mixed() {
         testSuccess(struct("mixed", struct("#empty.dot")), empty);
         testSuccess(struct("mixed", var("X")), empty);
     }
 
     @Test
-    public void ComponentCount() throws Exception {
+    public void ComponentCount() {
         testSuccess(struct("isConnected", var("X")), digraph); // generation not supported
         testSuccess(struct("isConnected", struct("#graph4.dot")), digraph);
         testSuccess(struct("isConnected", var("X")), empty); //generation not supported
@@ -118,7 +105,7 @@ public class LibraryFunctionalityTest {
     }
 
     @Test
-    public void AttributeCount() throws Exception {
+    public void AttributeCount() {
         testSuccess(struct("attributeCount", struct("#graph5.dot"), intVal(0)), undigraph);
         testSuccess(struct("attributeCount", struct("#(e;a)"), intVal(1)), undigraph);
         testSuccess(struct("attributeCount", struct("#(e;d)"), intVal(2)), undigraph);

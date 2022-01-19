@@ -4,15 +4,15 @@ import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graafvis.errors.VisError;
 import com.github.meteoorkip.graafvis.warnings.Warning;
 import com.github.meteoorkip.graphloader.Importer;
-import it.unibo.tuprolog.core.Clause;
-import org.dom4j.Document;
-import org.graphstream.graph.Graph;
-import org.xml.sax.SAXException;
 import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
 import com.github.meteoorkip.utils.FileUtils;
+import it.unibo.tuprolog.core.Clause;
+import org.dom4j.Document;
+import org.graphstream.graph.Graph;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,10 +29,10 @@ import java.util.Observable;
 
 public class Generation extends Observable{
 
-    private Path scriptFile;
-    private Path graphFile;
+    private final Path scriptFile;
+    private final Path graphFile;
 
-    private GenerationProgress targetProgress;
+    private final GenerationProgress targetProgress;
 
     private List<Clause> scriptTerms;
     private Graph graph;
@@ -41,7 +41,7 @@ public class Generation extends Observable{
     private SolveResults solveResults;
     private Document generatedSVG;
     private Exception exception;
-    private GraafvisCompiler compiler;
+    private final GraafvisCompiler compiler;
 
     /**
      * Constructor for a normal generation.
@@ -73,9 +73,9 @@ public class Generation extends Observable{
 
     /**
      * Compiles the Graafvis Script and notifies its observers about its progress.
-     * @throws IOException
-     * @throws GraafvisCompiler.SyntaxException
-     * @throws GraafvisCompiler.CheckerException
+     * @throws IOException thrown when the script file could not be read from storage
+     * @throws GraafvisCompiler.SyntaxException thrown when the script contains a syntax error
+     * @throws GraafvisCompiler.CheckerException thrown when the script contains a grammatical error
      */
     public void compileGraafVis() throws IOException, GraafvisCompiler.SyntaxException, GraafvisCompiler.CheckerException {
         /* Get a string representation of the script */

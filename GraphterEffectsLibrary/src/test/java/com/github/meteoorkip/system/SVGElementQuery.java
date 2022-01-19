@@ -11,21 +11,16 @@ import java.util.List;
  */
 public class SVGElementQuery {
 
-    private String type;
-    private List<Triple<String,String,Object>> conditions;
+    private final String type;
+    private final List<Triple<String,String,Object>> conditions;
 
     public SVGElementQuery(String type) {
         this.type = type;
         conditions = new LinkedList<>();
     }
 
+    @SafeVarargs
     public SVGElementQuery(String type, Triple<String,String,Object>... conditions) {
-        this.type = type;
-        this.conditions = new LinkedList<>();
-        this.conditions.addAll(Arrays.asList(conditions));
-    }
-
-    public SVGElementQuery(Triple<String,String,Object>... conditions) {
         this.type = type;
         this.conditions = new LinkedList<>();
         this.conditions.addAll(Arrays.asList(conditions));

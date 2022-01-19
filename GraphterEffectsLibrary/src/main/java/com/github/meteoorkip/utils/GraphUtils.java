@@ -6,15 +6,11 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.graph.implementations.MultiNode;
-import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class GraphUtils {
 
@@ -45,16 +41,6 @@ public class GraphUtils {
     }
 
     /**
-     * Returns the neighbourset of a graph node.
-     *
-     * @param node A given node.
-     * @return A set of all its neighbours.
-     */
-    public static Set<Node> neighbours(Node node) {
-        return node.neighborNodes().collect(Collectors.toSet());
-    }
-
-    /**
      * Returns the number of neighbours a graph node has.
      *
      * @param node A given node.
@@ -71,82 +57,6 @@ public class GraphUtils {
     public static final String ILLEGAL_PREFIX = "#";
     private static final Map<Graph, ConnectedComponents> connectedComponents = new HashMap<>();
 
-    /**
-     * Returns whether each edge in a given graph is undirected.
-     *
-     * @param graph A given graph.
-     * @return Whether each edge in this graph is undirected.
-     */
-    public static boolean isFullyUndirected(Graph graph) {
-        for (Edge edge : graph.edges().collect(Collectors.toSet())) {
-            if (edge.isDirected()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns all edges between two nodes A and B that either are directed and are pointed towards B or undirected.
-     * @param a source node
-     * @param b target node
-     * @return set of edges
-     */
-    public static Set<Edge> edgesBetween(Node a, Node b) {
-        if (a instanceof MultiNode) {
-            return ((MultiNode) a).getEdgeSetBetween(b).stream().filter(edge -> edge.getSourceNode() == a).collect(Collectors.toSet());
-        } else if (a.hasEdgeToward(b)) {
-            return CollectionUtils.setOf(a.getEdgeToward(b));
-        } else {
-            return Collections.emptySet();
-        }
-    }
-
-    /**
-     * Returns whether each edge in a given graph is directed.
-     *
-     * @param graph A given graph.
-     * @return Whether each edge in this graph is directed.
-     */
-    public static boolean isFullyDirected(Graph graph) {
-        for (Edge edge : graph.edges().collect(Collectors.toSet())) {
-            if (!edge.isDirected()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns whether the element is a directed edge or a fully directed graph.
-     *
-     * @param element Identifier of the element.
-     * @return Whether the element is a directed edge or a fully directed graph.
-     */
-    public static boolean isDirectedGeneral(Element element) {
-        if (element instanceof Graph) {
-            return isFullyDirected((Graph) element);
-        } else if (element instanceof Edge) {
-            return ((Edge) element).isDirected();
-        }
-        return false;
-    }
-
-    /**
-     * Returns whether the element is an undirected edge or a fully undirected graph.
-     *
-     * @param element Identifier of the element.
-     * @return Whether the element is an undirected edge or a fully undirected graph.
-     */
-    public static boolean isUnDirectedGeneral(Element element) {
-        if (element instanceof Graph) {
-            return isFullyUndirected((Graph) element);
-        } else if (element instanceof Edge) {
-            return !((Edge) element).isDirected();
-        }
-        return false;
-    }
-
 
     private static void initComponentCount(Graph graph) {
         if (connectedComponents.containsKey(graph)) {
@@ -155,7 +65,6 @@ public class GraphUtils {
         ConnectedComponents connectedComponents = new ConnectedComponents();
         connectedComponents.init(graph);
         connectedComponents.compute();
-        connectedComponents.setCountAttribute("_ATTRIBUTE_DETERMINING_WHICH_COMPONENT_THE_NODE_BELONGS_TO_");
         GraphUtils.connectedComponents.put(graph, connectedComponents);
     }
 
@@ -170,96 +79,6 @@ public class GraphUtils {
         return connectedComponents.get(graph).getConnectedComponentsCount();
     }
 
-
-    /**
-     * Returns a new grapg of the same type as a given graph.
-     *
-     * @param graph A given graph.
-     * @return A new graph of the same type.
-     */
-    public static Graph newGraphWithSameType(Graph graph) {
-        return newGraphWithSameType(graph, graph.getId());
-    }
-
-    /**
-     * Changes a Graph such that all objects in the Graph have a new ID that is the old one prefixed by an illegal
-     * prefix.
-     *
-     * @param input Graph to change.
-     * @return Changed graph.
-     */
-    public static Graph changeIDs(Graph input) {
-        Graph res = newGraphWithSameType(input, ILLEGAL_PREFIX + input.getId());
-        input.attributeKeys().forEach(key -> {
-            Object[] arr = {input.getAttribute(key)};
-            res.setAttribute(key, arr);
-        });
-        input.nodes().forEach(node -> {
-            Node added = res.addNode(ILLEGAL_PREFIX + node.getId());
-            node.attributeKeys().forEach(key -> {
-                Object[] arr = {node.getAttribute(key)};
-                added.setAttribute(key, arr);
-            });
-        });
-        input.edges().forEach(edge -> {
-            Edge added = res.addEdge(ILLEGAL_PREFIX + edge.getId(), ILLEGAL_PREFIX + edge.getSourceNode(), ILLEGAL_PREFIX + edge.getTargetNode(), edge.isDirected());
-            edge.attributeKeys().forEach(key -> {
-                Object[] arr = {edge.getAttribute(key)};
-                added.setAttribute(key, arr);
-            });
-        });
-        return res;
-    }
-
-
-    /**
-     * Returns a new graph of the same type as a given graph.
-     *
-     * @param graph A given graph.
-     * @param ID    ID of the new graph.
-     * @return A new graph of the same type.
-     */
-    public static Graph newGraphWithSameType(Graph graph, String ID) {
-        if (graph instanceof DefaultGraph) {
-            return new DefaultGraph(ID);
-        } else if (graph instanceof SingleGraph) {
-            return new SingleGraph(ID);
-        } else if (graph instanceof MultiGraph) {
-            return new MultiGraph(ID);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-
-    /**
-     * Returns a graph that is identical to the input graph  but with quotes around each attribute value.
-     *
-     * @param graph A given graph.
-     * @return A graph that is equal but with enforced quotes.
-     */
-    public static Graph enforceQuotes(Graph graph) {
-        Graph res = newGraphWithSameType(graph);
-        graph.attributeKeys().forEach(key -> {
-            Object[] arr = {graph.getAttribute(key)};
-            res.setAttribute(key, arr);
-        });
-        graph.nodes().forEach(node -> {
-            Node added = res.addNode(node.getId());
-            node.attributeKeys().forEach(key -> {
-                Object[] arr = {StringUtils.enforceQuotesIfString(node.getAttribute(key))};
-                added.setAttribute(key, arr);
-            });
-        });
-        graph.edges().forEach(edge -> {
-            Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
-            edge.attributeKeys().forEach(key -> {
-                Object[] arr = {StringUtils.enforceQuotesIfString(edge.getAttribute(key))};
-                added.setAttribute(key, arr);
-            });
-        });
-        return res;
-    }
 
     public static Optional<Element> getById(Graph graph, String id) {
         if (graph.getId().equals(id)) {

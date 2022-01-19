@@ -3,14 +3,13 @@ package com.github.meteoorkip.graafvis;
 import com.github.meteoorkip.graafvis.generator.RuleGenerator;
 import com.github.meteoorkip.graafvis.grammar.GraafvisLexer;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser;
+import com.github.meteoorkip.utils.CollectionUtils;
+import com.github.meteoorkip.utils.StringUtils;
 import it.unibo.tuprolog.core.Clause;
 import it.unibo.tuprolog.core.Rule;
 import it.unibo.tuprolog.core.Struct;
 import it.unibo.tuprolog.core.Term;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.github.meteoorkip.graafvis.generator.RuleGenerator.inList;
 import static com.github.meteoorkip.prolog.TuProlog.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -291,13 +289,19 @@ public class RuleGeneratorTest {
     }
 
 
-    /**********************
+    /* *********************
      --- Helper methods ---
-     **********************/
+     ********************* */
 
     // --- Custom assertions ---
-    public static void singleAssert(String s, Term t) {
-        assertEquals(inList(replaceVarsWithAtoms(t)), generate(s).stream().map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()));
+
+    /**
+     * Asserts that a graafvis script is parsed to an equivalent of a provided clause
+     * @param script graafvis script
+     * @param clause expected clause
+     */
+    public static void singleAssert(String script, Clause clause) {
+        assertEquals(CollectionUtils.listOf(replaceVarsWithAtoms(clause)), generate(script).stream().map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()));
     }
 
     private static Term replaceVarsWithAtoms(Term term) {
@@ -307,6 +311,8 @@ public class RuleGeneratorTest {
             List<Term> newBody = new ArrayList<>();
             term.castToRule().getBodyItems().forEach(x -> newBody.add(replaceVarsWithAtoms(x)));
             return Rule.of(replaceVarsWithAtoms(term.castToRule().getHead()).castToStruct(), newBody);
+        } else if (term.isAtom()) {
+            return atom(StringUtils.removeQuotation(term.castToAtom().getValue()));
         } else if (term.isStruct()) {
             return Struct.of(term.castToStruct().getFunctor(), term.castToStruct().getArgs().stream().map(RuleGeneratorTest::replaceVarsWithAtoms).collect(Collectors.toList()));
         } else if (term.isInteger()) {
@@ -323,7 +329,8 @@ public class RuleGeneratorTest {
     // --- Calling the rule generator ---
 
     public static List<Clause> generate(String script) {
-        Lexer lexer = new GraafvisLexer(new ANTLRInputStream(script));
+        CharStream charStream = CharStreams.fromString(script);
+        Lexer lexer = new GraafvisLexer(charStream);
         TokenStream tokens = new CommonTokenStream(lexer);
         GraafvisParser parser = new GraafvisParser(tokens);
         GraafvisParser.ProgramContext tree = parser.program();

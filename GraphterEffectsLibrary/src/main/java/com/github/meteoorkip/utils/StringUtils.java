@@ -1,28 +1,8 @@
 package com.github.meteoorkip.utils;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class StringUtils {
-
-    /**
-     * Returns whether this given {@code String} represents a double.
-     *
-     * @param input A given String.
-     * @return Whether the {@code String} represents a double.
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static boolean isDouble(String input) {
-        try {
-            Double.parseDouble(input);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
 
     /**
      * Parses a String into an integer.
@@ -34,19 +14,6 @@ public class StringUtils {
      */
     public static int parseInt(String value) {
         return new BigDecimal(value).intValue();
-    }
-
-    /**
-     * Repeats a character n times
-     *
-     * @param in Character to be repeated.
-     * @param n  Number of times to repeat.
-     * @return String containing <code>in</code> n times.
-     */
-    public static String repeat(char in, int n) {
-        char[] chars = new char[n];
-        Arrays.fill(chars, in);
-        return new String(chars);
     }
 
     /**
@@ -100,91 +67,7 @@ public class StringUtils {
         return in;
     }
 
-    /**
-     * Returns an accurate {@code String} representation of any {@code Object}, including arrays and collections of
-     * arrays or arrays of
-     * arrays.
-     *
-     * @param in Object of which the representation is required.
-     * @return A {@code String} representing the Object.
-     */
-    public static String ObjectToString(Object in) {
-        if (in instanceof Double && (Double) in == Math.floor((Double) in)) {
-            return String.valueOf(((int) ((Double) in).doubleValue()));
-        } else if (in instanceof Collection) {
-            List<String> to = new LinkedList<>();
-            for (Object i : ((Collection) in)) {
-                to.add(ObjectToString(i));
-            }
-            return to.toString();
-        } else if (in instanceof Object[]) {
-            String[] res = new String[((Object[]) in).length];
-            for (int i = 0; i < ((Object[]) in).length; i++) {
-                res[i] = ObjectToString(((Object[]) in)[i]);
-            }
-            return Arrays.toString(res);
-        } else if (in instanceof Integer || (in instanceof String && StringUtils.isInteger((String) in))) {
-            return String.valueOf(in);
-        } else if (in instanceof String && ((String) in).startsWith("\"")) {
-            return (String) in;
-        } else if (!(in instanceof String)) {
-            return "\"" + removeQuotation(in.toString()) + "\"";
-        }
-        return String.valueOf(in);
-    }
-
-
-    /**
-     * Returns whether this given {@code String} represents an integer.
-     *
-     * @param input A given String.
-     * @return Whether the {@code String} represents an integer.
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static boolean isInteger(String input) {
-        try {
-            Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Ensures all Strings contained in this Object have quotes (") around them unless they represent integers.
-     * Supported objects: array, {@link String}, {@link Collection}.
-     *
-     * @param in Input object.
-     * @return The edited object.
-     */
-    public static Object enforceQuotesIfString(Object in) {
-        if (in instanceof Object[]) {
-            Object[] res = new String[((Object[]) in).length];
-            for (int i = 0; i < ((Object[]) in).length; i++) {
-                res[i] = enforceQuotesIfString(String.valueOf(((Object[]) in)[i]));
-            }
-            return res;
-        } else if (in instanceof Collection) {
-            List<Object> to = new LinkedList<>();
-            for (Object i : ((Collection) in)) {
-                to.add(enforceQuotesIfString(i));
-            }
-            return to;
-        } else if (in instanceof String && isInteger((String) in)) {
-            return in;
-        } else if (in instanceof String) {
-            if (!((String) in).startsWith("\"")) {
-                in = "\"" + in;
-            }
-            if (!((String) in).endsWith("\"")) {
-                in = in + "\"";
-            }
-            return in;
-        }
-        return in;
-    }
-
-    public static String Chomp(String content) {
+    public static String chomp(String content) {
         if (content.endsWith("\r\n")) {
             return content.substring(0, content.length()-2);
         }

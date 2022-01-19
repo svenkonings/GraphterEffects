@@ -11,16 +11,16 @@ import it.unibo.tuprolog.solve.library.AliasedLibrary;
 import it.unibo.tuprolog.solve.primitive.Solve;
 import kotlin.sequences.Sequence;
 import kotlin.sequences.SequencesKt;
-import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.Integer;
-import java.util.*;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -46,43 +46,6 @@ public abstract class GraphLibrary implements AliasedLibrary {
         this.libraryName = libraryName;
     }
 
-    protected String stringRep(Object term) {
-        try {
-            if (term instanceof Integer || (term instanceof String && ((String) term).matches("\\d*"))) {
-                return term.toString();
-            } else if (term instanceof String && ((String) term).matches("\"\\d+\"")) {
-                return ((String) term).replaceFirst("\"(\\d+)\"", "$1");
-            } else if (term instanceof String[]) {
-                String[] res = new String[((String[]) term).length];
-                for (int i = 0; i < ((String[]) term).length; i++) {
-                    res[i] = stringRep(((String[]) term)[i]);
-                }
-                return Arrays.asList(res).toString();
-            } else if (term instanceof String && ((String) term).matches("\".*\"")) {
-                return (String) term;
-                //                return "'" + term + "'";
-            }
-            if (term instanceof List) {
-                if (((List) term).size() == 0) {
-                    return "[]";
-                } else {
-                    if (((List) term).get(0) instanceof String) {
-                        return stringRep(((List) term).toArray(new String[0]));
-                    } else {
-                        throw new RuntimeException("Unknown attribute value type: " + term.getClass());
-                    }
-                }
-            } else if (term instanceof String) {
-                return (String) term;
-            } else {
-                throw new UnknownObjectException("Unknown attribute value type: " + term.getClass());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
 
     @Override
     public final boolean contains(@NotNull Operator operator) {
@@ -192,9 +155,4 @@ public abstract class GraphLibrary implements AliasedLibrary {
         return recursiveSolutions.orElseGet(SequencesKt::emptySequence);
     }
 
-    private static class UnknownObjectException extends RuntimeException {
-        public UnknownObjectException(String s) {
-            super(s);
-        }
-    }
 }

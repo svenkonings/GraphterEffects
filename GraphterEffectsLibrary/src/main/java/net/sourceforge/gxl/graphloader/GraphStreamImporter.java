@@ -1,4 +1,4 @@
-package com.github.meteoorkip.graphloader;
+package net.sourceforge.gxl.graphloader;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.IdAlreadyInUseException;
@@ -10,14 +10,15 @@ import org.graphstream.stream.file.FileSourceFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+
+import static com.github.meteoorkip.utils.GraphUtils.ILLEGAL_PREFIX;
 
 /**
  * Class used to import {@link Graph} objects from formats natively supported by GraphStream.
  */
 @SuppressWarnings("WeakerAccess")
-final class GraphStreamImporter {
+public final class GraphStreamImporter {
 
     /**
      * {@link List} of file extensions accepted by this importer.
@@ -59,23 +60,14 @@ final class GraphStreamImporter {
     static Graph read(File file, boolean multigraph) throws IOException {
         Graph g;
         if (multigraph) {
-            g = new MultiGraph(file.getName());
+            g = new MultiGraph(ILLEGAL_PREFIX + file.getName());
         } else {
-            g = new SingleGraph(file.getName());
+            g = new SingleGraph(ILLEGAL_PREFIX + file.getName());
         }
         FileSource fs = FileSourceFactory.sourceFor(file.getAbsolutePath());
-        fs.addSink(g);
+        fs.addSink(new GraphMonitor(g));
         fs.readAll(file.getAbsolutePath());
         fs.removeSink(g);
         return g;
-    }
-
-    /**
-     * Returns an {@link Iterator} iterating over all accepted extensions.
-     *
-     * @return An {@link Iterator} over all accepted extensions.
-     */
-    public static Iterator<String> accepted() {
-        return acceptslist.iterator();
     }
 }

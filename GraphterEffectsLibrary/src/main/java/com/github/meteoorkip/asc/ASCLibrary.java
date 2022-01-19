@@ -1,31 +1,25 @@
 package com.github.meteoorkip.asc;
 
-import com.github.meteoorkip.prolog.TuProlog;
 import com.github.meteoorkip.utils.GraphUtils;
-import com.github.meteoorkip.utils.StringUtils;
-import it.unibo.tuprolog.core.*;
+import it.unibo.tuprolog.core.Atom;
+import it.unibo.tuprolog.core.Clause;
+import it.unibo.tuprolog.core.Substitution;
+import it.unibo.tuprolog.core.Term;
 import it.unibo.tuprolog.core.operators.OperatorSet;
 import it.unibo.tuprolog.solve.Signature;
-import it.unibo.tuprolog.solve.Solution;
 import it.unibo.tuprolog.solve.primitive.Primitive;
-import it.unibo.tuprolog.solve.primitive.Solve;
 import it.unibo.tuprolog.theory.Theory;
-import kotlin.sequences.Sequence;
 import kotlin.sequences.SequencesKt;
 import org.graphstream.algorithm.Dijkstra;
-import org.graphstream.graph.*;
-import org.graphstream.graph.implementations.AbstractEdge;
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.Path;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.graph.implementations.MultiNode;
 import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.stream.AttributeSink;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.github.meteoorkip.prolog.TuProlog.*;
 
@@ -94,9 +88,9 @@ public class ASCLibrary extends GraphLibrary {
             Term two = request.getArguments().get(1);
             Term three = request.getArguments().get(2);
             if (one.isAtom()) {
-                String oneContents = stringRep(one.castToAtom().getValue());
+                String oneContents = one.castToAtom().getValue();
                 if (two.isAtom()) {
-                    String twoContents = stringRep(two.castToAtom().getValue());
+                    String twoContents = two.castToAtom().getValue();
                     Atom threeShouldBe = atom(oneContents + two.castToAtom().getValue());
                     if (three.isVar()) {
                         return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(three.castToVar(), atom(oneContents + twoContents)), null));
@@ -106,10 +100,10 @@ public class ASCLibrary extends GraphLibrary {
                         return SequencesKt.emptySequence();
                     }
                 } else if (three.isAtom()) {
-                    String threeContents = stringRep(one.castToAtom().getValue());
+                    String threeContents = one.castToAtom().getValue();
                     if (threeContents.startsWith(oneContents)) {
                         String twoShouldBe = threeContents.substring(oneContents.length());
-                        if (two.isAtom() && stringRep(two.castToAtom().getValue()).equals(twoShouldBe)) {
+                        if (two.isAtom() && two.castToAtom().getValue().equals(twoShouldBe)) {
                             return SequencesKt.sequenceOf(request.replySuccess(Substitution.empty(), null));
                         } else if (two.isVar()) {
                             return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(two.castToVar(), atom(twoShouldBe)), null));
@@ -123,8 +117,8 @@ public class ASCLibrary extends GraphLibrary {
                     return SequencesKt.emptySequence();
                 }
             } else if (one.isVar() && two.isAtom() && three.isAtom()) {
-                String twoContents = stringRep(two.castToAtom().getValue());
-                String threeContents = stringRep(one.castToAtom().getValue());
+                String twoContents = two.castToAtom().getValue();
+                String threeContents = one.castToAtom().getValue();
                 if (threeContents.endsWith(twoContents)) {
                     String oneShouldBe = threeContents.substring(0, threeContents.length() - twoContents.length());
                     return SequencesKt.sequenceOf(request.replySuccess(Substitution.of(one.castToVar(), atom(oneShouldBe)), null));
@@ -183,7 +177,7 @@ public class ASCLibrary extends GraphLibrary {
             clauses.add(fact("edge", atom(edge.getId())));
             clauses.add(fact("edge", atom(edge.getSourceNode().getId()), atom(edge.getTargetNode().getId())));
             clauses.add(fact("edge", atom(edge.getSourceNode().getId()), atom(edge.getTargetNode().getId()), atom(edge.getId())));
-            edge.attributeKeys().forEach(key -> clauses.add(fact("attribute", atom(edge.getId()), atom("\"" + key + "\""), atom(stringRep(edge.getAttribute(key))))));
+            edge.attributeKeys().forEach(key -> clauses.add(fact("attribute", atom(edge.getId()), atom(key), (Term) edge.getAttribute(key))));
             if (edge.isDirected()) {
                 clauses.add(fact("directed", atom(edge.getId())));
             } else {
@@ -196,7 +190,7 @@ public class ASCLibrary extends GraphLibrary {
     private void addNodeClauses(List<Clause> clauses) {
         graph.nodes().forEach(node -> {
             clauses.add(fact("node", atom(node.getId())));
-            node.attributeKeys().forEach(key -> clauses.add(fact("attribute", atom(node.getId()), atom("\"" + key + "\""), atom(stringRep(node.getAttribute(key))))));
+            node.attributeKeys().forEach(key -> clauses.add(fact("attribute", atom(node.getId()), atom(key), (Term) node.getAttribute(key))));
             clauses.add(fact("attributeCount", atom(node.getId()), intVal(node.getAttributeCount())));
             clauses.add(fact("degree", atom(node.getId()), intVal(node.getDegree())));
             clauses.add(fact("indegree", atom(node.getId()), intVal(node.getInDegree())));
@@ -227,14 +221,14 @@ public class ASCLibrary extends GraphLibrary {
         clauses.add(fact("nodeCount", atom(graph.getId()), intVal(graph.getNodeCount())));
         clauses.add(fact("edgeCount", atom(graph.getId()), intVal(graph.getEdgeCount())));
         clauses.add(fact("attributeCount", atom(graph.getId()), intVal(graph.getAttributeCount())));
-        graph.attributeKeys().forEach(key -> clauses.add(fact("attribute", atom(graph.getId()), atom("\"" + key + "\""), atom(stringRep(graph.getAttribute(key))))));
+        graph.attributeKeys().forEach(key -> clauses.add(fact("attribute", atom(graph.getId()), atom(key), (Term) graph.getAttribute(key))));
     }
 
     private void addLogicClauses(List<Clause> clauses) {
         clauses.add(clause(struct("isConnected", var("X")), or(struct("componentCount", var("X"), intVal(0)), struct("componentCount", var("X"), intVal(1)))));
-        clauses.add(clause(struct("type", var("X"), var("Y")), struct("attribute", var("X"), atom("\"type\""), var("Y"))));
-        clauses.add(clause(struct("flag", var("X"), var("Y")), struct("attribute", var("X"), atom("\"flag\""), var("Y"))));
-        clauses.add(clause(struct("label", var("X"), var("Y")), struct("attribute", var("X"), atom("\"label\""), var("Y"))));
+        clauses.add(clause(struct("type", var("X"), var("Y")), struct("attribute", var("X"), atom("type"), var("Y"))));
+        clauses.add(clause(struct("flag", var("X"), var("Y")), struct("attribute", var("X"), atom("flag"), var("Y"))));
+        clauses.add(clause(struct("label", var("X"), var("Y")), struct("attribute", var("X"), atom("label"), var("Y"))));
     }
 
 }

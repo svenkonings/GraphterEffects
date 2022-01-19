@@ -25,7 +25,7 @@ public class CommandLineTest {
     public void Prepare() throws Exception {
         visLoc = FileUtils.fromResources("regression/general/test1.vis").getAbsolutePath();
         graphLoc = FileUtils.fromResources("library/simple_graphs/graph1.dot").getAbsolutePath();
-        svgLoc = Paths.get(".").toAbsolutePath().normalize().toString() + "/test.svg";
+        svgLoc = Paths.get(".").toAbsolutePath().normalize() + "/test.svg";
     }
 
     @Test
@@ -82,7 +82,7 @@ public class CommandLineTest {
             System.setOut(newstream);
             GraphterEffects.main(args);
             String content = new String(a.toByteArray(), StandardCharsets.UTF_8);
-            return StringUtils.Chomp(content);
+            return StringUtils.chomp(content);
         } finally {
             System.setOut(backup);
         }

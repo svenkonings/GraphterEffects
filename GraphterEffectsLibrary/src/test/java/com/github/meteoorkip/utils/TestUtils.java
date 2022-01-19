@@ -1,13 +1,9 @@
 package com.github.meteoorkip.utils;
 
-import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.prolog.TuProlog;
-import it.unibo.tuprolog.core.Struct;
 import it.unibo.tuprolog.core.Term;
 import org.graphstream.graph.Element;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public final class TestUtils {
-
-    public static boolean mapContains(Map<String, Term> map, String key, Term value) {
-        return map.containsKey(key) && map.get(key).equals(value);
-    }
 
     public static<K, V>  boolean mapContains(Map<K, V> haystack, Map<K, V> needle) {
         return haystack.entrySet().containsAll(needle.entrySet());
@@ -61,13 +53,10 @@ public final class TestUtils {
 
     public static void testAttributesCorrect(TuProlog prolog, Element element) {
         for (String attributeKey : element.attributeKeys().collect(Collectors.toSet())) {
-                List<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", struct(element.getId()), struct("\"" + attributeKey + "\""), var("Value"))));
-                String expectedValue = StringUtils.ObjectToString(element.getAttribute(attributeKey));
-                if (StringUtils.isDouble(StringUtils.removeQuotation(expectedValue)) || expectedValue.contains("[")) {
-                    return;
-                }
+                List<Map<String, Term>> answers = prolog.solve(and(elementTerm(element), struct("attribute", struct(element.getId()), atom(attributeKey), var("Value"))));
+                Term expectedValue = (Term) element.getAttribute(attributeKey);
                 try {
-                    assert answerContains(answers, var("Value"), atom(expectedValue)) || ((Struct) answers.get(0).get("Value")).getFunctor().equals(expectedValue);
+                    assert answerContains(answers, var("Value"), expectedValue);
                 } catch (Exception e) {
                     e.printStackTrace();
                     assert false;
@@ -84,13 +73,4 @@ public final class TestUtils {
     }
 
 
-    public static void showImage(Image image) {
-        JFrame f = new JFrame();
-        JLabel label = new JLabel();
-        label.setIcon(new ImageIcon(image));
-        f.add(label);
-        f.setVisible(true);
-        f.pack();
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    }
 }

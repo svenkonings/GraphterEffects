@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.meteoorkip.asc.GraphRuleTests.graphTest;
-import static com.github.meteoorkip.prolog.TuProlog.*;
+import static com.github.meteoorkip.prolog.TuProlog.struct;
+import static com.github.meteoorkip.prolog.TuProlog.var;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class AbstractSyntaxConverterWLIB {
@@ -77,7 +78,7 @@ public final class AbstractSyntaxConverterWLIB {
         MSTTest(graph);
     }
 
-    private void MSTTest(Graph graph) throws Exception {
+    private void MSTTest(Graph graph) {
         int length = GraphUtils.getMST(graph).size();
         TuProlog prolog = new TuProlog();
         ASCLibrary library = new ASCLibrary(graph);

@@ -3,7 +3,6 @@ package com.github.meteoorkip;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graphloader.Importer;
-import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.solver.ElementException;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
@@ -16,10 +15,7 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GraphterEffects {
 
@@ -109,7 +105,7 @@ public class GraphterEffects {
             Printer.pprint(graph);
         }
 
-        List<Clause> clauses = new GraafvisCompiler().compile(FileUtils.readFromFile(new File(scriptarg)));
+        List<Clause> clauses = scriptarg == null ? Collections.emptyList() : new GraafvisCompiler().compile(FileUtils.readFromFile(new File(scriptarg)));
 
         if (debuginfo) {
             System.out.println();
@@ -117,15 +113,7 @@ public class GraphterEffects {
             System.out.println();
         }
         Solver solver = new Solver();
-        SolveResults results = null;
-        try {
-            results = solver.solve(graph, clauses);
-        } catch (PrologException e) {
-            e.printStackTrace();
-        }
-//        if (debuginfo) {
-//            results.getModel().getSolver().printStatistics();
-//        }
+        SolveResults results = solver.solve(graph, clauses);
         if (!results.isSucces()) {
             throw new ElementException("Couldn't solve constraints");
         }
@@ -135,6 +123,10 @@ public class GraphterEffects {
         } else {
             SvgDocumentGenerator.writeDocument(document, svgarg);
         }
+        //        if (debuginfo) { todo: implement statistics printen in Jacomo
+//            results.getModel().getSolver().printStatistics();
+//        }
+
     }
 
     private static void showVersion() {
@@ -195,6 +187,6 @@ public class GraphterEffects {
                 arguments.add(anInput);
             }
         }
-        return new Pair<>(arguments.toArray(new String[arguments.size()]), flags);
+        return new Pair<>(arguments.toArray(new String[0]), flags);
     }
 }

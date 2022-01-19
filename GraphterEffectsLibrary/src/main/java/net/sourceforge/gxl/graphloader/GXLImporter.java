@@ -1,6 +1,6 @@
-package com.github.meteoorkip.graphloader;
+package net.sourceforge.gxl.graphloader;
 
-import com.github.meteoorkip.utils.GraphUtils;
+import it.unibo.tuprolog.core.Struct;
 import net.sourceforge.gxl.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
@@ -17,13 +17,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Consumer;
+
+import static com.github.meteoorkip.prolog.TuProlog.atom;
+import static com.github.meteoorkip.utils.GraphUtils.ILLEGAL_PREFIX;
 
 /**
  * Class used to import graphs saved in GXL format.
  */
 @SuppressWarnings("WeakerAccess")
-final class GXLImporter {
+public final class GXLImporter {
 
     /**
      * Set of seen IDs to ensure uniqueness of IDs given to GraphStream Graph elements.
@@ -81,22 +83,11 @@ final class GXLImporter {
 
 
     /**
-     * Reads a file in GXL format into a GraphStream graph Object.
-     *
-     * @param file File to read into a GraphsStream Graph Object.
-     * @return A GraphStream Graph Object containing the graph represented in the file.
-     * @throws IOException  Thrown when the file could not be read.
-     * @throws SAXException Thrown when the file contains incorrect syntax.
-     */
-    public static Graph read(File file, boolean addUnderscores, boolean multigraph) throws IOException, SAXException {
-        return read(file.getAbsolutePath(), addUnderscores, multigraph);
-    }
-
-    /**
      * Reads a file in GXL format into a {@link Graph}.
      *
      * @param path      Path to the file to read into a {@link Graph}.
      * @param addprefix <tt>true</tt> if an illegal prefix is to be added to the IDs of the read graph.
+     * @param multigraph <tt>true</tt> if the graph may have multiple edges with the same source and target
      * @return {@link Graph} containing the graph represented in the file.
      * @throws IOException  Thrown when the file could not be read.
      * @throws SAXException Thrown when the file contains incorrect syntax.
@@ -106,10 +97,10 @@ final class GXLImporter {
         idcounter = 0;
         String prefix = "";
         if (addprefix) {
-            prefix = GraphUtils.ILLEGAL_PREFIX;
+            prefix = ILLEGAL_PREFIX;
         }
         byte[] encoded = Files.readAllBytes(Paths.get(path));
-        String gxml = new String(encoded, "UTF-8");
+        String gxml = new String(encoded, StandardCharsets.UTF_8);
         gxml = gxml.replaceAll(" xmlns=\"http://www.gupro.de/GXL/gxl-1.0.dtd\"", "");
 
         gxml = removeDupAttr(gxml);
@@ -120,14 +111,14 @@ final class GXLImporter {
 
         Graph tograph;
         if (multigraph) {
-            tograph = new MultiGraph(prefix + graph.getAttribute("id"), true, false);
+            tograph = new MultiGraph(ILLEGAL_PREFIX + prefix + graph.getAttribute("id"), true, false);
         } else {
-            tograph = new SingleGraph(prefix + graph.getAttribute("id"), true, false);
+            tograph = new SingleGraph(ILLEGAL_PREFIX + prefix + graph.getAttribute("id"), true, false);
         }
 
         for (int p = 0; p < graph.getAttrCount(); p++) {
             GXLValue content = (graph.getAttrAt(p)).getValue();
-            tograph.setAttribute(graph.getAttrAt(p).getName(), getFromGXLValue(content, true));
+            tograph.setAttribute(graph.getAttrAt(p).getName(), getFromGXLValue(content));
 
         }
         boolean directed = graph.getAttribute("edgemode").equals("directed");
@@ -146,23 +137,19 @@ final class GXLImporter {
         }
         for (GXLGraphElement elem : nodes) {
             String id = getID(elem, addprefix);
-            Node n = tograph.addNode(id);
+            Node n = tograph.addNode(ILLEGAL_PREFIX + id);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
-                n.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content, true));
+                n.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content));
             }
         }
         for (GXLGraphElement elem : edges) {
             String id = getID(elem, addprefix);
-            Edge e = tograph.addEdge(id, prefix + elem.getAttribute("from"), prefix + elem.getAttribute("to"), directed);
+            Edge e = tograph.addEdge(ILLEGAL_PREFIX + id, ILLEGAL_PREFIX + prefix + elem.getAttribute("from"), ILLEGAL_PREFIX + prefix + elem.getAttribute("to"), directed);
             for (int p = 0; p < elem.getAttrCount(); p++) {
                 GXLValue content = (elem.getAttrAt(p)).getValue();
-                e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content, true));
+                e.setAttribute(elem.getAttrAt(p).getName(), getFromGXLValue(content));
             }
-        }
-        GXLAttr version = graph.getAttr("$version");
-        if (version != null && "curly".equals(getFromGXLValue(version.getValue(), false))) {
-            tograph = Grooveify(tograph);
         }
         return tograph;
     }
@@ -189,15 +176,14 @@ final class GXLImporter {
      * @param in {@link GXLValue} to be read from.
      * @return String or List Object, depending on whether it's an atomic or composite GXLValue.
      */
-    private static Object getFromGXLValue(GXLValue in, boolean addQuotes) {
-        String quotes = addQuotes ? "\"" : "";
+    private static Struct getFromGXLValue(GXLValue in) {
         if (in instanceof GXLAtomicValue) {
-            return quotes + ((GXLAtomicValue) in).getValue() + quotes;
+            return atom(((GXLAtomicValue) in).getValue());
         } else if (in instanceof GXLCompositeValue) {
-            List<Object> res = new LinkedList<>();
+            it.unibo.tuprolog.core.List res = it.unibo.tuprolog.core.List.empty();
             GXLCompositeValue a = (GXLCompositeValue) in;
             for (int i = 0; i < a.getValueCount(); i++) {
-                res.add(getFromGXLValue(a.getValueAt(i), addQuotes));
+                res.addLast(getFromGXLValue(a.getValueAt(i)));
             }
             return res;
         }
@@ -214,7 +200,7 @@ final class GXLImporter {
     private static String getID(GXLGraphElement in, boolean addUnderscore) {
         String underscore = "";
         if (addUnderscore) {
-            underscore = GraphUtils.ILLEGAL_PREFIX;
+            underscore = ILLEGAL_PREFIX;
         }
         String idgotten = in.getAttribute("id");
         if (idgotten != null && !ids.contains(underscore + idgotten)) {
@@ -233,40 +219,5 @@ final class GXLImporter {
         idgotten = underscore + prefix + "ID?" + idcounter;
         ids.add(idgotten);
         return idgotten;
-    }
-
-    private static Graph Grooveify(Graph input) {
-        Graph res = GraphUtils.newGraphWithSameType(input);
-        input.attributeKeys().forEach(key -> res.setAttribute(key, input.getAttribute(key)));
-        input.nodes().forEach(node -> {
-            Node added = res.addNode(node.getId());
-            node.attributeKeys().forEach(key -> added.setAttribute(key, node.getAttribute(key)));
-        });
-        input.edges().forEach(new Consumer<Edge>() {
-            @Override
-            public void accept(Edge edge) {
-                if (edge.getSourceNode().equals(edge.getTargetNode())) {
-                    String label = (String) edge.getAttribute("label");
-                    if (label == null) {
-                        return;
-                    }
-                    label = label.substring(1, label.length() - 1);
-                    String[] attribute = label.split(":", 2);
-                    if (attribute.length == 1) {
-                        res.getNode(edge.getSourceNode().getId()).setAttribute("label", "\"" + attribute[0] + "\"");
-                    } else if (attribute.length == 2) {
-                        // FIXME: Should support type imports instead
-                        if ("type".equals(attribute[0])) {
-                            attribute[0] = "label";
-                        }
-                        res.getNode(edge.getSourceNode().getId()).setAttribute(attribute[0], "\"" + attribute[1] + "\"");
-                    }
-                } else {
-                    Edge added = res.addEdge(edge.getId(), edge.getSourceNode().getId(), edge.getTargetNode().getId(), edge.isDirected());
-                    edge.attributeKeys().forEach(key -> added.setAttribute(key, edge.getAttribute(key)));
-                }
-            }
-        });
-        return res;
     }
 }

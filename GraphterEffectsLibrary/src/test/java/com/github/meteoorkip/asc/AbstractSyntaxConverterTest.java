@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.github.meteoorkip.asc.GraphRuleTests.generateGraphProlog;
 import static com.github.meteoorkip.asc.GraphRuleTests.graphTest;
-import static com.github.meteoorkip.prolog.TuProlog.*;
+import static com.github.meteoorkip.prolog.TuProlog.struct;
+import static com.github.meteoorkip.prolog.TuProlog.var;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class AbstractSyntaxConverterTest {
@@ -74,7 +74,7 @@ public final class AbstractSyntaxConverterTest {
     }
 
 
-    private void MSTTest(Graph graph) throws Exception {
+    private void MSTTest(Graph graph) {
         Kruskal kruskal = new Kruskal();
         kruskal.init(graph);
         kruskal.compute();

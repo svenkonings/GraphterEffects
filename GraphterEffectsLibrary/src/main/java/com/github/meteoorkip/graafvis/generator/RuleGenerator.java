@@ -5,11 +5,12 @@ import com.github.meteoorkip.graafvis.grammar.GraafvisBaseVisitor;
 import com.github.meteoorkip.graafvis.grammar.GraafvisLexer;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser;
 import com.github.meteoorkip.graafvis.grammar.GraafvisParser.*;
+import com.github.meteoorkip.utils.CollectionUtils;
 import com.github.meteoorkip.utils.StringUtils;
 import it.unibo.tuprolog.core.Clause;
 import it.unibo.tuprolog.core.Struct;
 import it.unibo.tuprolog.core.Term;
-import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
@@ -17,14 +18,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import static com.github.meteoorkip.prolog.TuProlog.*;
 
 public class RuleGenerator extends GraafvisBaseVisitor<Term> {
-    private List<Clause> result;
+    private final List<Clause> result;
 
     public RuleGenerator(ProgramContext ctx) {
         result = new ArrayList<>();
@@ -40,7 +40,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         String filename = StringUtils.removeQuotation(ctx.STRING().getText());
         Lexer lexer;
         try {
-            lexer = new GraafvisLexer(new ANTLRFileStream(filename));
+            lexer = new GraafvisLexer(CharStreams.fromFileName(filename));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,7 +58,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      *
      * An example:
      *      Line in Graafvis script:        node labels: "Wolf" as wolf.
-     *      Generates the hidden rule:      node(X), label(X, "Wolf") -> wolf(X).
+     *      Generates the hidden rule:      node(X), label(X, "Wolf") {@literal ->} wolf(X).
      *
      * @param ctx   the parse tree node
      * @return      null
@@ -83,9 +83,9 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      *
      * An example:
      *      Line in Graafvis script:        edge labels: "Is friends with" as friends.
-     *      Generates the hidden rules:     edge(X), label(X, "Is friends with")        -> friends(X).
-     *                                      edge(X, Y, Z), label(Z, "Is friends with")  -> friends(X, Y).
-     *                                      edge(X, Y, Z), label(Z, "Is friends with")  -> friends(X, Y, Z).
+     *      Generates the hidden rules:     edge(X), label(X, "Is friends with")        {@literal ->} friends(X).
+     *                                      edge(X, Y, Z), label(Z, "Is friends with")  {@literal ->} friends(X, Y).
+     *                                      edge(X, Y, Z), label(Z, "Is friends with")  {@literal ->} friends(X, Y, Z).
      *
      * @param ctx   the parse tree node
      * @return      null
@@ -120,7 +120,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                 }
                 addFact((Struct) visit(cTerm));
             }
-            return null;
         } else {
             Term antecedent = visit(ctx.antecedent);
             Objects.requireNonNull(antecedent);
@@ -130,8 +129,8 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                 }
                 addClause((Struct) visit(cTerm), antecedent);
             }
-            return null;
         }
+        return null;
     }
 
     // --- ANTECEDENT ---
@@ -169,7 +168,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitStringAntecedent(StringAntecedentContext ctx) {
-        return struct(ctx.getText());
+        return atom(StringUtils.removeQuotation(ctx.getText()));
     }
 
     @Override public Term visitNumberAntecedent(NumberAntecedentContext ctx) {
@@ -215,7 +214,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     @Override public Term visitStringConsequence(StringConsequenceContext ctx) {
-        return struct(ctx.getText());
+        return atom(StringUtils.removeQuotation(ctx.getText()));
     }
 
     @Override public Term visitNumberConsequence(NumberConsequenceContext ctx) {
@@ -301,7 +300,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     /**
-     * Visits the {@link ParseTree} multi arguments of a multi compound term, returning a {@link List<Term>} containing
+     * Visits the {@link ParseTree} multi arguments of a multi compound term, returning a {@link List}{@literal <}{@link Term}{@literal >} containing
      * every generated (singular) compound term.
      * Used for visiting {@link MultiAndCompoundAntecedentContext}, {@link MultiOrCompoundAntecedentContext} and
      * {@link MultiCompoundConsequenceContext}.
@@ -310,7 +309,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      *      Line in Graafvis script:        p{a, (X,Y), ((a,b)), (), []}.
      *      Generates the hidden rules:     p(a). p(X,Y). p((a,b)). p. p([]).
      *
-     * N.B. using {@link com.github.meteoorkip.prolog.TuProlog ensures that a multi
+     * N.B. using {@link com.github.meteoorkip.prolog.TuProlog} ensures that a multi
      * argument which does not contain any arguments still generates an atom: the functor without arguments.
      * N.B. there is no check ensuring multiArgs is not null, as the grammar prohibits using a multi compound without
      * multi arguments. Example: p{} is not allowed.
@@ -318,7 +317,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
      *
      * @param functor   Given functor
      * @param multiArgs Given multi arguments
-     * @return
+     * @return the arguments of the multi compound term as Prolog terms
      */
     public Term[] visitMultiArgs(FunctorContext functor, List<? extends ParseTree> multiArgs) {
         int n = multiArgs.size();
@@ -336,7 +335,7 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                     args = tc.aArgSeries().args;
                 } else if (tc.aTerm() != null) {
                     // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
-                    args = inList(tc.aTerm());
+                    args = CollectionUtils.listOf(tc.aTerm());
                 } else {
                     // [Case 3] No terms: empty parenthesis
                     args = null;
@@ -349,14 +348,14 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
                     args = tc.cArgSeries().args;
                 } else if (tc.cTerm() != null) {
                     // [Case 2] Without parenthesis: contains one argument for the to be generated compound term
-                    args = inList(tc.cTerm());
+                    args = CollectionUtils.listOf(tc.cTerm());
                 } else {
                     // [Case 3] No terms: empty parenthesis
                     args = null;
                 }
             }
             Term[] arguments = visitAggregate(args);
-            results[i] = arguments == null ? struct(getFunctor(functor)) : struct(getFunctor(functor), arguments);
+            results[i] = arguments == null ? atom(getFunctor(functor)) : struct(getFunctor(functor), arguments);
         }
         return results;
     }
@@ -380,10 +379,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
         return result;
     }
 
-    public void setResult(List<Clause> ts) {
-        this.result = ts;
-    }
-
     // --- String building ---
 
     private static String getFunctor(FunctorContext ctx) {
@@ -392,13 +387,6 @@ public class RuleGenerator extends GraafvisBaseVisitor<Term> {
     }
 
     private static String removeOuterChars(String s) {
-        return (s == null) ? s : s.substring(1, s.length() - 1);
+        return (s == null) ? null : s.substring(1, s.length() - 1);
     }
-
-    // --- Generic collection help ---
-
-    public static <T> List<T> inList(T... ts) {
-        return Arrays.asList(ts);
-    }
-
 }

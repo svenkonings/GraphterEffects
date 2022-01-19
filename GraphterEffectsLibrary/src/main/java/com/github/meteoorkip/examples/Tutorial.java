@@ -2,7 +2,6 @@ package com.github.meteoorkip.examples;
 
 import com.github.meteoorkip.graafvis.GraafvisCompiler;
 import com.github.meteoorkip.graphloader.Importer;
-import com.github.meteoorkip.prolog.PrologException;
 import com.github.meteoorkip.solver.SolveResults;
 import com.github.meteoorkip.solver.Solver;
 import com.github.meteoorkip.svg.SvgDocumentGenerator;
@@ -41,7 +40,7 @@ public class Tutorial {
             System.out.println(svgString);
 
 
-        } catch (GraafvisCompiler.SyntaxException | GraafvisCompiler.CheckerException | IOException | SAXException | PrologException e) {
+        } catch (GraafvisCompiler.SyntaxException | GraafvisCompiler.CheckerException | IOException | SAXException e) {
             //Thrown when the Graafvis script contains syntax errors.
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package com.github.meteoorkip.graphloader;
 
 import com.github.meteoorkip.utils.FileUtils;
+import net.sourceforge.gxl.graphloader.GXLImporter;
 import org.graphstream.graph.Graph;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -8,8 +9,8 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.IOException;
 
+import static com.github.meteoorkip.prolog.TuProlog.atom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public final class GXLImporterTest {
 
@@ -25,11 +26,9 @@ public final class GXLImporterTest {
 
     @Test
     public void GrooveGXL() throws IOException, SAXException {
-        Graph g = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/gxl/typicalgroove.gxl"), true);
-        assertEquals("\"type:testtype\"", g.getNode("#node1").getAttribute("label"));
-        assertNotEquals("type:testtype", g.getNode("#node1").getAttribute("label"));
-        assertEquals(g.getNode("#node1").getAttribute("label"), "\"type:testtype\"");
-        //assertEquals(g.getNode("#node1").getAttribute("type"), "\"testtype\"");
+        Graph g = Importer.graphFromFile(FileUtils.fromResources("library/strange_graphs/gxl/typicalgroove.gxl"));
+        assertEquals(atom("type:testtype"), g.getNode("#node1").getAttribute("label"));
+        assertEquals(g.getNode("#node1").getAttribute("label"), atom("type:testtype"));
     }
 
     private void testFromFolder(String folder) throws IOException, SAXException {
